@@ -704,4 +704,37 @@
     aspect-ratio: 16 / 10;
     overflow: hidden;
   }
+
+  /* ── Service Detail custom overrides ── */
+  .stepper-card-dark {
+    border: 1px solid rgba(255, 255, 255, 0.08) !important;
+  }
+  .stepper-card-dark:hover {
+    border-color: #f3e38c !important;
+  }
+
+  .candidate-card-clean {
+    border: 1px solid transparent !important;
+  }
+  .candidate-card-clean:hover {
+    border-color: #be9c25 !important;
+  }
+
+  .stepper-step-num {
+    border: 1px solid rgba(243, 227, 140, 0.3) !important;
+    transition: all 0.3s ease;
+  }
+  .stepper-card-dark:hover .stepper-step-num {
+    background-color: #f3e38c !important;
+    color: #0a0a0a !important;
+    border-color: #f3e38c !important;
+  }
+
+  .stepper-step-time {
+    border: 1px solid rgba(243, 227, 140, 0.2) !important;
+  }
+
+  .stepper-banner-cta {
+    border: 1px solid rgba(243, 227, 140, 0.3) !important;
+  }
 }
