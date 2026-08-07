@@ -14,6 +14,7 @@ const QAForm = dynamic(() => import("@/components/QAForm"), { ssr: false });
 const FAQ = dynamic(() => import("@/components/FAQ"), { ssr: false });
 const QuickQuote = dynamic(() => import("@/components/QuickQuote"), { ssr: false });
 const BlogSection = dynamic(() => import("@/components/sections/BlogSection"), { ssr: false });
+const CtaBanner = dynamic(() => import("@/components/CtaBanner"), { ssr: false });
 
 import { useContent } from "@/hooks/useContent";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
@@ -38,12 +39,14 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
       <section id="portfolio">
         <Portfolio />
       </section>
-      <Testimonials />
+
       <section id="about">
         <HowWeWork />
       </section>
+      <Testimonials />
+      <CtaBanner />
       <section id="contact">
-        <QAForm />
+        <QAForm pageData={pageData} />
       </section>
 
 
@@ -51,6 +54,8 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
         title={pageData?.content?.blogSection?.title || blogSection?.title}
         subtitle={pageData?.content?.blogSection?.subtitle || blogSection?.subtitle}
         description={pageData?.content?.blogSection?.description || blogSection?.description}
+        ctaAll={pageData?.content?.blogSection?.ctaAll || blogSection?.ctaAll}
+        ctaReadMore={pageData?.content?.blogSection?.ctaReadMore || blogSection?.ctaReadMore}
         posts={allBlogs.filter((p: any) => (pageData?.content?.blogSection?.selectedPosts || []).includes(p._id))}
       />
 

@@ -271,10 +271,45 @@ export const useContent = () => {
                 projects: selectedProjects
             };
         })(),
-        testimonials: getSafe(completeData, 'testimonials', {
-            section: { badge: "", headline: "", description: "" },
-            items: []
-        }),
+        testimonials: (() => {
+            const t = getSafe(completeData, 'testimonials', { items: [], results: [] });
+            
+            const label = t.section?.badge || t.label || "Reviews";
+            const title1 = t.section?.headlinePrefix || t.title1 || "Real People.";
+            const title2 = t.section?.headlineHighlight || t.title2 || "Real Results.";
+            const quoteIcon = t.quoteIcon || "\"";
+            const dash = t.dash || "—";
+            
+            // Map selected reviews to items
+            const selectedReviews = t.testimonials || [];
+            const mappedReviews = selectedReviews.map((r: any) => ({
+                quote: r.text || r.quote || "",
+                name: r.name || "",
+                stars: r.rating || r.stars || 5
+            }));
+            const items = mappedReviews.length > 0 ? mappedReviews : (t.items || []);
+            const results = t.results || [];
+
+            return {
+                ...t,
+                label,
+                badge: label,
+                title1,
+                title2,
+                quoteIcon,
+                dash,
+                items,
+                results,
+                // Back-compat for editor
+                section: {
+                    badge: label,
+                    headlinePrefix: title1,
+                    headlineHighlight: title2,
+                    headlineSuffix: "",
+                    featured: t.section?.featured || "Google Review"
+                }
+            };
+        })(),
         whyChooseUs: getSafe(completeData, 'whyChooseUs', {
             section: { badge: "", headline: "", description: "" },
             features: [],
@@ -299,6 +334,84 @@ export const useContent = () => {
             projectTypes: [],
             timelines: [],
             success: { title: "", message: "", response: "", buttonText: "" }
+        }),
+        contactFaq: (() => {
+            const faqObj = getSafe(completeData, 'faq', { section: { badge: "", headline: "", description: "" }, items: [] });
+            const quoteObj = getSafe(completeData, 'quote', { section: { badge: "", headline: "", description: "" }, services: [] });
+            
+            const faqLabel = faqObj.section?.badge || "FAQ";
+            const faqTitle = faqObj.section?.headline || "Frequently Asked Questions";
+            
+            const formLabel = quoteObj.section?.badge || "GET IN TOUCH";
+            const formTitle = quoteObj.section?.headline || "Have Questions? Let's Connect.";
+            
+            const formClinicPortal = quoteObj.formClinicPortal || "INSTANT ONLINE BOOKING";
+            const formClinicPortalSub = quoteObj.formClinicPortalSub || "Book directly on StyleSeat portal";
+            const formStyleSeatBtn = quoteObj.formStyleSeatBtn || "BOOK ON STYLESEAT";
+            
+            const formNameLabel = quoteObj.formNameLabel || "YOUR FULL NAME";
+            const formNamePlaceholder = quoteObj.formNamePlaceholder || "Antoine Lyles";
+            const formEmailLabel = quoteObj.formEmailLabel || "EMAIL ADDRESS";
+            const formEmailPlaceholder = quoteObj.formEmailPlaceholder || "antoine@example.com";
+            const formPhoneLabel = quoteObj.formPhoneLabel || "PHONE NUMBER";
+            const formPhonePlaceholder = quoteObj.formPhonePlaceholder || "(410) 555-0199";
+            const formServiceLabel = quoteObj.formServiceLabel || "DESIRED SERVICE CATEGORY";
+            const formServicePlaceholder = quoteObj.formServicePlaceholder || "Select a service category";
+            const formMessageLabel = quoteObj.formMessageLabel || "YOUR MESSAGE / INJURY DETAILS";
+            const formMessagePlaceholder = quoteObj.formMessagePlaceholder || "Please describe any pain, stiffness, or injuries...";
+            
+            const formBtnSubmit = quoteObj.formBtnSubmit || "SEND MESSAGE";
+            const formBtnSuccess = quoteObj.formBtnSuccess || "MESSAGE SENT!";
+            const formSuccessToast = quoteObj.formSuccessToast || "Thank you! Your inquiry has been sent. We will reply within 24 hours.";
+            
+            const trustHipa = quoteObj.trustHipa || "HIPAA Compliant & Secure";
+            const trustResponse = quoteObj.trustResponse || "Avg Response: 2 Hours";
+            
+            // Map quote.services to options format { label, value }
+            const formServicesOptions = Array.isArray(quoteObj.services) && quoteObj.services.length > 0 
+              ? quoteObj.services.map((s: any) => typeof s === 'string' ? { label: s, value: s } : { label: s.label || s.name || "", value: s.value || s.id || "" })
+              : [
+                  { label: "Performance Sports Massage", value: "sports-massage" },
+                  { label: "PNF Stretch & Mobility Session", value: "pnf-stretch" },
+                  { label: "Myofascial Trigger Point Therapy", value: "trigger-point" },
+                  { label: "Therapeutic Muscle Scraping", value: "scraping" }
+                ];
+                
+            return {
+                label: "GET IN TOUCH",
+                title: "Have Questions? Let's Connect.",
+                description: "",
+                faqLabel,
+                faqTitle,
+                formLabel,
+                formTitle,
+                formClinicPortal,
+                formClinicPortalSub,
+                formStyleSeatBtn,
+                formNameLabel,
+                formNamePlaceholder,
+                formEmailLabel,
+                formEmailPlaceholder,
+                formPhoneLabel,
+                formPhonePlaceholder,
+                formServiceLabel,
+                formServicePlaceholder,
+                formMessageLabel,
+                formMessagePlaceholder,
+                formBtnSubmit,
+                formBtnSuccess,
+                formSuccessToast,
+                trustHipa,
+                trustResponse,
+                formServicesOptions,
+                faqs: faqObj.items || []
+            };
+        })(),
+        ctaBanner: getSafe(completeData, 'ctaBanner', {
+            tagline: "Take the First Step",
+            title: "Ready to Feel Your Best?",
+            description: "Book your appointment today and start your journey to a pain-free, stronger you.",
+            button: "BOOK APPOINTMENT"
         }),
         footer: {
             ...footer,
@@ -372,6 +485,8 @@ export const useContent = () => {
             title: "Latest from the Blog",
             subtitle: "Insights & News",
             description: "Stay updated with the latest trends, tips, and news from the roofing and construction industry.",
+            ctaAll: "View All Articles",
+            ctaReadMore: "Read Article",
             selectedPosts: []
         }),
         allBlogs: Array.isArray(completeData?.allBlogs) ? completeData.allBlogs : [],

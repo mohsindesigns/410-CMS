@@ -129,7 +129,7 @@ export default async function RootLayout({
   try {
     const [globalContent, blogPosts] = await Promise.all([
       SiteContent.findOne({ key: 'complete_data' }),
-      import('@/models/Post').then(m => m.default.find({ status: 'published', isTrashed: { $ne: true } }).sort({ date: -1 }).limit(10).lean())
+      import('@/models/Post').then(m => m.default.find({ status: 'published', isTrashed: { $ne: true } }).sort({ date: -1 }).limit(10).populate('categories', 'name').populate('author', 'name').lean())
     ]);
 
     if (globalContent?.data) initialGlobalData = globalContent.data;

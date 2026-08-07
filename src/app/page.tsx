@@ -201,8 +201,15 @@ export default async function Index() {
     }
   }
 
-  // Default Home Template
+  // Default Home Template — try to find a home page document for page-specific FAQs
   const homeData = content?.data?.home;
+  const homePageDoc = await Page.findOne({
+    $or: [{ slug: "/" }, { slug: "home" }, { title: /^home$/i }],
+    status: "published",
+    isTrashed: { $ne: true },
+  }).lean();
+  const homePage = homePageDoc ? JSON.parse(JSON.stringify(homePageDoc)) : null;
+
   const schema = generateSchema({
     title: settings?.siteTitle || "Eagle Revolution",
     description: homeData?.hero?.subheadline || "Veteran-owned roofing & home improvement in St. Louis, MO.",
@@ -219,7 +226,7 @@ export default async function Index() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <HomeTemplate />
+      <HomeTemplate pageData={homePage ? { ...homePage, content: { ...(content?.data || {}), ...(homePage.content || {}) } } : undefined} />
     </>
   );
 }

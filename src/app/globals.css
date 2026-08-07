@@ -677,4 +677,31 @@
   .bg-diagonal-stripes-black {
     background-image: repeating-linear-gradient(-45deg, #000 0px, #000 1px, transparent 1px, transparent 12px);
   }
+
+  .bg-radial-dots-gold {
+    background-image: radial-gradient(var(--color-gold) 1px, transparent 1px);
+    background-size: 24px 24px;
+  }
+
+  /* ── Blog Section ─────────────────────────── */
+  .blog-card {
+    display: flex;
+    flex-direction: column;
+    background: #fff;
+    border: 1px solid var(--brand-border-light, #e8e2d9);
+    overflow: hidden;
+    transition: box-shadow 0.3s ease, transform 0.3s ease;
+  }
+
+  .blog-card:hover {
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.08);
+    transform: translateY(-4px);
+  }
+
+  .img-blog {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 10;
+    overflow: hidden;
+  }
 }

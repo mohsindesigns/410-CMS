@@ -19,7 +19,8 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
   await connectToDatabase();
   const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
   const services = content?.data?.services?.services || [];
-  const service = services.find((s: any) => s.slug === slug);
+  const serviceItems = content?.data?.services?.items || [];
+  const service = services.find((s: any) => s.slug === slug) || serviceItems.find((s: any) => s.slug === slug);
 
   if (!service) return {};
 
@@ -58,14 +59,13 @@ export default async function Page({ params }: { params: Promise<{ slug: string 
   }
 
   const services = content?.data?.services?.services || [];
-  console.log(`[Service Debug] Total services in DB: ${services.length}`);
+  const serviceItems = content?.data?.services?.items || [];
+  console.log(`[Service Debug] Total admin services in DB: ${services.length}, home items: ${serviceItems.length}`);
   console.log(`[Service Debug] Looking for slug: "${resolvedParams.slug}"`);
 
-  const serviceDoc = services.find((s: any) => {
-    const isMatch = s.slug === resolvedParams.slug;
-    if (isMatch) console.log(`[Service Debug] MATCH FOUND! Status: ${s.status}`);
-    return isMatch && (s.status !== 'draft');
-  });
+  const serviceDoc =
+    services.find((s: any) => s.slug === resolvedParams.slug && s.status !== 'draft') ||
+    serviceItems.find((s: any) => s.slug === resolvedParams.slug);
 
   if (!serviceDoc) {
     console.warn(`[Service Debug] No published service found for "${resolvedParams.slug}"`);

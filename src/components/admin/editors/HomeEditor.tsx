@@ -91,6 +91,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
       { id: "leadership", label: "Leadership" },
       { id: "portfolio", label: "Work" },
       { id: "testimonials", label: "Reviews" },
+      { id: "ctaBanner", label: "CTA Banner" },
       { id: "blog", label: "Blog" },
       { id: "quote", label: "Contact Form" },
    ];
@@ -798,10 +799,70 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                         <h3 className={UI.sectionHeader}>3. Global Metric</h3>
                         <div className="space-y-1.5"><label className={UI.label}>Happy Client Count</label><input type="text" value={data.testimonials?.stats?.subscribers || ""} onChange={(e) => updateSection("testimonials", "stats", { ...(data.testimonials?.stats || {}), subscribers: e.target.value })} className={UI.inputLarge} /></div>
                      </div>
+                     <div className="space-y-6 pt-10 border-t border-[#f0f0f1]">
+                        <h3 className={UI.sectionHeader}>4. Results Gallery Grid (6 Images)</h3>
+                        <div className="space-y-4">
+                           {(data.testimonials?.results || []).map((res: any, i: number) => (
+                              <div key={i} className={UI.card + " space-y-4"}>
+                                 <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                    <span className="text-[10px] font-bold text-[#646970] uppercase">Result Card #{i + 1}</span>
+                                    <button onClick={() => {
+                                       const newRes = data.testimonials.results.filter((_: any, idx: number) => idx !== i);
+                                       updateSection("testimonials", "results", newRes);
+                                    }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
+                                 </div>
+                                 <div className="space-y-1.5">
+                                    <label className={UI.label}>Caption Label</label>
+                                    <input type="text" value={res.label || ""} onChange={(e) => {
+                                       const newRes = [...data.testimonials.results];
+                                       newRes[i] = { ...newRes[i], label: e.target.value };
+                                       updateSection("testimonials", "results", newRes);
+                                    }} className={UI.input} />
+                                 </div>
+                                 <ImageField
+                                    label="Result Image"
+                                    value={res.image || ""}
+                                    onChange={(url) => {
+                                       const newRes = [...data.testimonials.results];
+                                       newRes[i] = { ...newRes[i], image: url };
+                                       updateSection("testimonials", "results", newRes);
+                                    }}
+                                    altValue={res.label || ""}
+                                    onAltChange={() => {}}
+                                 />
+                              </div>
+                           ))}
+                           <button onClick={() => {
+                              const currentRes = data.testimonials?.results || [];
+                              updateSection("testimonials", "results", [...currentRes, { id: currentRes.length + 1, label: "", image: "" }]);
+                           }} className={UI.buttonAdd}>+ Add Result Card</button>
+                        </div>
+                     </div>
                   </div>
                )}
 
-
+               {/* CTA BANNER SECTION */}
+               {activeTab === "ctaBanner" && (
+                  <div className="space-y-6">
+                     <h3 className={UI.sectionHeader}>CTA Banner Details</h3>
+                     <div className="space-y-1.5">
+                        <label className={UI.label}>Tagline Prefix</label>
+                        <input type="text" value={data.ctaBanner?.tagline || ""} onChange={(e) => updateSection("ctaBanner", "tagline", e.target.value)} className={UI.input} />
+                     </div>
+                     <div className="space-y-1.5">
+                        <label className={UI.label}>Headline Title</label>
+                        <input type="text" value={data.ctaBanner?.title || ""} onChange={(e) => updateSection("ctaBanner", "title", e.target.value)} className={UI.input} />
+                     </div>
+                     <div className="space-y-1.5">
+                        <label className={UI.label}>Description Narrative</label>
+                        <textarea value={data.ctaBanner?.description || ""} onChange={(e) => updateSection("ctaBanner", "description", e.target.value)} className={UI.input + " h-24"} />
+                     </div>
+                     <div className="space-y-1.5">
+                        <label className={UI.label}>Button Text Label</label>
+                        <input type="text" value={data.ctaBanner?.button || ""} onChange={(e) => updateSection("ctaBanner", "button", e.target.value)} className={UI.input} />
+                     </div>
+                  </div>
+               )}
 
                {/* QUOTE SECTION */}
                {activeTab === "quote" && (
@@ -870,6 +931,35 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            </div>
                         </div>
                      </div>
+                     <div className="space-y-6 pt-10 border-t border-[#f0f0f1]">
+                        <h3 className={UI.sectionHeader}>4. Booking Banner & Trust Badges</h3>
+                        <div className="grid grid-cols-2 gap-4">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Booking Banner Tag</label>
+                              <input type="text" value={data.quote?.formClinicPortal || ""} onChange={(e) => updateSection("quote", "formClinicPortal", e.target.value)} className={UI.input} placeholder="e.g. INSTANT ONLINE BOOKING" />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Booking Banner Description</label>
+                              <input type="text" value={data.quote?.formClinicPortalSub || ""} onChange={(e) => updateSection("quote", "formClinicPortalSub", e.target.value)} className={UI.input} placeholder="e.g. Book directly on StyleSeat portal" />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Booking Button Text</label>
+                              <input type="text" value={data.quote?.formStyleSeatBtn || ""} onChange={(e) => updateSection("quote", "formStyleSeatBtn", e.target.value)} className={UI.input} placeholder="e.g. BOOK ON STYLESEAT" />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Submit Button Label</label>
+                              <input type="text" value={data.quote?.formBtnSubmit || ""} onChange={(e) => updateSection("quote", "formBtnSubmit", e.target.value)} className={UI.input} placeholder="e.g. SEND MESSAGE" />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Security / HIPAA Label</label>
+                              <input type="text" value={data.quote?.trustHipa || ""} onChange={(e) => updateSection("quote", "trustHipa", e.target.value)} className={UI.input} placeholder="e.g. HIPAA Compliant & Secure" />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>Response Time Label</label>
+                              <input type="text" value={data.quote?.trustResponse || ""} onChange={(e) => updateSection("quote", "trustResponse", e.target.value)} className={UI.input} placeholder="e.g. Avg Response: 2 Hours" />
+                           </div>
+                        </div>
+                     </div>
                   </div>
                )}
 
@@ -878,8 +968,18 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                   <div className="space-y-12">
                      <div className="space-y-6">
                         <h3 className={UI.sectionHeader}>1. Header</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.blogSection?.subtitle || ""} onChange={(e) => updateSection("blogSection", "subtitle", e.target.value)} className={UI.input} /></div>
+                        <div className="space-y-1.5"><label className={UI.label}>Badge / Label</label><input type="text" value={data.blogSection?.subtitle || ""} onChange={(e) => updateSection("blogSection", "subtitle", e.target.value)} className={UI.input} /></div>
                         <div className="space-y-1.5"><label className={UI.label}>Headline</label><input type="text" value={data.blogSection?.title || ""} onChange={(e) => updateSection("blogSection", "title", e.target.value)} className={UI.inputLarge} /></div>
+                        <div className="grid grid-cols-2 gap-4">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>"View All" Button Text</label>
+                              <input type="text" value={data.blogSection?.ctaAll || ""} onChange={(e) => updateSection("blogSection", "ctaAll", e.target.value)} className={UI.input} placeholder="e.g. View All Articles" />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>"Read More" Link Text</label>
+                              <input type="text" value={data.blogSection?.ctaReadMore || ""} onChange={(e) => updateSection("blogSection", "ctaReadMore", e.target.value)} className={UI.input} placeholder="e.g. Read Article" />
+                           </div>
+                        </div>
                         <RichTextEditor
                            label="Description Narrative"
                            content={data.blogSection?.description || ""}
