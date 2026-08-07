@@ -119,74 +119,103 @@ function IconSelector({ value, onChange }: { value: string, onChange: (v: string
   );
 }
 
-const DEFAULT_FEATURED_CATEGORY = {
-  isFeaturedCategory: false,
-  featuredComparison: {
-    badge: "Premium Material Showcase",
-    titleLine1: "Composite & PVC:",
-    titleLine2: "Built Different",
-    description: "Two premium paths to your dream outdoor space. Discover why our deck installations are the gold standard.",
-    image: "",
-    imageBadge: "Award-Winning Craftsmanship",
-    imageTitle: "Transform Your Outdoor Living",
-    imageDescription: "Every deck we build is a masterpiece of engineering and design, backed by industry-leading warranties.",
-    comparisonTitle: "Compare & Choose",
-    comparisonSubtitle: "Find Your Perfect Material",
-    comparisonDescription: "Side-by-side comparison of our premium decking solutions",
-    card1: {
-      title: "Capped Composite",
-      subtitle: "Wood fiber + polymer blend",
-      icon: "TreePine",
-      features: [
-        "Natural wood look and feel",
-        "25+ year fade and stain warranty",
-        "Realistic wood grain patterns",
-        "Lower cost than premium PVC",
-        "Excellent for full sun exposure",
-        "Scratch and stain resistant capstock"
-      ],
-      footerLabel: "Starting at",
-      footerValue: "Competitive Pricing"
+const DEFAULT_CLINICAL_FIELDS = {
+  heroSectionLabel: "CLINICAL RECOVERY PROTOCOL",
+  heroDescriptionSuffix: "Targeted manual therapy engineered to eliminate chronic pain, unlock joint mobility, and accelerate athletic recovery.",
+  specDurationValue: "60 / 90 Mins",
+  specIntensityValue: "Targeted Deep",
+  specFocusValue: "Trigger Mapping",
+  bookingCta: "Book Appointment Now",
+  heroCtaSecondary: "SEE HOW IT HELPS",
+  
+  statsItem1Val: "98%",
+  statsItem1Label: "Pain Relief Success",
+  statsItem2Val: "5,000+",
+  statsItem2Label: "Sessions Completed",
+  statsItem3Val: "Est. 2020",
+  statsItem3Label: "Clinical Standard",
+  statsItem4Val: "100%",
+  statsItem4Label: "Targeted Protocols",
+  
+  overviewSectionLabel: "WHY THIS THERAPY WORKS",
+  overviewTitle1: "Targeted Bodywork.",
+  overviewTitle2: "Engineered For Recovery.",
+  overviewWatermark: "SPECIALIST PRACTICE • EST. 2020",
+  overviewSuccessRate: "98% SUCCESS",
+  overviewIntroSuffix: "We map postural compensations and active muscle trigger points to eliminate root-cause pain, flush soreness, and decompress joint structures.",
+  overviewCtaText: "BOOK YOUR SESSION NOW",
+  overviewHipaaText: "HIPAA Compliant & Certified",
+  
+  candidateSectionLabel: "TARGET CANDIDATES",
+  candidateTitle1: "Who Benefits Most.",
+  candidateTitle2: "Clinical Indications.",
+  candidateSuitability: "SUITABILITY: OPTIMAL",
+  profileBadgePrefix: "PROFILE",
+  whoProfiles: [
+    {
+      label: "Athletes",
+      desc: "Competitive athletes needing accelerated recovery between high-intensity training sessions."
     },
-    card2: {
-      title: "Cellular PVC",
-      subtitle: "100% pure polymer",
-      icon: "Droplets",
-      features: [
-        "Zero organic material - never rots",
-        "Lifetime rot and insect warranty",
-        "Lighter, cooler surface in direct sun",
-        "Ideal for pools and shaded areas",
-        "Superior moisture resistance",
-        "Never absorbs water or swells"
-      ],
-      footerLabel: "Premium Investment",
-      footerValue: "Worth Every Penny",
-      isRecommended: true
+    {
+      label: "Desk Professionals",
+      desc: "Individuals suffering from postural neck, shoulder, or lower back tightness from prolonged sitting."
+    },
+    {
+      label: "Chronic Pain Sufferers",
+      desc: "Anyone dealing with persistent muscle knots, joint stiffness, or old injury scar tissue buildup."
+    },
+    {
+      label: "Post-Rehab Patients",
+      desc: "People looking to safely regain full range of motion following physical therapy or injury rehabilitation."
     }
-  },
-  featuredGrid: {
-    cards: [
-      {
-        icon: "Zap",
-        title: "Cool-Touch Technology",
-        description: "Advanced heat-mitigating capstock keeps surfaces cooler than traditional composites",
-        colorTheme: "amber"
-      },
-      {
-        icon: "Palette",
-        title: "Premium Color Range",
-        description: "Multi-tonal streaking and authentic wood grain patterns that never fade",
-        colorTheme: "blue"
-      },
-      {
-        icon: "Shield",
-        title: "Lifetime Protection",
-        description: "Industry-leading warranties backed by our military-grade installation",
-        colorTheme: "green"
-      }
-    ]
-  }
+  ],
+  
+  protocolSectionLabel: "02 / SESSION PROTOCOL",
+  protocolTitle1: "3-Phase Clinical",
+  protocolTitle2: "Treatment Sequence.",
+  protocolPhasePrefix: "PHASE 0",
+  protocolDurations: ["15 MIN", "45 MIN", "15 MIN"],
+  protocolBannerBadge: "CLINICAL EXCELLENCE",
+  protocolBannerTitlePrefix: "Ready to experience",
+  protocolBannerTitleSuffix: "?",
+  protocolBannerCta: "BOOK YOUR SESSION NOW",
+  
+  sessionSteps: [
+    {
+      num: "01",
+      title: "Postural & Palpation Assessment",
+      desc: "We begin with an active range-of-motion test and palpation to pinpoint tight muscle groups and trigger points."
+    },
+    {
+      num: "02",
+      title: "Targeted Clinical Bodywork",
+      desc: "Hands-on application of deep tissue pressure, myofascial release, and cross-fiber friction adjusted to your comfort level."
+    },
+    {
+      num: "03",
+      title: "Post-Session Recovery Plan",
+      desc: "We measure mobility improvements post-therapy and provide personalized home stretching recommendations."
+    }
+  ],
+  
+  benefits: [
+    {
+      title: "Decompress Joint Structures",
+      description: "Gentle traction and targeted pressure release compression in spinal and peripheral joints."
+    },
+    {
+      title: "Flush Inflammatory Waste",
+      description: "Deep strokes stimulate lymphatic drainage and blood flow to clear metabolic waste products."
+    },
+    {
+      title: "Restore Myofascial Glide",
+      description: "Manual shearing releases adhesions between muscle layers to allow smooth mechanical motion."
+    },
+    {
+      title: "Accelerate Athletic Recovery",
+      description: "Faster tissue repair and reduced muscle soreness between intense training sessions."
+    }
+  ]
 };
 
 export default function ServicesAdminPage() {
@@ -205,20 +234,21 @@ export default function ServicesAdminPage() {
   const [quickEditing, setQuickEditing] = useState<any>(null);
 
   const [form, setForm] = useState<any>({
-    title: "", slug: "", tagline: "",
+    title: "",
+    slug: "",
+    tagline: "",
     description: "",
-    heroDescription: "",
-    breadcrumbText: "",
-    overviewTitlePrefix: "", overviewTitleHighlight: "", overviewTitleSuffix: "",
-    benefitsTitlePrefix: "", benefitsTitleHighlight: "", benefitsTitleSuffix: "",
-    benefitsBadge: "",
-    benefitsDescription: "",
-    processTitlePrefix: "", processTitleHighlight: "", processTitleSuffix: "",
-    processBadge: "",
-    processDescription: "",
-    overview: "", overviewImage: "", overviewStats: [],
-    cta: { text: "Start Your Project", link: "/contact-us" }, icon: "Layout", tag: "", status: "published", features: [], stats: [], benefits: [], process: [], faq: [], faqSchemaMarkup: "", faqBadge: "", faqTitle: "", faqDescription: "",
-    ...DEFAULT_FEATURED_CATEGORY
+    image: "",
+    icon: "Layout",
+    tag: "",
+    status: "published",
+    faq: [],
+    faqSchemaMarkup: "",
+    faqBadge: "",
+    faqTitle: "",
+    faqDescription: "",
+    blogSection: { title: "", subtitle: "", description: "", selectedPosts: [] },
+    ...DEFAULT_CLINICAL_FIELDS
   });
 
   useEffect(() => {
@@ -309,9 +339,8 @@ export default function ServicesAdminPage() {
   const handleEdit = (service: any) => {
     const originalIdx = services.findIndex(orig => orig.id === service.id);
     setForm({
-      ...DEFAULT_FEATURED_CATEGORY,
+      ...DEFAULT_CLINICAL_FIELDS,
       ...service,
-      features: (service.features || []).map((f: any) => typeof f === 'string' ? { text: f, icon: "CheckCircle" } : f),
       stats: service.stats || [],
       benefits: service.benefits || [],
       process: service.process || [],
@@ -320,24 +349,9 @@ export default function ServicesAdminPage() {
       faqBadge: service.faqBadge || "",
       faqTitle: service.faqTitle || "",
       faqDescription: service.faqDescription || "",
-      benefitsDescription: service.benefitsDescription || "",
-      processDescription: service.processDescription || "",
-      featuredComparison: {
-        ...DEFAULT_FEATURED_CATEGORY.featuredComparison,
-        ...(service.featuredComparison || {}),
-        card1: {
-          ...DEFAULT_FEATURED_CATEGORY.featuredComparison.card1,
-          ...(service.featuredComparison?.card1 || {})
-        },
-        card2: {
-          ...DEFAULT_FEATURED_CATEGORY.featuredComparison.card2,
-          ...(service.featuredComparison?.card2 || {})
-        }
-      },
-      featuredGrid: {
-        ...DEFAULT_FEATURED_CATEGORY.featuredGrid,
-        ...(service.featuredGrid || {})
-      }
+      whoProfiles: service.whoProfiles || DEFAULT_CLINICAL_FIELDS.whoProfiles,
+      sessionSteps: service.sessionSteps || DEFAULT_CLINICAL_FIELDS.sessionSteps,
+      protocolDurations: service.protocolDurations || DEFAULT_CLINICAL_FIELDS.protocolDurations
     });
     setSeo(service.seo || {});
     setIsEditing(originalIdx);
@@ -412,19 +426,21 @@ export default function ServicesAdminPage() {
             onClick={() => {
               setIsEditing(services.length);
               setForm({
-                title: "", slug: "", tagline: "", description: "",
-                heroDescription: "Professional solutions with military precision and architectural excellence.",
-                breadcrumbText: "",
-                overviewTitlePrefix: "Craftsmanship", overviewTitleHighlight: "Without Compromise", overviewTitleSuffix: ".",
-                benefitsTitlePrefix: "Key", benefitsTitleHighlight: "Benefits", benefitsTitleSuffix: "",
-                benefitsBadge: "The 410 Edge",
-                benefitsDescription: "Experience the difference with our unwavering commitment to military-grade excellence",
-                processTitlePrefix: "Precision", processTitleHighlight: "In Every Detail", processTitleSuffix: ".",
-                processBadge: "Methodology",
-                processDescription: "A battle-tested framework that ensures consistency, quality, and complete satisfaction—from initial consultation to final walkthrough.",
-                overview: "", overviewImage: "", overviewStats: [],
-                cta: { text: "Start Your Project", link: "/contact-us" }, icon: "Layout", tag: "", status: "published", features: [], stats: [], benefits: [], process: [], faq: [], faqSchemaMarkup: "", faqBadge: "", faqTitle: "", faqDescription: "",
-                ...DEFAULT_FEATURED_CATEGORY
+                title: "",
+                slug: "",
+                tagline: "",
+                description: "",
+                image: "",
+                icon: "Layout",
+                tag: "",
+                status: "published",
+                faq: [],
+                faqSchemaMarkup: "",
+                faqBadge: "",
+                faqTitle: "",
+                faqDescription: "",
+                blogSection: { title: "", subtitle: "", description: "", selectedPosts: [] },
+                ...DEFAULT_CLINICAL_FIELDS
               });
               setSeo({});
               setActiveTab("general");
@@ -466,10 +482,12 @@ export default function ServicesAdminPage() {
                 {/* Line 1: Core Tabs */}
                 <div className="flex flex-wrap border-b border-[#c3c4c7]">
                   {[
-                    { id: "general", label: "General" },
-                    { id: "content", label: "Page Details" },
-                    { id: "features", label: "Stats & Benefits" },
-                    { id: "steps", label: "Process" },
+                    { id: "general", label: "General Info" },
+                    { id: "branding-specs", label: "Hero & Specs" },
+                    { id: "overview", label: "Overview" },
+                    { id: "stats-candidates", label: "Stats & Candidates" },
+                    { id: "stepper", label: "Stepper Protocol" },
+                    { id: "benefits", label: "Key Benefits" },
                     { id: "faq", label: "FAQs" },
                     { id: "blog", label: "Blog" },
                     { id: "seo", label: "SEO" }
@@ -488,32 +506,6 @@ export default function ServicesAdminPage() {
                     </button>
                   ))}
                 </div>
-
-                {/* Line 2: Featured Sections Tabs */}
-                {form.isFeaturedCategory && (
-                  <div className="flex flex-wrap border-b border-[#c3c4c7] gap-x-2">
-                    {[
-                      { id: "featured-comparison", label: "Featured Comparison" },
-                      { id: "featured-grid", label: "Featured Grid" }
-                    ].map(tab => (
-                      <button
-                        key={tab.id}
-                        type="button"
-                        onClick={() => setActiveTab(tab.id)}
-                        className={`px-4 py-1 pb-2 text-[13px] border-b-2 transition-all flex flex-col items-center justify-center ${
-                          activeTab === tab.id
-                            ? 'border-[#2271b1] text-[#1d2327] font-bold'
-                            : 'border-transparent text-[#2271b1] hover:text-[#135e96]'
-                        }`}
-                      >
-                        <span className="text-[9px] bg-amber-500 text-white font-extrabold px-1.5 py-0.5 rounded-[3px] mb-0.5 uppercase tracking-wider leading-none">
-                          Featured
-                        </span>
-                        <span>{tab.label}</span>
-                      </button>
-                    ))}
-                  </div>
-                )}
               </div>
 
               <div className="space-y-6 min-h-[400px]">
@@ -548,726 +540,327 @@ export default function ServicesAdminPage() {
                         placeholder="Write a short description shown on service cards..."
                       />
                     </div>
-                    <div className="space-y-1 p-3 bg-[#f6f7f7] border border-[#c3c4c7] rounded-sm mt-4">
-                      <label className="flex items-center gap-2 cursor-pointer text-[13px] font-bold">
-                        <input
-                          type="checkbox"
-                          checked={form.isFeaturedCategory || false}
-                          onChange={(e) => setForm({ ...form, isFeaturedCategory: e.target.checked })}
-                          className="rounded-[3px] border-[#8c8f94] w-4 h-4"
-                        />
-                        Featured Category Service
-                      </label>
-                      <p className="text-[11px] text-[#646970] mt-1">
-                        If checked, this service details page will feature two custom layout sections (Material Comparison and Features Grid).
-                      </p>
+                  </div>
+                )}
+                {activeTab === "branding-specs" && (
+                  <div className="space-y-4">
+                    <div className="space-y-1">
+                      <label className="text-[13px] font-bold">Hero Section Label / Badge</label>
+                      <input type="text" value={form.heroSectionLabel || ""} onChange={(e) => setForm({ ...form, heroSectionLabel: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[13px] font-bold">Hero Description Suffix</label>
+                      <textarea value={form.heroDescriptionSuffix || ""} onChange={(e) => setForm({ ...form, heroDescriptionSuffix: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px] h-20" />
+                    </div>
+                    <div className="grid grid-cols-3 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Duration Value</label>
+                        <input type="text" value={form.specDurationValue || ""} onChange={(e) => setForm({ ...form, specDurationValue: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. 60 / 90 Mins" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Intensity Value</label>
+                        <input type="text" value={form.specIntensityValue || ""} onChange={(e) => setForm({ ...form, specIntensityValue: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Targeted Deep" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Focus Value</label>
+                        <input type="text" value={form.specFocusValue || ""} onChange={(e) => setForm({ ...form, specFocusValue: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Trigger Mapping" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Primary Booking CTA text</label>
+                        <input type="text" value={form.bookingCta || ""} onChange={(e) => setForm({ ...form, bookingCta: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Secondary CTA button text</label>
+                        <input type="text" value={form.heroCtaSecondary || ""} onChange={(e) => setForm({ ...form, heroCtaSecondary: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
+                      </div>
                     </div>
                   </div>
                 )}
 
-                {activeTab === "featured-comparison" && (
-                  <div className="space-y-6">
-                    <h3 className="text-[14px] font-bold border-b border-[#c3c4c7] pb-2 text-[#1d2327]">Comparison Header Content</h3>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Header Badge</label>
-                        <input
-                          type="text"
-                          value={form.featuredComparison?.badge || ""}
-                          onChange={(e) => setForm({
-                            ...form,
-                            featuredComparison: { ...form.featuredComparison, badge: e.target.value }
-                          })}
-                          className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Header Description</label>
-                        <input
-                          type="text"
-                          value={form.featuredComparison?.description || ""}
-                          onChange={(e) => setForm({
-                            ...form,
-                            featuredComparison: { ...form.featuredComparison, description: e.target.value }
-                          })}
-                          className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
-                        />
-                      </div>
+                {activeTab === "overview" && (
+                  <div className="space-y-4">
+                    <div className="space-y-1">
+                      <label className="text-[13px] font-bold">Overview Badge / Label</label>
+                      <input type="text" value={form.overviewSectionLabel || ""} onChange={(e) => setForm({ ...form, overviewSectionLabel: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
                     </div>
                     <div className="grid grid-cols-2 gap-4">
                       <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Title Line 1</label>
-                        <input
-                          type="text"
-                          value={form.featuredComparison?.titleLine1 || ""}
-                          onChange={(e) => setForm({
-                            ...form,
-                            featuredComparison: { ...form.featuredComparison, titleLine1: e.target.value }
-                          })}
-                          className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
-                        />
+                        <label className="text-[13px] font-bold">Overview Title (Part 1 - Regular)</label>
+                        <input type="text" value={form.overviewTitle1 || ""} onChange={(e) => setForm({ ...form, overviewTitle1: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Title Line 2 (Highlighted Gradient)</label>
-                        <input
-                          type="text"
-                          value={form.featuredComparison?.titleLine2 || ""}
-                          onChange={(e) => setForm({
-                            ...form,
-                            featuredComparison: { ...form.featuredComparison, titleLine2: e.target.value }
-                          })}
-                          className="w-full border border-[#2271b1] px-3 py-1.5 text-[14px] rounded-[3px]"
-                        />
+                        <label className="text-[13px] font-bold">Overview Title (Part 2 - Gold Italic)</label>
+                        <input type="text" value={form.overviewTitle2 || ""} onChange={(e) => setForm({ ...form, overviewTitle2: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <ImageField label="Overview Background/Featured Image" value={form.image || ""} onChange={(url) => setForm({ ...form, image: url })} />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Overview Watermark Text</label>
+                        <input type="text" value={form.overviewWatermark || ""} onChange={(e) => setForm({ ...form, overviewWatermark: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Success Rate / Floating Badge Text</label>
+                        <input type="text" value={form.overviewSuccessRate || ""} onChange={(e) => setForm({ ...form, overviewSuccessRate: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
+                      </div>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[13px] font-bold">Overview Description / Suffix</label>
+                      <textarea value={form.overviewIntroSuffix || ""} onChange={(e) => setForm({ ...form, overviewIntroSuffix: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px] h-20" />
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Overview CTA Button Text</label>
+                        <input type="text" value={form.overviewCtaText || ""} onChange={(e) => setForm({ ...form, overviewCtaText: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Overview HIPAA / Security text</label>
+                        <input type="text" value={form.overviewHipaaText || ""} onChange={(e) => setForm({ ...form, overviewHipaaText: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === "stats-candidates" && (
+                  <div className="space-y-8">
+                    {/* 4 Stats Cards */}
+                    <div className="bg-[#f6f7f7] border border-[#c3c4c7] p-4 rounded-sm space-y-4">
+                      <h3 className="text-[14px] font-bold border-b border-[#c3c4c7] pb-2 text-[#1d2327]">Highlight Stats Strip (4 Items)</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold block">Stat 1 Value & Label</label>
+                          <div className="flex gap-2">
+                            <input type="text" value={form.statsItem1Val || ""} onChange={(e) => setForm({ ...form, statsItem1Val: e.target.value })} className="w-24 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="e.g. 98%" />
+                            <input type="text" value={form.statsItem1Label || ""} onChange={(e) => setForm({ ...form, statsItem1Label: e.target.value })} className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="e.g. Pain Relief" />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold block">Stat 2 Value & Label</label>
+                          <div className="flex gap-2">
+                            <input type="text" value={form.statsItem2Val || ""} onChange={(e) => setForm({ ...form, statsItem2Val: e.target.value })} className="w-24 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="e.g. 5,000+" />
+                            <input type="text" value={form.statsItem2Label || ""} onChange={(e) => setForm({ ...form, statsItem2Label: e.target.value })} className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="e.g. Sessions" />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold block">Stat 3 Value & Label</label>
+                          <div className="flex gap-2">
+                            <input type="text" value={form.statsItem3Val || ""} onChange={(e) => setForm({ ...form, statsItem3Val: e.target.value })} className="w-24 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="e.g. Est. 2020" />
+                            <input type="text" value={form.statsItem3Label || ""} onChange={(e) => setForm({ ...form, statsItem3Label: e.target.value })} className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="e.g. Standard" />
+                          </div>
+                        </div>
+                        <div className="space-y-2">
+                          <label className="text-xs font-bold block">Stat 4 Value & Label</label>
+                          <div className="flex gap-2">
+                            <input type="text" value={form.statsItem4Val || ""} onChange={(e) => setForm({ ...form, statsItem4Val: e.target.value })} className="w-24 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="e.g. 100%" />
+                            <input type="text" value={form.statsItem4Label || ""} onChange={(e) => setForm({ ...form, statsItem4Label: e.target.value })} className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="e.g. Protocols" />
+                          </div>
+                        </div>
                       </div>
                     </div>
 
-                    <h3 className="text-[14px] font-bold border-b border-[#c3c4c7] pb-2 pt-4 text-[#1d2327]">Showcase Banner Image</h3>
+                    {/* Candidates Section Config */}
                     <div className="space-y-4">
-                      <ImageField
-                        label="Featured Image Showcase"
-                        value={form.featuredComparison?.image || ""}
-                        onChange={(url) => setForm({
-                          ...form,
-                          featuredComparison: { ...form.featuredComparison, image: url }
-                        })}
-                      />
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Image Floating Badge</label>
-                        <input
-                          type="text"
-                          value={form.featuredComparison?.imageBadge || ""}
-                          onChange={(e) => setForm({
-                            ...form,
-                            featuredComparison: { ...form.featuredComparison, imageBadge: e.target.value }
-                          })}
-                          className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
-                        />
+                      <h3 className="text-[14px] font-bold border-b border-[#c3c4c7] pb-2 text-[#1d2327]">Target Candidates Section Config</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold">Candidates Badge / Label</label>
+                          <input type="text" value={form.candidateSectionLabel || ""} onChange={(e) => setForm({ ...form, candidateSectionLabel: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1 text-xs rounded-[2px]" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold">Profiles Badge Prefix</label>
+                          <input type="text" value={form.profileBadgePrefix || ""} onChange={(e) => setForm({ ...form, profileBadgePrefix: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1 text-xs rounded-[2px]" />
+                        </div>
+                      </div>
+                      <div className="grid grid-cols-3 gap-2">
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold">Heading Part 1</label>
+                          <input type="text" value={form.candidateTitle1 || ""} onChange={(e) => setForm({ ...form, candidateTitle1: e.target.value })} className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[2px]" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold">Heading Part 2 (Italic)</label>
+                          <input type="text" value={form.candidateTitle2 || ""} onChange={(e) => setForm({ ...form, candidateTitle2: e.target.value })} className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[2px]" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold">Suitability Footer Label</label>
+                          <input type="text" value={form.candidateSuitability || ""} onChange={(e) => setForm({ ...form, candidateSuitability: e.target.value })} className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[2px]" />
+                        </div>
+                      </div>
+
+                      {/* Repeatable Profiles */}
+                      <div className="space-y-3 pt-4">
+                        <h4 className="text-xs font-bold border-b border-[#f0f0f1] pb-1 text-[#646970] uppercase tracking-wider">Candidate Profiles</h4>
+                        {(form.whoProfiles || []).map((p: any, pIdx: number) => (
+                          <div key={pIdx} className="bg-white border border-[#c3c4c7] p-3 rounded-sm space-y-2">
+                            <div className="flex gap-2 justify-between">
+                              <span className="text-[10px] font-mono font-bold text-[#2271b1]">PROFILE #{pIdx + 1}</span>
+                              <button type="button" onClick={() => {
+                                const np = form.whoProfiles.filter((_: any, idx: number) => idx !== pIdx);
+                                setForm({ ...form, whoProfiles: np });
+                              }} className="text-[#d63638] text-xs">Remove</button>
+                            </div>
+                            <div className="space-y-1.5">
+                              <input type="text" value={p.label || ""} onChange={(e) => {
+                                const np = [...form.whoProfiles];
+                                np[pIdx] = { ...np[pIdx], label: e.target.value };
+                                setForm({ ...form, whoProfiles: np });
+                              }} className="w-full border border-[#8c8f94] px-2.5 py-1 text-xs font-bold" placeholder="Profile Title (e.g. Athletes)" />
+                              <textarea value={p.desc || ""} onChange={(e) => {
+                                const np = [...form.whoProfiles];
+                                np[pIdx] = { ...np[pIdx], desc: e.target.value };
+                                setForm({ ...form, whoProfiles: np });
+                              }} className="w-full border border-[#8c8f94] px-2.5 py-1 text-xs h-16" placeholder="Profile indications and descriptions..." />
+                            </div>
+                          </div>
+                        ))}
+                        <button type="button" onClick={() => setForm({ ...form, whoProfiles: [...(form.whoProfiles || []), { label: "", desc: "" }] })} className="text-[#2271b1] text-xs underline font-bold">+ Add Profile</button>
+                      </div>
+                    </div>
+                  </div>
+                )}
+
+                {activeTab === "stepper" && (
+                  <div className="space-y-8">
+                    {/* Stepper Section Config */}
+                    <div className="space-y-4">
+                      <h3 className="text-[14px] font-bold border-b border-[#c3c4c7] pb-2 text-[#1d2327]">Stepper Section Config</h3>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold">Stepper Section Badge</label>
+                          <input type="text" value={form.protocolSectionLabel || ""} onChange={(e) => setForm({ ...form, protocolSectionLabel: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1 text-xs rounded-[2px]" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold">Phase Prefix Label</label>
+                          <input type="text" value={form.protocolPhasePrefix || ""} onChange={(e) => setForm({ ...form, protocolPhasePrefix: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1 text-xs rounded-[2px]" />
+                        </div>
                       </div>
                       <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1">
-                          <label className="text-[13px] font-bold">Image Heading Title</label>
-                          <input
-                            type="text"
-                            value={form.featuredComparison?.imageTitle || ""}
-                            onChange={(e) => setForm({
-                              ...form,
-                              featuredComparison: { ...form.featuredComparison, imageTitle: e.target.value }
-                            })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
-                          />
+                          <label className="text-xs font-bold">Heading Part 1</label>
+                          <input type="text" value={form.protocolTitle1 || ""} onChange={(e) => setForm({ ...form, protocolTitle1: e.target.value })} className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[2px]" />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[13px] font-bold">Image Description</label>
-                          <input
-                            type="text"
-                            value={form.featuredComparison?.imageDescription || ""}
-                            onChange={(e) => setForm({
-                              ...form,
-                              featuredComparison: { ...form.featuredComparison, imageDescription: e.target.value }
-                            })}
-                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]"
-                          />
+                          <label className="text-xs font-bold">Heading Part 2 (Gold Italic)</label>
+                          <input type="text" value={form.protocolTitle2 || ""} onChange={(e) => setForm({ ...form, protocolTitle2: e.target.value })} className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[2px]" />
                         </div>
+                      </div>
+
+                      {/* Step Sequence Details */}
+                      <div className="space-y-4 pt-4">
+                        <h4 className="text-xs font-bold border-b border-[#f0f0f1] pb-1 text-[#646970] uppercase tracking-wider">Stepper Treatment Phases</h4>
+                        {(form.sessionSteps || []).map((step: any, sIdx: number) => (
+                          <div key={sIdx} className="bg-white border border-[#c3c4c7] p-4 rounded-sm space-y-4">
+                            <div className="flex justify-between items-center border-b border-[#f0f0f1] pb-2">
+                              <span className="text-[11px] font-mono font-bold text-[#2271b1]">PHASE {step.num || `0${sIdx+1}`}</span>
+                              <div className="flex gap-4 items-center">
+                                <div className="space-y-0.5">
+                                  <label className="text-[10px] text-[#646970]">Phase Duration</label>
+                                  <input type="text" value={form.protocolDurations?.[sIdx] || ""} onChange={(e) => {
+                                    const nd = [...(form.protocolDurations || ["15 MIN", "45 MIN", "15 MIN"])];
+                                    nd[sIdx] = e.target.value;
+                                    setForm({ ...form, protocolDurations: nd });
+                                  }} className="w-20 border border-[#8c8f94] px-2 py-0.5 text-xs text-center font-mono" placeholder="15 MIN" />
+                                </div>
+                                <button type="button" onClick={() => {
+                                  const ns = form.sessionSteps.filter((_: any, idx: number) => idx !== sIdx);
+                                  setForm({ ...form, sessionSteps: ns });
+                                }} className="text-[#d63638] text-xs">Remove</button>
+                              </div>
+                            </div>
+                            <div className="grid grid-cols-1 gap-2">
+                              <div className="space-y-1">
+                                <label className="text-[11px] text-[#646970]">Step Title</label>
+                                <input type="text" value={step.title || ""} onChange={(e) => {
+                                  const ns = [...form.sessionSteps];
+                                  ns[sIdx] = { ...ns[sIdx], title: e.target.value };
+                                  setForm({ ...form, sessionSteps: ns });
+                                }} className="w-full border border-[#8c8f94] px-2 py-1 text-xs font-bold" />
+                              </div>
+                              <div className="space-y-1">
+                                <label className="text-[11px] text-[#646970]">Step Description</label>
+                                <textarea value={step.desc || ""} onChange={(e) => {
+                                  const ns = [...form.sessionSteps];
+                                  ns[sIdx] = { ...ns[sIdx], desc: e.target.value };
+                                  setForm({ ...form, sessionSteps: ns });
+                                }} className="w-full border border-[#8c8f94] px-2 py-1 text-xs h-16" />
+                              </div>
+                            </div>
+                          </div>
+                        ))}
+                        <button type="button" onClick={() => {
+                          const nextNum = `0${(form.sessionSteps || []).length + 1}`;
+                          setForm({ ...form, sessionSteps: [...(form.sessionSteps || []), { num: nextNum, title: "", desc: "" }] });
+                        }} className="text-[#2271b1] text-xs underline font-bold">+ Add Step</button>
                       </div>
                     </div>
 
-                    <h3 className="text-[14px] font-bold border-b border-[#c3c4c7] pb-2 pt-4 text-[#1d2327]">Comparison Grid Title</h3>
-                    <div className="grid grid-cols-3 gap-2">
-                      <div className="space-y-1">
-                        <label className="text-[11px] text-[#646970]">Comparison Header Title</label>
-                        <input
-                          type="text"
-                          value={form.featuredComparison?.comparisonTitle || ""}
-                          onChange={(e) => setForm({
-                            ...form,
-                            featuredComparison: { ...form.featuredComparison, comparisonTitle: e.target.value }
-                          })}
-                          className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[11px] text-[#646970]">Comparison Subtitle</label>
-                        <input
-                          type="text"
-                          value={form.featuredComparison?.comparisonSubtitle || ""}
-                          onChange={(e) => setForm({
-                            ...form,
-                            featuredComparison: { ...form.featuredComparison, comparisonSubtitle: e.target.value }
-                          })}
-                          className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[11px] text-[#646970]">Comparison Description</label>
-                        <input
-                          type="text"
-                          value={form.featuredComparison?.comparisonDescription || ""}
-                          onChange={(e) => setForm({
-                            ...form,
-                            featuredComparison: { ...form.featuredComparison, comparisonDescription: e.target.value }
-                          })}
-                          className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
-                        />
-                      </div>
-                    </div>
-
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-4 pt-4 border-t border-[#c3c4c7]">
-                      {/* Card 1 */}
-                      <div className="bg-[#f6f7f7] border border-[#c3c4c7] p-4 rounded-sm space-y-4">
-                        <h4 className="font-bold text-[13px] border-b border-[#c3c4c7] pb-1">Comparison Card 1</h4>
+                    {/* Banner Config */}
+                    <div className="space-y-4 border-t border-[#c3c4c7] pt-6">
+                      <h3 className="text-[14px] font-bold border-b border-[#c3c4c7] pb-2 text-[#1d2327]">Bottom CTA Stepper Banner</h3>
+                      <div className="grid grid-cols-2 gap-4">
                         <div className="space-y-1">
-                          <label className="text-[11px] text-[#646970]">Card Title</label>
-                          <input
-                            type="text"
-                            value={form.featuredComparison?.card1?.title || ""}
-                            onChange={(e) => setForm({
-                              ...form,
-                              featuredComparison: {
-                                ...form.featuredComparison,
-                                card1: { ...form.featuredComparison.card1, title: e.target.value }
-                              }
-                            })}
-                            className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
-                          />
+                          <label className="text-xs font-bold">Banner Top Badge</label>
+                          <input type="text" value={form.protocolBannerBadge || ""} onChange={(e) => setForm({ ...form, protocolBannerBadge: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1 text-xs rounded-[2px]" />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[11px] text-[#646970]">Card Subtitle</label>
-                          <input
-                            type="text"
-                            value={form.featuredComparison?.card1?.subtitle || ""}
-                            onChange={(e) => setForm({
-                              ...form,
-                              featuredComparison: {
-                                ...form.featuredComparison,
-                                card1: { ...form.featuredComparison.card1, subtitle: e.target.value }
-                              }
-                            })}
-                            className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[11px] text-[#646970] block">Card Icon</label>
-                          <IconSelector
-                            value={form.featuredComparison?.card1?.icon || "TreePine"}
-                            onChange={(v) => setForm({
-                              ...form,
-                              featuredComparison: {
-                                ...form.featuredComparison,
-                                card1: { ...form.featuredComparison.card1, icon: v }
-                              }
-                            })}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-[11px] text-[#646970] font-bold">Bullet Features</label>
-                          {(form.featuredComparison?.card1?.features || []).map((f: string, fIdx: number) => (
-                            <div key={fIdx} className="flex gap-1.5">
-                              <input
-                                type="text"
-                                value={f}
-                                onChange={(e) => {
-                                  const nf = [...form.featuredComparison.card1.features];
-                                  nf[fIdx] = e.target.value;
-                                  setForm({
-                                    ...form,
-                                    featuredComparison: {
-                                      ...form.featuredComparison,
-                                      card1: { ...form.featuredComparison.card1, features: nf }
-                                    }
-                                  });
-                                }}
-                                className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const nf = form.featuredComparison.card1.features.filter((_: any, idx: number) => idx !== fIdx);
-                                  setForm({
-                                    ...form,
-                                    featuredComparison: {
-                                      ...form.featuredComparison,
-                                      card1: { ...form.featuredComparison.card1, features: nf }
-                                    }
-                                  });
-                                }}
-                                className="text-[#d63638] text-xs"
-                              >✕</button>
-                            </div>
-                          ))}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const nf = [...(form.featuredComparison?.card1?.features || []), ""];
-                              setForm({
-                                ...form,
-                                    featuredComparison: {
-                                      ...form.featuredComparison,
-                                      card1: { ...form.featuredComparison.card1, features: nf }
-                                    }
-                              });
-                            }}
-                            className="text-[#2271b1] text-xs underline"
-                          >+ Add Feature</button>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="space-y-1">
-                            <label className="text-[11px] text-[#646970]">Footer Label</label>
-                            <input
-                              type="text"
-                              value={form.featuredComparison?.card1?.footerLabel || ""}
-                              onChange={(e) => setForm({
-                                ...form,
-                                featuredComparison: {
-                                  ...form.featuredComparison,
-                                  card1: { ...form.featuredComparison.card1, footerLabel: e.target.value }
-                                }
-                              })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[11px] text-[#646970]">Footer Value</label>
-                            <input
-                              type="text"
-                              value={form.featuredComparison?.card1?.footerValue || ""}
-                              onChange={(e) => setForm({
-                                ...form,
-                                featuredComparison: {
-                                  ...form.featuredComparison,
-                                  card1: { ...form.featuredComparison.card1, footerValue: e.target.value }
-                                }
-                              })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
-                            />
-                          </div>
+                          <label className="text-xs font-bold">Banner Button CTA text</label>
+                          <input type="text" value={form.protocolBannerCta || ""} onChange={(e) => setForm({ ...form, protocolBannerCta: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1 text-xs rounded-[2px]" />
                         </div>
                       </div>
-
-                      {/* Card 2 */}
-                      <div className="bg-[#f6f7f7] border border-[#c3c4c7] p-4 rounded-sm space-y-4">
-                        <div className="flex justify-between items-center border-b border-[#c3c4c7] pb-1">
-                          <h4 className="font-bold text-[13px]">Comparison Card 2</h4>
-                          <label className="flex items-center gap-1 cursor-pointer text-xs font-bold">
-                            <input
-                              type="checkbox"
-                              checked={form.featuredComparison?.card2?.isRecommended || false}
-                              onChange={(e) => setForm({
-                                ...form,
-                                featuredComparison: {
-                                  ...form.featuredComparison,
-                                  card2: { ...form.featuredComparison.card2, isRecommended: e.target.checked }
-                                }
-                              })}
-                              className="w-3.5 h-3.5 shadow-none"
-                            />
-                            Recommended
-                          </label>
+                      <div className="grid grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-xs font-bold">Title Prefix (e.g. Ready to experience)</label>
+                          <input type="text" value={form.protocolBannerTitlePrefix || ""} onChange={(e) => setForm({ ...form, protocolBannerTitlePrefix: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1 text-xs rounded-[2px]" />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-[11px] text-[#646970]">Card Title</label>
-                          <input
-                            type="text"
-                            value={form.featuredComparison?.card2?.title || ""}
-                            onChange={(e) => setForm({
-                              ...form,
-                              featuredComparison: {
-                                ...form.featuredComparison,
-                                card2: { ...form.featuredComparison.card2, title: e.target.value }
-                              }
-                            })}
-                            className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[11px] text-[#646970]">Card Subtitle</label>
-                          <input
-                            type="text"
-                            value={form.featuredComparison?.card2?.subtitle || ""}
-                            onChange={(e) => setForm({
-                              ...form,
-                              featuredComparison: {
-                                ...form.featuredComparison,
-                                card2: { ...form.featuredComparison.card2, subtitle: e.target.value }
-                              }
-                            })}
-                            className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
-                          />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-[11px] text-[#646970] block">Card Icon</label>
-                          <IconSelector
-                            value={form.featuredComparison?.card2?.icon || "Droplets"}
-                            onChange={(v) => setForm({
-                              ...form,
-                              featuredComparison: {
-                                ...form.featuredComparison,
-                                card2: { ...form.featuredComparison.card2, icon: v }
-                              }
-                            })}
-                          />
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-[11px] text-[#646970] font-bold">Bullet Features</label>
-                          {(form.featuredComparison?.card2?.features || []).map((f: string, fIdx: number) => (
-                            <div key={fIdx} className="flex gap-1.5">
-                              <input
-                                type="text"
-                                value={f}
-                                onChange={(e) => {
-                                  const nf = [...form.featuredComparison.card2.features];
-                                  nf[fIdx] = e.target.value;
-                                  setForm({
-                                    ...form,
-                                    featuredComparison: {
-                                      ...form.featuredComparison,
-                                      card2: { ...form.featuredComparison.card2, features: nf }
-                                    }
-                                  });
-                                }}
-                                className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px]"
-                              />
-                              <button
-                                type="button"
-                                onClick={() => {
-                                  const nf = form.featuredComparison.card2.features.filter((_: any, idx: number) => idx !== fIdx);
-                                  setForm({
-                                    ...form,
-                                    featuredComparison: {
-                                      ...form.featuredComparison,
-                                      card2: { ...form.featuredComparison.card2, features: nf }
-                                    }
-                                  });
-                                }}
-                                className="text-[#d63638] text-xs"
-                              >✕</button>
-                            </div>
-                          ))}
-                          <button
-                            type="button"
-                            onClick={() => {
-                              const nf = [...(form.featuredComparison?.card2?.features || []), ""];
-                              setForm({
-                                ...form,
-                                    featuredComparison: {
-                                      ...form.featuredComparison,
-                                      card2: { ...form.featuredComparison.card2, features: nf }
-                                    }
-                              });
-                            }}
-                            className="text-[#2271b1] text-xs underline"
-                          >+ Add Feature</button>
-                        </div>
-                        <div className="grid grid-cols-2 gap-2">
-                          <div className="space-y-1">
-                            <label className="text-[11px] text-[#646970]">Footer Label</label>
-                            <input
-                              type="text"
-                              value={form.featuredComparison?.card2?.footerLabel || ""}
-                              onChange={(e) => setForm({
-                                ...form,
-                                featuredComparison: {
-                                  ...form.featuredComparison,
-                                  card2: { ...form.featuredComparison.card2, footerLabel: e.target.value }
-                                }
-                              })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[11px] text-[#646970]">Footer Value</label>
-                            <input
-                              type="text"
-                              value={form.featuredComparison?.card2?.footerValue || ""}
-                              onChange={(e) => setForm({
-                                ...form,
-                                featuredComparison: {
-                                  ...form.featuredComparison,
-                                  card2: { ...form.featuredComparison.card2, footerValue: e.target.value }
-                                }
-                              })}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
-                            />
-                          </div>
+                          <label className="text-xs font-bold">Title Suffix (e.g. ?)</label>
+                          <input type="text" value={form.protocolBannerTitleSuffix || ""} onChange={(e) => setForm({ ...form, protocolBannerTitleSuffix: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1 text-xs rounded-[2px]" />
                         </div>
                       </div>
                     </div>
                   </div>
                 )}
 
-                {activeTab === "featured-grid" && (
-                  <div className="space-y-8">
-                    <h3 className="text-[14px] font-bold border-b border-[#c3c4c7] pb-2 text-[#1d2327]">3-Card Featured Detail Grid</h3>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-                      {(form.featuredGrid?.cards || []).map((card: any, cIdx: number) => (
-                        <div key={cIdx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-4 rounded-sm space-y-4">
-                          <h4 className="font-bold text-[13px] border-b border-[#c3c4c7] pb-1">Feature Card #{cIdx + 1}</h4>
-                          <div className="space-y-1">
-                            <label className="text-[11px] text-[#646970] block">Icon</label>
-                            <IconSelector
-                              value={card.icon || "Zap"}
-                              onChange={(v) => {
-                                const nc = [...form.featuredGrid.cards];
-                                nc[cIdx] = { ...nc[cIdx], icon: v };
-                                setForm({ ...form, featuredGrid: { ...form.featuredGrid, cards: nc } });
-                              }}
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[11px] text-[#646970]">Title</label>
-                            <input
-                              type="text"
-                              value={card.title || ""}
-                              onChange={(e) => {
-                                const nc = [...form.featuredGrid.cards];
-                                nc[cIdx] = { ...nc[cIdx], title: e.target.value };
-                                setForm({ ...form, featuredGrid: { ...form.featuredGrid, cards: nc } });
-                              }}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[11px] text-[#646970]">Description</label>
-                            <textarea
-                              value={card.description || ""}
-                              onChange={(e) => {
-                                const nc = [...form.featuredGrid.cards];
-                                nc[cIdx] = { ...nc[cIdx], description: e.target.value };
-                                setForm({ ...form, featuredGrid: { ...form.featuredGrid, cards: nc } });
-                              }}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] h-20"
-                            />
-                          </div>
-                          <div className="space-y-1">
-                            <label className="text-[11px] text-[#646970] block">Color Theme</label>
-                            <select
-                              value={card.colorTheme || "amber"}
-                              onChange={(e) => {
-                                const nc = [...form.featuredGrid.cards];
-                                nc[cIdx] = { ...nc[cIdx], colorTheme: e.target.value };
-                                setForm({ ...form, featuredGrid: { ...form.featuredGrid, cards: nc } });
-                              }}
-                              className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[3px] bg-white outline-none"
-                            >
-                              <option value="amber">Amber / Orange</option>
-                              <option value="blue">Blue / Purple</option>
-                              <option value="green">Green / Emerald</option>
-                            </select>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === "content" && (
+                {activeTab === "benefits" && (
                   <div className="space-y-6">
-                    {/* Page Tagline */}
-                    <div className="space-y-1">
-                      <label className="text-[13px] font-bold">Page Tagline <span className="text-[#8c8f94] font-normal">(shown above the overview heading)</span></label>
-                      <input type="text" placeholder="e.g. Expert Roofing Solutions" value={form.tagline} onChange={(e) => setForm({ ...form, tagline: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                    </div>
-
-                    {/* Split Overview Heading */}
-                    <div className="space-y-2 p-3 bg-[#f6f7f7] border border-[#c3c4c7] rounded-sm">
-                      <label className="text-[13px] font-bold">Overview Heading <span className="text-[#8c8f94] font-normal">(split into prefix / highlight / suffix)</span></label>
-                      <div className="grid grid-cols-3 gap-2">
-                        <div className="space-y-0.5">
-                          <label className="text-[11px] text-[#646970]">Prefix</label>
-                          <input type="text" placeholder="e.g. Craftsmanship" value={form.overviewTitlePrefix || ""} onChange={(e) => setForm({ ...form, overviewTitlePrefix: e.target.value })} className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
-                        </div>
-                        <div className="space-y-0.5">
-                          <label className="text-[11px] text-[#646970]">Highlight <span className="text-[#2271b1]">⚡ gradient</span></label>
-                          <input type="text" placeholder="e.g. Without Compromise" value={form.overviewTitleHighlight || ""} onChange={(e) => setForm({ ...form, overviewTitleHighlight: e.target.value })} className="w-full border border-[#2271b1] px-2 py-1 text-[13px] rounded-[3px]" />
-                        </div>
-                        <div className="space-y-0.5">
-                          <label className="text-[11px] text-[#646970]">Suffix</label>
-                          <input type="text" placeholder="e.g. ." value={form.overviewTitleSuffix || ""} onChange={(e) => setForm({ ...form, overviewTitleSuffix: e.target.value })} className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
-                        </div>
-                      </div>
-                      <p className="text-[11px] text-[#646970]">Preview: <em>{(form.overviewTitlePrefix || "")} <strong className="text-[#2271b1]">{form.overviewTitleHighlight || ""}</strong>{(form.overviewTitleSuffix || "")}</em></p>
-                    </div>
-
-                    <ImageField label="Overview Section Image" value={form.overviewImage || ""} onChange={(v) => setForm({ ...form, overviewImage: v })} />
-
-                    <div className="space-y-1">
-                      <label className="text-[13px] font-bold">Overview Detailed Text</label>
-                      <QuillEditor
-                        content={form.overview}
-                        onChange={(v) => setForm({ ...form, overview: v })}
-                        placeholder="Write the full overview text shown on the service detail page..."
-                      />
-                    </div>
-
-                    {/* Overview Stats (2x2 grid) */}
-                    <div className="space-y-3 pt-4 border-t border-[#c3c4c7]">
-                      <div className="flex justify-between items-center">
-                        <div>
-                          <h3 className="text-[13px] font-bold">Overview Stats Grid <span className="text-[#8c8f94] font-normal">(2×2 grid shown below overview description)</span></h3>
-                          <p className="text-[11px] text-[#646970] mt-0.5">Add up to 4 items — each with an icon and a label text.</p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={() => setForm({ ...form, overviewStats: [...(form.overviewStats || []), { icon: "CheckCircle", label: "" }] })}
-                          className="text-[#2271b1] text-xs underline whitespace-nowrap"
-                        >+ Add Stat</button>
-                      </div>
-                      {(form.overviewStats || []).map((s: any, i: number) => (
-                        <div key={i} className="flex gap-2 items-center bg-white border border-[#c3c4c7] p-2 rounded-sm">
-                          <IconSelector value={s.icon} onChange={(v) => { const ns = [...form.overviewStats]; ns[i] = { ...ns[i], icon: v }; setForm({ ...form, overviewStats: ns }); }} />
-                          <input
-                            placeholder="Label (e.g. 10-Year Warranty)"
-                            value={s.label}
-                            onChange={(e) => { const ns = [...form.overviewStats]; ns[i] = { ...ns[i], label: e.target.value }; setForm({ ...form, overviewStats: ns }); }}
-                            className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs rounded-[2px]"
-                          />
-                          <button type="button" onClick={() => { const ns = (form.overviewStats || []).filter((_: any, idx: number) => idx !== i); setForm({ ...form, overviewStats: ns }); }} className="text-[#d63638] text-xs shrink-0">✕</button>
-                        </div>
-                      ))}
-                    </div>
-
-                    <div className="grid grid-cols-2 gap-4 pt-4 border-t border-[#c3c4c7]">
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">CTA Button Text</label>
-                        <input type="text" value={form.cta?.text || ""} onChange={(e) => setForm({ ...form, cta: { ...form.cta, text: e.target.value } })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">CTA Button Link</label>
-                        <input type="text" value={form.cta?.link || ""} onChange={(e) => setForm({ ...form, cta: { ...form.cta, link: e.target.value } })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === "features" && (
-                  <div className="space-y-8">
-                    {/* Benefits Badge */}
-                    <div className="space-y-1">
-                      <label className="text-[13px] font-bold">Key Benefits Section Badge <span className="text-[#8c8f94] font-normal">(shown above the heading)</span></label>
-                      <input type="text" placeholder="e.g. The 410 Edge" value={form.benefitsBadge || ""} onChange={(e) => setForm({ ...form, benefitsBadge: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                    </div>
-
-                    {/* Split Benefits Heading */}
-                    <div className="space-y-2 p-3 bg-[#f6f7f7] border border-[#c3c4c7] rounded-sm">
-                      <label className="text-[13px] font-bold">Key Benefits Heading <span className="text-[#8c8f94] font-normal">(split into prefix / highlight / suffix)</span></label>
-                      <div className="grid grid-cols-3 gap-2">
-                        <div className="space-y-0.5">
-                          <label className="text-[11px] text-[#646970]">Prefix</label>
-                          <input type="text" placeholder="e.g. Key" value={form.benefitsTitlePrefix || ""} onChange={(e) => setForm({ ...form, benefitsTitlePrefix: e.target.value })} className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
-                        </div>
-                        <div className="space-y-0.5">
-                          <label className="text-[11px] text-[#646970]">Highlight <span className="text-[#2271b1]">⚡ gradient</span></label>
-                          <input type="text" placeholder="e.g. Benefits" value={form.benefitsTitleHighlight || ""} onChange={(e) => setForm({ ...form, benefitsTitleHighlight: e.target.value })} className="w-full border border-[#2271b1] px-2 py-1 text-[13px] rounded-[3px]" />
-                        </div>
-                        <div className="space-y-0.5">
-                          <label className="text-[11px] text-[#646970]">Suffix</label>
-                          <input type="text" placeholder="e.g. ." value={form.benefitsTitleSuffix || ""} onChange={(e) => setForm({ ...form, benefitsTitleSuffix: e.target.value })} className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
-                        </div>
-                      </div>
-                      <p className="text-[11px] text-[#646970]">Preview: <em>{(form.benefitsTitlePrefix || "")} <strong className="text-[#2271b1]">{form.benefitsTitleHighlight || ""}</strong>{(form.benefitsTitleSuffix || "")}</em></p>
-                    </div>
-
-                    {/* Benefits Description */}
-                    <div className="space-y-1">
-                      <label className="text-[13px] font-bold">Key Benefits Section Description</label>
-                      <textarea
-                        placeholder="e.g. Experience the difference with our unwavering commitment..."
-                        value={form.benefitsDescription || ""}
-                        onChange={(e) => setForm({ ...form, benefitsDescription: e.target.value })}
-                        className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px] h-20"
-                      />
-                    </div>
-
-                    <div className="space-y-4">
-                      <div className="flex justify-between items-center"><h3 className="text-sm font-bold">Service Stats</h3><button type="button" onClick={() => setForm({ ...form, stats: [...(form.stats || []), { value: "", label: "", icon: "Star", category: "Impact" }] })} className="text-[#2271b1] text-xs underline">+ Add Stat</button></div>
-                      {form.stats?.map((s: any, i: number) => (
-                        <div key={i} className="flex flex-col sm:flex-row gap-2 bg-[#f6f7f7] p-2 border border-[#c3c4c7] rounded-[3px]">
-                          <div className="flex gap-2 items-center flex-1">
-                            <IconSelector value={s.icon || "Star"} onChange={(v) => { const ns = [...form.stats]; ns[i] = { ...ns[i], icon: v }; setForm({ ...form, stats: ns }); }} />
-                            <input placeholder="Category (e.g. Impact)" value={s.category || ""} onChange={(e) => { const ns = [...form.stats]; ns[i] = { ...ns[i], category: e.target.value }; setForm({ ...form, stats: ns }); }} className="w-32 border border-[#8c8f94] px-2 py-1 text-xs rounded-[2px]" />
-                            <input placeholder="Value" value={s.value} onChange={(e) => { const ns = [...form.stats]; ns[i] = { ...ns[i], value: e.target.value }; setForm({ ...form, stats: ns }); }} className="w-20 border border-[#8c8f94] px-2 py-1 text-xs rounded-[2px]" />
-                            <input placeholder="Label" value={s.label} onChange={(e) => { const ns = [...form.stats]; ns[i] = { ...ns[i], label: e.target.value }; setForm({ ...form, stats: ns }); }} className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs rounded-[2px]" />
-                          </div>
-                          <button onClick={() => { const ns = form.stats.filter((_: any, idx: number) => idx !== i); setForm({ ...form, stats: ns }); }} className="text-[#d63638] text-xs hover:underline self-center shrink-0">Remove</button>
-                        </div>
-                      ))}
+                    <div className="flex justify-between items-center border-b border-[#c3c4c7] pb-2">
+                      <h3 className="text-[14px] font-bold text-[#1d2327]">Key Clinical Benefits</h3>
+                      <button type="button" onClick={() => setForm({ ...form, benefits: [...(form.benefits || []), { title: "", description: "" }] })} className="text-[#2271b1] text-xs underline font-bold">+ Add Benefit</button>
                     </div>
                     <div className="space-y-4">
-                      <div className="flex justify-between items-center"><h3 className="text-sm font-bold">Key Benefits</h3><button onClick={() => setForm({ ...form, benefits: [...(form.benefits || []), { title: "", description: "", icon: "Shield" }] })} className="text-[#2271b1] text-xs underline">+ Add Benefit</button></div>
-                      {form.benefits?.map((b: any, i: number) => (
-                        <div key={i} className="bg-[#f6f7f7] border border-[#c3c4c7] p-3 space-y-2">
-                          <div className="flex gap-2 items-center">
-                            <IconSelector value={b.icon} onChange={(v) => { const nb = [...form.benefits]; nb[i] = { ...nb[i], icon: v }; setForm({ ...form, benefits: nb }); }} />
-                            <input placeholder="Title" value={b.title} onChange={(e) => { const nb = [...form.benefits]; nb[i] = { ...nb[i], title: e.target.value }; setForm({ ...form, benefits: nb }); }} className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs" />
+                      {(form.benefits || []).map((b: any, i: number) => (
+                        <div key={i} className="bg-[#f6f7f7] border border-[#c3c4c7] p-4 rounded-sm space-y-4">
+                          <div className="flex justify-between items-center border-b border-[#c3c4c7] pb-1">
+                            <span className="text-[11px] font-mono font-bold text-[#2271b1]">BENEFIT #{i+1}</span>
+                            <button type="button" onClick={() => {
+                              const nb = form.benefits.filter((_: any, idx: number) => idx !== i);
+                              setForm({ ...form, benefits: nb });
+                            }} className="text-[#d63638] text-xs">Remove</button>
                           </div>
-                          <QuillEditor
-                            content={b.description}
-                            onChange={(v) => { const nb = [...form.benefits]; nb[i] = { ...nb[i], description: v }; setForm({ ...form, benefits: nb }); }}
-                            placeholder="Describe this benefit..."
-                          />
-                          <button onClick={() => { const nb = form.benefits.filter((_: any, idx: number) => idx !== i); setForm({ ...form, benefits: nb }); }} className="text-[#d63638] text-xs">Remove Benefit</button>
+                          <div className="space-y-2">
+                            <div className="space-y-1">
+                              <label className="text-xs font-bold">Title</label>
+                              <input type="text" value={b.title || ""} onChange={(e) => {
+                                const nb = [...form.benefits];
+                                nb[i] = { ...nb[i], title: e.target.value };
+                                setForm({ ...form, benefits: nb });
+                              }} className="w-full border border-[#8c8f94] px-3 py-1 text-xs" />
+                            </div>
+                            <div className="space-y-1">
+                              <label className="text-xs font-bold">Description</label>
+                              <textarea value={b.description || ""} onChange={(e) => {
+                                const nb = [...form.benefits];
+                                nb[i] = { ...nb[i], description: e.target.value };
+                                setForm({ ...form, benefits: nb });
+                              }} className="w-full border border-[#8c8f94] px-3 py-1 text-xs h-16" />
+                            </div>
+                          </div>
                         </div>
                       ))}
                     </div>
-                  </div>
-                )}
-
-                {activeTab === "steps" && (
-                  <div className="space-y-4">
-                    {/* Process Badge */}
-                    <div className="space-y-1">
-                      <label className="text-[13px] font-bold">Process Section Badge <span className="text-[#8c8f94] font-normal">(shown above the heading)</span></label>
-                      <input type="text" placeholder="e.g. Methodology" value={form.processBadge || ""} onChange={(e) => setForm({ ...form, processBadge: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                    </div>
-
-                    {/* Split Process Heading */}
-                    <div className="space-y-2 p-3 bg-[#f6f7f7] border border-[#c3c4c7] rounded-sm">
-                      <label className="text-[13px] font-bold">Process Section Heading <span className="text-[#8c8f94] font-normal">(split into prefix / highlight / suffix)</span></label>
-                      <div className="grid grid-cols-3 gap-2">
-                        <div className="space-y-0.5">
-                          <label className="text-[11px] text-[#646970]">Prefix</label>
-                          <input type="text" placeholder="e.g. Precision" value={form.processTitlePrefix || ""} onChange={(e) => setForm({ ...form, processTitlePrefix: e.target.value })} className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
-                        </div>
-                        <div className="space-y-0.5">
-                          <label className="text-[11px] text-[#646970]">Highlight <span className="text-[#2271b1]">⚡ gradient</span></label>
-                          <input type="text" placeholder="e.g. In Every Detail" value={form.processTitleHighlight || ""} onChange={(e) => setForm({ ...form, processTitleHighlight: e.target.value })} className="w-full border border-[#2271b1] px-2 py-1 text-[13px] rounded-[3px]" />
-                        </div>
-                        <div className="space-y-0.5">
-                          <label className="text-[11px] text-[#646970]">Suffix</label>
-                          <input type="text" placeholder="e.g. ." value={form.processTitleSuffix || ""} onChange={(e) => setForm({ ...form, processTitleSuffix: e.target.value })} className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
-                        </div>
-                      </div>
-                      <p className="text-[11px] text-[#646970]">Preview: <em>{(form.processTitlePrefix || "")} <strong className="text-[#2271b1]">{form.processTitleHighlight || ""}</strong>{(form.processTitleSuffix || "")}</em></p>
-                    </div>
-
-                    {/* Process Description */}
-                    <div className="space-y-1">
-                      <label className="text-[13px] font-bold">Process Section Description</label>
-                      <textarea
-                        placeholder="e.g. A battle-tested framework that ensures consistency..."
-                        value={form.processDescription || ""}
-                        onChange={(e) => setForm({ ...form, processDescription: e.target.value })}
-                        className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px] h-20"
-                      />
-                    </div>
-
-                    <button type="button" onClick={() => setForm({ ...form, process: [...(form.process || []), { title: "", description: "", icon: "Hammer" }] })} className="text-[#2271b1] text-xs underline font-bold">+ Add Step</button>
-                    {form.process?.map((step: any, i: number) => (
-                      <div key={i} className="bg-[#f6f7f7] border border-[#c3c4c7] p-4 flex gap-4">
-                        <div className="w-8 h-8 bg-[#2271b1] text-white rounded-full flex items-center justify-center shrink-0 text-xs font-bold">{i + 1}</div>
-                        <div className="flex-1 space-y-2">
-                          <div className="flex gap-2 items-center">
-                            <IconSelector value={step.icon} onChange={(v) => { const np = [...form.process]; np[i] = { ...np[i], icon: v }; setForm({ ...form, process: np }); }} />
-                            <input value={step.title} onChange={(e) => { const np = [...form.process]; np[i] = { ...np[i], title: e.target.value }; setForm({ ...form, process: np }); }} placeholder="Step Title" className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs font-bold" />
-                          </div>
-                          <QuillEditor
-                            content={step.description}
-                            onChange={(v) => { const np = [...form.process]; np[i] = { ...np[i], description: v }; setForm({ ...form, process: np }); }}
-                            placeholder="Describe this process step..."
-                          />
-                          <button onClick={() => { const np = form.process.filter((_: any, idx: number) => idx !== i); setForm({ ...form, process: np }); }} className="text-[#d63638] text-xs">Remove Step</button>
-                        </div>
-                      </div>
-                    ))}
                   </div>
                 )}
 

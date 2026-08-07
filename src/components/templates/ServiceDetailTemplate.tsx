@@ -52,57 +52,57 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
 
   // Hydrate configurations with defaults
   const pg = {
-    backLink: serviceDetailPage.backLink || "Back to All Services",
-    heroSectionLabel: serviceDetailPage.heroSectionLabel || "CLINICAL RECOVERY PROTOCOL",
-    profileBadgePrefix: serviceDetailPage.profileBadgePrefix || "PROFILE",
-    specialtyBadge: serviceDetailPage.specialtyBadge || "Clinical Specialty",
-    tailoredLabel: serviceDetailPage.tailoredLabel || "100% Tailored Therapy",
-    tailoredSub: serviceDetailPage.tailoredSub || "Individualized Protocols",
-    specDurationLabel: serviceDetailPage.specDurationLabel || "Duration",
-    specDurationValue: serviceDetailPage.specDurationValue || "60 / 90 Mins",
-    specIntensityLabel: serviceDetailPage.specIntensityLabel || "Intensity",
-    specIntensityValue: serviceDetailPage.specIntensityValue || "Targeted Deep",
-    specFocusLabel: serviceDetailPage.specFocusLabel || "Focus",
-    specFocusValue: serviceDetailPage.specFocusValue || "Trigger Mapping",
-    specResultsLabel: serviceDetailPage.specResultsLabel || "Results",
-    specResultsValue: serviceDetailPage.specResultsValue || "Immediate Relief",
-    bookingDesc: serviceDetailPage.bookingDesc || "Schedule your consultation with Antoine Lyles and start feeling pain-free.",
-    bookingCta: serviceDetailPage.bookingCta || "Book Appointment Now",
-    heroDescriptionSuffix: serviceDetailPage.heroDescriptionSuffix || "Targeted manual therapy engineered to eliminate chronic pain, unlock joint mobility, and accelerate athletic recovery.",
-    heroCtaSecondary: serviceDetailPage.heroCtaSecondary || "SEE HOW IT HELPS",
-    statsItem1Val: serviceDetailPage.statsItem1Val || "98%",
-    statsItem1Label: serviceDetailPage.statsItem1Label || "Pain Relief Success",
-    statsItem2Val: serviceDetailPage.statsItem2Val || "5,000+",
-    statsItem2Label: serviceDetailPage.statsItem2Label || "Sessions Completed",
-    statsItem3Val: serviceDetailPage.statsItem3Val || "Est. 2020",
-    statsItem3Label: serviceDetailPage.statsItem3Label || "Clinical Standard",
-    statsItem4Val: serviceDetailPage.statsItem4Val || "100%",
-    statsItem4Label: serviceDetailPage.statsItem4Label || "Targeted Protocols",
-    overviewSectionLabel: serviceDetailPage.overviewSectionLabel || "WHY THIS THERAPY WORKS",
-    overviewTitle1: serviceDetailPage.overviewTitle1 || "Targeted Bodywork.",
-    overviewTitle2: serviceDetailPage.overviewTitle2 || "Engineered For Recovery.",
-    overviewWatermark: serviceDetailPage.overviewWatermark || "SPECIALIST PRACTICE • EST. 2020",
-    overviewSuccessRate: serviceDetailPage.overviewSuccessRate || "98% SUCCESS",
-    overviewIntroSuffix: serviceDetailPage.overviewIntroSuffix || "We map postural compensations and active muscle trigger points to eliminate root-cause pain, flush soreness, and decompress joint structures.",
-    overviewCtaText: serviceDetailPage.overviewCtaText || "BOOK YOUR SESSION NOW",
-    overviewHipaaText: serviceDetailPage.overviewHipaaText || "HIPAA Compliant & Certified",
-    candidateSectionLabel: serviceDetailPage.candidateSectionLabel || "TARGET CANDIDATES",
-    candidateTitle1: serviceDetailPage.candidateTitle1 || "Who Benefits Most.",
-    candidateTitle2: serviceDetailPage.candidateTitle2 || "Clinical Indications.",
-    candidateSuitability: serviceDetailPage.candidateSuitability || "SUITABILITY: OPTIMAL",
-    protocolSectionLabel: serviceDetailPage.protocolSectionLabel || "02 / SESSION PROTOCOL",
-    protocolTitle1: serviceDetailPage.protocolTitle1 || "3-Phase Clinical",
-    protocolTitle2: serviceDetailPage.protocolTitle2 || "Treatment Sequence.",
-    protocolPhasePrefix: serviceDetailPage.protocolPhasePrefix || "PHASE 0",
-    protocolDurations: serviceDetailPage.protocolDurations || ["15 MIN", "45 MIN", "15 MIN"],
-    protocolBannerBadge: serviceDetailPage.protocolBannerBadge || "CLINICAL EXCELLENCE",
-    protocolBannerTitlePrefix: serviceDetailPage.protocolBannerTitlePrefix || "Ready to experience",
-    protocolBannerTitleSuffix: serviceDetailPage.protocolBannerTitleSuffix || "?",
-    protocolBannerCta: serviceDetailPage.protocolBannerCta || "BOOK YOUR SESSION NOW",
-    benefitsTitle: serviceDetailPage.benefitsTitle || "Key Clinical Benefits",
-    benefitCardDesc: serviceDetailPage.benefitCardDesc || "Targeted mechanical input designed to accelerate tissue recovery and restore movement.",
-    whoTitle: serviceDetailPage.whoTitle || "Who Is This Therapy For?",
-    whoProfiles: serviceDetailPage.whoProfiles || [
+    backLink: service.backLink || serviceDetailPage.backLink || "Back to All Services",
+    heroSectionLabel: service.heroSectionLabel || serviceDetailPage.heroSectionLabel || "CLINICAL RECOVERY PROTOCOL",
+    profileBadgePrefix: service.profileBadgePrefix || serviceDetailPage.profileBadgePrefix || "PROFILE",
+    specialtyBadge: service.specialtyBadge || serviceDetailPage.specialtyBadge || "Clinical Specialty",
+    tailoredLabel: service.tailoredLabel || serviceDetailPage.tailoredLabel || "100% Tailored Therapy",
+    tailoredSub: service.tailoredSub || serviceDetailPage.tailoredSub || "Individualized Protocols",
+    specDurationLabel: service.specDurationLabel || serviceDetailPage.specDurationLabel || "Duration",
+    specDurationValue: service.specDurationValue || serviceDetailPage.specDurationValue || "60 / 90 Mins",
+    specIntensityLabel: service.specIntensityLabel || serviceDetailPage.specIntensityLabel || "Intensity",
+    specIntensityValue: service.specIntensityValue || serviceDetailPage.specIntensityValue || "Targeted Deep",
+    specFocusLabel: service.specFocusLabel || serviceDetailPage.specFocusLabel || "Focus",
+    specFocusValue: service.specFocusValue || serviceDetailPage.specFocusValue || "Trigger Mapping",
+    specResultsLabel: service.specResultsLabel || serviceDetailPage.specResultsLabel || "Results",
+    specResultsValue: service.specResultsValue || serviceDetailPage.specResultsValue || "Immediate Relief",
+    bookingDesc: service.bookingDesc || serviceDetailPage.bookingDesc || "Schedule your consultation with Antoine Lyles and start feeling pain-free.",
+    bookingCta: service.bookingCta || serviceDetailPage.bookingCta || "Book Appointment Now",
+    heroDescriptionSuffix: service.heroDescriptionSuffix || service.heroDescription || serviceDetailPage.heroDescriptionSuffix || "Targeted manual therapy engineered to eliminate chronic pain, unlock joint mobility, and accelerate athletic recovery.",
+    heroCtaSecondary: service.heroCtaSecondary || serviceDetailPage.heroCtaSecondary || "SEE HOW IT HELPS",
+    statsItem1Val: service.statsItem1Val || serviceDetailPage.statsItem1Val || "98%",
+    statsItem1Label: service.statsItem1Label || serviceDetailPage.statsItem1Label || "Pain Relief Success",
+    statsItem2Val: service.statsItem2Val || serviceDetailPage.statsItem2Val || "5,000+",
+    statsItem2Label: service.statsItem2Label || serviceDetailPage.statsItem2Label || "Sessions Completed",
+    statsItem3Val: service.statsItem3Val || serviceDetailPage.statsItem3Val || "Est. 2020",
+    statsItem3Label: service.statsItem3Label || serviceDetailPage.statsItem3Label || "Clinical Standard",
+    statsItem4Val: service.statsItem4Val || serviceDetailPage.statsItem4Val || "100%",
+    statsItem4Label: service.statsItem4Label || serviceDetailPage.statsItem4Label || "Targeted Protocols",
+    overviewSectionLabel: service.overviewSectionLabel || serviceDetailPage.overviewSectionLabel || "WHY THIS THERAPY WORKS",
+    overviewTitle1: service.overviewTitle1 || service.overviewTitlePrefix || serviceDetailPage.overviewTitle1 || "Targeted Bodywork.",
+    overviewTitle2: service.overviewTitle2 || service.overviewTitleHighlight || serviceDetailPage.overviewTitle2 || "Engineered For Recovery.",
+    overviewWatermark: service.overviewWatermark || serviceDetailPage.overviewWatermark || "SPECIALIST PRACTICE • EST. 2020",
+    overviewSuccessRate: service.overviewSuccessRate || serviceDetailPage.overviewSuccessRate || "98% SUCCESS",
+    overviewIntroSuffix: service.overviewIntroSuffix || serviceDetailPage.overviewIntroSuffix || "We map postural compensations and active muscle trigger points to eliminate root-cause pain, flush soreness, and decompress joint structures.",
+    overviewCtaText: service.overviewCtaText || serviceDetailPage.overviewCtaText || "BOOK YOUR SESSION NOW",
+    overviewHipaaText: service.overviewHipaaText || serviceDetailPage.overviewHipaaText || "HIPAA Compliant & Certified",
+    candidateSectionLabel: service.candidateSectionLabel || serviceDetailPage.candidateSectionLabel || "TARGET CANDIDATES",
+    candidateTitle1: service.candidateTitle1 || serviceDetailPage.candidateTitle1 || "Who Benefits Most.",
+    candidateTitle2: service.candidateTitle2 || serviceDetailPage.candidateTitle2 || "Clinical Indications.",
+    candidateSuitability: service.candidateSuitability || serviceDetailPage.candidateSuitability || "SUITABILITY: OPTIMAL",
+    protocolSectionLabel: service.protocolSectionLabel || serviceDetailPage.protocolSectionLabel || "02 / SESSION PROTOCOL",
+    protocolTitle1: service.protocolTitle1 || serviceDetailPage.protocolTitle1 || "3-Phase Clinical",
+    protocolTitle2: service.protocolTitle2 || serviceDetailPage.protocolTitle2 || "Treatment Sequence.",
+    protocolPhasePrefix: service.protocolPhasePrefix || serviceDetailPage.protocolPhasePrefix || "PHASE 0",
+    protocolDurations: service.protocolDurations || serviceDetailPage.protocolDurations || ["15 MIN", "45 MIN", "15 MIN"],
+    protocolBannerBadge: service.protocolBannerBadge || serviceDetailPage.protocolBannerBadge || "CLINICAL EXCELLENCE",
+    protocolBannerTitlePrefix: service.protocolBannerTitlePrefix || serviceDetailPage.protocolBannerTitlePrefix || "Ready to experience",
+    protocolBannerTitleSuffix: service.protocolBannerTitleSuffix || serviceDetailPage.protocolBannerTitleSuffix || "?",
+    protocolBannerCta: service.protocolBannerCta || serviceDetailPage.protocolBannerCta || "BOOK YOUR SESSION NOW",
+    benefitsTitle: service.benefitsTitle || serviceDetailPage.benefitsTitle || "Key Clinical Benefits",
+    benefitCardDesc: service.benefitCardDesc || serviceDetailPage.benefitCardDesc || "Targeted mechanical input designed to accelerate tissue recovery and restore movement.",
+    whoTitle: service.whoTitle || serviceDetailPage.whoTitle || "Who Is This Therapy For?",
+    whoProfiles: service.whoProfiles || serviceDetailPage.whoProfiles || [
       {
         label: "Athletes",
         desc: "Competitive athletes needing accelerated recovery between high-intensity training sessions."
@@ -120,8 +120,12 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
         desc: "People looking to safely regain full range of motion following physical therapy or injury rehabilitation."
       }
     ],
-    sessionTitle: serviceDetailPage.sessionTitle || "What To Expect During Your Session",
-    sessionSteps: serviceDetailPage.sessionSteps || [
+    sessionTitle: service.sessionTitle || serviceDetailPage.sessionTitle || "What To Expect During Your Session",
+    sessionSteps: service.sessionSteps || (service.process && service.process.length > 0 ? service.process.map((step: any, idx: number) => ({
+      num: String(idx + 1).padStart(2, '0'),
+      title: step.title,
+      desc: step.description || step.desc || ""
+    })) : null) || serviceDetailPage.sessionSteps || [
       {
         num: "01",
         title: "Postural & Palpation Assessment",
@@ -129,7 +133,7 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
       },
       {
         num: "02",
-        title: "Targeted Clinical Bodywork",
+        title: "Targeted Myofascial Release",
         desc: "Hands-on application of deep tissue pressure, myofascial release, and cross-fiber friction adjusted to your comfort level."
       },
       {
@@ -147,6 +151,12 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
   const serviceImage = service.image || service.featuredImage || "/images/service-massage.webp";
   const bookingUrl = globalMetadata?.bookingUrl || "https://www.styleseat.com/m/v/410muscletherapy";
   const benefits = service.benefits || [];
+  const statsList = [
+    { value: service.statsItem1Val || pg.statsItem1Val, label: service.statsItem1Label || pg.statsItem1Label },
+    { value: service.statsItem2Val || pg.statsItem2Val, label: service.statsItem2Label || pg.statsItem2Label },
+    { value: service.statsItem3Val || pg.statsItem3Val, label: service.statsItem3Label || pg.statsItem3Label },
+    { value: service.statsItem4Val || pg.statsItem4Val, label: service.statsItem4Label || pg.statsItem4Label }
+  ];
 
   return (
     <>
@@ -244,22 +254,12 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
         <div className="bg-dark-2 border-b border-border-dark py-8 relative z-10">
           <div className="site-container">
             <div className="grid grid-cols-2 md:grid-cols-4 gap-4 md:gap-6">
-              <div className="p-5 rounded-lg bg-white/[0.03] border border-white/10 hover:border-gold/40 shadow-xl transition-all duration-300 group text-center">
-                <span className="text-gold font-serif text-[26px] md:text-[32px] font-bold block leading-none mb-1 group-hover:scale-105 transition-transform">{pg.statsItem1Val}</span>
-                <span className="text-white/60 text-[10.5px] font-mono uppercase tracking-widest">{pg.statsItem1Label}</span>
-              </div>
-              <div className="p-5 rounded-lg bg-white/[0.03] border border-white/10 hover:border-gold/40 shadow-xl transition-all duration-300 group text-center">
-                <span className="text-gold font-serif text-[26px] md:text-[32px] font-bold block leading-none mb-1 group-hover:scale-105 transition-transform">{pg.statsItem2Val}</span>
-                <span className="text-white/60 text-[10.5px] font-mono uppercase tracking-widest">{pg.statsItem2Label}</span>
-              </div>
-              <div className="p-5 rounded-lg bg-white/[0.03] border border-white/10 hover:border-gold/40 shadow-xl transition-all duration-300 group text-center">
-                <span className="text-gold font-serif text-[26px] md:text-[32px] font-bold block leading-none mb-1 group-hover:scale-105 transition-transform">{pg.statsItem3Val}</span>
-                <span className="text-white/60 text-[10.5px] font-mono uppercase tracking-widest">{pg.statsItem3Label}</span>
-              </div>
-              <div className="p-5 rounded-lg bg-white/[0.03] border border-white/10 hover:border-gold/40 shadow-xl transition-all duration-300 group text-center">
-                <span className="text-gold font-serif text-[26px] md:text-[32px] font-bold block leading-none mb-1 group-hover:scale-105 transition-transform">{pg.statsItem4Val}</span>
-                <span className="text-white/60 text-[10.5px] font-mono uppercase tracking-widest">{pg.statsItem4Label}</span>
-              </div>
+              {statsList.map((stat: any, idx: number) => (
+                <div key={idx} className="p-5 rounded-lg bg-white/[0.03] border border-white/10 hover:border-gold/40 shadow-xl transition-all duration-300 group text-center">
+                  <span className="text-gold font-serif text-[26px] md:text-[32px] font-bold block leading-none mb-1 group-hover:scale-105 transition-transform">{stat.value}</span>
+                  <span className="text-white/60 text-[10.5px] font-mono uppercase tracking-widest">{stat.label}</span>
+                </div>
+              ))}
             </div>
           </div>
         </div>
@@ -337,26 +337,30 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
 
                   {/* 4 Feature Row Cards */}
                   <div className="space-y-4 mb-10">
-                    {benefits.map((benefit: any, idx: number) => (
-                      <div
-                        key={idx}
-                        className="p-5 rounded-lg bg-card-bg border border-border-light/80 hover:border-gold-dark/60 hover:bg-white transition-all duration-300 shadow-sm hover:shadow-xl flex items-start gap-4 group relative overflow-hidden"
-                      >
-                        <div className="h-[2px] w-full bg-gradient-to-r from-gold-dark/60 via-gold-dark to-transparent opacity-0 group-hover:opacity-100 transition-opacity absolute top-0 left-0" />
-                        
-                        <div className="w-10 h-10 rounded-md bg-gold-dark/15 border border-gold-dark/30 flex items-center justify-center text-gold-dark font-serif font-bold text-[18px] flex-shrink-0 group-hover:bg-gold-dark group-hover:text-white transition-colors">
-                          0{idx + 1}
+                    {benefits.map((benefit: any, idx: number) => {
+                      const benefitTitle = typeof benefit === 'string' ? benefit : (benefit.title || "");
+                      const benefitDesc = typeof benefit === 'string' ? pg.benefitCardDesc : (benefit.description || pg.benefitCardDesc);
+                      return (
+                        <div
+                          key={idx}
+                          className="p-5 rounded-lg bg-card-bg border border-border-light/80 hover:border-gold-dark/60 hover:bg-white transition-all duration-300 shadow-sm hover:shadow-xl flex items-start gap-4 group relative overflow-hidden"
+                        >
+                          <div className="h-[2px] w-full bg-gradient-to-r from-gold-dark/60 via-gold-dark to-transparent opacity-0 group-hover:opacity-100 transition-opacity absolute top-0 left-0" />
+                          
+                          <div className="w-10 h-10 rounded-md bg-gold-dark/15 border border-gold-dark/30 flex items-center justify-center text-gold-dark font-serif font-bold text-[18px] flex-shrink-0 group-hover:bg-gold-dark group-hover:text-white transition-colors">
+                            {String(idx + 1).padStart(2, '0')}
+                          </div>
+                          <div>
+                            <h3 className="text-dark font-bold text-[17px] mb-1 group-hover:text-gold-dark transition-colors">
+                              {benefitTitle}
+                            </h3>
+                            <p className="text-dark/65 text-[13.5px] font-light leading-relaxed">
+                              {benefitDesc}
+                            </p>
+                          </div>
                         </div>
-                        <div>
-                          <h3 className="text-dark font-bold text-[17px] mb-1 group-hover:text-gold-dark transition-colors">
-                            {benefit}
-                          </h3>
-                          <p className="text-dark/65 text-[13.5px] font-light leading-relaxed">
-                            {pg.benefitCardDesc}
-                          </p>
-                        </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
 
@@ -417,10 +421,10 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                   <div>
                     <div className="flex items-center justify-between mb-6 border-b border-border-light/70 pb-4 relative z-10">
                       <span className="text-gold-dark font-serif font-bold text-[28px] leading-none">
-                        0{idx + 1}
+                        {String(idx + 1).padStart(2, '0')}
                       </span>
                       <span className="px-3 py-1 rounded-full bg-gold-dark/10 text-gold-dark text-[10.5px] font-mono font-bold tracking-widest uppercase">
-                        {pg.profileBadgePrefix || "PROFILE"} 0{idx + 1}
+                        {pg.profileBadgePrefix || "PROFILE"} {String(idx + 1).padStart(2, '0')}
                       </span>
                     </div>
 
@@ -492,7 +496,7 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                   </div>
 
                   <div className="mt-8 pt-4 border-t border-white/10 flex items-center justify-between text-gold text-[12px] font-bold tracking-wider uppercase">
-                    <span>{pg.protocolPhasePrefix}{idx + 1}</span>
+                    <span>{pg.protocolPhasePrefix}{String(idx + 1).padStart(2, '0')}</span>
                     <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
