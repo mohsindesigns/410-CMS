@@ -1,208 +1,134 @@
 "use client";
 
-import { motion, useInView } from "framer-motion";
-import { useRef, useEffect, useState } from "react";
 import Image from "next/image";
+import { ArrowRight } from "lucide-react";
+import { motion } from "framer-motion";
 import { useContent } from "../hooks/useContent";
-import { Icon } from "../config/icons";
-import gsap from "gsap";
-import { ScrollTrigger } from "gsap/ScrollTrigger";
-import RichTextRenderer from "./ui/RichTextRenderer";
-
-gsap.registerPlugin(ScrollTrigger);
 
 export default function Leadership() {
-  const sectionRef = useRef(null);
-  const [isClient, setIsClient] = useState(false);
-  const { leadership } = useContent();
-  const story = leadership || { section: {}, ceo: {} };
-  const ceo = story.ceo || {};
+  const { leadership, globalMetadata } = useContent();
 
-  useEffect(() => {
-    setIsClient(true);
-  }, []);
+  const {
+    label = "Antoine's Story",
+    title = "Antoine Lyles — Performance Recovery Specialist",
+    tagline = "My Mission is Your Mobility.",
+    desc1 = "",
+    desc2 = "",
+    photoBadge = "Performance Recovery",
+    ctaMore = "BOOK RECOVERY SESSION",
+    ctaLink = "",
+    signatureName = "Antoine Lyles",
+    signatureTitle = "FOUNDER & HEAD THERAPIST",
+    image = "/images/theraphist.jpeg",
+    imageAlt = "Antoine Lyles — Performance Recovery Specialist"
+  } = leadership || {};
 
-  useEffect(() => {
-    if (!sectionRef.current || !isClient) return;
+  const bookingUrl = ctaLink || globalMetadata?.bookingUrl || "https://www.styleseat.com/m/v/410muscletherapy";
 
-    const ctx = gsap.context(() => {
-      gsap.fromTo('.leadership-reveal',
-        { y: 30, opacity: 0 },
-        {
-          y: 0,
-          opacity: 1,
-          duration: 1,
-          stagger: 0.15,
-          ease: "power2.out",
-          scrollTrigger: {
-            trigger: sectionRef.current,
-            start: "top 85%",
-            toggleActions: "play none none reverse"
-          }
-        }
-      );
-    }, sectionRef);
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: { staggerChildren: 0.08 },
+    },
+  } as const;
 
-    return () => ctx.revert();
-  }, [isClient]);
-
-  // Handle missing data case
-  if (!ceo.name && !story.section?.headline) return null;
+  const itemVariants = {
+    hidden: { y: 20, opacity: 0 },
+    visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
+  } as const;
 
   return (
-    <section
-      ref={sectionRef}
-      id="leadership"
-      className="relative bg-background py-12 sm:py-16 md:py-20 lg:py-24 xl:py-32 overflow-hidden"
-    >
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, hsl(var(--primary)) 1px, transparent 1px),
-              linear-gradient(to bottom, hsl(var(--primary)) 1px, transparent 1px)
-            `,
-            backgroundSize: '60px 60px sm:80px 80px',
-          }}
-        />
-      </div>
+    <section className="bg-white py-28 relative overflow-hidden border-t border-border-light/40">
+      {/* Decorative background grid pattern */}
+      <div className="absolute inset-0 opacity-[0.015] bg-grid-pattern-black pointer-events-none" />
 
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[500px] sm:w-[800px] h-[300px] sm:h-[400px] bg-gradient-to-b from-primary/5 to-transparent opacity-60 blur-3xl" />
+      <div className="site-container relative">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1.3fr] gap-16 lg:gap-24 items-center">
 
-      <div className="max-w-7xl mx-auto px-3 sm:px-4 md:px-6 lg:px-8 relative z-30">
-        <div className="max-w-3xl mx-auto text-center mb-12 sm:mb-16 md:mb-20 leadership-reveal">
-          <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4 sm:mb-6">
-            <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-primary/30 to-primary" />
-            <span className="text-[10px] sm:text-xs font-medium tracking-[0.2em] uppercase text-primary">
-              {story.section?.badge || "Our Leadership"}
-            </span>
-            <div className="w-6 sm:w-8 h-[2px] bg-gradient-to-r from-primary to-primary/30" />
-          </div>
-
-          <h2
-            className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl xl:text-6xl font-light text-foreground mb-4 sm:mb-6 leading-tight px-2"
+          {/* ── Left Column: Premium Framed Image ───────── */}
+          <motion.div
+            initial={{ opacity: 0, x: -40 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true, margin: "-60px" }}
+            transition={{ duration: 0.8, ease: "easeOut" }}
+            className="relative"
           >
-            {(story.section?.headlinePrefix || story.section?.headlineHighlight || story.section?.headlineSuffix) ? (
-              <>
-                {story.section?.headlinePrefix && (
-                  <span>{story.section.headlinePrefix} </span>
-                )}
-                {story.section?.headlineHighlight && (
-                  <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/80 font-semibold">
-                    {story.section.headlineHighlight}
-                  </span>
-                )}
-                {story.section?.headlineSuffix && (
-                  <span> {story.section.headlineSuffix}</span>
-                )}
-              </>
-            ) : (
-              <span dangerouslySetInnerHTML={{ __html: story.section?.headline || "" }} />
-            )}
-          </h2>
+            {/* Gold backdrop accent square */}
+            <div className="absolute -bottom-4 -right-4 w-full h-full border border-gold-dark/40 rounded-sm pointer-events-none z-0" />
 
-          <RichTextRenderer
-            content={story.section?.description}
-            className="text-muted-foreground text-sm sm:text-base md:text-lg lg:text-xl font-light max-w-2xl mx-auto px-3 sm:px-4 text-center"
-            stripParagraphs={true}
-          />
-        </div>
-
-        <div className="grid lg:grid-cols-2 gap-8 sm:gap-12 lg:gap-16 xl:gap-20 items-start">
-          <div className="leadership-reveal lg:sticky lg:top-24">
-            <div className="relative group">
-              <div className="relative">
-                <div className="absolute -inset-1 bg-gradient-to-r from-primary/20 via-primary/20 to-primary/20 rounded-2xl sm:rounded-3xl blur-lg group-hover:blur-xl transition-all duration-700" />
-                <div className="relative rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl shadow-gray-300/50 h-[350px] xs:h-[400px] sm:h-[450px] md:h-[500px] lg:h-[600px]">
-                  {ceo.image?.src && (ceo.image.src.startsWith('http') || ceo.image.src.startsWith('/uploads') || ceo.image.src.startsWith('/cdn-images')) ? (
-                    <img
-                      src={ceo.image.src}
-                      alt={ceo.alt || ceo.name || "CEO"}
-                      className="object-cover w-full h-full"
-                    />
-                  ) : (
-                    <Image
-                      src={ceo.image?.src || "/eagle-logo.png"}
-                      alt={ceo.alt || ceo.name || "CEO"}
-                      className="object-cover"
-                      fill
-                      quality={100}
-                      sizes="(max-width: 640px) 100vw, (max-width: 768px) 80vw, 50vw"
-                    />
-                  )}
-                  <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-secondary/20 to-transparent" />
-                </div>
-
-                {ceo.badges?.top && (
-                  <div className="absolute top-3 sm:top-4 md:top-6 left-3 sm:left-4 md:left-6 z-10">
-                    <div className="bg-card/95 backdrop-blur-sm px-2 sm:px-3 md:px-5 py-1 sm:py-2 md:py-2.5 rounded-full shadow-xl border border-border">
-                      <span className="flex items-center gap-1 sm:gap-2 text-[8px] sm:text-[10px] md:text-xs font-bold text-primary">
-                        <Icon name="Flag" className="w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4" />
-                        {ceo.badges.top}
-                      </span>
-                    </div>
-                  </div>
-                )}
-
-                {ceo.badges?.bottom && (
-                  <div className="absolute bottom-3 sm:bottom-4 md:bottom-6 right-3 sm:right-4 md:right-6 z-10">
-                    <div className="bg-card/95 backdrop-blur-sm px-2 sm:px-3 md:px-5 py-1 sm:py-2 md:py-2.5 rounded-full shadow-xl border border-border">
-                      <span className="flex items-center gap-1 sm:gap-2 text-[8px] sm:text-[10px] md:text-xs font-bold text-primary">
-                        <Icon name="Award" className="w-2 h-2 sm:w-3 sm:h-3 md:w-4 md:h-4" />
-                        {ceo.badges.bottom}
-                      </span>
-                    </div>
-                  </div>
-                )}
-              </div>
-            </div>
-          </div>
-
-          <div className="space-y-6 sm:space-y-8 md:space-y-10 leadership-reveal">
-            <div>
-              <h3 className="text-2xl sm:text-3xl md:text-4xl font-light text-foreground mb-3 sm:mb-4 text-left">
-                {ceo.name}
-                <span className="block text-xs sm:text-sm font-mono text-primary mt-1 sm:mt-2 tracking-[0.15em] sm:tracking-[0.2em] uppercase">
-                  {ceo.title}
-                </span>
-              </h3>
-
-              {ceo.quotes && ceo.quotes.length > 0 && (
-                <div className="mt-6 sm:mt-8 relative">
-                  <div className="absolute -left-2 sm:-left-4 -top-2 text-primary/20">
-                    <Icon name="Quote" className="w-6 h-6 sm:w-8 sm:h-8 md:w-10 md:h-10" />
-                  </div>
-                  <RichTextRenderer
-                    content={ceo.quotes[0]}
-                    className="text-foreground text-base sm:text-lg md:text-xl font-medium leading-relaxed pl-4 sm:pl-6 md:pl-8"
-                  />
-                </div>
-              )}
-
-              <RichTextRenderer
-                content={ceo.description}
-                className="mt-6 sm:mt-8 space-y-4 text-muted-foreground"
+            {/* Main photo container */}
+            <div className="img-therapist h-[400px] md:h-[600px] rounded-sm overflow-hidden shadow-2xl relative z-10 border border-border-light group">
+              <Image
+                src={image}
+                alt={imageAlt}
+                fill
+                sizes="(max-width: 1024px) 100vw, 45vw"
+                className="object-cover object-top transition-transform duration-750 group-hover:scale-105"
+                priority
               />
-
-              <div className="flex flex-wrap items-center justify-start gap-3 sm:gap-4 mt-8 sm:mt-10 pt-4 border-t border-border">
-                {(ceo.socials || []).map((social: any, idx: number) => (
-                  <motion.a
-                    key={idx}
-                    href={social.url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    whileHover={{ scale: 1.1 }}
-                    whileTap={{ scale: 0.95 }}
-                    className="p-2 sm:p-3 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-colors"
-                    aria-label={social.icon}
-                  >
-                    <Icon name={social.icon} className="w-4 h-4 sm:w-5 sm:h-5" />
-                  </motion.a>
-                ))}
-              </div>
+              {/* Overlay */}
+              <div className="absolute inset-0 bg-dark/5 group-hover:bg-transparent transition-colors duration-300" />
             </div>
-          </div>
+
+            {/* Small floating tag */}
+            <div className="absolute bottom-6 left-6 z-20 bg-dark text-gold font-mono text-[10px] font-bold tracking-widest uppercase px-4 py-2 border border-border-dark shadow-2xl">
+              {photoBadge}
+            </div>
+          </motion.div>
+
+          {/* ── Right Column: Editorial Text ───────── */}
+          <motion.div
+            variants={containerVariants}
+            initial="hidden"
+            whileInView="visible"
+            viewport={{ once: true, margin: "-60px" }}
+            className="flex flex-col"
+          >
+            <motion.p variants={itemVariants} className="section-label text-gold-dark mb-4">
+              {label}
+            </motion.p>
+            
+            <motion.h2 variants={itemVariants} className="display-heading text-[32px] min-[400px]:text-[38px] md:text-[48px] text-dark leading-tight mb-4">
+              {title}
+            </motion.h2>
+
+            <motion.p variants={itemVariants} className="text-gold-dark font-serif italic text-[18px] md:text-[20px] mb-6">
+              {tagline}
+            </motion.p>
+
+            <motion.p variants={itemVariants} className="text-dark/60 text-[14.5px] md:text-[15px] leading-relaxed mb-5 font-light">
+              {desc1}
+            </motion.p>
+
+            <motion.p variants={itemVariants} className="text-dark/65 text-[14.5px] md:text-[15px] leading-relaxed mb-8 border-l-2 border-gold-dark/30 pl-4 py-1 font-light">
+              {desc2}
+            </motion.p>
+
+            {/* Signature + CTA Row */}
+            <motion.div
+              variants={itemVariants}
+              className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-8 border-t border-border-light mt-auto"
+            >
+              <a
+                href={bookingUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="btn-gold w-full sm:w-auto justify-center text-center cursor-pointer"
+              >
+                {ctaMore} <ArrowRight size={14} className="ml-1" />
+              </a>
+              <div className="text-center sm:text-right flex flex-col items-center sm:items-end">
+                <p className="font-signature text-[38px] min-[360px]:text-[48px] md:text-[56px] text-gold-dark leading-none mb-1 select-none">
+                  {signatureName}
+                </p>
+                <p className="text-dark/50 text-[11.5px] uppercase tracking-wider font-semibold">
+                  {signatureTitle}
+                </p>
+              </div>
+            </motion.div>
+          </motion.div>
+
         </div>
       </div>
     </section>

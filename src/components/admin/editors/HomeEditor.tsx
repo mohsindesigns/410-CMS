@@ -87,6 +87,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
       { id: "about", label: "About" },
       { id: "services", label: "Services" },
       { id: "whyChooseUs", label: "Value Props" },
+      { id: "process", label: "How It Works" },
       { id: "leadership", label: "Leadership" },
       { id: "portfolio", label: "Work" },
       { id: "testimonials", label: "Reviews" },
@@ -532,10 +533,109 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            <button onClick={() => updateSection("whyChooseUs", "stats", [...(data.whyChooseUs?.stats || []), { value: "", suffix: "", label: "" }])} className={UI.buttonAdd}>+ Add Metric</button>
                         </div>
                      </div>
-                  </div>
-               )}
+                   </div>
+                )}
 
-               {/* LEADERSHIP SECTION */}
+                {/* PROCESS (HOW IT WORKS) SECTION */}
+                {activeTab === "process" && (
+                   <div className="space-y-12">
+                      <div className="space-y-6">
+                         <h3 className={UI.sectionHeader}>1. Section Intro</h3>
+                         <div className="space-y-1.5">
+                            <label className={UI.label}>Intro Badge</label>
+                            <input type="text" value={data.process?.label || ""} onChange={(e) => updateSection("process", "label", e.target.value)} className={UI.input} />
+                         </div>
+                         <div className="space-y-1.5">
+                            <label className={UI.label}>Headline Title</label>
+                            <input type="text" value={data.process?.title || ""} onChange={(e) => updateSection("process", "title", e.target.value)} className={UI.input} />
+                         </div>
+                         <div className="space-y-1.5">
+                            <label className={UI.label}>Description Text</label>
+                            <textarea value={data.process?.description || ""} onChange={(e) => updateSection("process", "description", e.target.value)} className={UI.input + " h-24"} />
+                         </div>
+                         <div className="space-y-1.5">
+                            <label className={UI.label}>Step ID Prefix Label (e.g. PHASE or STEP)</label>
+                            <input type="text" value={data.process?.phaseLabel || ""} onChange={(e) => updateSection("process", "phaseLabel", e.target.value)} className={UI.input} />
+                         </div>
+                      </div>
+
+                      <div className="space-y-8 pt-10 border-t border-[#f0f0f1]">
+                         <h3 className={UI.sectionHeader}>2. Process Steps</h3>
+                         <div className="space-y-6">
+                            {(data.process?.items || []).map((step: any, i: number) => (
+                               <div key={i} className={UI.card + " space-y-4"}>
+                                  <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                     <span className="text-[10px] font-bold text-[#646970] uppercase">Step #{i + 1} Details</span>
+                                     <button onClick={() => {
+                                        const newItems = data.process.items.filter((_: any, idx: number) => idx !== i);
+                                        updateSection("process", "items", newItems);
+                                     }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
+                                  </div>
+                                  <div className="grid grid-cols-2 gap-4">
+                                     <div className="space-y-1.5">
+                                        <label className={UI.label}>Step ID (e.g. 01)</label>
+                                        <input type="text" value={step.id || ""} onChange={(e) => {
+                                           const newItems = [...data.process.items];
+                                           newItems[i] = { ...newItems[i], id: e.target.value };
+                                           updateSection("process", "items", newItems);
+                                        }} className={UI.input} />
+                                     </div>
+                                     <div className="space-y-1.5">
+                                        <label className={UI.label}>Step Title</label>
+                                        <input type="text" value={step.title || ""} onChange={(e) => {
+                                           const newItems = [...data.process.items];
+                                           newItems[i] = { ...newItems[i], title: e.target.value };
+                                           updateSection("process", "items", newItems);
+                                        }} className={UI.input} />
+                                     </div>
+                                  </div>
+
+                                  <div className="space-y-1.5">
+                                     <label className={UI.label}>Step Narrative</label>
+                                     <textarea value={step.description || ""} onChange={(e) => {
+                                        const newItems = [...data.process.items];
+                                        newItems[i] = { ...newItems[i], description: e.target.value };
+                                        updateSection("process", "items", newItems);
+                                     }} className={UI.input + " h-20"} />
+                                  </div>
+
+                                  <ImageField
+                                     label="Step Preview Image"
+                                     value={step.image || ""}
+                                     onChange={(url) => {
+                                        const newItems = [...data.process.items];
+                                        newItems[i] = { ...newItems[i], image: url };
+                                        updateSection("process", "items", newItems);
+                                     }}
+                                     altValue={step.title || ""}
+                                     onAltChange={() => {}}
+                                  />
+
+                                  <div className="space-y-1.5">
+                                     <label className={UI.label}>Checklist Action Items (One per line)</label>
+                                     <textarea
+                                        value={Array.isArray(step.actions) ? step.actions.join("\n") : (step.actions || "")}
+                                        onChange={(e) => {
+                                           const newItems = [...data.process.items];
+                                           newItems[i] = { ...newItems[i], actions: e.target.value.split("\n").filter(Boolean) };
+                                           updateSection("process", "items", newItems);
+                                        }}
+                                        className={UI.input + " h-24 font-mono text-xs"}
+                                        placeholder="e.g. Check item 1&#10;Check item 2"
+                                     />
+                                  </div>
+                               </div>
+                            ))}
+                            <button onClick={() => {
+                               const currentItems = data.process?.items || [];
+                               updateSection("process", "items", [...currentItems, { id: `0${currentItems.length + 1}`, title: "", description: "", image: "", actions: [] }]);
+                            }} className={UI.buttonAdd}>+ Add Step</button>
+                         </div>
+                      </div>
+                   </div>
+                )}
+
+                {/* LEADERSHIP SECTION */}
                {activeTab === "leadership" && (
                   <div className="space-y-12">
                      <div className="space-y-6">
@@ -607,6 +707,17 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                            content={data.leadership?.ceo?.description || ""}
                            onChange={(html) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), description: html })}
                         />
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[#f0f0f1]">
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>CTA Button Label</label>
+                              <input type="text" value={data.leadership?.ctaMore || ""} onChange={(e) => updateSection("leadership", "ctaMore", e.target.value)} className={UI.input} placeholder="e.g. LEARN MORE ABOUT ANTOINE" />
+                           </div>
+                           <div className="space-y-1.5">
+                              <label className={UI.label}>CTA Button Link (Optional override)</label>
+                              <input type="text" value={data.leadership?.ctaLink || ""} onChange={(e) => updateSection("leadership", "ctaLink", e.target.value)} className={UI.input} placeholder="Defaults to Booking URL" />
+                           </div>
+                        </div>
 
                         <div className="space-y-4">
                            <div className="flex justify-between items-center">

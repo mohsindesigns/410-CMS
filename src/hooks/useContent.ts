@@ -191,10 +191,66 @@ export const useContent = () => {
                 }
             };
         })(),
-        leadership: getSafe(completeData, 'leadership', {
-            section: { badge: "", headline: "", description: "" },
-            ceo: { name: "", title: "", image: { src: "" }, badges: { top: "", bottom: "" }, quotes: [], description: "", socials: [] }
-        }),
+        leadership: (() => {
+            const l = getSafe(completeData, 'leadership', {});
+            const ceo = l.ceo || {};
+            const section = l.section || {};
+
+            const label = section.badge || "The Specialist";
+            const title = section.headline || "Meet Antoine Lyles";
+            const tagline = ceo.quotes?.[0] || ceo.title || "Performance Recovery Specialist";
+            const image = ceo.image?.src || "/images/theraphist.jpeg";
+            const imageAlt = ceo.image?.alt || ceo.alt || "Antoine Lyles — Performance Recovery Specialist";
+
+            const descRaw = ceo.description || "";
+            const paragraphs = descRaw.split(/<\/p>\s*<p>|\n\n|<br\s*\/?>/);
+            const desc1 = paragraphs[0] ? paragraphs[0].replace(/<[^>]*>/g, '') : "";
+            const desc2 = paragraphs[1] ? paragraphs[1].replace(/<[^>]*>/g, '') : "";
+
+            const photoBadge = ceo.badges?.top || "PERFORMANCE RECOVERY SPECIALIST";
+            const signatureName = ceo.name || "Antoine Lyles";
+            const signatureTitle = ceo.title || "Performance Recovery Specialist";
+            const ctaMore = l.ctaMore || "LEARN MORE ABOUT ANTOINE";
+            const ctaLink = l.ctaLink || "";
+
+            return {
+                ...l,
+                label,
+                title,
+                tagline,
+                desc1,
+                desc2,
+                photoBadge,
+                signatureName,
+                signatureTitle,
+                image,
+                imageAlt,
+                ctaMore,
+                ctaLink,
+
+                // Back-compat for admin editor
+                section: {
+                    badge: label,
+                    headline: title,
+                    description: descRaw
+                },
+                ceo: {
+                    ...ceo,
+                    name: signatureName,
+                    title: signatureTitle,
+                    quotes: [tagline],
+                    description: descRaw,
+                    badges: {
+                        top: photoBadge,
+                        bottom: ceo.badges?.bottom || ""
+                    },
+                    image: {
+                        src: image,
+                        alt: imageAlt
+                    }
+                }
+            };
+        })(),
         portfolio: (() => {
             const p = getSafe(completeData, 'portfolio', {});
             const selectedProjects = Array.isArray(p.projects) ? p.projects : [];
@@ -228,6 +284,13 @@ export const useContent = () => {
         faq: getSafe(completeData, 'faq', {
             section: { badge: "", headline: "", title: "", description: "" },
             categories: [],
+            items: []
+        }),
+        process: getSafe(completeData, 'process', {
+            label: "THE CLINICAL PROCESS",
+            title: "Your Recovery Journey.",
+            description: "",
+            phaseLabel: "PHASE",
             items: []
         }),
         quote: getSafe(completeData, 'quote', {
