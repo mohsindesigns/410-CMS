@@ -108,20 +108,25 @@ function MapPlaceholder({ addressText }: { addressText: string }) {
 export default function Footer() {
   const { footer, navbar, services: servicesData } = useContent();
 
+  const contactInfo = footer?.contact || {};
+  const companyInfo = footer?.company || {};
+  const bottomInfo = footer?.bottom || {};
+
   const {
-    brandDescription = "Elite performance recovery bodywork, mobility optimization, and injury prevention for athletes and active adults since 2020. #bodywork #performancerecovery",
     quickLinksLabel = "Quick Links",
     servicesLabel = "Services",
     contactLabel = "Contact Us",
-    copyright = "© 2024 Muscle Therapy. All Rights Reserved.",
     privacy = "Privacy Policy",
     terms = "Terms & Conditions",
-    divider = "|",
-    address = "125 Wellness Way, Suite 101\nLos Angeles, CA 90001",
-    phone = "(323) 456-7890",
-    email = "info@muscletherapy.com",
-    hours = "Mon–Sat: 8:00 AM – 7:00 PM"
+    divider = "|"
   } = footer || {};
+
+  const brandDescriptionText = companyInfo.description || footer?.brandDescription || "Elite performance recovery bodywork, mobility optimization, and injury prevention for athletes and active adults since 2020. #bodywork #performancerecovery";
+  const addressText = contactInfo.address || footer?.address || "125 Wellness Way, Suite 101\nLos Angeles, CA 90001";
+  const phoneText = contactInfo.phone || footer?.phone || "(323) 456-7890";
+  const emailText = contactInfo.email || footer?.email || "info@muscletherapy.com";
+  const hoursText = contactInfo.hours || footer?.hours || "Mon–Sat: 8:00 AM – 7:00 PM";
+  const copyrightText = bottomInfo.copyright || footer?.copyright || "© 2024 Muscle Therapy. All Rights Reserved.";
 
   const companyLinks = navbar?.companyLinks || navbar?.links || [];
   const quickLinksData = companyLinks.map((link: any) => ({
@@ -149,7 +154,7 @@ export default function Footer() {
             <div className="flex flex-col items-start text-left">
               <FooterLogo logoUrl={navbar?.logo} siteTitle={navbar?.siteTitle} logoText1={navbar?.logoText1} logoText2={navbar?.logoText2} />
               <div className="text-white/45 text-[13.5px] leading-[1.8] mb-4 max-w-[280px] [&_p]:m-0">
-                <RichTextRenderer content={brandDescription} className="!text-white/45 text-[13.5px]" />
+                <RichTextRenderer content={brandDescriptionText} className="!text-white/45 text-[13.5px]" />
               </div>
               <SocialIcons socialItems={footer?.social} />
             </div>
@@ -197,19 +202,19 @@ export default function Footer() {
                 {[
                   {
                     icon: <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />,
-                    text: address,
+                    text: addressText,
                   },
                   {
                     icon: <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.92a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />,
-                    text: phone,
+                    text: phoneText,
                   },
                   {
                     icon: <><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><path d="M22 6l-10 7L2 6" /></>,
-                    text: email,
+                    text: emailText,
                   },
                   {
                     icon: <><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></>,
-                    text: hours,
+                    text: hoursText,
                   },
                 ].map((item, i) => (
                   <li key={i} className="flex items-start gap-3">
@@ -232,7 +237,7 @@ export default function Footer() {
                 ))}
               </ul>
               <div className="w-full">
-                <MapPlaceholder addressText={address} />
+                <MapPlaceholder addressText={addressText} />
               </div>
             </div>
 
@@ -241,7 +246,7 @@ export default function Footer() {
           {/* ── Bottom bar ───────────────────────────── */}
           <div className="flex flex-col sm:flex-row items-center justify-between py-6 gap-3 text-center sm:text-left">
             <div className="text-white/30 text-[12px] [&_p]:m-0">
-              <RichTextRenderer content={copyright} className="!text-white/30 text-[12px]" />
+              <RichTextRenderer content={copyrightText} className="!text-white/30 text-[12px]" />
             </div>
             <div className="flex items-center gap-4 sm:gap-6">
               <Link href="/contact" className="text-white/30 text-[12px] hover:text-white/70 transition-colors">{privacy}</Link>

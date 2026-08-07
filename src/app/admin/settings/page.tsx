@@ -234,7 +234,8 @@ export default function SettingsEditor() {
       const pageList = (pagesJson || [])
         .filter((p: any) => p.status === 'published')
         .map((p: any) => ({ ...p, type: 'page' }));
-      const serviceList = (contentJson.services?.services || contentJson.services || [])
+      const rawServices = contentJson.services?.services || (Array.isArray(contentJson.services) ? contentJson.services : []);
+      const serviceList = rawServices
         .filter((s: any) => s.status === 'published' || s.status === undefined)
         .map((s: any) => ({ ...s, _id: s._id || s.slug, type: 'service', title: s.title, slug: `services/${s.slug}` }));
       setPages([...pageList, ...serviceList]);
