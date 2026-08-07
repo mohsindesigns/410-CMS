@@ -49,9 +49,18 @@ export const useContent = () => {
         return data?.[key] || fallback;
     };
 
+    const contactPage = getSafe(completeData, 'contactPage', { info: {} });
+    const info = contactPage?.info || {};
+
     const footer = getSafe(completeData, 'footer');
     const footerServices = getSafe(footer, 'services', { title: "Our Services", materials: { title: "Premium Materials", items: [] } });
     const footerContact = getSafe(footer, 'contact', { title: "Contact Us", email: "", phone: "", address: "", emergency: "", areas: "" });
+    
+    footerContact.email = footerContact.email || info.email || footer?.email || "";
+    footerContact.phone = footerContact.phone || info.phone || footer?.phone || "";
+    footerContact.address = footerContact.address || info.address || footer?.address || "";
+    footerContact.hours = footerContact.hours || info.hours || footer?.hours || "";
+
     const footerCompany = getSafe(footer, 'company', { name: "Eagle Revolution", tagline: "Veteran Owned & Operated", description: "", logo: "" });
     const footerBottom = getSafe(footer, 'bottom', { copyright: "© 2026 Eagle Revolution", rights: "All Rights Reserved", tagline: "", links: [] });
     const footerMarquee = getSafe(footer, 'marquee', { texts: [], speed: 30, repeats: 8 });
@@ -73,7 +82,63 @@ export const useContent = () => {
             }
             return nav;
         })(),
-        hero: getSafe(completeData, 'hero', { headlines: [], description: "", buttons: [], stats: [], images: [] }),
+        hero: (() => {
+            const h = getSafe(completeData, 'hero', { headlines: [], description: "", buttons: [], stats: [], images: [] });
+            
+            const label = h.badge || h.label || "Performance Recovery Specialist • Est. 2020";
+            
+            const headlines = h.headlines || [];
+            const title1 = headlines[0]?.text || h.title1 || "Recover Faster.";
+            const title2 = headlines[1]?.text || h.title2 || "Perform Higher.";
+            
+            const buttons = h.buttons || [];
+            const ctaBook = buttons[0]?.text || h.ctaBook || "BOOK RECOVERY SESSION";
+            const ctaServices = buttons[1]?.text || h.ctaServices || "EXPLORE SERVICES";
+            
+            const stats = h.stats || [];
+            const socialProofText = stats.length > 0
+                ? `${stats[0].value} ${stats[0].label}`
+                : (h.socialProofText || "Trusted by 500+ athletes & active adults");
+                
+            const image = h.images?.[0] || h.image || "/images/hero-bg.webp";
+            const imageAlt = h.bgImageAlt || h.imageAlt || "Expert muscle therapy session";
+            
+            const mappedHeadlines = headlines.length > 0 ? headlines : [
+                { text: title1, highlight: false },
+                { text: title2, highlight: true }
+            ];
+            
+            const mappedButtons = buttons.length > 0 ? buttons : [
+                { text: ctaBook, href: h.bookingUrl || "/#contact", primary: true, icon: "ArrowRight" },
+                { text: ctaServices, href: "/#services", primary: false, icon: "ArrowRight" }
+            ];
+            
+            const mappedStats = stats.length > 0 ? stats : [
+                { value: "500+", label: "Athletes Treated", icon: "Star" }
+            ];
+            
+            const mappedImages = h.images && h.images.length > 0 ? h.images : [image];
+
+            return {
+                ...h,
+                label,
+                title1,
+                title2,
+                ctaBook,
+                ctaServices,
+                socialProofText,
+                image,
+                imageAlt,
+                
+                // Back-compat for admin editor
+                badge: label,
+                headlines: mappedHeadlines,
+                buttons: mappedButtons,
+                stats: mappedStats,
+                images: mappedImages,
+                bgImageAlt: imageAlt
+            };
+        })(),
         about: getSafe(completeData, 'about'),
         services: (() => {
             const s = getSafe(completeData, 'services', { services: [] });
@@ -202,6 +267,8 @@ export const useContent = () => {
         }),
         serviceDetailPage: getSafe(completeData, 'serviceDetailPage'),
         settings: completeData?.settings || { siteTitle: "Eagle Revolution", siteTemplate: "%s | Eagle Revolution", favicon: "/eagle-logo.png" },
+        globalSite: getSafe(completeData, 'globalSite', {}),
+        globalMetadata: getSafe(completeData, 'globalMetadata', {}),
         faqPage: getSafe(completeData, 'faqPage'),
         blogSection: getSafe(completeData, 'blogSection', {
             title: "Latest from the Blog",
