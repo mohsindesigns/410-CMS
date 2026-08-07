@@ -10,7 +10,7 @@ data.services.hero = {
         suffix: "Company"
     },
     description: [
-        "Eagle Revolution provides expert exterior remodeling services for homes and businesses. From windows and doors to roofing and decks, our team delivers quality craftsmanship with military precision.",
+        "410 Muscle Therapy provides expert exterior remodeling services for homes and businesses. From windows and doors to roofing and decks, our team delivers quality craftsmanship with military precision.",
         "<span class=\"font-semibold text-primary\">Veteran Owned • Licensed • Bonded & Insured</span>"
     ]
 };

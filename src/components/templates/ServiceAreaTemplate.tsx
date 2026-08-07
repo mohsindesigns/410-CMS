@@ -210,12 +210,12 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
   const pageUrlDisplay = (() => {
     const slug = pageData?.slug?.toString().trim();
-    if (!slug) return "https://eaglerevolution.com";
+    if (!slug) return "https://410-muscletherapy.com";
 
     const normalizedSlug = slug.replace(/^\/+|\/+$/g, "");
     if (/^https?:\/\//i.test(normalizedSlug)) return normalizedSlug;
 
-    return `https://eaglerevolution.com/${normalizedSlug}`;
+    return `https://410-muscletherapy.com/${normalizedSlug}`;
   })();
 
   return (

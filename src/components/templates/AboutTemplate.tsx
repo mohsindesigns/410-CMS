@@ -213,13 +213,13 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
           {hero.bgImage && (hero.bgImage.startsWith('http') || hero.bgImage.startsWith('/uploads') || hero.bgImage.startsWith('/cdn-images')) ? (
             <img
               src={hero.bgImage}
-              alt={hero.bgImageAlt || "Eagle Revolution Interior"}
+              alt={hero.bgImageAlt || "410 Muscle Therapy Interior"}
               className="object-cover w-full h-full opacity-20 sm:opacity-30 scale-110 grayscale-[0.5]"
             />
           ) : (
             <Image
               src={hero.bgImage || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070"}
-              alt={hero.bgImageAlt || "Eagle Revolution Interior"}
+              alt={hero.bgImageAlt || "410 Muscle Therapy Interior"}
               fill
               quality={100}
               className="object-cover opacity-20 sm:opacity-30 scale-110 grayscale-[0.5]"

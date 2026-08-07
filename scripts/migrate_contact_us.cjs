@@ -3,7 +3,7 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env.local') });
 
 const uri = process.env.MONGODB_URI;
-const dbName = 'eagle_revolution';
+const dbName = '410_muscle_therapy';
 
 function cleanEmailsAndLinks(obj) {
   if (!obj) return obj;
@@ -17,13 +17,13 @@ function cleanEmailsAndLinks(obj) {
     if (val.toLowerCase().includes('banderson@')) {
       if (val.includes('<a')) {
         // Sanitize within HTML tag (href and inner text)
-        val = val.replace(/href="mailto:[^"]*"/gi, 'href="mailto:banderson@eaglerevolution.com"');
-        val = val.replace(/mailto:[a-zA-Z0-9.\s@_#-]+/gi, 'mailto:banderson@eaglerevolution.com');
-        val = val.replace(/>[a-zA-Z0-9.\s@_#-]+@eaglerevolution\.com</gi, '>banderson@eaglerevolution.com<');
-        val = val.replace(/>banderson@[^<]*</gi, '>banderson@eaglerevolution.com<');
+        val = val.replace(/href="mailto:[^"]*"/gi, 'href="mailto:antoine.lyles@yahoo.com"');
+        val = val.replace(/mailto:[a-zA-Z0-9.\s@_#-]+/gi, 'mailto:antoine.lyles@yahoo.com');
+        val = val.replace(/>[a-zA-Z0-9.\s@_#-]+@410MuscleTherapy\.com</gi, '>antoine.lyles@yahoo.com<');
+        val = val.replace(/>banderson@[^<]*</gi, '>antoine.lyles@yahoo.com<');
       } else {
         // Plain string fallback
-        val = 'banderson@eaglerevolution.com';
+        val = 'antoine.lyles@yahoo.com';
       }
     }
     return val;

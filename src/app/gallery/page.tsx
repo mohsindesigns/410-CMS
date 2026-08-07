@@ -49,7 +49,7 @@ export async function generateMetadata(): Promise<Metadata> {
       title: seo.ogTitle || seo.metaTitle || metaTitle,
       description: seo.ogDescription || metaDescription,
       url: pageUrl,
-      siteName: "Eagle Revolution",
+      siteName: "410 Muscle Therapy",
       type: "website",
       images: seo.featuredImage ? [{ url: seo.featuredImage }] : [],
     },

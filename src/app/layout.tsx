@@ -42,17 +42,17 @@ export async function generateMetadata(): Promise<Metadata> {
       apple: settings.favicon || `${BASE_URL}/eagle-logo.png`,
     },
     facebook: {
-      appId: "Eagle-Revolution-61564977483096",
+      appId: "410-Muscle-Therapy-61564977483096",
     },
     title: {
       default: settings.siteTitle,
       template: settings.siteTemplate,
     },
     description: settings.siteDescription,
-    keywords: settings.siteKeywords || ["Eagle Revolution"],
-    authors: [{ name: "Eagle Revolution", url: BASE_URL }],
-    creator: "Eagle Revolution",
-    publisher: "Eagle Revolution",
+    keywords: settings.siteKeywords || ["410 Muscle Therapy"],
+    authors: [{ name: "410 Muscle Therapy", url: BASE_URL }],
+    creator: "410 Muscle Therapy",
+    publisher: "410 Muscle Therapy",
 
     // ── Robots & Canonical ──
     robots: {
@@ -71,7 +71,7 @@ export async function generateMetadata(): Promise<Metadata> {
       type: "website",
       locale: "en_US",
       url: BASE_URL,
-      siteName: "Eagle Revolution",
+      siteName: "410 Muscle Therapy",
       title: settings.siteTitle,
       description: settings.siteDescription,
       images: [
@@ -79,7 +79,7 @@ export async function generateMetadata(): Promise<Metadata> {
           url: settings.favicon || `${BASE_URL}/eagle-logo.png`,
           width: 1200,
           height: 630,
-          alt: "Eagle Revolution – Veteran Owned Roofing & Home Improvement",
+          alt: "410 Muscle Therapy – Veteran Owned Roofing & Home Improvement",
           type: "image/png",
         },
       ],
@@ -91,8 +91,8 @@ export async function generateMetadata(): Promise<Metadata> {
       title: settings.siteTitle,
       description: settings.siteDescription,
       images: [settings.favicon || `${BASE_URL}/eagle-logo.png`],
-      creator: "@EagleRevolution",
-      site: "@EagleRevolution",
+      creator: "@410MuscleTherapy",
+      site: "@410MuscleTherapy",
     },
 
     other: {

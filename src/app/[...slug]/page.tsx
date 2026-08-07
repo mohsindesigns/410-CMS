@@ -57,7 +57,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: seo.ogTitle || seo.metaTitle || page.title,
       description: seo.ogDescription || seo.metaDescription,
       url: pageUrl,
-      siteName: "Eagle Revolution",
+      siteName: "410 Muscle Therapy",
       type: "website",
       images: [
         {
@@ -73,8 +73,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || page.title,
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
       images: [getAbsoluteUrl(seo.featuredImage || seo.twitterImage || seo.ogImage) || `${BASE_URL}/eagle-logo.png`],
-      site: "@EagleRevolution",
-      creator: "@EagleRevolution",
+      site: "@410MuscleTherapy",
+      creator: "@410MuscleTherapy",
     },
   };
 }

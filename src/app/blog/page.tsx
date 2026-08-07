@@ -50,110 +50,108 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
+import Image from 'next/image';
+
 export default async function BlogIndexPage() {
   await connectToDatabase();
   
-  const [posts, categories] = await Promise.all([
+  const [posts, content] = await Promise.all([
     Post.find({ status: 'published' })
       .populate('categories author')
       .sort({ publishedAt: -1 }),
-    Category.find({}).lean()
+    SiteContent.findOne({ key: 'complete_data' }).lean() as any
   ]);
 
+  const blogPage = content?.data?.blogPage || {};
+  const globalMetadata = content?.data?.globalMetadata || {};
+
+  const label = blogPage.header?.badge || "OUR BLOG";
+  const titleLine1 = blogPage.header?.titlePrefix || "Our";
+  const titleLine2 = blogPage.header?.titleHighlight || "Insights";
+  const description = blogPage.header?.description || "Stay updated with the latest news, guides and updates from 410 Muscle Therapy.";
+  const ctaReadMore = blogPage.ctaReadMore || "Read Article";
+
   return (
-    <div className="min-h-screen bg-white">
-      {/* Simple Clean Hero */}
-      <section className="relative h-[400px] flex items-center justify-center bg-slate-900 overflow-hidden">
-        <div className="absolute inset-0">
-          <img 
-            src="https://images.unsplash.com/photo-1451187580459-43490279c0fa?q=80&w=2072&auto=format&fit=crop" 
-            alt="Blog Header"
-            className="w-full h-full object-cover opacity-40"
-          />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-900 via-slate-900/40 to-transparent" />
-        </div>
-        
-        <div className="container mx-auto px-4 relative z-10 text-center">
-          <div className="flex items-center justify-center gap-2 text-white/60 text-xs font-bold uppercase tracking-[0.3em] mb-4">
-            <Link href="/" className="text-white/60 hover:text-white transition-colors">Home</Link>
-            <span className="opacity-30">/</span>
-            <span className="text-white">Blog</span>
-          </div>
-          <h1 className="text-4xl md:text-6xl font-bold text-white tracking-tight">Our Insights</h1>
-          <p className="text-slate-400 mt-4 text-lg max-w-2xl mx-auto">Latest news, guides and updates from Eagle Revolution.</p>
-        </div>
-      </section>
+    <>
+      <main className="bg-dark min-h-screen pt-[140px] pb-24 relative overflow-hidden">
+        {/* Subtle background texture */}
+        <div className="absolute inset-0 opacity-[0.03] bg-radial-dots-gold pointer-events-none" />
 
-      <div className="container mx-auto px-4 py-20">
-        {/* Simple Search/Filter */}
-        <div className="flex flex-col md:flex-row items-center justify-between gap-6 mb-16">
-          <div className="flex flex-wrap gap-2">
-            <button className="px-6 py-2 rounded-full bg-blue-600 text-white text-xs font-bold uppercase tracking-wider">All</button>
-            {categories.slice(0, 5).map((cat: any) => (
-              <button key={cat._id} className="px-6 py-2 rounded-full bg-slate-100 text-slate-600 text-xs font-bold uppercase tracking-wider hover:bg-slate-200 transition-all">{cat.name}</button>
-            ))}
+        <div className="site-container relative z-10">
+          <div className="mb-12 md:mb-20 text-center flex flex-col items-center">
+            <p className="section-label mb-4">{label}</p>
+            <h1 className="display-heading text-[32px] min-[400px]:text-[44px] md:text-[64px] text-white leading-tight">
+              {titleLine1} <span className="text-gold italic font-light">{titleLine2}</span>
+            </h1>
+            <p className="text-white/60 text-[14px] md:text-[15px] max-w-2xl mx-auto mt-6 leading-relaxed">
+              {description}
+            </p>
           </div>
-          <div className="relative w-full md:w-80">
-            <Search className="absolute left-4 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-400" />
-            <input 
-              type="text" 
-              placeholder="Search posts..." 
-              className="w-full bg-slate-50 border border-slate-200 rounded-full py-3 pl-10 pr-4 text-sm outline-none focus:border-blue-600 transition-all"
-            />
-          </div>
-        </div>
 
-        {/* Square Cards Grid (3 columns) */}
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {posts.map((post) => (
-            <Link key={post._id} href={`/blog/${post.slug}`} className="group block bg-white border border-slate-100 rounded-2xl overflow-hidden hover:shadow-xl hover:shadow-blue-900/5 transition-all">
-              <div className="aspect-square relative overflow-hidden">
-                {post.featuredImage ? (
-                  <img 
-                    src={post.featuredImage} 
-                    alt={post.title}
-                    className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
-                  />
-                ) : (
-                  <div className="w-full h-full bg-slate-100 flex items-center justify-center">
-                    <BookOpen className="w-12 h-12 text-slate-300" />
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {posts.map((post) => {
+              const tag =
+                post.category ||
+                (post.categories && post.categories[0]?.name) ||
+                "";
+
+              const rawExcerpt = post.excerpt || post.content || "";
+              const cleanExcerpt = rawExcerpt.replace(/<[^>]*>/g, '').substring(0, 140) + "...";
+
+              return (
+                <article key={post._id} className="bg-black/40 border border-border-dark/50 rounded-sm overflow-hidden group shadow-2xl flex flex-col">
+                  <div className="relative w-full h-[240px] overflow-hidden">
+                    {post.featuredImage ? (
+                      <Image
+                        src={post.featuredImage}
+                        alt={post.title}
+                        fill
+                        sizes="(max-width: 768px) 100vw, 33vw"
+                        className="object-cover transition-transform duration-700 group-hover:scale-105 group-hover:opacity-80"
+                      />
+                    ) : (
+                      <div className="w-full h-full bg-slate-950 flex items-center justify-center">
+                        <BookOpen className="w-12 h-12 text-slate-800" />
+                      </div>
+                    )}
+                    <div className="absolute inset-0 pointer-events-none ring-1 ring-inset ring-white/10" />
+                    {tag && (
+                      <span className="absolute top-4 left-4 bg-gold text-dark text-[10px] font-bold tracking-wider uppercase px-3 py-1.5 shadow-lg">
+                        {tag}
+                      </span>
+                    )}
                   </div>
-                )}
-                {post.categories?.[0] && (
-                  <div className="absolute top-4 left-4">
-                    <span className="bg-white/90 backdrop-blur-md text-blue-600 px-3 py-1 text-[10px] font-bold uppercase tracking-wider rounded-md shadow-sm">
-                      {post.categories[0].name}
-                    </span>
+                  <div className="p-6 md:p-8 flex flex-col flex-grow text-left">
+                    <h3 className="text-white font-bold text-[18px] md:text-[20px] leading-snug mb-3 group-hover:text-gold transition-colors duration-200">
+                      <Link href={`/blog/${post.slug}`} className="text-white hover:text-gold no-underline">
+                        {post.title}
+                      </Link>
+                    </h3>
+                    <p className="text-white/60 text-[13.5px] leading-relaxed mb-6 flex-grow">
+                      {cleanExcerpt}
+                    </p>
+                    <Link
+                      href={`/blog/${post.slug}`}
+                      className="flex items-center gap-2 text-gold text-[12px] font-bold tracking-wide uppercase hover:gap-3 transition-all duration-200 mt-auto"
+                    >
+                      {ctaReadMore} <ArrowRight size={14} />
+                    </Link>
                   </div>
-                )}
-              </div>
-              <div className="p-8">
-                <div className="flex items-center gap-2 text-slate-400 text-[10px] font-bold uppercase tracking-wider mb-3">
-                  <span>{new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' })}</span>
-                </div>
-                <h2 className="text-xl font-bold text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-2 mb-4 leading-tight">
-                  {post.title}
-                </h2>
-                <p className="text-slate-500 text-sm line-clamp-2 mb-6 leading-relaxed">
-                  {post.excerpt || post.content.replace(/<[^>]*>/g, '').substring(0, 100)}...
-                </p>
-                <span className="inline-flex items-center gap-2 text-blue-600 text-xs font-bold uppercase tracking-widest">
-                  Read More <ArrowRight className="w-3 h-3 group-hover:translate-x-1 transition-transform" />
-                </span>
-              </div>
-            </Link>
-          ))}
-        </div>
-
-        {posts.length === 0 && (
-          <div className="text-center py-20 bg-slate-50 rounded-3xl border border-slate-100">
-             <BookOpen className="w-12 h-12 text-slate-300 mx-auto mb-4" />
-             <h3 className="text-2xl font-bold text-slate-900">No posts yet</h3>
-             <p className="text-slate-500 mt-2">Check back later for new updates.</p>
+                </article>
+              );
+            })}
           </div>
-        )}
-      </div>
-    </div>
+
+          {posts.length === 0 && (
+            <div className="text-center py-20 bg-black/20 rounded-lg border border-border-dark/50">
+               <BookOpen className="w-12 h-12 text-slate-700 mx-auto mb-4" />
+               <h3 className="text-2xl font-bold text-white">No posts yet</h3>
+               <p className="text-white/40 mt-2">Check back later for new updates.</p>
+            </div>
+          )}
+        </div>
+      </main>
+    </>
   );
 }
 

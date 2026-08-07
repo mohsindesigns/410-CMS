@@ -61,8 +61,8 @@ export const useContent = () => {
     footerContact.address = footerContact.address || info.address || footer?.address || "";
     footerContact.hours = footerContact.hours || info.hours || footer?.hours || "";
 
-    const footerCompany = getSafe(footer, 'company', { name: "Eagle Revolution", tagline: "Veteran Owned & Operated", description: "", logo: "" });
-    const footerBottom = getSafe(footer, 'bottom', { copyright: "© 2026 Eagle Revolution", rights: "All Rights Reserved", tagline: "", links: [] });
+    const footerCompany = getSafe(footer, 'company', { name: "410 Muscle Therapy", tagline: "Veteran Owned & Operated", description: "", logo: "" });
+    const footerBottom = getSafe(footer, 'bottom', { copyright: "© 2026 410 Muscle Therapy", rights: "All Rights Reserved", tagline: "", links: [] });
     const footerMarquee = getSafe(footer, 'marquee', { texts: [], speed: 30, repeats: 8 });
     const footerCertifications = getSafe(footer, 'certifications', []);
 
@@ -446,7 +446,7 @@ export const useContent = () => {
             ...(completeData?.recognition ? { recognition: completeData.recognition } : {}),
         },
         images: getSafe(completeData, 'images', {}),
-        loader: getSafe(completeData, 'loader', { company: { name: "Eagle Revolution", tagline: "Veteran Owned" }, phases: { simpleDark: 200, roofDraw: 300, logoText: 400, ready: 100 } }),
+        loader: getSafe(completeData, 'loader', { company: { name: "410 Muscle Therapy", tagline: "Veteran Owned" }, phases: { simpleDark: 200, roofDraw: 300, logoText: 400, ready: 100 } }),
         quickQuote: getSafe(completeData, 'quickQuote', {
             title: "",
             description: "",
@@ -477,7 +477,7 @@ export const useContent = () => {
             items: []
         }),
         serviceDetailPage: getSafe(completeData, 'serviceDetailPage'),
-        settings: completeData?.settings || { siteTitle: "Eagle Revolution", siteTemplate: "%s | Eagle Revolution", favicon: "/eagle-logo.png" },
+        settings: completeData?.settings || { siteTitle: "410 Muscle Therapy", siteTemplate: "%s | 410 Muscle Therapy", favicon: "/eagle-logo.png" },
         globalSite: getSafe(completeData, 'globalSite', {}),
         globalMetadata: getSafe(completeData, 'globalMetadata', {}),
         faqPage: getSafe(completeData, 'faqPage'),

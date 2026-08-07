@@ -155,6 +155,16 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
                          onChange={(val) => updateHeader("description", val)} 
                        />
                     </div>
+                    <div className="space-y-1.5">
+                       <label className={UI.label}>Booking Button Text</label>
+                       <input 
+                         type="text" 
+                         value={data.galleryPage?.header?.ctaBook || ""} 
+                         onChange={(e) => updateHeader("ctaBook", e.target.value)} 
+                         className={UI.input} 
+                         placeholder="e.g. BOOK RECOVERY SESSION"
+                       />
+                    </div>
                  </div>
               </div>
             )}

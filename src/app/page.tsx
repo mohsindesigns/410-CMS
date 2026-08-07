@@ -26,13 +26,13 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     openGraph: {
       url: pageUrl,
-      siteName: "Eagle Revolution",
+      siteName: "410 Muscle Therapy",
       type: "website",
     },
     twitter: {
       card: "summary_large_image",
-      site: "@EagleRevolution",
-      creator: "@EagleRevolution",
+      site: "@410MuscleTherapy",
+      creator: "@410MuscleTherapy",
     }
   };
 
@@ -211,7 +211,7 @@ export default async function Index() {
   const homePage = homePageDoc ? JSON.parse(JSON.stringify(homePageDoc)) : null;
 
   const schema = generateSchema({
-    title: settings?.siteTitle || "Eagle Revolution",
+    title: settings?.siteTitle || "410 Muscle Therapy",
     description: homeData?.hero?.subheadline || "Veteran-owned roofing & home improvement in St. Louis, MO.",
     slug: "/",
     type: "WebPage",

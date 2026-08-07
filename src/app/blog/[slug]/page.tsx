@@ -54,8 +54,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       title: post.seo?.ogTitle || post.title,
       description: post.seo?.ogDescription || post.excerpt,
       images: [post.seo?.ogImage || post.featuredImage || `${BASE_URL}/eagle-logo.png`],
-      site: "@EagleRevolution",
-      creator: "@EagleRevolution",
+      site: "@410MuscleTherapy",
+      creator: "@410MuscleTherapy",
     },
     robots: {
       index: post.seo?.metaRobotsIndex !== 'noindex',
@@ -180,7 +180,7 @@ export default async function BlogPostPage({ params }: Props) {
                 {post.title}
               </h1>
               <div className="flex items-center gap-4 text-white/50 text-[12px] tracking-[0.1em] uppercase font-bold">
-                <span>{post.author?.name || 'Eagle Revolution'}</span>
+                <span>{post.author?.name || '410 Muscle Therapy'}</span>
                 <span className="w-1 h-1 bg-gold rounded-full"></span>
                 <span>{new Date(post.publishedAt).toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric' })}</span>
               </div>

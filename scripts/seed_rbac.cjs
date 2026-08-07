@@ -4,7 +4,7 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env.local') });
 
 const MONGODB_URI = process.env.MONGODB_URI;
-const dbName = 'eagle_revolution';
+const dbName = '410_muscle_therapy';
 
 if (!MONGODB_URI) {
     console.error("MONGODB_URI not found");
@@ -111,7 +111,7 @@ async function seed() {
             { 
                 $set: {
                     username: adminUsername,
-                    email: 'admin@eaglerevolution.com',
+                    email: 'antoine.lyles@yahoo.com',
                     password: hashedPassword,
                     role: adminRole._id,
                     status: 'active'

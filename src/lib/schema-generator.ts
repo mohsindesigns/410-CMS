@@ -22,7 +22,7 @@ export function generateSchema(options: SchemaOptions) {
   const organizationSchema = {
     "@type": "Organization",
     "@id": `${BASE_URL}/#organization`,
-    "name": "Eagle Revolution",
+    "name": "410 Muscle Therapy",
     "url": BASE_URL,
     "logo": {
       "@type": "ImageObject",
@@ -41,10 +41,10 @@ export function generateSchema(options: SchemaOptions) {
   const localBusinessSchema = {
     "@type": "LocalBusiness",
     "@id": `${BASE_URL}/#localbusiness`,
-    "name": "Eagle Revolution",
+    "name": "410 Muscle Therapy",
     "image": `${BASE_URL}/eagle-logo.png`,
     "telePhone": "636-449-9714",
-    "email": "banderson@eaglerevolution.com",
+    "email": "antoine.lyles@yahoo.com",
     "url": BASE_URL,
     "address": {
       "@type": "PostalAddress",
@@ -77,7 +77,7 @@ export function generateSchema(options: SchemaOptions) {
     "@type": "WebSite",
     "@id": `${BASE_URL}/#website`,
     "url": BASE_URL,
-    "name": "Eagle Revolution",
+    "name": "410 Muscle Therapy",
     "publisher": { "@id": `${BASE_URL}/#organization` }
   };
 

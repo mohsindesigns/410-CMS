@@ -5,17 +5,20 @@ require('dotenv').config({ path: path.resolve(__dirname, '../.env.local') });
 const uri = process.env.MONGODB_URI;
 const dbName = '410_muscle_therapy';
 
-async function check() {
+async function run() {
     const client = new MongoClient(uri);
     try {
         await client.connect();
         const db = client.db(dbName);
-        const doc = await db.collection('site_contents').findOne({ key: 'complete_data' });
-        console.log("Seeded Document Title:", doc?.data?.globalMetadata?.title);
-    } catch (err) {
-        console.error(err);
+        const posts = await db.collection('posts').find({}).toArray();
+        console.log("POSTS IN DB:");
+        posts.forEach(p => {
+            console.log(`- Title: ${p.title}\n  Slug: ${p.slug}\n  Image: ${p.featuredImage}\n  Status: ${p.status}`);
+        });
+    } catch (e) {
+        console.error(e);
     } finally {
         await client.close();
     }
 }
-check();
+run();
