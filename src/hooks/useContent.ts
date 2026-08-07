@@ -58,13 +58,48 @@ export const useContent = () => {
     const footerCertifications = getSafe(footer, 'certifications', []);
 
     return {
-        navbar: getSafe(completeData, 'navbar', { menu: [], logo: "", cta: { text: "Get Quote", href: "/contact-us" } }),
+        navbar: (() => {
+            const nav = getSafe(completeData, 'navbar', { menu: [], logo: "", cta: { text: "Get Quote", href: "/contact-us" } });
+            if (nav) {
+                const linksList = (nav.companyLinks || nav.links || nav.menu || []).map((link: any) => {
+                    if (link && (link.label === "Services" || link.href === "/services") && link.useMegaMenu === undefined) {
+                        return { ...link, useMegaMenu: true };
+                    }
+                    return link;
+                });
+                nav.companyLinks = linksList;
+                nav.links = linksList;
+                nav.menu = linksList;
+            }
+            return nav;
+        })(),
         hero: getSafe(completeData, 'hero', { headlines: [], description: "", buttons: [], stats: [], images: [] }),
         about: getSafe(completeData, 'about'),
         services: (() => {
             const s = getSafe(completeData, 'services', { services: [] });
-            // Normalize: if it's already an array, wrap it in the expected object structure
-            return Array.isArray(s) ? { services: s } : s;
+            let list = s;
+            if (s && s.items && !s.services) {
+                list = { ...s, services: s.items };
+            } else if (s && s.services && !s.items) {
+                list = { ...s, items: s.services };
+            } else if (Array.isArray(s)) {
+                list = { services: s, items: s };
+            }
+            if (list && Array.isArray(list.services)) {
+                list.services = list.services.map((item: any) => {
+                    const title = item.title || item.name || "";
+                    const name = item.name || item.title || "";
+                    return { ...item, title, name };
+                });
+            }
+            if (list && Array.isArray(list.items)) {
+                list.items = list.items.map((item: any) => {
+                    const title = item.title || item.name || "";
+                    const name = item.name || item.title || "";
+                    return { ...item, title, name };
+                });
+            }
+            return list;
         })(),
         leadership: getSafe(completeData, 'leadership', {
             section: { badge: "", headline: "", description: "" },

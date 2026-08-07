@@ -17,6 +17,8 @@ export default {
                 heading: ['Space Grotesk', 'sans-serif'],
                 body: ['DM Sans', 'sans-serif'],
                 accent: ['DM Sans', 'sans-serif'],
+                sans: ['var(--font-sans)', 'Inter', 'sans-serif'],
+                display: ['var(--font-display)', 'Playfair Display', 'serif'],
             },
             colors: {
                 border: "hsl(var(--border))",
@@ -76,6 +78,33 @@ export default {
                     blue: "#002664", // Deeper navy blue option
                     scarlet: "#B22234", // Alternative red
                 },
+                gold: {
+                    DEFAULT: "var(--color-gold)",
+                    dark: "var(--color-gold-dark)",
+                    hover: "var(--color-gold-hover)",
+                    light: "var(--color-gold-light)",
+                    muted: "var(--color-gold-muted)",
+                },
+                dark: {
+                    DEFAULT: "var(--color-dark)",
+                    2: "var(--color-dark-2)",
+                    3: "var(--color-dark-3)",
+                    4: "var(--color-dark-4)",
+                },
+                "warm-white": "var(--color-warm-white)",
+                "warm-cream": "var(--color-warm-cream)",
+                "card-bg": "var(--color-card-bg)",
+                "warm-gray": "var(--color-warm-gray)",
+                "off-white": "var(--color-off-white)",
+                body: "var(--color-body)",
+                "border-light": "var(--color-border-light)",
+                "border-dark": "var(--color-border-dark)",
+                "border-dark-2": "var(--color-border-dark-2)",
+                "brand-bg-light": "var(--color-brand-bg-light)",
+                "brand-border-light": "var(--color-brand-border-light)",
+                "brand-border-muted": "var(--color-brand-border-muted)",
+                "brand-hover-cream": "var(--color-brand-hover-cream)",
+
             },
             borderRadius: {
                 lg: "var(--radius)",

@@ -1,12 +1,12 @@
 "use client"
 
 import { useState, useEffect, useRef } from "react";
+import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
+import { ChevronDown, ArrowRight, Menu, X } from "lucide-react";
 import { Icon } from "../config/icons";
 import { useContent } from "../hooks/useContent";
-// import sharedServicesData from "../data/servicesData.json";
-import logo from "../assets/eaglelogo.png";
-
+import logo from "../assets/logo.png";
 import Image from "next/image";
 import Link from "next/link";
 
@@ -18,6 +18,7 @@ const stripHtml = (html: string) => {
 const Navbar = () => {
   const content = useContent();
   const { navbar, settings, services: servicesData } = content;
+  const pathname = usePathname();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
@@ -25,7 +26,6 @@ const Navbar = () => {
   const [hoveredService, setHoveredService] = useState<string | null>(null);
   const [expandedMobileLink, setExpandedMobileLink] = useState<string | null>(null);
 
-  const servicesButtonRef = useRef<HTMLButtonElement>(null);
   const megaMenuRef = useRef<HTMLDivElement>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
 
@@ -33,21 +33,10 @@ const Navbar = () => {
   const services = (servicesData.services || []).filter((s: any) => s.status === 'published' || s.status === undefined);
 
   useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 10);
+    const handleScroll = () => setScrolled(window.scrollY > 30);
     window.addEventListener("scroll", handleScroll);
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
-
-  const handleServicesMouseEnter = () => {
-    if (timeoutRef.current) clearTimeout(timeoutRef.current);
-    setActiveMegaMenu("services");
-  };
-
-  const handleServicesMouseLeave = () => {
-    timeoutRef.current = setTimeout(() => {
-      if (!isHoveringMegaMenu) setActiveMegaMenu(null);
-    }, 150);
-  };
 
   const handleMegaMenuMouseEnter = () => {
     if (timeoutRef.current) clearTimeout(timeoutRef.current);
@@ -63,324 +52,345 @@ const Navbar = () => {
   };
 
   const handleLinkClick = () => {
-    // Reset all menu states
     setActiveMegaMenu(null);
     setIsMenuOpen(false);
     setHoveredService(null);
     setExpandedMobileLink(null);
 
-    // In production, we want to ensure any active mega menus are fully hidden
-    // before the page transition shutters cover the screen
     if (typeof window !== 'undefined') {
       window.scrollTo({ top: 0, behavior: 'instant' });
     }
   };
 
+  const isLinkActive = (href: string) => {
+    if (href === '/') return pathname === '/';
+    if (href.startsWith('/#')) return false;
+    return pathname.startsWith(href);
+  };
+
   return (
     <>
       <nav
-        className={`sticky top-0 left-0 w-full z-50 transition-all duration-300 ${scrolled
-          ? "bg-white/50 backdrop-blur-xl shadow-lg py-2 border-b border-border"
-          : "bg-background/80 backdrop-blur-xl shadow-sm py-4 border-b border-border/10"
-          }`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled || isMenuOpen ? 'bg-dark shadow-[0_4px_24px_rgba(0,0,0,0.6)] py-1' : 'bg-transparent py-3'}`}
       >
-        <div className="container mx-auto px-4 lg:px-8">
-          <div className="flex items-center justify-between">
-            <Link
-              href="/"
-              className="flex items-center group"
-              onClick={handleLinkClick}
-            >
-              <div className="h-12 sm:h-14 md:h-16 lg:h-18 w-24 sm:w-28 md:w-32 lg:w-36 flex items-center justify-center overflow-hidden relative">
-                {(navbar.logo && (navbar.logo.startsWith('http') || navbar.logo.startsWith('/uploads') || navbar.logo.startsWith('/cdn-images'))) ? (
-                  <img
-                    src={navbar.logo}
-                    alt={navbar.siteTitle || "Eagle Revolution Logo"}
-                    className="object-contain w-full h-full"
-                  />
-                ) : (
-                  <Image
-                    src={navbar.logo || logo}
-                    alt={navbar.siteTitle || "Eagle Revolution Logo"}
-                    className="object-contain"
-                    fill
-                    priority
-                    quality={100}
-                  />
-                )}
+        <div className="site-container flex items-center justify-between h-[76px]">
 
+          {/* ── Logo ───────────────────────────────────── */}
+          <Link href="/" className="flex items-center gap-2.5 md:gap-3" onClick={handleLinkClick}>
+            {navbar.logo && (navbar.logo.startsWith('http') || navbar.logo.startsWith('/uploads') || navbar.logo.startsWith('/cdn-images')) ? (
+              <div className="relative h-[85px] w-[85px] min-[400px]:w-[110px] min-[400px]:h-[110px] sm:w-[150px] sm:h-[150px] flex items-center justify-center overflow-hidden">
+                <img
+                  src={navbar.logo}
+                  alt={navbar.siteTitle || "410 Muscle Therapy Logo"}
+                  className="object-contain w-full h-full"
+                />
               </div>
-            </Link>
+            ) : (
+              <div className="flex items-center gap-3">
+                <svg width="36" height="42" viewBox="0 0 42 48" fill="none" className="md:w-[42px] md:h-[48px] flex-shrink-0">
+                  <path d="M21 1L40 9.5V25C40 36.5 31.5 44.5 21 47C10.5 44.5 2 36.5 2 25V9.5L21 1Z" fill="#C8960C" />
+                  <text x="21" y="33" textAnchor="middle" fill="#0A0A0A" fontFamily="Georgia,serif" fontSize="20" fontWeight="bold" fontStyle="italic">M</text>
+                </svg>
+                <span className="flex flex-col text-left">
+                  <span className="text-[15px] md:text-[18px] font-black tracking-[0.2em] text-white leading-none">
+                    {navbar.logoText1 || "MUSCLE"}
+                  </span>
+                  <span className="text-[10px] md:text-[11px] font-black tracking-[0.2em] text-gold mt-1 leading-none">
+                    {navbar.logoText2 || "THERAPY"}
+                  </span>
+                </span>
+              </div>
+            )}
+          </Link>
 
-            <div className="hidden lg:flex items-center space-x-1 ml-2">
-              {(companyLinks || []).map((link: any, linkIdx: number) => {
-                if (link.useMegaMenu) {
-                  return (
-                    <div key={linkIdx} className={link.useMegaMenu ? "static" : "relative"}>
-                      <Link
-                        href={link.href}
-                        onMouseEnter={() => {
-                          if (timeoutRef.current) clearTimeout(timeoutRef.current);
-                          setActiveMegaMenu(`mega-${linkIdx}`);
-                        }}
-                        onMouseLeave={() => {
-                          timeoutRef.current = setTimeout(() => {
-                            if (!isHoveringMegaMenu) setActiveMegaMenu(null);
-                          }, 150);
-                        }}
-                        className={`flex items-center space-x-2 px-5 py-2.5 transition-all duration-300 font-bold rounded-xl relative group ${scrolled ? "text-black hover:text-primary" : "text-black hover:text-primary"}`}
-                      >
-                        <Icon name={link.icon || "Wrench"} className="h-4 w-4" />
-                        <span>{link.label}</span>
-                        {services.length > 0 && (
-                          <motion.span animate={{ rotate: activeMegaMenu === `mega-${linkIdx}` ? 180 : 0 }}>
-                            <Icon name="ChevronDown" className="h-4 w-4 ml-1" />
-                          </motion.span>
-                        )}
-                        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary group-hover:w-4/5 transition-all duration-500" />
-                      </Link>
+          {/* ── Desktop Nav Links ──────────────────────── */}
+          <ul className="hidden md:flex items-center gap-7">
+            {(companyLinks || []).map((link: any, linkIdx: number) => {
+              const active = isLinkActive(link.href);
 
-                      <AnimatePresence>
-                        {activeMegaMenu === `mega-${linkIdx}` && (
-                          <motion.div
-                            ref={megaMenuRef}
-                            initial={{ opacity: 0, y: 15, x: "-50%" }}
-                            animate={{ opacity: 1, y: 0, x: "-50%" }}
-                            exit={{ opacity: 0, y: 10, x: "-50%" }}
-                            onMouseEnter={handleMegaMenuMouseEnter}
-                            onMouseLeave={handleMegaMenuMouseLeave}
-                            className="absolute left-1/2 top-full mt-2 w-[800px] bg-white rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.15)] border border-border p-8"
-                            style={{ zIndex: 1000 }}
-                          >
-                            <div className="grid grid-cols-3 gap-6">
-                              {services.map((service: any) => {
-                                const isThisHovered = hoveredService === service.title;
-                                return (
-                                  <Link
-                                    key={service.slug}
-                                    href={`/services/${service.slug}`}
-                                    onMouseEnter={() => setHoveredService(service.title)}
-                                    onMouseLeave={() => setHoveredService(null)}
-                                    onClick={handleLinkClick}
-                                    className="group block p-4 rounded-xl hover:bg-primary/5 transition-all duration-300 border border-transparent hover:border-primary/10"
-                                  >
-                                    <div className="flex items-center space-x-4 mb-3">
-                                      <div className={`h-12 w-12 rounded-xl flex items-center justify-center transition-all duration-300 ${isThisHovered ? "bg-primary shadow-lg shadow-primary/25" : "bg-primary/10"}`}>
-                                        <Icon name={service.icon} className={`h-6 w-6 transition-colors duration-300 ${isThisHovered ? "text-white" : "text-primary"}`} />
-                                      </div>
-                                      <h3 className={`font-bold transition-colors ${isThisHovered ? "text-primary" : "text-foreground"}`}>
-                                        {service.title}
-                                      </h3>
+              // Case 1: Mega Menu
+              if (link.useMegaMenu) {
+                return (
+                  <li key={linkIdx} className="static">
+                    <button
+                      onMouseEnter={() => {
+                        if (timeoutRef.current) clearTimeout(timeoutRef.current);
+                        setActiveMegaMenu(`mega-${linkIdx}`);
+                      }}
+                      onMouseLeave={() => {
+                        timeoutRef.current = setTimeout(() => {
+                          if (!isHoveringMegaMenu) setActiveMegaMenu(null);
+                        }, 150);
+                      }}
+                      className={`flex items-center gap-1 text-[13.5px] font-medium transition-colors duration-200 cursor-pointer
+                        ${activeMegaMenu === `mega-${linkIdx}` || active
+                          ? 'text-gold'
+                          : 'text-white/75 hover:text-white'
+                        }`}
+                    >
+                      {link.icon && <Icon name={link.icon} className="h-4 w-4" />}
+                      <span>{link.label}</span>
+                      {services.length > 0 && (
+                        <motion.span animate={{ rotate: activeMegaMenu === `mega-${linkIdx}` ? 180 : 0 }}>
+                          <ChevronDown size={14} className="opacity-70 ml-0.5" />
+                        </motion.span>
+                      )}
+                    </button>
+
+                    <AnimatePresence>
+                      {activeMegaMenu === `mega-${linkIdx}` && (
+                        <motion.div
+                          ref={megaMenuRef}
+                          initial={{ opacity: 0, y: 15, x: "-50%" }}
+                          animate={{ opacity: 1, y: 0, x: "-50%" }}
+                          exit={{ opacity: 0, y: 10, x: "-50%" }}
+                          onMouseEnter={handleMegaMenuMouseEnter}
+                          onMouseLeave={handleMegaMenuMouseLeave}
+                          className="absolute left-1/2 top-full mt-2 w-[800px] bg-dark rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] border border-border-dark p-8"
+                          style={{ zIndex: 1000 }}
+                        >
+                          <div className="grid grid-cols-3 gap-6">
+                            {services.map((service: any) => {
+                              const isThisHovered = hoveredService === service.title;
+                              return (
+                                <Link
+                                  key={service.slug}
+                                  href={`/services/${service.slug}`}
+                                  onMouseEnter={() => setHoveredService(service.title)}
+                                  onMouseLeave={() => setHoveredService(null)}
+                                  onClick={handleLinkClick}
+                                  className="group block p-4 rounded-xl hover:bg-white/5 transition-all duration-300 border border-transparent hover:border-white/10"
+                                >
+                                  <div className="flex items-center space-x-4 mb-3">
+                                    <div className={`h-12 w-12 rounded-xl flex items-center justify-center transition-all duration-300 ${isThisHovered ? "bg-gold shadow-lg shadow-gold/25" : "bg-white/10"}`}>
+                                      <Icon name={service.icon} className={`h-6 w-6 transition-colors duration-300 ${isThisHovered ? "text-dark" : "text-white"}`} />
                                     </div>
-                                    <p className="text-muted-foreground text-xs leading-relaxed line-clamp-2">
-                                      {stripHtml(service.description)}
-                                    </p>
-                                  </Link>
-                                );
-                              })}
-                            </div>
-                          </motion.div>
-                        )}
-                      </AnimatePresence>
-                    </div>
-                  );
-                }
+                                    <h3 className={`font-bold transition-colors ${isThisHovered ? "text-gold" : "text-white"}`}>
+                                      {service.title}
+                                    </h3>
+                                  </div>
+                                  <p className="text-white/60 text-xs leading-relaxed line-clamp-2">
+                                    {stripHtml(service.description)}
+                                  </p>
+                                </Link>
+                              );
+                            })}
+                          </div>
+                        </motion.div>
+                      )}
+                    </AnimatePresence>
+                  </li>
+                );
+              }
 
-                if (link.subLinks && link.subLinks.length > 0) {
-                  return (
-                    <div key={linkIdx} className="relative group">
-                      <Link
-                        href={link.href}
-                        onClick={handleLinkClick}
-                        className={`flex items-center space-x-2 px-4 py-2.5 transition-all duration-300 font-bold rounded-xl relative group ${scrolled ? "text-black hover:text-primary" : "text-black hover:text-primary"}`}
-                      >
-                        <Icon name={link.icon} className="h-4 w-4" />
-                        <span>{link.label}</span>
-                        <Icon name="ChevronDown" className="h-3 w-3 ml-1 transition-transform group-hover:rotate-180" />
-                        <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary group-hover:w-3/4 transition-all duration-500" />
-                      </Link>
+              // Case 2: Sub-links Dropdown (Sub-menu)
+              if (link.subLinks && link.subLinks.length > 0) {
+                return (
+                  <li key={linkIdx} className="relative group">
+                    <button
+                      className={`flex items-center gap-1 text-[13.5px] font-medium transition-colors duration-200 cursor-pointer
+                        ${active ? 'text-gold' : 'text-white/75 hover:text-white'}`}
+                    >
+                      {link.icon && <Icon name={link.icon} className="h-4 w-4" />}
+                      <span>{link.label}</span>
+                      <ChevronDown size={14} className="opacity-70 ml-0.5 transition-transform group-hover:rotate-180" />
+                    </button>
 
-                      <div className="absolute left-0 top-full w-48 bg-white rounded-xl shadow-lg border border-border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-left -translate-y-2 group-hover:translate-y-0" style={{ zIndex: 1000 }}>
-                        <div className="py-2">
-                          {link.subLinks.map((subLink: any, sIdx: number) => (
-                            <Link
-                              key={sIdx}
-                              href={subLink.href}
-                              className="flex items-center space-x-2 px-4 py-2 text-sm font-bold text-foreground hover:text-primary hover:bg-primary/5 transition-colors"
-                              onClick={handleLinkClick}
-                            >
-                              {subLink.icon && <Icon name={subLink.icon} className="h-4 w-4" />}
-                              <span>{subLink.label}</span>
-                            </Link>
-                          ))}
-                        </div>
+                    <div className="absolute left-0 top-full w-48 bg-dark rounded-xl shadow-2xl border border-border-dark opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 transform origin-top-left -translate-y-2 group-hover:translate-y-0" style={{ zIndex: 1000 }}>
+                      <div className="py-2">
+                        {link.subLinks.map((subLink: any, sIdx: number) => (
+                          <Link
+                            key={sIdx}
+                            href={subLink.href}
+                            className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white/70 hover:text-gold hover:bg-white/5 transition-colors"
+                            onClick={handleLinkClick}
+                          >
+                            {subLink.icon && <Icon name={subLink.icon} className="h-4 w-4" />}
+                            <span>{subLink.label}</span>
+                          </Link>
+                        ))}
                       </div>
                     </div>
-                  );
-                }
-
-                return (
-                  <Link
-                    key={linkIdx}
-                    href={link.href}
-                    onClick={handleLinkClick}
-                    className={`flex items-center space-x-2 px-4 py-2.5 transition-all duration-300 font-bold rounded-xl relative group ${scrolled ? "text-black hover:text-primary" : "text-black hover:text-primary"}`}
-                  >
-                    <Icon name={link.icon} className="h-4 w-4" />
-                    <span>{link.label}</span>
-                    <span className="absolute bottom-0 left-1/2 -translate-x-1/2 w-0 h-0.5 bg-primary group-hover:w-3/4 transition-all duration-500" />
-                  </Link>
+                  </li>
                 );
-              })}
-            </div>
+              }
 
-            <motion.div className="hidden lg:flex items-center" whileHover={{ scale: 1.05 }} whileTap={{ scale: 0.95 }}>
-              <Link
-                href={navbar.ctaLink || "/contact-us"}
-                className="flex items-center space-x-2 px-7 py-3.5 rounded-xl font-bold transition-all duration-300 bg-primary text-white shadow-lg shadow-primary/20 hover:text-white"
-              >
-                <Icon name="Calendar" className="h-4 w-4" />
-                <span>{navbar.ctaText || "Book Now"}</span>
-              </Link>
-            </motion.div>
+              // Case 3: Normal Link
+              const isExternal = link.href.startsWith('http');
+              return (
+                <li key={linkIdx}>
+                  {isExternal ? (
+                    <a
+                      href={link.href}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="text-white/75 hover:text-gold text-[13.5px] font-medium transition-colors duration-200"
+                    >
+                      {link.label}
+                    </a>
+                  ) : (
+                    <Link
+                      href={link.href}
+                      onClick={handleLinkClick}
+                      className={`flex items-center gap-1 text-[13.5px] font-medium transition-colors duration-200
+                        ${active
+                          ? 'text-gold border-b border-gold pb-0.5'
+                          : 'text-white/75 hover:text-white'
+                        }`}
+                    >
+                      {link.icon && <Icon name={link.icon} className="h-4 w-4" />}
+                      <span>{link.label}</span>
+                    </Link>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
 
-            <div className="lg:hidden flex items-center">
-              <motion.button
-                onClick={() => setIsMenuOpen(!isMenuOpen)}
-                className={`
-                  flex items-center justify-center 
-                  h-11 w-11 rounded-xl transition-all duration-300
-                  ${scrolled
-                    ? "bg-white text-primary shadow-md border border-border"
-                    : "bg-white/20 text-primary backdrop-blur-sm"
-                  }
-                `}
-                whileTap={{ scale: 0.9 }}
-              >
-                {isMenuOpen ? <Icon name="X" className="h-6 w-6" /> : <Icon name="Menu" className="h-6 w-6" />}
-              </motion.button>
-            </div>
+          {/* ── Desktop CTA / Mobile Trigger ───────────── */}
+          <div className="flex items-center gap-3">
+            <a
+              href={navbar.ctaLink || "https://app.squareup.com/gift/V4MA1Q75Q5VJ5/order"}
+              target="_blank"
+              rel="noopener noreferrer"
+              className="hidden md:inline-flex btn-gold"
+            >
+              <Icon name={navbar.ctaIcon || "Calendar"} className="h-4 w-4 mr-1.5" />
+              {navbar.ctaText || "Book Now"} <ArrowRight size={14} className="ml-1" />
+            </a>
+
+            {/* Hamburger Button */}
+            <button
+              onClick={() => setIsMenuOpen(!isMenuOpen)}
+              className="md:hidden w-10 h-10 border border-white/20 flex items-center justify-center text-white hover:border-gold hover:text-gold transition-colors"
+              aria-label="Toggle menu"
+            >
+              {isMenuOpen ? <X size={20} /> : <Menu size={20} />}
+            </button>
           </div>
+
         </div>
       </nav>
 
+      {/* ── Mobile Menu Drawer ─────────────────────── */}
       <AnimatePresence>
         {isMenuOpen && (
           <>
+            {/* Backdrop */}
             <motion.div
               initial={{ opacity: 0 }}
               animate={{ opacity: 1 }}
               exit={{ opacity: 0 }}
               onClick={() => setIsMenuOpen(false)}
-              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 lg:hidden"
+              className="fixed inset-0 bg-black/60 backdrop-blur-sm z-40 md:hidden"
             />
+
+            {/* Menu Drawer */}
             <motion.div
-              initial={{ x: "100%" }}
-              animate={{ x: 0 }}
-              exit={{ x: "100%" }}
-              transition={{ type: "spring", damping: 25, stiffness: 200 }}
-              className="fixed top-0 right-0 h-full w-full max-w-sm bg-white z-50 lg:hidden shadow-2xl flex flex-col"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+              exit={{ opacity: 0, y: -20 }}
+              transition={{ duration: 0.25, ease: 'easeOut' }}
+              className="fixed inset-x-0 top-[76px] z-40 bg-dark border-b border-border-dark flex flex-col px-6 py-8 md:hidden gap-6 shadow-[0_12px_32px_rgba(0,0,0,0.8)]"
             >
-              <div className="p-6 border-b border-border flex items-center justify-between">
-                <div className="relative h-10 w-24">
-                  {(navbar.logo && (navbar.logo.startsWith('http') || navbar.logo.startsWith('/uploads') || navbar.logo.startsWith('/cdn-images'))) ? (
-                    <img src={navbar.logo} alt="Logo" className="object-contain w-full h-full" />
-                  ) : (
-                    <Image src={navbar.logo || logo} alt="Logo" className="object-contain" fill quality={100} />
-                  )}
-                </div>
-                <button onClick={() => setIsMenuOpen(false)} className="p-2 text-foreground">
-                  <Icon name="X" />
-                </button>
-              </div>
+              <ul className="flex flex-col gap-4">
+                {(companyLinks || []).map((link: any, linkIdx: number) => {
+                  const active = isLinkActive(link.href);
+                  const isMegaMenu = link.useMegaMenu;
+                  const hasSubLinks = link.subLinks && link.subLinks.length > 0;
+                  const isExpanded = expandedMobileLink === link.label;
+                  const isExternal = link.href.startsWith('http');
 
-              <div className="flex-1 overflow-y-auto p-6 space-y-8">
-                <div className="grid gap-2">
-                  {companyLinks.map((link: any, linkIdx: number) => {
-                    const isMegaMenu = link.useMegaMenu;
-                    const hasSubLinks = link.subLinks && link.subLinks.length > 0;
-                    const isExpanded = expandedMobileLink === link.label;
-
-                    return (
-                      <div key={linkIdx} className="flex flex-col">
-                        <div className="flex items-center justify-between p-3">
+                  return (
+                    <li key={linkIdx} className="flex flex-col">
+                      <div className="flex items-center justify-between py-1">
+                        {isExternal ? (
+                          <a
+                            href={link.href}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            onClick={() => setIsMenuOpen(false)}
+                            className="block text-[15px] font-medium text-white/70 hover:text-gold transition-colors"
+                          >
+                            {link.label}
+                          </a>
+                        ) : (
                           <Link
                             href={link.href}
                             onClick={handleLinkClick}
-                            className="flex items-center space-x-3 font-bold text-foreground hover:text-primary flex-1"
+                            className={`block text-[15px] font-medium transition-colors
+                              ${active ? 'text-gold' : 'text-white/70 hover:text-white'}`}
                           >
-                            <Icon name={link.icon || "Wrench"} className="h-4 w-4" />
-                            <span>{link.label}</span>
+                            {link.label}
                           </Link>
-                          {(isMegaMenu || hasSubLinks) && (
-                            <button
-                              onClick={() => setExpandedMobileLink(isExpanded ? null : link.label)}
-                              className="p-2 text-muted-foreground hover:text-primary transition-colors"
-                            >
-                              <motion.div
-                                animate={{ rotate: isExpanded ? 180 : 0 }}
-                                transition={{ duration: 0.2 }}
-                              >
-                                <Icon name="ChevronDown" className="h-4 w-4" />
-                              </motion.div>
-                            </button>
-                          )}
-                        </div>
-
-                        <AnimatePresence>
-                          {(isMegaMenu || hasSubLinks) && isExpanded && (
+                        )}
+                        {(isMegaMenu || hasSubLinks) && (
+                          <button
+                            onClick={() => setExpandedMobileLink(isExpanded ? null : link.label)}
+                            className="p-1 text-white/50 hover:text-gold transition-colors"
+                          >
                             <motion.div
-                              initial={{ height: 0, opacity: 0 }}
-                              animate={{ height: "auto", opacity: 1 }}
-                              exit={{ height: 0, opacity: 0 }}
-                              transition={{ duration: 0.3, ease: "easeInOut" }}
-                              className="overflow-hidden"
+                              animate={{ rotate: isExpanded ? 180 : 0 }}
+                              transition={{ duration: 0.2 }}
                             >
-                              <div className="pl-6 flex flex-col space-y-1 mb-2 border-l-2 border-primary/20 ml-5">
-                                {isMegaMenu ? (
-                                  services.map((service: any) => (
-                                    <Link
-                                      key={service.slug}
-                                      href={`/services/${service.slug}`}
-                                      onClick={handleLinkClick}
-                                      className="flex items-center space-x-3 p-2.5 text-sm font-bold text-muted-foreground hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
-                                    >
-                                      {service.icon && <Icon name={service.icon} className="h-4 w-4" />}
-                                      <span>{service.title}</span>
-                                    </Link>
-                                  ))
-                                ) : (
-                                  link.subLinks.map((subLink: any, sIdx: number) => (
-                                    <Link
-                                      key={sIdx}
-                                      href={subLink.href}
-                                      onClick={handleLinkClick}
-                                      className="flex items-center space-x-3 p-2.5 text-sm font-bold text-muted-foreground hover:text-primary transition-colors rounded-lg hover:bg-primary/5"
-                                    >
-                                      {subLink.icon && <Icon name={subLink.icon} className="h-4 w-4" />}
-                                      <span>{subLink.label}</span>
-                                    </Link>
-                                  ))
-                                )}
-                              </div>
+                              <ChevronDown size={16} />
                             </motion.div>
-                          )}
-                        </AnimatePresence>
+                          </button>
+                        )}
                       </div>
-                    );
-                  })}
-                </div>
-              </div>
 
-              <div className="p-6 bg-muted/30">
-                <Link
-                  href={navbar.ctaLink || "/contact-us"}
-                  onClick={handleLinkClick}
-                  className="block w-full py-4 bg-primary text-white font-bold rounded-xl text-center shadow-lg shadow-primary/20"
-                >
-                  {navbar.ctaText || "Book Now"}
-                </Link>
-              </div>
+                      <AnimatePresence>
+                        {(isMegaMenu || hasSubLinks) && isExpanded && (
+                          <motion.div
+                            initial={{ height: 0, opacity: 0 }}
+                            animate={{ height: "auto", opacity: 1 }}
+                            exit={{ height: 0, opacity: 0 }}
+                            transition={{ duration: 0.2, ease: "easeInOut" }}
+                            className="overflow-hidden"
+                          >
+                            <div className="pl-4 flex flex-col gap-2 mt-1 mb-2 border-l border-white/10 ml-2">
+                              {isMegaMenu ? (
+                                services.map((service: any) => (
+                                  <Link
+                                    key={service.slug}
+                                    href={`/services/${service.slug}`}
+                                    onClick={handleLinkClick}
+                                    className="block py-1 text-sm font-medium text-white/60 hover:text-gold transition-colors"
+                                  >
+                                    {service.title}
+                                  </Link>
+                                ))
+                              ) : (
+                                link.subLinks.map((subLink: any, sIdx: number) => (
+                                  <Link
+                                    key={sIdx}
+                                    href={subLink.href}
+                                    onClick={handleLinkClick}
+                                    className="block py-1 text-sm font-medium text-white/60 hover:text-gold transition-colors"
+                                  >
+                                    {subLink.label}
+                                  </Link>
+                                ))
+                              )}
+                            </div>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+                    </li>
+                  );
+                })}
+              </ul>
+
+              <a
+                href={navbar.ctaLink || "https://app.squareup.com/gift/V4MA1Q75Q5VJ5/order"}
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={handleLinkClick}
+                className="btn-gold justify-center w-full py-3.5"
+              >
+                <Icon name={navbar.ctaIcon || "Calendar"} className="h-4 w-4 mr-1.5" />
+                {navbar.ctaText || "Book Now"} <ArrowRight size={14} className="ml-1" />
+              </a>
             </motion.div>
           </>
         )}

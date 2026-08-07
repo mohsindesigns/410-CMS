@@ -8,7 +8,6 @@ import Services from "@/components/Services";
 
 const Portfolio = dynamic(() => import("@/components/Portfolio"));
 const Leadership = dynamic(() => import("@/components/Leadership"));
-const BrandStore = dynamic(() => import("@/components/BrandStore"), { ssr: false });
 const Testimonials = dynamic(() => import("@/components/Testimonials"), { ssr: false });
 const HowWeWork = dynamic(() => import("@/components/HowWeWork"), { ssr: false });
 const QAForm = dynamic(() => import("@/components/QAForm"), { ssr: false });
@@ -36,7 +35,6 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
       <section id="portfolio">
         <Portfolio />
       </section>
-      <BrandStore />
       <Testimonials />
       <section id="about">
         <HowWeWork />
@@ -46,7 +44,7 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
       </section>
 
 
-       <BlogSection
+      <BlogSection
         title={pageData?.content?.blogSection?.title || blogSection?.title}
         subtitle={pageData?.content?.blogSection?.subtitle || blogSection?.subtitle}
         description={pageData?.content?.blogSection?.description || blogSection?.description}

@@ -13,13 +13,9 @@ const Images = {
 
 const ParallaxLayer = ({ children, speed = 0.1, className = "", sectionRef }: any) => {
   const ref = useRef<any>(null);
-  const [scrollTarget, setScrollTarget] = useState<any>(undefined);
-  useEffect(() => {
-    setScrollTarget(sectionRef);
-  }, [sectionRef]);
 
   const { scrollYProgress } = useScroll({
-    target: scrollTarget,
+    target: sectionRef,
     offset: ["start start", "end end"]
   });
   const y = useTransform(scrollYProgress, [0, 1], [0, speed * 50]);

@@ -1,433 +1,258 @@
 "use client";
 
-import { useState, Fragment } from "react";
-import { Icon } from "../config/icons";
 import { useContent } from "../hooks/useContent";
 import Image from "next/image";
 import Link from "next/link";
 import RichTextRenderer from "./ui/RichTextRenderer";
+import logo from "../assets/logo.png";
 
-const NewsletterForm = () => {
-  const { footer } = useContent();
-  const [email, setEmail] = useState('');
-  const [isFocused, setIsFocused] = useState(false);
-  const [isSubscribed, setIsSubscribed] = useState(false);
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (email) {
-      try {
-        await fetch('/api/send', {
-          method: 'POST',
-          headers: {
-            'Content-Type': 'application/json'
-          },
-          body: JSON.stringify({
-            type: 'Newsletter',
-            subject: 'New Newsletter Subscription',
-            name: 'Newsletter Subscriber',
-            email: email,
-            message: `New subscription from: ${email}`
-          })
-        });
-      } catch (error) {
-        console.error('Newsletter submission failed:', error);
-      }
-      setIsSubscribed(true);
-      setEmail('');
-      setTimeout(() => setIsSubscribed(false), 3000);
-    }
-  };
-
-  return (
-    <div className="relative">
-      <form onSubmit={handleSubmit} className="relative">
-        <div className={`
-          relative flex items-center bg-muted backdrop-blur-sm rounded-full border transition-all duration-300
-          ${isFocused
-            ? 'border-primary/50 shadow-[0_0_30px_hsl(var(--primary)/0.1)]'
-            : 'border-border hover:border-border/80'
-          }
-        `}>
-          <input
-            type="email"
-            placeholder={footer.newsletter?.placeholder || "Enter your email"}
-            value={email}
-            onChange={(e) => setEmail(e.target.value)}
-            onFocus={() => setIsFocused(true)}
-            onBlur={() => setIsFocused(false)}
-            className="w-full bg-transparent px-6 py-4 text-sm text-foreground placeholder:text-muted-foreground focus:outline-none"
-            required
+/* ── Logo ──────────────────────────────────────────────── */
+function FooterLogo({ logoUrl, siteTitle, logoText1, logoText2 }: { logoUrl?: string; siteTitle?: string; logoText1?: string; logoText2?: string }) {
+  if (logoUrl && (logoUrl.startsWith('http') || logoUrl.startsWith('/uploads') || logoUrl.startsWith('/cdn-images'))) {
+    return (
+      <Link href="/" className="inline-flex items-center gap-3 mb-4">
+        <div className="relative w-[110px] h-[110px] sm:w-[130px] sm:h-[130px] flex items-center justify-center overflow-hidden">
+          <img
+            src={logoUrl}
+            alt={siteTitle || "410 Muscle Therapy Logo"}
+            className="object-contain w-full h-full"
           />
-          <button
-            type="submit"
-            className="absolute right-2 px-4 py-2 bg-primary text-primary-foreground text-xs font-medium rounded-full hover:bg-primary/90 transition-all duration-300 flex items-center gap-2 hover:scale-[1.02] active:scale-[0.98]"
-          >
-            {footer.newsletter?.buttonText || "Subscribe"}
-            <Icon name="ArrowRight" className="w-4 h-4" />
-          </button>
         </div>
-      </form>
-
-      {isSubscribed && (
-        <div className="absolute -bottom-8 left-0 right-0 text-center">
-          <span className="text-xs text-primary">
-            ✓ Thank you for subscribing
-          </span>
-        </div>
-      )}
-    </div>
-  );
-};
-
-const ServiceLinks = () => {
-  const { services: servicesData, footer } = useContent();
-  const dynamicServicesRaw = ((servicesData as any).services || []).filter((s: any) => s.status === 'published' || s.status === undefined);
-  const selectedServices = footer?.services?.selectedServices || [];
-  
-  const dynamicServices = selectedServices.length > 0 
-    ? dynamicServicesRaw.filter((s: any) => selectedServices.includes(s._id))
-    : dynamicServicesRaw;
-
-  const footerServices = footer?.services || { title: "Our Services" };
-
+      </Link>
+    );
+  }
   return (
-    <div className="space-y-4">
-      <h4 className="text-xs font-mono tracking-[0.2em] uppercase text-muted-foreground flex items-center gap-2">
-        <Icon name="Sparkles" className="w-4 h-4" />
-        {footerServices.title}
-      </h4>
-      <div className="grid grid-cols-1 gap-2">
-        {dynamicServices.map((service: any) => (
-          <Link
-            key={service.slug}
-            href={`/services/${service.slug}`}
-            className="inline-flex items-center gap-3 text-sm text-muted-foreground hover:text-primary transition-all duration-300 group py-1"
-          >
-            <span className="text-muted-foreground/60 group-hover:text-primary transition-colors">
-              <Icon name={service.icon || "Layout"} className="w-5 h-5" />
-            </span>
-            <span>{service.title}</span>
-          </Link>
-        ))}
-      </div>
-    </div>
+    <Link href="/" className="inline-flex items-center gap-3 mb-6">
+      <svg width="36" height="42" viewBox="0 0 42 48" fill="none" className="md:w-[42px] md:h-[48px] flex-shrink-0">
+        <path d="M21 1L40 9.5V25C40 36.5 31.5 44.5 21 47C10.5 44.5 2 36.5 2 25V9.5L21 1Z" fill="#C8960C" />
+        <text x="21" y="33" textAnchor="middle" fill="#0A0A0A" fontFamily="Georgia,serif" fontSize="20" fontWeight="bold" fontStyle="italic">M</text>
+      </svg>
+      <span className="flex flex-col text-left">
+        <span className="text-[15px] md:text-[18px] font-black tracking-[0.2em] text-white leading-none">
+          {logoText1 || "MUSCLE"}
+        </span>
+        <span className="text-[10px] md:text-[11px] font-black tracking-[0.2em] text-gold mt-1 leading-none">
+          {logoText2 || "THERAPY"}
+        </span>
+      </span>
+    </Link>
   );
-};
+}
 
-const MaterialsSection = () => {
-  const { footer } = useContent();
-  const services = footer?.services || { materials: { title: "Materials", items: [] } };
-  const materials = services.materials || { title: "Materials", items: [] };
+/* ── Social Icons ─────────────────────────────────────── */
+function SocialIcons({ socialItems }: { socialItems?: any[] }) {
+  const socials = [
+    {
+      label: 'Facebook',
+      path: 'M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z',
+    },
+    {
+      label: 'Instagram',
+      path: 'M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zM17.5 6.5h.01M7.5 2h9A5.5 5.5 0 0122 7.5v9a5.5 5.5 0 01-5.5 5.5h-9A5.5 5.5 0 012 16.5v-9A5.5 5.5 0 017.5 2z',
+    },
+    {
+      label: 'Google',
+      path: 'M21.35 11.1H12.18V13.83H18.69C18.36 17.64 15.19 19.27 12.19 19.27C8.36 19.27 5 16.25 5 12C5 7.9 8.2 4.73 12.2 4.73C15.29 4.73 17.1 6.7 17.1 6.7L19 4.72C19 4.72 16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12C2.03 17.05 6.16 22 12.25 22C17.6 22 21.5 18.33 21.5 12.91C21.5 11.76 21.35 11.1 21.35 11.1Z',
+    },
+    {
+      label: 'YouTube',
+      path: 'M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.95 1.95C5.12 20 12 20 12 20s6.88 0 8.59-.47a2.78 2.78 0 001.95-1.95A29 29 0 0023 12a29 29 0 00-.46-5.58z M9.75 15.02V8.98L15.5 12z',
+    },
+  ];
 
-  return (
-    <div className="space-y-3 mt-8 border-t border-border/40 pt-6">
-      <h5 className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary/60">
-        {materials.title}
-      </h5>
-      <div className="flex flex-wrap items-center gap-x-3 gap-y-1.5 text-xs">
-        {(materials.items || []).map((material: any, idx: number) => (
-          <Fragment key={material.label}>
-            {idx > 0 && <span className="text-muted-foreground/30 font-light">•</span>}
-            <Link
-              href={material.href || '#'}
-              className="text-muted-foreground hover:text-primary transition-colors py-0.5"
-            >
-              {material.label}
-            </Link>
-          </Fragment>
-        ))}
-      </div>
-    </div>
-  );
-};
-
-const ContactInfo = () => {
-  const { footer, hours } = useContent();
-  const contact = footer?.contact || { title: "Contact Us", email: "", phone: "", address: "", emergency: "", areas: "" };
-
-  return (
-    <div className="space-y-6">
-      <div className="space-y-4">
-        <h4 className="text-xs font-mono tracking-[0.2em] uppercase text-muted-foreground flex items-center gap-2">
-          <Icon name="Sparkles" className="w-4 h-4" />
-          {contact.title}
-        </h4>
-        <div className="space-y-4">
-          <div className="flex items-start gap-3 text-sm text-muted-foreground group">
-            <span className="text-muted-foreground/60 group-hover:text-primary mt-0.5 flex-shrink-0">
-              <Icon name="Mail" className="w-5 h-5" />
-            </span>
-            <div className="[&_a]:text-muted-foreground [&_a]:no-underline [&_a]:hover:text-primary [&_a]:transition-colors">
-              <RichTextRenderer content={contact.email} className="!text-muted-foreground [&_p]:m-0" />
-            </div>
-          </div>
-          <div className="flex items-start gap-3 text-sm text-muted-foreground group">
-            <span className="text-muted-foreground/60 group-hover:text-primary mt-0.5 flex-shrink-0">
-              <Icon name="Phone" className="w-5 h-5" />
-            </span>
-            <div className="[&_a]:text-muted-foreground [&_a]:no-underline [&_a]:hover:text-primary [&_a]:transition-colors">
-              <RichTextRenderer content={contact.phone} className="!text-muted-foreground [&_p]:m-0" />
-            </div>
-          </div>
-          <div className="flex items-start gap-3 text-sm text-muted-foreground group">
-            <span className="text-muted-foreground/60 group-hover:text-primary mt-0.5 flex-shrink-0">
-              <Icon name="MapPin" className="w-5 h-5" />
-            </span>
-            <div className="[&_a]:text-muted-foreground [&_a]:no-underline [&_a]:hover:text-primary [&_a]:transition-colors">
-              <RichTextRenderer content={contact.address} className="!text-muted-foreground [&_p]:m-0" />
-            </div>
-          </div>
-          <div className="flex items-start gap-3 text-sm text-muted-foreground group">
-            <span className="text-muted-foreground/60 group-hover:text-primary mt-0.5 flex-shrink-0">
-              <Icon name="Infinity" className="w-5 h-5" />
-            </span>
-            <div className="[&_a]:text-muted-foreground [&_a]:no-underline [&_a]:hover:text-primary [&_a]:transition-colors">
-              <RichTextRenderer content={contact.emergency} className="!text-muted-foreground [&_p]:m-0" />
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {hours && (
-        <div className="space-y-3">
-          <h5 className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary/60">
-            Office Hours
-          </h5>
-          <div className="space-y-1 text-xs text-muted-foreground">
-            <div className="flex justify-between">
-              <span>Monday - Friday:</span>
-              <span>{hours.monday}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Saturday:</span>
-              <span>{hours.saturday}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Sunday:</span>
-              <span>{hours.sunday}</span>
-            </div>
-          </div>
-        </div>
-      )}
-
-      <div className="space-y-3">
-        <h5 className="text-[10px] font-mono tracking-[0.2em] uppercase text-primary/60">
-          Service Areas
-        </h5>
-        <div className="text-sm leading-relaxed">
-          <RichTextRenderer content={contact.areas} className="!text-muted-foreground [&_p]:m-0" />
-        </div>
-      </div>
-    </div>
-  );
-};
-
-const SocialLinks = () => {
-  const { footer } = useContent();
-  const social = footer?.social || [];
-
-  const getIconName = (item: any) => {
-    return item.icon || item.platform;
+  const getSocialUrl = (platform: string) => {
+    if (!socialItems) return "#";
+    const item = socialItems.find((s: any) => s.platform?.toLowerCase() === platform.toLowerCase());
+    return item?.href || "#";
   };
 
   return (
-    <div className="flex items-center gap-3 flex-wrap">
-      {social.map((socialItem: any) => (
+    <div className="flex gap-2.5 mt-4 justify-start">
+      {socials.map((s) => (
         <a
-          key={socialItem.platform}
-          href={socialItem.href}
+          key={s.label}
+          href={getSocialUrl(s.label)}
           target="_blank"
           rel="noopener noreferrer"
-          className="relative w-10 h-10 rounded-full bg-muted border border-border flex items-center justify-center text-muted-foreground hover:text-primary hover:bg-primary/5 hover:border-primary/20 transition-all duration-300 group"
-          aria-label={socialItem.platform}
+          aria-label={s.label}
+          className="w-9 h-9 rounded-full border border-border-dark flex items-center justify-center text-white/40 hover:text-gold hover:border-gold transition-all duration-200"
         >
-          <Icon name={getIconName(socialItem)} className="w-5 h-5" />
+          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
+            <path d={s.path} />
+          </svg>
         </a>
       ))}
     </div>
   );
-};
+}
 
-const LegacyMarquee = () => {
-  const { footer } = useContent();
-  const certifications = footer?.certifications || [];
-
-  if (certifications.length === 0) return null;
-
+/* ── Map Placeholder ───────────────────────────────────── */
+function MapPlaceholder({ addressText }: { addressText: string }) {
   return (
-    <div className="relative overflow-hidden py-12 border-t border-border bg-muted/10">
-      <div className="animate-marquee flex whitespace-nowrap">
-        {[...Array(4)].map((_, i) => (
-          <div key={i} className="flex items-center gap-16 px-8 flex-shrink-0">
-            {certifications.map((cert: any, idx: number) => (
-              <div key={`${i}-${idx}`} className="flex items-center gap-5 group">
-                <div className="w-12 h-12 rounded-2xl bg-card flex items-center justify-center text-muted-foreground group-hover:text-primary transition-all duration-500 border border-border group-hover:border-primary/30 shadow-sm group-hover:shadow-md">
-                  <Icon name={cert.icon} className="w-6 h-6" />
-                </div>
-                <div className="flex flex-col">
-                  <span className="text-xs font-black uppercase tracking-[0.2em] text-muted-foreground/60 group-hover:text-foreground transition-colors">{cert.cert}</span>
-                  <span className="text-[10px] font-mono text-muted-foreground/40 mt-0.5">{cert.number}</span>
-                </div>
-                <div className="ml-12 opacity-20">
-                  <Icon name="Sparkles" className="w-3 h-3 text-primary" />
-                </div>
-              </div>
-            ))}
-          </div>
-        ))}
+    <div className="mt-5 h-24 sm:h-28 bg-dark-3 rounded-md overflow-hidden relative flex items-center justify-center border border-border-dark">
+      <div
+        className="absolute inset-0 bg-grid-pattern-white-faint"
+      />
+      <div className="relative flex flex-col items-center gap-1.5">
+        <svg width="22" height="22" viewBox="0 0 24 24" fill="#C8960C">
+          <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
+        </svg>
+        <div className="text-white/40 text-[10.5px] font-medium text-center px-2 whitespace-pre-line leading-tight">
+          <RichTextRenderer content={addressText} className="!text-white/40 text-[10.5px] font-medium text-center [&_p]:m-0" />
+        </div>
       </div>
-      <div className="absolute inset-y-0 left-0 w-32 bg-gradient-to-r from-background to-transparent z-10 pointer-events-none" />
-      <div className="absolute inset-y-0 right-0 w-32 bg-gradient-to-l from-background to-transparent z-10 pointer-events-none" />
     </div>
   );
-};
+}
 
-const Footer = () => {
-  const { footer } = useContent();
+export default function Footer() {
+  const { footer, navbar, services: servicesData } = useContent();
 
-  const company = footer?.company || { name: "Eagle Revolution", tagline: "", description: "" };
-  const bottom = footer?.bottom || { copyright: "", rights: "", links: [], tagline: "" };
+  const {
+    brandDescription = "Elite performance recovery bodywork, mobility optimization, and injury prevention for athletes and active adults since 2020. #bodywork #performancerecovery",
+    quickLinksLabel = "Quick Links",
+    servicesLabel = "Services",
+    contactLabel = "Contact Us",
+    copyright = "© 2024 Muscle Therapy. All Rights Reserved.",
+    privacy = "Privacy Policy",
+    terms = "Terms & Conditions",
+    divider = "|",
+    address = "125 Wellness Way, Suite 101\nLos Angeles, CA 90001",
+    phone = "(323) 456-7890",
+    email = "info@muscletherapy.com",
+    hours = "Mon–Sat: 8:00 AM – 7:00 PM"
+  } = footer || {};
+
+  const companyLinks = navbar?.companyLinks || navbar?.links || [];
+  const quickLinksData = companyLinks.map((link: any) => ({
+    label: link.label,
+    href: link.href
+  }));
+
+  const servicesListRaw = (servicesData?.services || []).filter((s: any) => s.status === 'published' || s.status === undefined);
+  const servicesDataList = servicesListRaw.slice(0, 6).map((svc: any) => ({
+    label: svc.title,
+    href: `/services/${svc.slug}`
+  }));
 
   return (
-    <footer className="relative bg-background overflow-hidden">
-      <div className="absolute inset-0 pointer-events-none">
-        <div
-          className="absolute inset-0 opacity-[0.02]"
-          style={{
-            backgroundImage: `
-              linear-gradient(to right, hsl(var(--primary)) 1px, transparent 1px),
-              linear-gradient(to bottom, hsl(var(--primary)) 1px, transparent 1px)
-            `,
-            backgroundSize: '60px 60px',
-          }}
-        />
-      </div>
+    <footer>
 
-      <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full h-[600px] bg-gradient-to-b from-primary/5 to-transparent opacity-60 blur-3xl" />
+      {/* ══ Main Footer ════════════════════════════════ */}
+      <div className="bg-dark-2 pt-12 md:pt-16 pb-0 border-t border-border-dark/60">
+        <div className="site-container">
 
-      <div className="max-w-7xl mx-auto px-6 md:px-8 relative z-30">
-        <div className="grid grid-cols-1 lg:grid-cols-12 gap-12 pt-24 pb-16 border-b border-border">
-          <div className="lg:col-span-3 space-y-8">
-            <div className="space-y-6">
-              <div className="flex items-center gap-3">
-                {footer.company?.logo ? (
-                  <div className="relative w-12 h-12 rounded-xl overflow-hidden">
-                    <Image src={footer.company.logo} alt={footer.company.name} fill className="object-contain" />
-                  </div>
-                ) : (
-                  <div className="w-12 h-12 rounded-full bg-gradient-to-br from-primary to-primary/80 flex items-center justify-center shadow-2xl shadow-primary/30">
-                    <span className="text-primary-foreground font-bold text-sm text-center leading-tight">ER</span>
-                  </div>
-                )}
-                <div>
-                  <span className="text-foreground font-light text-lg block">{company.name}</span>
-                  <span className="text-[10px] text-primary/60 font-mono tracking-wider">{company.tagline}</span>
-                </div>
+          {/* Responsive grid wrapping from 1 to 4 columns */}
+          <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[1.6fr_1fr_1.2fr_1.5fr] gap-10 md:gap-12 pb-12 border-b border-border-dark">
+
+            {/* Col 1 — Brand */}
+            <div className="flex flex-col items-start text-left">
+              <FooterLogo logoUrl={navbar?.logo} siteTitle={navbar?.siteTitle} logoText1={navbar?.logoText1} logoText2={navbar?.logoText2} />
+              <div className="text-white/45 text-[13.5px] leading-[1.8] mb-4 max-w-[280px] [&_p]:m-0">
+                <RichTextRenderer content={brandDescription} className="!text-white/45 text-[13.5px]" />
               </div>
-
-              <div className="text-muted-foreground text-sm leading-relaxed font-light [&_p]:m-0">
-                <RichTextRenderer content={company.description} />
-              </div>
-
-              <SocialLinks />
+              <SocialIcons socialItems={footer?.social} />
             </div>
 
-            <div className="space-y-3">
-              <h4 className="text-[10px] font-mono tracking-[0.2em] uppercase text-muted-foreground">
-                Subscribe to insights
+            {/* Col 2 — Quick Links */}
+            <div className="flex flex-col items-start text-left">
+              <h4 className="text-white font-bold text-[11.5px] tracking-[0.16em] uppercase mb-5">
+                {quickLinksLabel}
               </h4>
-              <NewsletterForm />
+              <ul className="flex flex-col gap-3">
+                {quickLinksData.map((link: any) => (
+                  <li key={link.label}>
+                    <Link href={link.href} className="text-white/45 text-[13.5px] hover:text-gold transition-colors duration-200 flex items-center gap-2 group py-0.5">
+                      <span className="w-0 h-px bg-gold transition-all duration-200 group-hover:w-3" />
+                      {link.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
             </div>
-          </div>
 
-          <div className="lg:col-span-3">
-            <ServiceLinks />
-            <MaterialsSection />
-          </div>
-
-          <div className="lg:col-span-3">
-            <ContactInfo />
-          </div>
-
-          <div className="lg:col-span-3">
-            <div className="space-y-4">
-              <h4 className="text-xs font-mono tracking-[0.2em] uppercase text-muted-foreground flex items-center gap-2">
-                <Icon name="MapPin" className="w-4 h-4" />
-                Our Location
+            {/* Col 3 — Services */}
+            <div className="flex flex-col items-start text-left">
+              <h4 className="text-white font-bold text-[11.5px] tracking-[0.16em] uppercase mb-5">
+                {servicesLabel}
               </h4>
-              <div className="relative w-full aspect-square lg:aspect-auto lg:h-[350px] rounded-2xl overflow-hidden border border-border shadow-2xl group transition-all duration-500 hover:border-primary/30">
-                <iframe 
-                  src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3109.2535729046463!2d-90.68510192536498!3d38.803742752226945!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0xa84c3b8dec6bf3f%3A0x18a7936317172933!2sEagle%20Revolution!5e0!3m2!1sen!2s!4v1778495491394!5m2!1sen!2s" 
-                  width="100%" 
-                  height="100%" 
-                  style={{ border: 0 }} 
-                  allowFullScreen={true} 
-                  loading="lazy" 
-                  referrerPolicy="no-referrer-when-downgrade"
-                  className="grayscale hover:grayscale-0 transition-all duration-700"
-                />
-                <div className="absolute inset-0 pointer-events-none border-[12px] border-background/20 rounded-2xl" />
+              <ul className="flex flex-col gap-3">
+                {servicesDataList.map((svc: any) => (
+                  <li key={svc.label}>
+                    <Link href={svc.href} className="text-white/45 text-[13.5px] hover:text-gold transition-colors duration-200 flex items-center gap-2 group py-0.5">
+                      <span className="w-0 h-px bg-gold transition-all duration-200 group-hover:w-3" />
+                      {svc.label}
+                    </Link>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* Col 4 — Contact */}
+            <div className="flex flex-col items-start text-left">
+              <h4 className="text-white font-bold text-[11.5px] tracking-[0.16em] uppercase mb-5">
+                {contactLabel}
+              </h4>
+              <ul className="flex flex-col gap-3.5 w-full">
+                {[
+                  {
+                    icon: <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />,
+                    text: address,
+                  },
+                  {
+                    icon: <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.92a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />,
+                    text: phone,
+                  },
+                  {
+                    icon: <><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><path d="M22 6l-10 7L2 6" /></>,
+                    text: email,
+                  },
+                  {
+                    icon: <><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></>,
+                    text: hours,
+                  },
+                ].map((item, i) => (
+                  <li key={i} className="flex items-start gap-3">
+                    <svg
+                      width="14" height="14"
+                      viewBox="0 0 24 24"
+                      fill="none"
+                      stroke="#C8960C"
+                      strokeWidth="1.5"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      className="mt-1 flex-shrink-0"
+                    >
+                      {item.icon}
+                    </svg>
+                    <div className="text-white/45 text-[13px] leading-snug [&_p]:m-0">
+                      <RichTextRenderer content={item.text} className="!text-white/45 text-[13px]" />
+                    </div>
+                  </li>
+                ))}
+              </ul>
+              <div className="w-full">
+                <MapPlaceholder addressText={address} />
               </div>
-              <p className="text-[10px] text-muted-foreground font-mono mt-2">
-                1077 E Terra Ln, O&apos;Fallon, MO 63366
-              </p>
+            </div>
+
+          </div>
+
+          {/* ── Bottom bar ───────────────────────────── */}
+          <div className="flex flex-col sm:flex-row items-center justify-between py-6 gap-3 text-center sm:text-left">
+            <div className="text-white/30 text-[12px] [&_p]:m-0">
+              <RichTextRenderer content={copyright} className="!text-white/30 text-[12px]" />
+            </div>
+            <div className="flex items-center gap-4 sm:gap-6">
+              <Link href="/contact" className="text-white/30 text-[12px] hover:text-white/70 transition-colors">{privacy}</Link>
+              <span className="text-white/15">{divider}</span>
+              <Link href="/contact" className="text-white/30 text-[12px] hover:text-white/70 transition-colors">{terms}</Link>
             </div>
           </div>
-        </div>
 
-        <LegacyMarquee />
-
-        <div className="flex flex-col md:flex-row items-center justify-between gap-4 py-6 text-[10px] text-muted-foreground">
-          <div className="flex items-center gap-4 flex-wrap">
-            <span>{bottom.copyright}</span>
-            <span className="w-1 h-1 rounded-full bg-border" />
-            <span>{bottom.rights}</span>
-            <span className="w-1 h-1 rounded-full bg-border" />
-            <span>
-              Designed by{" "}
-              <a
-                href="https://mohsindesigns.com/"
-                target="_blank"
-                rel="noopener noreferrer"
-                className="hover:text-primary transition-colors font-medium"
-              >
-                Mohsin Designs
-              </a>
-            </span>
-          </div>
-          <div className="flex items-center gap-6 flex-wrap justify-center">
-            {bottom.links.map((link: any) => (
-              <Link key={link.label} href={link.href} className="hover:text-primary transition-colors">{link.label}</Link>
-            ))}
-          </div>
-          <div className="text-muted-foreground/60">
-            <span className="font-mono">{bottom.tagline}</span>
-          </div>
         </div>
       </div>
 
-      <div className="absolute bottom-0 left-0 w-full overflow-hidden pointer-events-none">
-        <svg
-          viewBox="0 0 1440 120"
-          className="relative block w-full h-20 md:h-24"
-          preserveAspectRatio="none"
-        >
-          <path
-            fill="url(#footerWave)"
-            d="M0,64L60,69.3C120,75,240,85,360,80C480,75,600,53,720,48C840,43,960,53,1080,58.7C1200,64,1320,64,1380,64L1440,64L1440,120L1380,120C1320,120,1200,120,1080,120C960,120,840,120,720,120C600,120,480,120,360,120C240,120,120,120,60,120L0,120Z"
-          />
-          <defs>
-            <linearGradient id="footerWave" x1="0%" y1="0%" x2="100%" y2="0%">
-              <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.03" />
-              <stop offset="50%" stopColor="hsl(var(--primary))" stopOpacity="0.05" />
-              <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.03" />
-            </linearGradient>
-          </defs>
-        </svg>
-      </div>
     </footer>
   );
-};
-
-export default Footer;
+}
