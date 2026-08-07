@@ -139,7 +139,7 @@ export default function Footer() {
     <footer>
 
       {/* ══ Main Footer ════════════════════════════════ */}
-      <div className="bg-dark-2 pt-12 md:pt-16 pb-0 border-t border-border-dark/60">
+      <div className="bg-dark-2 pt-12 md:pt-16 pb-0 border-t border-border-dark/10">
         <div className="site-container">
 
           {/* Responsive grid wrapping from 1 to 4 columns */}

@@ -3,7 +3,7 @@ const path = require('path');
 require('dotenv').config({ path: path.resolve(__dirname, '../.env.local') });
 
 const uri = process.env.MONGODB_URI;
-const dbName = '410_muscle_therapy';
+const dbName = process.env.MONGODB_DB || '410_muscle_therapy';
 
 const blogItems = [
   {
@@ -12,7 +12,7 @@ const blogItems = [
     "tag": "DEEP TISSUE",
     "title": "5 Signs You Need Deep Tissue Therapy",
     "excerpt": "Know when it's time to get professional help for chronic muscle tension.",
-    "image": "/images/blog-1.webp",
+    "image": "/images/service-massage.webp",
     "date": "October 12, 2023",
     "author": "Dr. James Vance",
     "content": [
@@ -88,7 +88,7 @@ const blogItems = [
     "tag": "ATHLETES",
     "title": "Best Stretches for Athletes",
     "excerpt": "Improve flexibility and prevent injuries with these proven routines.",
-    "image": "/images/blog-2.webp",
+    "image": "/images/testimonial-1.webp",
     "date": "November 05, 2023",
     "author": "Sarah Jenkins",
     "content": [
@@ -144,7 +144,7 @@ const blogItems = [
     "tag": "RECOVERY",
     "title": "How to Speed Up Muscle Recovery",
     "excerpt": "Simple, actionable tips to recover faster and perform better tomorrow.",
-    "image": "/images/blog-3.webp",
+    "image": "/images/testimonial-2.webp",
     "date": "December 20, 2023",
     "author": "Marcus Vance",
     "content": [

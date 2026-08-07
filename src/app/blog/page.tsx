@@ -62,14 +62,14 @@ export default async function BlogIndexPage() {
     SiteContent.findOne({ key: 'complete_data' }).lean() as any
   ]);
 
-  const blogPage = content?.data?.blogPage || {};
+  const blogsPage = content?.data?.blogsPage || content?.data?.blogPage || {};
   const globalMetadata = content?.data?.globalMetadata || {};
 
-  const label = blogPage.header?.badge || "OUR BLOG";
-  const titleLine1 = blogPage.header?.titlePrefix || "Our";
-  const titleLine2 = blogPage.header?.titleHighlight || "Insights";
-  const description = blogPage.header?.description || "Stay updated with the latest news, guides and updates from 410 Muscle Therapy.";
-  const ctaReadMore = blogPage.ctaReadMore || "Read Article";
+  const label = blogsPage.label || blogsPage.header?.badge || "Recovery Insights";
+  const titleLine1 = blogsPage.titleLine1 || blogsPage.header?.titlePrefix || "Our";
+  const titleLine2 = blogsPage.titleLine2 || blogsPage.header?.titleHighlight || "Journal.";
+  const description = blogsPage.description || blogsPage.header?.description || "Explore our latest articles, insights, and clinical tips on deep tissue therapy, mobility, and athletic recovery.";
+  const ctaReadMore = blogsPage.ctaReadMore || "Read More";
 
   return (
     <>
@@ -99,7 +99,7 @@ export default async function BlogIndexPage() {
               const cleanExcerpt = rawExcerpt.replace(/<[^>]*>/g, '').substring(0, 140) + "...";
 
               return (
-                <article key={post._id} className="bg-black/40 border border-border-dark/50 rounded-sm overflow-hidden group shadow-2xl flex flex-col">
+                <article key={post._id} className="bg-black/40 border border-white/5 rounded-sm overflow-hidden group shadow-2xl flex flex-col">
                   <div className="relative w-full h-[240px] overflow-hidden">
                     {post.featuredImage ? (
                       <Image
