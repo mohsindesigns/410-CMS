@@ -150,6 +150,16 @@ export const useContent = () => {
             } else if (Array.isArray(s)) {
                 list = { services: s, items: s };
             }
+
+            const label = list.badge || list.label || "Our Services";
+            const titleLine1 = list.titleLine1 || list.headline?.prefix || "Therapies";
+            const titleLine2 = list.titleLine2 || list.headline?.highlight || "Designed";
+            const titleLine3 = list.titleLine3 || list.headline?.suffix || "Around";
+            const titleItalicWord = list.titleItalicWord || "You";
+            
+            const ctaAll = list.ctaAll || "VIEW ALL SERVICES";
+            const ctaLearnMore = list.ctaLearnMore || "LEARN MORE";
+
             if (list && Array.isArray(list.services)) {
                 list.services = list.services.map((item: any) => {
                     const title = item.title || item.name || "";
@@ -164,7 +174,22 @@ export const useContent = () => {
                     return { ...item, title, name };
                 });
             }
-            return list;
+            return {
+                ...list,
+                label,
+                badge: label,
+                titleLine1,
+                titleLine2,
+                titleLine3,
+                titleItalicWord,
+                ctaAll,
+                ctaLearnMore,
+                headline: {
+                    prefix: titleLine1,
+                    highlight: titleLine2,
+                    suffix: titleLine3
+                }
+            };
         })(),
         leadership: getSafe(completeData, 'leadership', {
             section: { badge: "", headline: "", description: "" },
@@ -252,6 +277,16 @@ export const useContent = () => {
             buttonText: ""
         }),
         hours: getSafe(completeData, 'hours'),
+        stats: getSafe(completeData, 'stats', {
+            label: "",
+            titleLine1: "",
+            titleLine2: "",
+            titleItalicWord: "",
+            description: "",
+            image: "",
+            imageAlt: "",
+            items: []
+        }),
         contactPage: getSafe(completeData, 'contactPage', {
             header: { badge: "", headline: "", description: "" },
             formFields: [],

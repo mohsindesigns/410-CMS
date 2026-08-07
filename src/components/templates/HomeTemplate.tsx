@@ -18,11 +18,14 @@ const BlogSection = dynamic(() => import("@/components/sections/BlogSection"), {
 import { useContent } from "@/hooks/useContent";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 
+import StatsBar from "@/components/StatsBar";
+
 export default function HomeTemplate({ pageData, params }: { pageData?: any, params?: any }) {
   const { allBlogs, blogSection } = useContent();
   return (
     <div className="relative">
       <Hero />
+      <StatsBar />
       <section id="roofingexperts">
         <AggressiveRoofingSection />
       </section>

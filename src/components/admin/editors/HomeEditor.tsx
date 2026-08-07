@@ -83,6 +83,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
 
    const tabs = [
       { id: "hero", label: "Home" },
+      { id: "statsBar", label: "Stats Bar" },
       { id: "about", label: "About" },
       { id: "services", label: "Services" },
       { id: "whyChooseUs", label: "Value Props" },
@@ -204,6 +205,103 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                      </div>
                   </div>
                )}
+
+                {/* STATS BAR SECTION */}
+                {activeTab === "statsBar" && (
+                    <div className="space-y-12">
+                       <div className="space-y-6">
+                          <h3 className={UI.sectionHeader}>Stats Section & Bar Management</h3>
+                          <p className="text-[12px] text-[#646970] -mt-2">Manage both the editorial statistics text/image and the achievements bar items list.</p>
+                       </div>
+                       
+                       {/* Section Texts & Image */}
+                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                          <div className={UI.card + " space-y-4"}>
+                             <h4 className="text-[12px] font-bold text-[#1d2327] border-b border-[#f0f0f1] pb-2">Narrative & Text</h4>
+                             <div className="space-y-1.5">
+                                <label className={UI.label}>Section Badge/Label</label>
+                                <input type="text" value={data.stats?.label || ""} onChange={(e) => updateSection("stats", "label", e.target.value)} className={UI.input} />
+                             </div>
+                             <div className="space-y-1.5">
+                                <label className={UI.label}>Headline Line 1</label>
+                                <input type="text" value={data.stats?.titleLine1 || ""} onChange={(e) => updateSection("stats", "titleLine1", e.target.value)} className={UI.input} />
+                             </div>
+                             <div className="space-y-1.5">
+                                <label className={UI.label}>Headline Line 2</label>
+                                <input type="text" value={data.stats?.titleLine2 || ""} onChange={(e) => updateSection("stats", "titleLine2", e.target.value)} className={UI.input} />
+                             </div>
+                             <div className="space-y-1.5">
+                                <label className={UI.label}>Accent Word (Italicized)</label>
+                                <input type="text" value={data.stats?.titleItalicWord || ""} onChange={(e) => updateSection("stats", "titleItalicWord", e.target.value)} className={UI.input + " italic font-serif"} />
+                             </div>
+                             <div className="space-y-1.5">
+                                <label className={UI.label}>Narrative Description</label>
+                                <RichTextEditor 
+                                  content={data.stats?.description || ""} 
+                                  onChange={(val) => updateSection("stats", "description", val)} 
+                                />
+                             </div>
+                          </div>
+                          <div className={UI.card + " space-y-4"}>
+                             <h4 className="text-[12px] font-bold text-[#1d2327] border-b border-[#f0f0f1] pb-2">Editorial Image</h4>
+                             <ImageField 
+                               label="Section Image" 
+                               value={data.stats?.image || ""} 
+                               onChange={(url: string) => updateSection("stats", "image", url)} 
+                               altValue={data.stats?.imageAlt || ""}
+                               onAltChange={(alt: string) => updateSection("stats", "imageAlt", alt)}
+                             />
+                          </div>
+                       </div>
+
+                       <div className="space-y-6">
+                          <h4 className="text-[12px] font-bold text-[#1d2327] border-b border-[#f0f0f1] pb-1">Stats Achievements List (Top 4 stats show horizontally)</h4>
+                          <div className="space-y-4">
+                            {((data.stats?.items) || []).map((s: any, i: number) => (
+                               <div key={i} className={UI.card + " space-y-4 relative group"}>
+                                  <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                                     <span className="text-[10px] font-bold text-[#646970] uppercase">Stat #{i + 1}</span>
+                                     <button onClick={() => {
+                                        const newItems = (data.stats?.items || []).filter((_: any, idx: number) => idx !== i);
+                                        updateSection("stats", "items", newItems);
+                                     }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
+                                  </div>
+                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                     <div className="space-y-1.5">
+                                        <label className={UI.label}>Value (e.g. 5,000+)</label>
+                                        <input type="text" value={s.value || ""} onChange={(e) => {
+                                           const newItems = [...(data.stats?.items || [])];
+                                           newItems[i] = { ...newItems[i], value: e.target.value };
+                                           updateSection("stats", "items", newItems);
+                                        }} className={UI.inputLarge} />
+                                     </div>
+                                     <div className="space-y-1.5">
+                                        <label className={UI.label}>Label (e.g. Clients Treated)</label>
+                                        <input type="text" value={s.label || ""} onChange={(e) => {
+                                           const newItems = [...(data.stats?.items || [])];
+                                           newItems[i] = { ...newItems[i], label: e.target.value };
+                                           updateSection("stats", "items", newItems);
+                                        }} className={UI.input} />
+                                     </div>
+                                  </div>
+                                  <div className="space-y-1.5">
+                                     <label className={UI.label}>Short Description (Optional)</label>
+                                     <input type="text" value={s.desc || ""} onChange={(e) => {
+                                        const newItems = [...(data.stats?.items || [])];
+                                        newItems[i] = { ...newItems[i], desc: e.target.value };
+                                        updateSection("stats", "items", newItems);
+                                     }} className={UI.input} />
+                                  </div>
+                               </div>
+                            ))}
+                            <button onClick={() => {
+                               const currentItems = data.stats?.items || [];
+                               updateSection("stats", "items", [...currentItems, { value: "", label: "", desc: "" }]);
+                            }} className={UI.buttonAdd}>+ Add Stat</button>
+                         </div>
+                      </div>
+                   </div>
+                )}
 
                {/* ABOUT SECTION */}
                {activeTab === "about" && (
