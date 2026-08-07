@@ -38,5 +38,7 @@ build/
 .env.test.local
 .env.production.local
 *.tsbuildinfo
+!.env.local
+
 
 
