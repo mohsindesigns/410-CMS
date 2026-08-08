@@ -42,26 +42,22 @@
     --popover-foreground: 0 0% 0%;
     /* Black */
 
-    /* Primary - #2430D2 Blue */
-    --primary: 235 70% 48%;
-    /* #2430D2 */
-    --primary-foreground: 0 0% 100%;
-    /* White text on blue */
+    /* Primary - Gold */
+    --primary: 47 67% 45%;
+    --primary-foreground: 0 0% 0%;
 
-    /* Secondary - Darker blue variant */
-    --secondary: 235 70% 40%;
-    /* Darker shade of #2430D2 */
-    --secondary-foreground: 0 0% 100%;
-    /* White text */
+    /* Secondary - Darker Gold */
+    --secondary: 47 67% 38%;
+    --secondary-foreground: 0 0% 0%;
 
     /* Muted - Light gray background */
     --muted: 0 0% 96%;
     --muted-foreground: 0 0% 45%;
     /* Medium gray */
 
-    /* Accent - Same blue for highlights */
-    --accent: 235 70% 48%;
-    --accent-foreground: 0 0% 100%;
+    /* Accent - Gold for highlights */
+    --accent: 47 67% 45%;
+    --accent-foreground: 0 0% 0%;
 
     /* Destructive */
     --destructive: 0 84.2% 60.2%;
@@ -70,26 +66,26 @@
     /* Borders */
     --border: 0 0% 90%;
     --input: 0 0% 90%;
-    --ring: 235 70% 48%;
-    /* Blue ring focus */
+    --ring: 47 67% 45%;
+    /* Gold ring focus */
 
     --radius: 0.5rem;
 
-    /* Deep - Blue for dark backgrounds */
-    --deep: 235 70% 48%;
+    /* Deep - Gold for dark backgrounds */
+    --deep: 47 67% 45%;
     --surface: 0 0% 98%;
     --surface-light: 0 0% 100%;
     --text-dark: 0 0% 0%;
 
-    /* Sidebar - Blue */
-    --sidebar-background: 235 70% 48%;
-    --sidebar-foreground: 0 0% 100%;
-    --sidebar-primary: 235 70% 48%;
-    --sidebar-primary-foreground: 0 0% 100%;
-    --sidebar-accent: 235 70% 40%;
-    --sidebar-accent-foreground: 0 0% 100%;
-    --sidebar-border: 235 70% 40%;
-    --sidebar-ring: 235 70% 48%;
+    /* Sidebar - Gold */
+    --sidebar-background: 47 67% 45%;
+    --sidebar-foreground: 0 0% 0%;
+    --sidebar-primary: 47 67% 45%;
+    --sidebar-primary-foreground: 0 0% 0%;
+    --sidebar-accent: 47 67% 38%;
+    --sidebar-accent-foreground: 0 0% 0%;
+    --sidebar-border: 47 67% 38%;
+    --sidebar-ring: 47 67% 45%;
 
     /* Fonts */
     --font-heading: 'Space Grotesk', sans-serif;

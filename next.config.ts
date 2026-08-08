@@ -21,6 +21,12 @@ const nextConfig: NextConfig = {
         port: '',
         pathname: '/**',
       },
+      {
+        protocol: 'https',
+        hostname: '410-muscletherapy.com',
+        port: '',
+        pathname: '/**',
+      },
     ],
   },
   async redirects() {
