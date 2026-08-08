@@ -125,7 +125,11 @@ export default async function BlogIndexPage() {
               const cleanExcerpt = rawExcerpt.replace(/<[^>]*>/g, '').substring(0, 140) + "...";
 
               return (
-                <article key={post._id} className="bg-black/40 border border-white/5 rounded-sm overflow-hidden group shadow-2xl flex flex-col">
+                <Link
+                  key={post._id}
+                  href={`/blog/${post.slug}`}
+                  className="bg-black/40 border border-white/5 rounded-sm overflow-hidden group shadow-2xl flex flex-col hover:border-gold/30 hover:shadow-[0_0_30px_rgba(190,156,37,0.06)] transition-all duration-300"
+                >
                   <div className="relative w-full h-[240px] overflow-hidden">
                     {post.featuredImage ? (
                       <Image
@@ -149,21 +153,18 @@ export default async function BlogIndexPage() {
                   </div>
                   <div className="p-6 md:p-8 flex flex-col flex-grow text-left">
                     <h3 className="text-white font-bold text-[18px] md:text-[20px] leading-snug mb-3 group-hover:text-gold transition-colors duration-200">
-                      <Link href={`/blog/${post.slug}`} className="text-white hover:text-gold no-underline">
-                        {post.title}
-                      </Link>
+                      {post.title}
                     </h3>
                     <p className="text-white/60 text-[13.5px] leading-relaxed mb-6 flex-grow">
                       {cleanExcerpt}
                     </p>
-                    <Link
-                      href={`/blog/${post.slug}`}
-                      className="flex items-center gap-2 text-gold text-[12px] font-bold tracking-wide uppercase hover:gap-3 transition-all duration-200 mt-auto"
+                    <div
+                      className="flex items-center gap-2 text-gold text-[12px] font-bold tracking-wide uppercase group-hover:gap-3 transition-all duration-200 mt-auto"
                     >
                       {ctaReadMore} <ArrowRight size={14} />
-                    </Link>
+                    </div>
                   </div>
-                </article>
+                </Link>
               );
             })}
           </div>

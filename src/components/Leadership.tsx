@@ -4,24 +4,24 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useContent } from "../hooks/useContent";
-import { stripHtml } from "../lib/utils";
+
 
 export default function Leadership() {
   const { leadership, globalMetadata } = useContent();
 
   const {
-    label = "Antoine's Story",
-    title = "Antoine Lyles — Performance Recovery Specialist",
-    tagline = "My Mission is Your Mobility.",
+    label,
+    title,
+    tagline,
     desc1 = "",
     desc2 = "",
-    photoBadge = "Performance Recovery",
-    ctaMore = "BOOK RECOVERY SESSION",
+    photoBadge,
+    ctaMore,
     ctaLink = "",
-    signatureName = "Antoine Lyles",
-    signatureTitle = "FOUNDER & HEAD THERAPIST",
+    signatureName,
+    signatureTitle,
     image = "/images/theraphist.jpeg",
-    imageAlt = "Antoine Lyles — Performance Recovery Specialist"
+    imageAlt = "Antoine Lyles"
   } = leadership || {};
 
   const bookingUrl = ctaLink || globalMetadata?.bookingUrl || "https://www.styleseat.com/m/v/410muscletherapy";
@@ -98,13 +98,13 @@ export default function Leadership() {
               {tagline}
             </motion.p>
 
-            <motion.p variants={itemVariants} className="text-dark/60 text-[14.5px] md:text-[15px] leading-relaxed mb-5 font-light">
-              {stripHtml(desc1)}
-            </motion.p>
+            {desc1 && (
+              <motion.div variants={itemVariants} className="text-dark/60 text-[14.5px] md:text-[15px] leading-relaxed mb-5 font-light [&>p]:mb-0" dangerouslySetInnerHTML={{ __html: desc1 }} />
+            )}
 
-            <motion.p variants={itemVariants} className="text-dark/65 text-[14.5px] md:text-[15px] leading-relaxed mb-8 border-l-2 border-gold-dark/30 pl-4 py-1 font-light">
-              {stripHtml(desc2)}
-            </motion.p>
+            {desc2 && (
+              <motion.div variants={itemVariants} className="text-dark/65 text-[14.5px] md:text-[15px] leading-relaxed mb-8 border-l-2 border-gold-dark/30 pl-4 py-1 font-light [&>p]:mb-0" dangerouslySetInnerHTML={{ __html: desc2 }} />
+            )}
 
             {/* Signature + CTA Row */}
             <motion.div

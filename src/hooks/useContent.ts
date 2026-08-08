@@ -200,15 +200,32 @@ export const useContent = () => {
             const section = l.section || {};
 
             const label = section.badge || "The Specialist";
-            const title = section.headline || "Meet Antoine Lyles";
-            const tagline = ceo.quotes?.[0] || ceo.title || "Performance Recovery Specialist";
+            // Admin editor saves headline as 3 separate fields
+            const titleParts = [section.headlinePrefix, section.headlineHighlight, section.headlineSuffix].filter(Boolean);
+            const title = titleParts.length > 0 ? titleParts.join(" ") : (section.headline || "Meet Antoine Lyles");
+            const titleHighlight = section.headlineHighlight || "";
+            // tagline comes from rich text editor — strip HTML wrapper
+            const rawTagline = ceo.quotes?.[0] || ceo.title || "Performance Recovery Specialist";
+            const tagline = rawTagline.replace(/<[^>]*>/g, '').trim();
             const image = ceo.image?.src || "/images/theraphist.jpeg";
-            const imageAlt = ceo.image?.alt || ceo.alt || "Antoine Lyles — Performance Recovery Specialist";
+            const imageAlt = ceo.image?.alt || ceo.alt || "Antoine Lyles";
 
             const descRaw = ceo.description || "";
-            const paragraphs = descRaw.split(/<\/p>\s*<p>|\n\n|<br\s*\/?>/);
-            const desc1 = paragraphs[0] ? paragraphs[0].replace(/<[^>]*>/g, '') : "";
-            const desc2 = paragraphs[1] ? paragraphs[1].replace(/<[^>]*>/g, '') : "";
+            // Split into two paragraphs but preserve HTML for rendering
+            const pMatch = descRaw.match(/<p[^>]*>([\s\S]*?)<\/p>/gi);
+            let desc1 = "";
+            let desc2 = "";
+            if (pMatch && pMatch.length >= 2) {
+              desc1 = pMatch[0];
+              desc2 = pMatch.slice(1).join("");
+            } else if (pMatch && pMatch.length === 1) {
+              desc1 = pMatch[0];
+            } else {
+              // No <p> tags — split on double newline
+              const parts = descRaw.split(/\n\n/);
+              desc1 = parts[0] ? `<p>${parts[0].replace(/<[^>]*>/g, '')}</p>` : "";
+              desc2 = parts[1] ? `<p>${parts[1].replace(/<[^>]*>/g, '')}</p>` : "";
+            }
 
             const photoBadge = ceo.badges?.top || "PERFORMANCE RECOVERY SPECIALIST";
             const signatureName = ceo.name || "Antoine Lyles";
@@ -220,6 +237,7 @@ export const useContent = () => {
                 ...l,
                 label,
                 title,
+                titleHighlight,
                 tagline,
                 desc1,
                 desc2,

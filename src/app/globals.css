@@ -134,23 +134,23 @@
 
   /* Optional dark mode if needed */
   .dark {
-    --background: 235 70% 10%;
+    --background: 0 0% 6%;
     --foreground: 0 0% 100%;
-    --card: 235 70% 12%;
+    --card: 0 0% 10%;
     --card-foreground: 0 0% 100%;
-    --popover: 235 70% 12%;
+    --popover: 0 0% 10%;
     --popover-foreground: 0 0% 100%;
-    --primary: 235 70% 48%;
-    --primary-foreground: 0 0% 100%;
-    --secondary: 235 70% 30%;
-    --secondary-foreground: 0 0% 100%;
-    --muted: 235 70% 20%;
+    --primary: 47 67% 45%;
+    --primary-foreground: 0 0% 0%;
+    --secondary: 47 67% 38%;
+    --secondary-foreground: 0 0% 0%;
+    --muted: 0 0% 15%;
     --muted-foreground: 0 0% 70%;
-    --accent: 235 70% 48%;
-    --accent-foreground: 0 0% 100%;
-    --border: 235 70% 25%;
-    --input: 235 70% 25%;
-    --ring: 235 70% 48%;
+    --accent: 47 67% 45%;
+    --accent-foreground: 0 0% 0%;
+    --border: 0 0% 15%;
+    --input: 0 0% 15%;
+    --ring: 47 67% 45%;
   }
 }
 
