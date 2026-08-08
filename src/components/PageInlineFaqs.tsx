@@ -131,8 +131,8 @@ const AccordionItem = ({
         />
         <defs>
           <radialGradient id="liquidGradient">
-            <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.2" />
-            <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.05" />
+            <stop offset="0%" stopColor="#be9c25" stopOpacity="0.15" />
+            <stop offset="100%" stopColor="#be9c25" stopOpacity="0.03" />
           </radialGradient>
         </defs>
       </svg>
@@ -149,7 +149,7 @@ const AccordionItem = ({
         <span
           className={`
             text-[90px] font-black leading-none tracking-tighter
-            ${isOpen ? "text-primary/15" : "text-muted-foreground/20"}
+            ${isOpen ? "text-gold-dark/15" : "text-muted-foreground/20"}
             transition-colors duration-300
           `}
         >
@@ -166,8 +166,8 @@ const AccordionItem = ({
           relative bg-card/90 backdrop-blur-sm rounded-2xl
           border transition-all duration-300
           ${isOpen
-            ? "border-primary/30 shadow-2xl shadow-primary/15"
-            : "border-primary/10 hover:border-primary/20 shadow-lg shadow-primary/5"
+            ? "border-gold-dark/30 shadow-2xl shadow-gold-dark/15"
+            : "border-gold-dark/10 hover:border-gold-dark/20 shadow-lg shadow-gold-dark/5"
           }
         `}
       >
@@ -191,8 +191,8 @@ const AccordionItem = ({
           />
           <defs>
             <linearGradient id="borderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-              <stop offset="0%" stopColor="hsl(var(--primary))" />
-              <stop offset="100%" stopColor="hsl(var(--primary)/80)" />
+              <stop offset="0%" stopColor="#be9c25" />
+              <stop offset="100%" stopColor="#be9c25" />
             </linearGradient>
           </defs>
         </svg>
@@ -206,11 +206,11 @@ const AccordionItem = ({
                 style={{
                   background:
                     i % 2 === 0
-                      ? "hsl(var(--primary))"
-                      : "hsl(var(--primary)/80)",
+                      ? "#be9c25"
+                      : "#be9c25",
                   boxShadow: `0 0 8px ${i % 2 === 0
-                    ? "hsl(var(--primary))"
-                    : "hsl(var(--primary)/80)"
+                    ? "#be9c25"
+                    : "#be9c25"
                     }`,
                 }}
                 initial={{ x: "50%", y: "50%", scale: 0, opacity: 0.6 }}
@@ -241,7 +241,7 @@ const AccordionItem = ({
               className={`
                 text-base md:text-lg lg:text-xl font-light transition-all duration-300 w-full
                 ${isOpen
-                  ? "text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/80 font-medium"
+                  ? "text-transparent bg-clip-text bg-gradient-to-r from-gold-dark to-gold-dark font-medium"
                   : "text-card-foreground group-hover:text-card-foreground/90"
                 }
               `}
@@ -256,15 +256,15 @@ const AccordionItem = ({
                     ? {
                       rotate: 180,
                       scale: 1.1,
-                      backgroundColor: "rgb(36, 48, 210)",
-                      borderColor: "rgb(36, 48, 210)",
+                      backgroundColor: "#be9c25",
+                      borderColor: "#be9c25",
                     }
                     : {
                       rotate: 0,
                       scale: 1,
                       backgroundColor: "rgb(255, 255, 255)",
                       borderColor: isHovered
-                        ? "rgb(36, 48, 210)"
+                        ? "#be9c25"
                         : "rgb(230, 230, 230)",
                     }
                 }
@@ -273,7 +273,7 @@ const AccordionItem = ({
                   w-10 h-10 md:w-12 md:h-12 rounded-full border-2
                   flex items-center justify-center
                   transition-all duration-300
-                  ${isOpen ? "bg-primary border-primary" : "bg-background"}
+                  ${isOpen ? "bg-gold-dark border-gold-dark" : "bg-background"}
                 `}
               >
                 <motion.svg
@@ -289,7 +289,7 @@ const AccordionItem = ({
                       isOpen
                         ? "white"
                         : isHovered
-                          ? "rgb(36, 48, 210)"
+                          ? "#be9c25"
                           : "rgb(115, 115, 115)"
                     }
                     strokeWidth="1.8"
@@ -303,12 +303,12 @@ const AccordionItem = ({
                       isOpen
                         ? "white"
                         : isHovered
-                          ? "rgb(36, 48, 210)"
+                          ? "#be9c25"
                           : "rgb(115, 115, 115)"
                     }
                     strokeWidth="1.8"
                     strokeLinecap="round"
-                    animate={{ 
+                    animate={{
                       rotate: isOpen ? 90 : 0,
                       opacity: isOpen ? 0 : 1
                     }}
@@ -320,7 +320,7 @@ const AccordionItem = ({
 
               {isOpen && (
                 <motion.div
-                  className="absolute inset-0 rounded-full border-2 border-primary"
+                  className="absolute inset-0 rounded-full border-2 border-gold-dark"
                   animate={{ scale: [1, 1.3, 1], opacity: [0.4, 0, 0.4] }}
                   transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
                 />
@@ -339,7 +339,7 @@ const AccordionItem = ({
               className="overflow-hidden"
             >
               <div className="px-7 md:px-9 pb-7 md:pb-9">
-                <div className="relative pl-6 border-l-2 border-primary/20">
+                <div className="relative pl-6 border-l-2 border-gold-dark/20">
                   <RichTextRenderer
                     content={item.answer}
                     className="text-muted-foreground text-sm md:text-base leading-relaxed mb-5"
@@ -355,7 +355,7 @@ const AccordionItem = ({
                           transition={{ delay: 0.1 + i * 0.05 }}
                           className="flex items-center gap-2 text-xs"
                         >
-                          <span className="w-1 h-1 bg-primary rounded-full" />
+                          <span className="w-1 h-1 bg-gold-dark rounded-full" />
                           <span className="text-muted-foreground">{meta.label}:</span>
                           <span className="font-medium text-card-foreground">{meta.value}</span>
                         </motion.div>
@@ -368,13 +368,13 @@ const AccordionItem = ({
                       initial={{ opacity: 0, y: 10 }}
                       animate={{ opacity: 1, y: 0 }}
                       transition={{ delay: 0.15 }}
-                      className="flex flex-wrap items-center gap-4 pt-4 border-t border-primary/10"
+                      className="flex flex-wrap items-center gap-4 pt-4 border-t border-gold-dark/10"
                     >
                       {item.links.map((link: any, i: number) => (
                         <Link key={`${link.url}-${i}`} href={link.url}>
                           <motion.div
                             whileHover={{ x: 5 }}
-                            className="inline-flex items-center gap-1.5 text-xs font-medium text-primary hover:text-primary/80 transition-colors group cursor-pointer"
+                            className="inline-flex items-center gap-1.5 text-xs font-medium text-gold-dark hover:text-gold-dark/80 transition-colors group cursor-pointer"
                           >
                             <span>{link.label}</span>
                             <motion.svg
@@ -403,8 +403,8 @@ const AccordionItem = ({
           className="absolute top-5 left-5 w-6 h-6 border-t-2 border-l-2"
           animate={
             isHovered
-              ? { width: 14, height: 14, borderColor: "rgba(36, 48, 210, 0.5)" }
-              : { width: 24, height: 24, borderColor: "rgba(36, 48, 210, 0.2)" }
+              ? { width: 14, height: 14, borderColor: "rgba(190, 156, 37, 0.5)" }
+              : { width: 24, height: 24, borderColor: "rgba(190, 156, 37, 0.2)" }
           }
           transition={{ duration: 0.2 }}
         />
@@ -412,8 +412,8 @@ const AccordionItem = ({
           className="absolute bottom-5 right-5 w-6 h-6 border-b-2 border-r-2"
           animate={
             isHovered
-              ? { width: 14, height: 14, borderColor: "rgba(36, 48, 210, 0.5)" }
-              : { width: 24, height: 24, borderColor: "rgba(36, 48, 210, 0.2)" }
+              ? { width: 14, height: 14, borderColor: "rgba(190, 156, 37, 0.5)" }
+              : { width: 24, height: 24, borderColor: "rgba(190, 156, 37, 0.2)" }
           }
           transition={{ duration: 0.2 }}
         />
@@ -457,15 +457,15 @@ const CategoryFilter = ({
           className={`
             relative px-4 py-2 md:px-5 md:py-2.5 rounded-full text-xs md:text-sm font-bold transition-all duration-200
             ${activeCategory === category.id
-              ? "text-white"
-              : "text-muted-foreground hover:text-card-foreground bg-card/50 hover:bg-primary/5"
+              ? "text-white font-semibold"
+              : "text-muted-foreground hover:text-card-foreground bg-card/50 hover:bg-gold-dark/5"
             }
           `}
         >
           {activeCategory === category.id && (
             <motion.div
               layoutId="activeCategory"
-              className="absolute inset-0 bg-primary rounded-full shadow-lg shadow-primary/20"
+              className="absolute inset-0 bg-gold-dark rounded-full shadow-lg shadow-gold-dark/20"
               initial={false}
               transition={{ type: "spring", stiffness: 500, damping: 40, duration: 0.2 }}
             />
@@ -501,7 +501,7 @@ const SearchBar = ({ onSearch }: { onSearch: (query: string) => void }) => {
         className={`
           relative flex items-center bg-card rounded-full border transition-all duration-200
           ${isFocused
-            ? "border-primary shadow-lg shadow-primary/10"
+            ? "border-gold-dark shadow-lg shadow-gold-dark/10"
             : "border-border hover:border-border/80 shadow-md"
           }
         `}
@@ -561,8 +561,8 @@ export default function PageInlineFaqs({
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Use passed faqs prop, fall back to global faq items if none provided
-  const items: any[] = faqs && faqs.length > 0 ? faqs : (globalFaq as any)?.items || [];
+  // Use passed faqs prop, do not fall back to global faq items if none provided
+  const items: any[] = faqs && faqs.length > 0 ? faqs : [];
 
   // Extract unique categories from the items if they have category fields
   const rawCategories: any[] = (() => {
@@ -700,7 +700,7 @@ export default function PageInlineFaqs({
             {/* Section Header */}
             {!hideHeader && (
               <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16 inline-faq-reveal">
-                <span className="text-xs font-medium tracking-[0.2em] uppercase text-primary mb-3 block">
+                <span className="text-xs font-medium tracking-[0.2em] uppercase text-gold-dark mb-3 block">
                   {badge || section?.badge || "Knowledge Base"}
                 </span>
                 <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium text-foreground mb-4">
@@ -717,7 +717,7 @@ export default function PageInlineFaqs({
                     <p>Answers to common questions about our exterior remodeling services in St. Louis.</p>
                   )}
                 </div>
-                <div className="w-16 h-0.5 bg-gradient-to-r from-primary to-primary/60 mx-auto mt-6 rounded-full" />
+                <div className="w-16 h-0.5 bg-gradient-to-r from-gold-dark to-gold-dark/60 mx-auto mt-6 rounded-full" />
               </div>
             )}
 
@@ -763,7 +763,7 @@ export default function PageInlineFaqs({
                       setActiveCategory("all");
                       setSearchQuery("");
                     }}
-                    className="mt-4 text-sm text-primary hover:text-primary/80 underline underline-offset-4"
+                    className="mt-4 text-sm text-gold-dark hover:text-gold-dark/80 underline underline-offset-4"
                   >
                     Clear filters
                   </button>
