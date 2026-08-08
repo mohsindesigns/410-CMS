@@ -3,6 +3,7 @@
 import Image from "next/image";
 import { motion } from "framer-motion";
 import { useContent } from "../hooks/useContent";
+import { stripHtml } from "../lib/utils";
 
 export default function StatsSection() {
   const { stats } = useContent();
@@ -60,10 +61,10 @@ export default function StatsSection() {
 
           {/* ── Right Column: Editorial Text ── */}
           <div>
-            <p className="section-label text-gold-dark mb-4">{label}</p>
+            <p className="section-label text-gold-dark mb-4">{stripHtml(label)}</p>
             <h2 className="display-heading text-[30px] min-[400px]:text-[36px] md:text-[44px] text-dark leading-tight mb-6">
-              {titleLine1}<br />
-              {titleLine2} <span className="text-gold-dark italic">{titleItalicWord}</span>
+              {stripHtml(titleLine1)}<br />
+              {stripHtml(titleLine2)} <span className="text-gold-dark italic">{stripHtml(titleItalicWord)}</span>
             </h2>
 
             <motion.p
@@ -73,7 +74,7 @@ export default function StatsSection() {
               variants={paragraphVariants}
               className="text-dark/70 text-[15px] md:text-[16px] leading-[1.8] font-light max-w-[540px] border-l-2 border-gold-dark/30 pl-4 py-1"
             >
-              {description}
+              {stripHtml(description)}
             </motion.p>
           </div>
 

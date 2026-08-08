@@ -1,10 +1,15 @@
 "use client";
 
 import { useContent } from "../hooks/useContent";
-import Image from "next/image";
+import { useContentContext } from "../context/ContentContext";
 import Link from "next/link";
-import RichTextRenderer from "./ui/RichTextRenderer";
-import logo from "../assets/logo.png";
+import * as LucideIcons from "lucide-react";
+
+/** Strip HTML tags and return plain text */
+function stripHtml(html: string): string {
+  if (!html) return "";
+  return html.replace(/<[^>]*>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&nbsp;/g, " ").trim();
+}
 
 /* ── Logo ──────────────────────────────────────────────── */
 function FooterLogo({ logoUrl, siteTitle, logoText1, logoText2 }: { logoUrl?: string; siteTitle?: string; logoText1?: string; logoText2?: string }) {
@@ -39,67 +44,76 @@ function FooterLogo({ logoUrl, siteTitle, logoText1, logoText2 }: { logoUrl?: st
   );
 }
 
-/* ── Social Icons ─────────────────────────────────────── */
+/* ── Social Icons — only renders platforms added from dashboard ── */
 function SocialIcons({ socialItems }: { socialItems?: any[] }) {
-  const socials = [
-    {
-      label: 'Facebook',
-      path: 'M18 2h-3a5 5 0 00-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 011-1h3z',
-    },
-    {
-      label: 'Instagram',
-      path: 'M16 11.37A4 4 0 1112.63 8 4 4 0 0116 11.37zM17.5 6.5h.01M7.5 2h9A5.5 5.5 0 0122 7.5v9a5.5 5.5 0 01-5.5 5.5h-9A5.5 5.5 0 012 16.5v-9A5.5 5.5 0 017.5 2z',
-    },
-    {
-      label: 'Google',
-      path: 'M21.35 11.1H12.18V13.83H18.69C18.36 17.64 15.19 19.27 12.19 19.27C8.36 19.27 5 16.25 5 12C5 7.9 8.2 4.73 12.2 4.73C15.29 4.73 17.1 6.7 17.1 6.7L19 4.72C19 4.72 16.56 2 12.1 2C6.42 2 2.03 6.8 2.03 12C2.03 17.05 6.16 22 12.25 22C17.6 22 21.5 18.33 21.5 12.91C21.5 11.76 21.35 11.1 21.35 11.1Z',
-    },
-    {
-      label: 'YouTube',
-      path: 'M22.54 6.42a2.78 2.78 0 00-1.95-1.96C18.88 4 12 4 12 4s-6.88 0-8.59.46a2.78 2.78 0 00-1.95 1.96A29 29 0 001 12a29 29 0 00.46 5.58 2.78 2.78 0 001.95 1.95C5.12 20 12 20 12 20s6.88 0 8.59-.47a2.78 2.78 0 001.95-1.95A29 29 0 0023 12a29 29 0 00-.46-5.58z M9.75 15.02V8.98L15.5 12z',
-    },
-  ];
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line no-console
+    console.log('[Footer] socialItems received:', socialItems);
+  }
 
-  const getSocialUrl = (platform: string) => {
-    if (!socialItems) return "#";
-    const item = socialItems.find((s: any) => s.platform?.toLowerCase() === platform.toLowerCase());
-    return item?.href || "#";
-  };
+  if (!socialItems || socialItems.length === 0) return null;
+
+  // Show all entries that have a platform name
+  const activeSocials = socialItems.filter((s: any) => s.platform && s.platform.trim() !== '');
+
+  if (activeSocials.length === 0) return null;
 
   return (
     <div className="flex gap-2.5 mt-4 justify-start">
-      {socials.map((s) => (
-        <a
-          key={s.label}
-          href={getSocialUrl(s.label)}
-          target="_blank"
-          rel="noopener noreferrer"
-          aria-label={s.label}
-          className="w-9 h-9 rounded-full border border-border-dark flex items-center justify-center text-white/40 hover:text-gold hover:border-gold transition-all duration-200"
-        >
-          <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round">
-            <path d={s.path} />
-          </svg>
-        </a>
-      ))}
+      {activeSocials.map((s: any, i: number) => {
+        // Look up iconName from s.icon or s.platform
+        const iconName = s.icon || s.platform || '';
+        // Format to PascalCase to match Lucide icon export names
+        const formattedIconName = iconName.charAt(0).toUpperCase() + iconName.slice(1);
+        
+        let IconComponent = (LucideIcons as any)[formattedIconName];
+
+        // Specific fallbacks for common lowercase names if not direct match
+        if (!IconComponent) {
+          const lower = formattedIconName.toLowerCase();
+          if (lower === 'linkedin') {
+            IconComponent = LucideIcons.Linkedin;
+          } else if (lower === 'facebook') {
+            IconComponent = LucideIcons.Facebook;
+          } else if (lower === 'instagram') {
+            IconComponent = LucideIcons.Instagram;
+          } else if (lower === 'twitter') {
+            IconComponent = LucideIcons.Twitter;
+          } else if (lower === 'youtube') {
+            IconComponent = LucideIcons.Youtube;
+          } else {
+            IconComponent = LucideIcons.Share2;
+          }
+        }
+
+        const href = s.href && s.href.trim() !== '' ? s.href : '#';
+        return (
+          <a
+            key={`${s.platform}-${i}`}
+            href={href}
+            target={href !== '#' ? '_blank' : undefined}
+            rel="noopener noreferrer"
+            aria-label={s.platform}
+            className="w-9 h-9 rounded-full border border-white/20 flex items-center justify-center text-white/60 hover:text-gold hover:border-gold transition-all duration-200"
+          >
+            <IconComponent size={16} strokeWidth={1.5} />
+          </a>
+        );
+      })}
     </div>
   );
 }
 
+
 /* ── Map Placeholder ───────────────────────────────────── */
 function MapPlaceholder({ addressText }: { addressText: string }) {
   return (
-    <div className="mt-5 h-24 sm:h-28 bg-dark-3 rounded-md overflow-hidden relative flex items-center justify-center border border-border-dark">
-      <div
-        className="absolute inset-0 bg-grid-pattern-white-faint"
-      />
-      <div className="relative flex flex-col items-center gap-1.5">
+    <div className="mt-5 h-24 sm:h-28 bg-white/[0.03] rounded-md overflow-hidden relative flex items-center justify-center border border-white/10">
+      <div className="relative flex flex-col items-center gap-1.5 px-3">
         <svg width="22" height="22" viewBox="0 0 24 24" fill="#C8960C">
           <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
         </svg>
-        <div className="text-white/40 text-[10.5px] font-medium text-center px-2 whitespace-pre-line leading-tight">
-          <RichTextRenderer content={addressText} className="!text-white/40 text-[10.5px] font-medium text-center [&_p]:m-0" />
-        </div>
+        <p className="text-white/55 text-[10.5px] font-medium text-center whitespace-pre-line leading-tight">{addressText}</p>
       </div>
     </div>
   );
@@ -107,10 +121,20 @@ function MapPlaceholder({ addressText }: { addressText: string }) {
 
 export default function Footer() {
   const { footer, navbar, services: servicesData } = useContent();
+  const rawCtx = useContentContext();
+  const rawFooter = rawCtx?.footer || {};
 
   const contactInfo = footer?.contact || {};
   const companyInfo = footer?.company || {};
   const bottomInfo = footer?.bottom || {};
+  const socialLinks: any[] = Array.isArray(rawFooter.social) ? rawFooter.social
+    : Array.isArray((footer as any)?.social) ? (footer as any).social
+    : [];
+
+  if (typeof window !== 'undefined') {
+    // eslint-disable-next-line no-console
+    console.log('[Footer] rawFooter.social:', rawFooter.social, '| socialLinks:', socialLinks);
+  }
 
   const {
     quickLinksLabel = "Quick Links",
@@ -121,12 +145,14 @@ export default function Footer() {
     divider = "|"
   } = footer || {};
 
-  const brandDescriptionText = companyInfo.description || footer?.brandDescription || "Elite performance recovery bodywork, mobility optimization, and injury prevention for athletes and active adults since 2020. #bodywork #performancerecovery";
-  const addressText = contactInfo.address || footer?.address || "125 Wellness Way, Suite 101\nLos Angeles, CA 90001";
-  const phoneText = contactInfo.phone || footer?.phone || "(323) 456-7890";
-  const emailText = contactInfo.email || footer?.email || "info@muscletherapy.com";
-  const hoursText = contactInfo.hours || footer?.hours || "Mon–Sat: 8:00 AM – 7:00 PM";
-  const copyrightText = bottomInfo.copyright || footer?.copyright || "© 2024 Muscle Therapy. All Rights Reserved.";
+  const brandDescriptionText: string = stripHtml(
+    companyInfo.description || (footer as any)?.brandDescription || "Elite performance recovery bodywork, mobility optimization, and injury prevention for athletes and active adults since 2020."
+  );
+  const addressText: string = stripHtml(contactInfo.address || (footer as any)?.address || "125 Wellness Way, Suite 101\nLos Angeles, CA 90001");
+  const phoneText: string = stripHtml(contactInfo.phone || (footer as any)?.phone || "(323) 456-7890");
+  const emailText: string = stripHtml(contactInfo.email || (footer as any)?.email || "info@muscletherapy.com");
+  const hoursText: string = stripHtml(contactInfo.hours || (footer as any)?.hours || "Mon–Sat: 8:00 AM – 7:00 PM");
+  const copyrightText: string = stripHtml(bottomInfo.copyright || (footer as any)?.copyright || "© 2024 Muscle Therapy. All Rights Reserved.");
 
   const companyLinks = navbar?.companyLinks || navbar?.links || [];
   const quickLinksData = companyLinks.map((link: any) => ({
@@ -152,11 +178,11 @@ export default function Footer() {
 
             {/* Col 1 — Brand */}
             <div className="flex flex-col items-start text-left">
-              <FooterLogo logoUrl={navbar?.logo} siteTitle={navbar?.siteTitle} logoText1={navbar?.logoText1} logoText2={navbar?.logoText2} />
-              <div className="text-white/45 text-[13.5px] leading-[1.8] mb-4 max-w-[280px] [&_p]:m-0">
-                <RichTextRenderer content={brandDescriptionText} className="!text-white/45 text-[13.5px]" />
-              </div>
-              <SocialIcons socialItems={footer?.social} />
+              <FooterLogo logoUrl={(navbar as any)?.logo} siteTitle={(navbar as any)?.siteTitle} logoText1={(navbar as any)?.logoText1} logoText2={(navbar as any)?.logoText2} />
+              <p className="text-white/55 text-[13.5px] leading-[1.8] mb-4 max-w-[280px]">
+                {brandDescriptionText}
+              </p>
+              <SocialIcons socialItems={socialLinks} />
             </div>
 
             {/* Col 2 — Quick Links */}
@@ -226,13 +252,13 @@ export default function Footer() {
                       strokeWidth="1.5"
                       strokeLinecap="round"
                       strokeLinejoin="round"
-                      className="mt-1 flex-shrink-0"
+                      className="mt-0.5 flex-shrink-0"
                     >
                       {item.icon}
                     </svg>
-                    <div className="text-white/45 text-[13px] leading-snug [&_p]:m-0">
-                      <RichTextRenderer content={item.text} className="!text-white/45 text-[13px]" />
-                    </div>
+                    <span className="text-white/55 text-[13px] leading-snug whitespace-pre-line">
+                      {item.text}
+                    </span>
                   </li>
                 ))}
               </ul>
@@ -245,13 +271,11 @@ export default function Footer() {
 
           {/* ── Bottom bar ───────────────────────────── */}
           <div className="flex flex-col sm:flex-row items-center justify-between py-6 gap-3 text-center sm:text-left">
-            <div className="text-white/30 text-[12px] [&_p]:m-0">
-              <RichTextRenderer content={copyrightText} className="!text-white/30 text-[12px]" />
-            </div>
+            <p className="text-white/40 text-[12px]">{copyrightText}</p>
             <div className="flex items-center gap-4 sm:gap-6">
-              <Link href="/contact" className="text-white/30 text-[12px] hover:text-white/70 transition-colors">{privacy}</Link>
+              <Link href="/contact" className="text-white/40 text-[12px] hover:text-white/70 transition-colors">{privacy}</Link>
               <span className="text-white/15">{divider}</span>
-              <Link href="/contact" className="text-white/30 text-[12px] hover:text-white/70 transition-colors">{terms}</Link>
+              <Link href="/contact" className="text-white/40 text-[12px] hover:text-white/70 transition-colors">{terms}</Link>
             </div>
           </div>
 

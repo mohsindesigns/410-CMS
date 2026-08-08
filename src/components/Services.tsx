@@ -6,6 +6,7 @@ import Link from "next/link";
 import { ArrowRight, CheckCircle2 } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useContent } from "../hooks/useContent";
+import { stripHtml } from "../lib/utils";
 
 export default function ServicesSection() {
   const [activeIdx, setActiveIdx] = useState(0);
@@ -32,13 +33,13 @@ export default function ServicesSection() {
           {/* ── Col 1: Intro / Section Title ── */}
           <div className="w-full lg:pr-8 lg:border-r border-border-dark flex flex-col justify-between py-2 h-full">
             <div>
-              <p className="section-label mb-4">{label}</p>
+              <p className="section-label mb-4">{stripHtml(label)}</p>
               <h2 className="display-heading text-[32px] min-[400px]:text-[36px] md:text-[40px] text-white leading-[1.12] mb-5">
-                {titleLine1}<br className="hidden lg:block" /> {titleLine2}<br className="hidden lg:block" /> {titleLine3}{' '}
-                <em className="text-gold not-italic italic">{titleItalicWord}</em>
+                {stripHtml(titleLine1)}<br className="hidden lg:block" /> {stripHtml(titleLine2)}<br className="hidden lg:block" /> {stripHtml(titleLine3)}{' '}
+                <em className="text-gold not-italic italic">{stripHtml(titleItalicWord)}</em>
               </h2>
               <p className="text-white/45 text-[13.5px] leading-[1.8] font-light">
-                {description}
+                {stripHtml(description)}
               </p>
             </div>
             
@@ -108,9 +109,9 @@ export default function ServicesSection() {
                     </span>
                   </div>
 
-                  <h3 className="display-heading text-[22px] md:text-[25px] text-white mb-2 leading-tight">{active.name}</h3>
+                  <h3 className="display-heading text-[22px] md:text-[25px] text-white mb-2 leading-tight">{stripHtml(active.name)}</h3>
                   <p className="text-white/60 text-[13px] leading-relaxed mb-4 font-light h-[54px] overflow-hidden">
-                    {active.description}
+                    {stripHtml(active.description)}
                   </p>
 
                   {/* Strictly 4 benefits for 100% height uniformity */}

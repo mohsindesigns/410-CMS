@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Check } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useContent } from "../hooks/useContent";
+import { stripHtml } from "../lib/utils";
 
 const stepImages = [
   "/images/blog-1.webp",
@@ -69,12 +70,12 @@ export default function HowItWorksSection() {
 
         {/* ── Header ── */}
         <div className="mb-12 md:mb-20 max-w-xl">
-          <p className="section-label text-gold-dark mb-4">{label}</p>
+          <p className="section-label text-gold-dark mb-4">{stripHtml(label)}</p>
           <h2 className="display-heading text-[28px] min-[400px]:text-[34px] md:text-[48px] text-dark leading-tight">
-            {title}
+            {stripHtml(title)}
           </h2>
           <p className="text-dark/55 text-[14px] md:text-[15px] leading-relaxed mt-4">
-            {description}
+            {stripHtml(description)}
           </p>
         </div>
 
@@ -110,10 +111,10 @@ export default function HowItWorksSection() {
                 <div className="absolute bottom-6 left-6 right-6 bg-dark/85 backdrop-blur-md p-4 border border-white/15 rounded-lg flex items-center justify-between">
                   <div>
                     <p className="text-gold font-mono font-bold text-[11px] tracking-[0.2em] uppercase mb-0.5">
-                      {phaseLabel} {items[activeIdx].id}
+                      {stripHtml(phaseLabel)} {stripHtml(items[activeIdx].id)}
                     </p>
                     <p className="text-white font-semibold text-[14px] leading-snug">
-                      {items[activeIdx].title}
+                      {stripHtml(items[activeIdx].title)}
                     </p>
                   </div>
                   <span className="text-white/40 text-[11px] font-mono font-bold">
@@ -162,11 +163,11 @@ export default function HowItWorksSection() {
 
                   <h3 className={`font-bold text-[19px] md:text-[22px] mb-3 tracking-tight leading-snug transition-colors
                     ${isActive ? "text-dark" : "text-dark/80"}`}>
-                    {step.title}
+                    {stripHtml(step.title)}
                   </h3>
 
                   <p className="text-dark/65 text-[13.5px] md:text-[14.5px] leading-relaxed mb-5 font-light">
-                    {step.description}
+                    {stripHtml(step.description)}
                   </p>
 
                   {/* Action Items Checklist */}

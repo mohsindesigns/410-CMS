@@ -17,6 +17,20 @@ import { useContent } from "../../hooks/useContent";
 import ContactFaqSection from '../QAForm';
 import RichTextRenderer from "../ui/RichTextRenderer";
 
+/** Strip HTML tags and decode common entities to plain text */
+function sh(html: string | undefined | null): string {
+  if (!html) return "";
+  return String(html)
+    .replace(/<[^>]*>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .trim();
+}
+
 export default function ServiceDetailTemplate({ pageData, params: syncParams }: { pageData?: any, params?: any }) {
   const { services: servicesData, globalMetadata, serviceDetailPage: globalServiceDetailPage } = useContent();
   const [slug, setSlug] = useState<string | null>(null);
@@ -144,18 +158,19 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
     ]
   };
 
-  const serviceName = service.title || service.name || "";
+  const serviceName = sh(service.title || service.name || "");
   const titleWords = serviceName.split(' ');
   const mainTitle = titleWords.slice(0, -1).join(' ');
   const lastTitleWord = titleWords[titleWords.length - 1] || "";
   const serviceImage = service.image || service.featuredImage || "/images/service-massage.webp";
   const bookingUrl = globalMetadata?.bookingUrl || "https://www.styleseat.com/m/v/410muscletherapy";
+  const serviceDescription = sh(service.description);
   const benefits = service.benefits || [];
   const statsList = [
-    { value: service.statsItem1Val || pg.statsItem1Val, label: service.statsItem1Label || pg.statsItem1Label },
-    { value: service.statsItem2Val || pg.statsItem2Val, label: service.statsItem2Label || pg.statsItem2Label },
-    { value: service.statsItem3Val || pg.statsItem3Val, label: service.statsItem3Label || pg.statsItem3Label },
-    { value: service.statsItem4Val || pg.statsItem4Val, label: service.statsItem4Label || pg.statsItem4Label }
+    { value: sh(service.statsItem1Val || pg.statsItem1Val), label: sh(service.statsItem1Label || pg.statsItem1Label) },
+    { value: sh(service.statsItem2Val || pg.statsItem2Val), label: sh(service.statsItem2Label || pg.statsItem2Label) },
+    { value: sh(service.statsItem3Val || pg.statsItem3Val), label: sh(service.statsItem3Label || pg.statsItem3Label) },
+    { value: sh(service.statsItem4Val || pg.statsItem4Val), label: sh(service.statsItem4Label || pg.statsItem4Label) }
   ];
 
   return (
@@ -209,7 +224,7 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
 
               {/* Description */}
               <p className="text-white/75 md:text-white/65 text-[15px] md:text-[17px] leading-[1.8] max-w-[540px] mb-8 font-light">
-                {service.description} {pg.heroDescriptionSuffix}
+                {serviceDescription} {sh(pg.heroDescriptionSuffix)}
               </p>
 
               {/* Quick Specs Pill Strip */}
@@ -332,7 +347,7 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
               <div className="lg:col-span-7 flex flex-col justify-between text-left">
                 <div>
                   <p className="text-dark/75 text-[16px] md:text-[17.5px] leading-[1.85] font-light mb-8">
-                    {service.description} {pg.overviewIntroSuffix}
+                    {serviceDescription} {sh(pg.overviewIntroSuffix)}
                   </p>
 
                   {/* 4 Feature Row Cards */}
@@ -352,10 +367,10 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                           </div>
                           <div>
                             <h3 className="text-dark font-bold text-[17px] mb-1 group-hover:text-gold-dark transition-colors">
-                              {benefitTitle}
+                              {sh(benefitTitle)}
                             </h3>
                             <p className="text-dark/65 text-[13.5px] font-light leading-relaxed">
-                              {benefitDesc}
+                              {sh(benefitDesc)}
                             </p>
                           </div>
                         </div>
@@ -429,11 +444,11 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                     </div>
 
                     <h3 className="text-dark font-bold text-[19px] mb-2.5 leading-snug group-hover:text-gold-dark transition-colors relative z-10">
-                      {profile.label}
+                      {sh(profile.label)}
                     </h3>
 
                     <p className="text-dark/65 text-[14px] font-light leading-relaxed relative z-10">
-                      {profile.desc}
+                      {sh(profile.desc)}
                     </p>
                   </div>
 
@@ -487,11 +502,11 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                     </div>
 
                     <h3 className="text-white font-bold text-[19px] mb-3 leading-snug group-hover:text-gold transition-colors">
-                      {step.title}
+                      {sh(step.title)}
                     </h3>
 
                     <p className="text-white/65 text-[14px] font-light leading-relaxed">
-                      {step.desc}
+                      {sh(step.desc)}
                     </p>
                   </div>
 

@@ -5,6 +5,7 @@ import Link from "next/link";
 import { ArrowRight, Star } from "lucide-react";
 import { motion } from "framer-motion";
 import { useContent } from "../hooks/useContent";
+import { stripHtml } from "../lib/utils";
 
 export default function HeroSection() {
   const { hero, globalMetadata } = useContent();
@@ -20,6 +21,11 @@ export default function HeroSection() {
     image = "/images/hero-bg.webp",
     imageAlt = "Expert muscle therapy session"
   } = hero || {};
+
+  const cleanLabel = stripHtml(label);
+  const cleanTitle1 = stripHtml(title1);
+  const cleanTitle2 = stripHtml(title2);
+  const cleanDescription = stripHtml(description);
 
   const bookingUrl = globalMetadata?.bookingUrl || "https://www.styleseat.com/m/v/410muscletherapy";
 
@@ -87,19 +93,19 @@ export default function HeroSection() {
           <motion.div variants={itemVariants} className="flex items-center gap-3 mb-4 md:mb-5">
             <span className="w-6 h-[1px] bg-gold flex-shrink-0 hidden md:block" />
             <p className="section-label">
-              {label}
+              {cleanLabel}
             </p>
           </motion.div>
 
           {/* Headline */}
           <motion.h1 variants={itemVariants} className="display-heading text-[33px] min-[400px]:text-[41px] md:text-[60px] leading-[1.1] mb-6 md:mb-8 tracking-tight">
-            <span className="block text-white mb-0">{title1}</span>
-            <span className="block text-gold italic">{title2}</span>
+            <span className="block text-white mb-0">{cleanTitle1}</span>
+            <span className="block text-gold italic">{cleanTitle2}</span>
           </motion.h1>
 
           {/* Description */}
           <motion.p variants={itemVariants} className="text-white/70 md:text-white/55 text-[14px] md:text-[15px] leading-[1.7] md:leading-[1.8] max-w-[460px] mb-8 md:mb-10">
-            {description}
+            {cleanDescription}
           </motion.p>
 
           {/* CTA Buttons */}

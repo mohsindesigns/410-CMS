@@ -4,6 +4,7 @@ import Image from "next/image";
 import { ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useContent } from "../hooks/useContent";
+import { stripHtml } from "../lib/utils";
 
 export default function Leadership() {
   const { leadership, globalMetadata } = useContent();
@@ -98,11 +99,11 @@ export default function Leadership() {
             </motion.p>
 
             <motion.p variants={itemVariants} className="text-dark/60 text-[14.5px] md:text-[15px] leading-relaxed mb-5 font-light">
-              {desc1}
+              {stripHtml(desc1)}
             </motion.p>
 
             <motion.p variants={itemVariants} className="text-dark/65 text-[14.5px] md:text-[15px] leading-relaxed mb-8 border-l-2 border-gold-dark/30 pl-4 py-1 font-light">
-              {desc2}
+              {stripHtml(desc2)}
             </motion.p>
 
             {/* Signature + CTA Row */}

@@ -3,6 +3,7 @@
 import { CalendarRange, ArrowRight } from "lucide-react";
 import { motion } from "framer-motion";
 import { useContent } from "../hooks/useContent";
+import { stripHtml } from "../lib/utils";
 
 export default function CtaBanner() {
   const { ctaBanner, globalMetadata } = useContent();
@@ -46,13 +47,13 @@ export default function CtaBanner() {
 
           <div className="flex flex-col items-center sm:items-start">
             <p className="text-dark/60 text-[10px] md:text-[12px] font-bold tracking-[0.15em] uppercase mb-1">
-              {tagline}
+              {stripHtml(tagline)}
             </p>
             <h3 className="display-heading text-[20px] min-[400px]:text-[24px] md:text-[30px] text-dark leading-tight mb-1.5">
-              {title}
+              {stripHtml(title)}
             </h3>
             <p className="text-dark/65 text-[13px] md:text-[14px]">
-              {description}
+              {stripHtml(description)}
             </p>
           </div>
         </div>

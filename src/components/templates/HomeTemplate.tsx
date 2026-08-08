@@ -36,9 +36,7 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
       <section id="leadership">
         <Leadership />
       </section>
-      <section id="portfolio">
-        <Portfolio />
-      </section>
+
 
       <section id="about">
         <HowWeWork />

@@ -93,3 +93,20 @@ export function sanitizeEncoding(obj: any): any {
   return obj;
 }
 
+/**
+ * Strips all HTML tags and returns plain text.
+ */
+export function stripHtml(html: string | undefined | null): string {
+  if (!html) return "";
+  return String(html)
+    .replace(/<[^>]*>/g, "")
+    .replace(/&amp;/g, "&")
+    .replace(/&lt;/g, "<")
+    .replace(/&gt;/g, ">")
+    .replace(/&nbsp;/g, " ")
+    .replace(/&#39;/g, "'")
+    .replace(/&quot;/g, '"')
+    .trim();
+}
+
+

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useContent } from "../hooks/useContent";
+import { stripHtml } from "../lib/utils";
 
 export default function TestimonialsSection() {
   const [activeIdx, setActiveIdx] = useState(0);
@@ -60,7 +61,7 @@ export default function TestimonialsSection() {
                     transition={{ duration: 0.25, ease: "easeOut" }}
                   >
                     <p className="text-white/80 text-[13.5px] min-[400px]:text-[15px] md:text-[16px] leading-[1.65] md:leading-[1.75] font-display italic pt-3 sm:pt-4 mb-5">
-                      {activeTestimonial.quote}
+                      {stripHtml(activeTestimonial.quote)}
                     </p>
 
                     {/* Stars + name */}
@@ -71,7 +72,7 @@ export default function TestimonialsSection() {
                         ))}
                       </div>
                       <span className="text-gold text-[11.5px] min-[400px]:text-[12.5px] md:text-[13px] font-semibold tracking-wide">
-                        {dash} {activeTestimonial.name}
+                        {dash} {stripHtml(activeTestimonial.name)}
                       </span>
                     </div>
                   </motion.div>
