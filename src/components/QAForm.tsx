@@ -42,7 +42,7 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
   } = contactFaq || {};
 
   // Read page-specific overrides if editing or viewing on a specific page
-  const pageFaqs = pageData?.content?.faqs || pageData?.faqs;
+  const pageFaqs = pageData?.content?.faqs || pageData?.faqs || pageData?.faq;
   const activeFaqs = Array.isArray(pageFaqs) && pageFaqs.length > 0
     ? pageFaqs.map((f: any) => ({ q: f.q || f.question || "", a: f.a || f.answer || "" }))
     : faqs;

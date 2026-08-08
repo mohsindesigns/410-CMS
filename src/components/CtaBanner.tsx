@@ -12,10 +12,12 @@ export default function CtaBanner() {
     tagline = "Take the First Step",
     title = "Ready to Feel Your Best?",
     description = "Book your appointment today and start your journey to a pain-free, stronger you.",
-    button = "BOOK APPOINTMENT"
+    button = "BOOK APPOINTMENT",
+    btnUrl = "",
+    buttonUrl = ""
   } = ctaBanner || {};
 
-  const bookingUrl = globalMetadata?.bookingUrl || "https://www.styleseat.com/m/v/410muscletherapy";
+  const bookingUrl = btnUrl || buttonUrl || globalMetadata?.bookingUrl || "https://www.styleseat.com/m/v/410muscletherapy";
 
   return (
     <section className="bg-gold relative overflow-hidden py-12 md:py-14">

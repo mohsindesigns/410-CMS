@@ -106,7 +106,19 @@ function SocialIcons({ socialItems }: { socialItems?: any[] }) {
 
 
 /* ── Map Placeholder ───────────────────────────────────── */
-function MapPlaceholder({ addressText }: { addressText: string }) {
+function MapPlaceholder({ addressText, iframeHtml }: { addressText: string; iframeHtml?: string | null }) {
+  if (iframeHtml) {
+    // Ensure the map iframe fills the container perfectly and has rounded borders
+    const styledIframe = iframeHtml
+      .replace(/width="[^"]*"/i, 'width="100%"')
+      .replace(/height="[^"]*"/i, 'height="100%"');
+    return (
+      <div 
+        className="mt-5 h-[160px] w-full rounded-md overflow-hidden border border-white/10 relative"
+        dangerouslySetInnerHTML={{ __html: styledIframe }}
+      />
+    );
+  }
   return (
     <div className="mt-5 h-24 sm:h-28 bg-white/[0.03] rounded-md overflow-hidden relative flex items-center justify-center border border-white/10">
       <div className="relative flex flex-col items-center gap-1.5 px-3">
@@ -120,7 +132,7 @@ function MapPlaceholder({ addressText }: { addressText: string }) {
 }
 
 export default function Footer() {
-  const { footer, navbar, services: servicesData } = useContent();
+  const { footer, navbar, services: servicesData, hours } = useContent();
   const rawCtx = useContentContext();
   const rawFooter = rawCtx?.footer || {};
 
@@ -148,10 +160,35 @@ export default function Footer() {
   const brandDescriptionText: string = stripHtml(
     companyInfo.description || (footer as any)?.brandDescription || "Elite performance recovery bodywork, mobility optimization, and injury prevention for athletes and active adults since 2020."
   );
-  const addressText: string = stripHtml(contactInfo.address || (footer as any)?.address || "125 Wellness Way, Suite 101\nLos Angeles, CA 90001");
+
+  // Extract map iframe if present in the address field
+  const rawAddress = contactInfo.address || (footer as any)?.address || "125 Wellness Way, Suite 101\nLos Angeles, CA 90001";
+  const iframeRegex = /<iframe[^>]*>[\s\S]*?<\/iframe>/i;
+  const match = rawAddress.match(iframeRegex);
+  const iframeHtml = match ? match[0] : null;
+
+  // Clean address text by removing the iframe block
+  const addressCleanHtml = rawAddress.replace(iframeRegex, "").trim();
+  const addressText = stripHtml(addressCleanHtml);
+
   const phoneText: string = stripHtml(contactInfo.phone || (footer as any)?.phone || "(323) 456-7890");
   const emailText: string = stripHtml(contactInfo.email || (footer as any)?.email || "info@muscletherapy.com");
-  const hoursText: string = stripHtml(contactInfo.hours || (footer as any)?.hours || "Mon–Sat: 8:00 AM – 7:00 PM");
+
+  // Construct business hours dynamically from general settings or fall back
+  let hoursText = "";
+  const rawHoursText = contactInfo.hours || (footer as any)?.hours || "";
+  if (rawHoursText) {
+    hoursText = stripHtml(rawHoursText);
+  } else if (hours && (hours.monday || hours.saturday || hours.sunday)) {
+    const parts = [];
+    if (hours.monday) parts.push(`Mon–Fri: ${hours.monday}`);
+    if (hours.saturday) parts.push(`Sat: ${hours.saturday}`);
+    if (hours.sunday) parts.push(`Sun: ${hours.sunday}`);
+    hoursText = parts.join('\n');
+  } else {
+    hoursText = "Mon–Sat: 8:00 AM – 7:00 PM";
+  }
+
   const copyrightText: string = stripHtml(bottomInfo.copyright || (footer as any)?.copyright || "© 2024 Muscle Therapy. All Rights Reserved.");
 
   const companyLinks = navbar?.companyLinks || navbar?.links || [];
@@ -263,7 +300,7 @@ export default function Footer() {
                 ))}
               </ul>
               <div className="w-full">
-                <MapPlaceholder addressText={addressText} />
+                <MapPlaceholder addressText={addressText} iframeHtml={iframeHtml} />
               </div>
             </div>
 

@@ -539,7 +539,7 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
       </main>
 
       {/* Built-in Contact & FAQ Section */}
-      <ContactFaqSection pageData={pageData} />
+      <ContactFaqSection pageData={service} />
     </>
   );
 }

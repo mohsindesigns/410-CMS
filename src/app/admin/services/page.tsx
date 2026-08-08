@@ -242,6 +242,8 @@ export default function ServicesAdminPage() {
     icon: "Layout",
     tag: "",
     status: "published",
+    bookingCtaUrl: "",
+    heroCtaSecondaryUrl: "",
     faq: [],
     faqSchemaMarkup: "",
     faqBadge: "",
@@ -341,6 +343,8 @@ export default function ServicesAdminPage() {
     setForm({
       ...DEFAULT_CLINICAL_FIELDS,
       ...service,
+      bookingCtaUrl: service.bookingCtaUrl || "",
+      heroCtaSecondaryUrl: service.heroCtaSecondaryUrl || "",
       stats: service.stats || [],
       benefits: service.benefits || [],
       process: service.process || [],
@@ -572,8 +576,18 @@ export default function ServicesAdminPage() {
                         <input type="text" value={form.bookingCta || ""} onChange={(e) => setForm({ ...form, bookingCta: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
                       </div>
                       <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Primary Booking CTA Link (URL)</label>
+                        <input type="text" placeholder="Defaults to global booking link" value={form.bookingCtaUrl || ""} onChange={(e) => setForm({ ...form, bookingCtaUrl: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
                         <label className="text-[13px] font-bold">Secondary CTA button text</label>
                         <input type="text" value={form.heroCtaSecondary || ""} onChange={(e) => setForm({ ...form, heroCtaSecondary: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Secondary CTA Link (URL)</label>
+                        <input type="text" placeholder="Defaults to /services/slug" value={form.heroCtaSecondaryUrl || ""} onChange={(e) => setForm({ ...form, heroCtaSecondaryUrl: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
                       </div>
                     </div>
                   </div>

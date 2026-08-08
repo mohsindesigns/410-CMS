@@ -319,11 +319,30 @@ export const useContent = () => {
             stats: [],
             cta: { badge: "", title: "", description: "", trustBadges: [], buttons: [] }
         }),
-        faq: getSafe(completeData, 'faq', {
-            section: { badge: "", headline: "", title: "", description: "" },
-            categories: [],
-            items: []
-        }),
+        faq: (() => {
+            const globalFaq = getSafe(completeData, 'faq', {
+                section: { badge: "", headline: "", title: "", description: "" },
+                categories: [],
+                items: []
+            });
+            if (Array.isArray(completeData.faqs) && completeData.faqs.length > 0) {
+                return {
+                    ...globalFaq,
+                    section: {
+                        ...globalFaq.section,
+                        badge: completeData.faqBadge || globalFaq.section?.badge || "",
+                        headline: completeData.faqTitle || globalFaq.section?.headline || globalFaq.section?.title || "",
+                        title: completeData.faqTitle || globalFaq.section?.title || "",
+                        description: completeData.faqDescription || globalFaq.section?.description || ""
+                    },
+                    items: completeData.faqs.map((f: any) => ({
+                        question: f.question,
+                        answer: f.answer
+                    }))
+                };
+            }
+            return globalFaq;
+        })(),
         process: getSafe(completeData, 'process', {
             label: "THE CLINICAL PROCESS",
             title: "Your Recovery Journey.",

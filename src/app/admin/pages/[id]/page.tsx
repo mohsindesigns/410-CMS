@@ -293,7 +293,7 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
                       <div className="text-[13px] text-[#646970] italic bg-[#f6f7f7] p-6 text-center border border-dashed border-[#c3c4c7] rounded-[3px]">No FAQs added for this page yet. Click "+ Add FAQ" above to start.</div>
                     ) : (
                       <div className="space-y-5">
-                         {content.faqs.map((faq: any, idx: number) => (
+                        {content.faqs.map((faq: any, idx: number) => (
                           <div key={idx} className="bg-white border border-[#c3c4c7] p-5 rounded-[4px] shadow-sm hover:shadow-md transition-all space-y-4 relative">
                             <div className="flex justify-between items-start gap-4">
                               <div className="flex-1 space-y-4">
