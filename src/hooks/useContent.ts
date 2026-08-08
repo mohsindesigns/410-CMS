@@ -142,19 +142,20 @@ export const useContent = () => {
         about: getSafe(completeData, 'about'),
         services: (() => {
             const s = getSafe(completeData, 'services', { services: [] });
-            let list = s;
-            if (s && s.items && !s.services) {
-                list = { ...s, services: s.items };
-            } else if (s && s.services && !s.items) {
-                list = { ...s, items: s.services };
-            } else if (Array.isArray(s)) {
-                list = { services: s, items: s };
-            }
+            const servicesList = Array.isArray(s.services) && s.services.length > 0 
+                ? s.services 
+                : (Array.isArray(s.items) ? s.items : []);
+            
+            const list = {
+                ...s,
+                services: servicesList,
+                items: servicesList
+            };
 
             const label = list.badge || list.label || "Our Services";
-            const titleLine1 = list.titleLine1 || list.headline?.prefix || "Therapies";
-            const titleLine2 = list.titleLine2 || list.headline?.highlight || "Designed";
-            const titleLine3 = list.titleLine3 || list.headline?.suffix || "Around";
+            const titleLine1 = list.headline?.prefix || list.titleLine1 || "Therapies";
+            const titleLine2 = list.headline?.highlight || list.titleLine2 || "Designed";
+            const titleLine3 = list.headline?.suffix || list.titleLine3 || "Around";
             const titleItalicWord = list.titleItalicWord || "You";
             
             const ctaAll = list.ctaAll || "VIEW ALL SERVICES";
@@ -164,14 +165,16 @@ export const useContent = () => {
                 list.services = list.services.map((item: any) => {
                     const title = item.title || item.name || "";
                     const name = item.name || item.title || "";
-                    return { ...item, title, name };
+                    const slug = item.slug || item.id || "";
+                    return { ...item, title, name, slug };
                 });
             }
             if (list && Array.isArray(list.items)) {
                 list.items = list.items.map((item: any) => {
                     const title = item.title || item.name || "";
                     const name = item.name || item.title || "";
-                    return { ...item, title, name };
+                    const slug = item.slug || item.id || "";
+                    return { ...item, title, name, slug };
                 });
             }
             return {

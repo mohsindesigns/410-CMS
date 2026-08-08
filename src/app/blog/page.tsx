@@ -9,24 +9,33 @@ import { BASE_URL } from '@/lib/constants';
 export const revalidate = 60; // Cache for 1 minute
 
 import SiteContent from '@/models/Content';
+import Page from '@/models/Page';
+import PageInlineFaqs from '@/components/PageInlineFaqs';
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
-  const content = await SiteContent.findOne({ key: 'complete_data' }).lean() as any;
-  const blogData = content?.data?.blogPage;
-  const seo = blogData?.seo || {};
+  const [content, pageDoc] = await Promise.all([
+    SiteContent.findOne({ key: 'complete_data' }).lean() as any,
+    Page.findOne({ slug: 'blog' }).lean() as any
+  ]);
+  
+  const blogData = content?.data?.blogPage || {};
+  const seo = {
+    ...(blogData?.seo || {}),
+    ...(pageDoc?.seo || {})
+  };
   const pageUrl = `${BASE_URL}/blog`;
 
   return {
     title: {
-      absolute: seo.metaTitle
+      absolute: seo.metaTitle || pageDoc?.title || "Our Blog"
     },
     description: seo.metaDescription || blogData?.hero?.description,
     alternates: {
       canonical: seo.canonicalUrl || pageUrl,
     },
     openGraph: {
-      title: seo.ogTitle || seo.metaTitle || blogData?.hero?.title,
+      title: seo.ogTitle || seo.metaTitle || pageDoc?.title || "Our Blog",
       description: seo.ogDescription || seo.metaDescription || blogData?.hero?.description,
       url: pageUrl,
       type: 'website',
@@ -55,14 +64,20 @@ import Image from 'next/image';
 export default async function BlogIndexPage() {
   await connectToDatabase();
   
-  const [posts, content] = await Promise.all([
+  const [allPosts, pageDoc, content] = await Promise.all([
     Post.find({ status: 'published' })
       .populate('categories author')
-      .sort({ publishedAt: -1 }),
+      .sort({ publishedAt: -1 })
+      .lean(),
+    Page.findOne({ slug: 'blog' }).lean() as any,
     SiteContent.findOne({ key: 'complete_data' }).lean() as any
   ]);
 
-  const blogsPage = content?.data?.blogsPage || content?.data?.blogPage || {};
+  const globalBlogsPage = content?.data?.blogsPage || content?.data?.blogPage || {};
+  const blogsPage = {
+    ...globalBlogsPage,
+    ...(pageDoc?.content || {})
+  };
   const globalMetadata = content?.data?.globalMetadata || {};
 
   const label = blogsPage.label || blogsPage.header?.badge || "Recovery Insights";
@@ -70,6 +85,14 @@ export default async function BlogIndexPage() {
   const titleLine2 = blogsPage.titleLine2 || blogsPage.header?.titleHighlight || "Journal.";
   const description = blogsPage.description || blogsPage.header?.description || "Explore our latest articles, insights, and clinical tips on deep tissue therapy, mobility, and athletic recovery.";
   const ctaReadMore = blogsPage.ctaReadMore || "Read More";
+
+  // Filter posts based on selected posts list, keeping custom selection order
+  let posts = allPosts;
+  if (Array.isArray(blogsPage.selectedPosts) && blogsPage.selectedPosts.length > 0) {
+    posts = blogsPage.selectedPosts
+      .map((id: string) => allPosts.find((p: any) => String(p._id) === String(id)))
+      .filter(Boolean);
+  }
 
   return (
     <>
@@ -83,9 +106,12 @@ export default async function BlogIndexPage() {
             <h1 className="display-heading text-[32px] min-[400px]:text-[44px] md:text-[64px] text-white leading-tight">
               {titleLine1} <span className="text-gold italic font-light">{titleLine2}</span>
             </h1>
-            <p className="text-white/60 text-[14px] md:text-[15px] max-w-2xl mx-auto mt-6 leading-relaxed">
-              {description}
-            </p>
+            {description && (
+              <div 
+                className="text-white/60 text-[14px] md:text-[15px] max-w-2xl mx-auto mt-6 leading-relaxed [&_p]:text-white/60 [&_p]:text-center [&_p]:text-[14px] [&_p]:md:text-[15px] [&_p]:leading-relaxed"
+                dangerouslySetInnerHTML={{ __html: description }}
+              />
+            )}
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -151,6 +177,19 @@ export default async function BlogIndexPage() {
           )}
         </div>
       </main>
+
+      {((pageDoc?.content?.faqs && pageDoc.content.faqs.length > 0) || 
+        (pageDoc?.content?.faqSchemaMarkup && pageDoc.content.faqSchemaMarkup.trim())) && (
+        <div className="bg-dark pb-24 relative z-10">
+          <PageInlineFaqs 
+            faqs={pageDoc.content.faqs} 
+            faqSchemaMarkup={pageDoc.content.faqSchemaMarkup} 
+            badge={pageDoc.content.faqBadge}
+            title={pageDoc.content.faqTitle}
+            subtitle={pageDoc.content.faqDescription}
+          />
+        </div>
+      )}
     </>
   );
 }

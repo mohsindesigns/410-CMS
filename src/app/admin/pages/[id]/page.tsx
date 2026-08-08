@@ -6,7 +6,7 @@ import {
   Save, Loader2, LayoutTemplate, ChevronRight,
   Settings, Type, Image as ImageIcon, Briefcase,
   Star, CircleHelp, Phone, Users, Globe, ArrowUpRight, Trash2, ArrowLeft, ExternalLink,
-  ChevronDown, Calendar, Eye
+  ChevronDown, Calendar, Eye, BookOpen
 } from "lucide-react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
@@ -31,6 +31,7 @@ const EDITOR_TEMPLATES = [
   { id: 'faq', label: 'Support FAQ', icon: CircleHelp },
   { id: 'contact', label: 'Contact Center', icon: Phone },
   { id: 'service-area', label: 'Service Area', icon: Globe },
+  { id: 'blog', label: 'Blog Index', icon: BookOpen },
 ];
 
 export default function DynamicPageEditor({ params }: { params: Promise<{ id: string }> }) {

@@ -68,7 +68,7 @@ export default function ServicesSection() {
                     />
                   )}
                   <span className={`text-[10px] font-bold tracking-widest w-6 flex-shrink-0 transition-colors ${i === activeIdx ? 'text-gold' : 'text-white/20 group-hover:text-white/40'}`}>
-                    {svc.id}
+                    {String(i + 1).padStart(2, '0')}
                   </span>
                   <span className={`text-[13.5px] font-medium transition-colors truncate ${i === activeIdx ? 'text-white font-semibold' : 'text-white/50 group-hover:text-white/80'}`}>
                     {svc.name}
@@ -105,7 +105,7 @@ export default function ServicesSection() {
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/30 to-transparent" />
                     <span className="absolute bottom-3 right-5 text-[48px] font-bold leading-none text-white/10 font-serif select-none pointer-events-none">
-                      {active.id}
+                      {String(activeIdx + 1).padStart(2, '0')}
                     </span>
                   </div>
 
@@ -117,12 +117,15 @@ export default function ServicesSection() {
                   {/* Strictly 4 benefits for 100% height uniformity */}
                   {active.benefits && (
                     <div className="flex flex-col gap-2 h-[130px] justify-start">
-                      {active.benefits.slice(0, 4).map((b: any, idx: number) => (
-                        <div key={idx} className="flex items-center gap-2.5 text-white/75 text-[12.5px]">
-                          <CheckCircle2 size={13} className="text-gold flex-shrink-0" />
-                          <span className="truncate">{b}</span>
-                        </div>
-                      ))}
+                      {active.benefits.slice(0, 4).map((b: any, idx: number) => {
+                        const benefitText = typeof b === 'string' ? b : (b.title || b.name || b.label || "");
+                        return (
+                          <div key={idx} className="flex items-center gap-2.5 text-white/75 text-[12.5px]">
+                            <CheckCircle2 size={13} className="text-gold flex-shrink-0" />
+                            <span className="truncate">{stripHtml(benefitText)}</span>
+                          </div>
+                        );
+                      })}
                     </div>
                   )}
                 </div>
