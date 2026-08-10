@@ -12,6 +12,8 @@ import SiteContent from '@/models/Content';
 import Page from '@/models/Page';
 import PageInlineFaqs from '@/components/PageInlineFaqs';
 
+import { getRobotsMetadata } from "@/lib/seo";
+
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
   const [content, pageDoc] = await Promise.all([
@@ -19,6 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
     Page.findOne({ slug: 'blog' }).lean() as any
   ]);
   
+  const settings = content?.data?.settings;
   const blogData = content?.data?.blogPage || {};
   const seo = {
     ...(blogData?.seo || {}),
@@ -47,15 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
       images: [seo.featuredImage || seo.twitterImage || seo.ogImage].filter(Boolean) as string[],
     },
-    robots: {
-      index: seo.metaRobotsIndex !== 'noindex',
-      follow: seo.metaRobotsFollow !== 'nofollow',
-      ...(seo.metaRobotsIndex !== 'noindex' && {
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      })
-    }
+    robots: getRobotsMetadata(settings, seo)
   };
 }
 

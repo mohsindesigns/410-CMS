@@ -57,7 +57,6 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
         posts={allBlogs.filter((p: any) => (pageData?.content?.blogSection?.selectedPosts || []).includes(p._id))}
       />
 
-      <QuickQuote />
 
     </div>
   );

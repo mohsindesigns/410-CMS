@@ -7,6 +7,8 @@ import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
 import { BASE_URL } from "@/lib/constants";
 
+import { getRobotsMetadata } from "@/lib/seo";
+
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-heading",
@@ -55,13 +57,7 @@ export async function generateMetadata(): Promise<Metadata> {
     publisher: "410 Muscle Therapy",
 
     // ── Robots & Canonical ──
-    robots: {
-      index: true,
-      follow: true,
-      'max-video-preview': -1,
-      'max-image-preview': 'large',
-      'max-snippet': -1,
-    },
+    robots: getRobotsMetadata(settings),
     alternates: {
       canonical: BASE_URL,
     },

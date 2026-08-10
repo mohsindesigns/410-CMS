@@ -24,15 +24,21 @@ function getAbsoluteUrl(path: string | undefined) {
 
 // Auto-schema logic moved to centralized generator
 
+import { getRobotsMetadata } from "@/lib/seo";
+
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
   const slug = resolvedParams.slug.join('/');
 
   await connectToDatabase();
-  const page = await Page.findOne({ slug, status: 'published' }).lean();
+  const [page, content] = await Promise.all([
+    Page.findOne({ slug, status: 'published' }).lean(),
+    SiteContent.findOne({ key: 'complete_data' }).lean() as any
+  ]);
 
   if (!page) return {};
 
+  const settings = content?.data?.settings;
   const seo = page.seo || {};
   const pageUrl = `${BASE_URL}/${slug}`;
 
@@ -44,15 +50,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     alternates: {
       canonical: seo.canonicalUrl || pageUrl,
     },
-    robots: {
-      index: seo.metaRobotsIndex !== 'noindex',
-      follow: seo.metaRobotsFollow !== 'nofollow',
-      ...(seo.metaRobotsIndex !== 'noindex' && {
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      })
-    },
+    robots: getRobotsMetadata(settings, seo),
     openGraph: {
       title: seo.ogTitle || seo.metaTitle || page.title,
       description: seo.ogDescription || seo.metaDescription,

@@ -19,13 +19,20 @@ interface Props {
   params: Promise<{ slug: string }>;
 }
 
+import SiteContent from "@/models/Content";
+import { getRobotsMetadata } from "@/lib/seo";
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   await connectToDatabase();
-  const post = await Post.findOne({ slug, status: 'published' });
+  const [post, content] = await Promise.all([
+    Post.findOne({ slug, status: 'published' }),
+    SiteContent.findOne({ key: "complete_data" }).lean() as any
+  ]);
 
   if (!post) return { title: 'Post Not Found' };
 
+  const settings = content?.data?.settings;
   const url = `${BASE_URL}/blog/${slug}`;
 
   return {
@@ -57,15 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       site: "@410MuscleTherapy",
       creator: "@410MuscleTherapy",
     },
-    robots: {
-      index: post.seo?.metaRobotsIndex !== 'noindex',
-      follow: post.seo?.metaRobotsFollow !== 'nofollow',
-      ...(post.seo?.metaRobotsIndex !== 'noindex' && {
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      })
-    },
+    robots: getRobotsMetadata(settings, post.seo),
     alternates: {
       canonical: post.seo?.canonicalUrl || url,
     }

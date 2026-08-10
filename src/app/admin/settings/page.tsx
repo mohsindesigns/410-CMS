@@ -340,6 +340,17 @@ export default function SettingsEditor() {
                <SettingsRow label="Site Favicon" description="Upload the small icon that appears in the browser tab.">
                   <ImageField value={data.settings?.favicon || ""} onChange={(val) => updateData("settings", "favicon", val)} label="Favicon" />
                </SettingsRow>
+               <SettingsRow label="Search Engine Visibility" description="When checked, forces 'noindex, nofollow' across the entire website. Unchecking this restores page-wise SEO settings.">
+                  <label className="flex items-center gap-2.5 cursor-pointer text-[14px] text-[#1d2327]">
+                     <input 
+                       type="checkbox" 
+                       checked={!!data.settings?.noIndexNoFollow} 
+                       onChange={(e) => updateData("settings", "noIndexNoFollow", e.target.checked)} 
+                       className="w-4 h-4 rounded-[3px] border-[#8c8f94] text-[#2271b1] focus:ring-[#2271b1]" 
+                     />
+                     <span className="font-semibold text-[#d63638]">Discourage search engines from indexing this site (Global No-Index &amp; No-Follow)</span>
+                  </label>
+               </SettingsRow>
             </motion.div>
           )}
 

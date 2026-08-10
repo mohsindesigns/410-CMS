@@ -10,6 +10,7 @@ import { generateSchema } from "@/lib/schema-generator";
 import { TemplateWrapper } from "@/components/templates/TemplateRegistry";
 import ServiceDetailTemplate from "@/components/templates/ServiceDetailTemplate";
 import { BASE_URL } from "@/lib/constants";
+import { getRobotsMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
@@ -57,15 +58,7 @@ export async function generateMetadata(): Promise<Metadata> {
           description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
           images: [seo.featuredImage || seo.twitterImage || seo.ogImage].filter(Boolean) as string[],
         },
-        robots: {
-          index: seo.metaRobotsIndex !== 'noindex',
-          follow: seo.metaRobotsFollow !== 'nofollow',
-          ...(seo.metaRobotsIndex !== 'noindex' && {
-            'max-video-preview': -1,
-            'max-image-preview': 'large',
-            'max-snippet': -1,
-          })
-        }
+        robots: getRobotsMetadata(settings, seo)
       };
     }
     // Check if it's a service
@@ -88,15 +81,7 @@ export async function generateMetadata(): Promise<Metadata> {
           description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || service.description,
           images: [seo.featuredImage || seo.twitterImage || seo.ogImage].filter(Boolean) as string[],
         },
-        robots: {
-          index: seo.metaRobotsIndex !== 'noindex',
-          follow: seo.metaRobotsFollow !== 'nofollow',
-          ...(seo.metaRobotsIndex !== 'noindex' && {
-            'max-video-preview': -1,
-            'max-image-preview': 'large',
-            'max-snippet': -1,
-          })
-        }
+        robots: getRobotsMetadata(settings, seo)
       };
     }
   }
@@ -116,15 +101,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: seo.ogDescription || seo.metaDescription || homeData?.hero?.subheadline,
       images: [seo.featuredImage || `${BASE_URL}/eagle-logo.png`].filter(Boolean) as string[],
     },
-    robots: {
-      index: seo.metaRobotsIndex !== 'noindex',
-      follow: seo.metaRobotsFollow !== 'nofollow',
-      ...(seo.metaRobotsIndex !== 'noindex' && {
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      })
-    }
+    robots: getRobotsMetadata(settings, seo)
   };
 }
 

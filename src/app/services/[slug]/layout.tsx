@@ -658,10 +658,13 @@ type Props = {
   params: Promise<{ slug: string }>;
 };
 
+import { getRobotsMetadata } from "@/lib/seo";
+
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   await connectToDatabase();
   const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
+  const settings = content?.data?.settings;
   const services = content?.data?.services?.services || [];
   const service = services.find((s: any) => s.slug === slug);
 
@@ -680,15 +683,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   return {
     title,
     description,
-    robots: {
-      index: seo.metaRobotsIndex !== 'noindex',
-      follow: seo.metaRobotsFollow !== 'nofollow',
-      ...(seo.metaRobotsIndex !== 'noindex' && {
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      })
-    },
+    robots: getRobotsMetadata(settings, seo),
     alternates: {
       canonical: `${BASE_URL}/services/${slug}`,
     },

@@ -14,10 +14,13 @@ function getAbsoluteUrl(path: string | undefined) {
   return `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 }
 
+import { getRobotsMetadata } from "@/lib/seo";
+
 export async function generateMetadata({ params }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
   const { slug } = await params;
   await connectToDatabase();
   const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
+  const settings = content?.data?.settings;
   const services = content?.data?.services?.services || [];
   const serviceItems = content?.data?.services?.items || [];
   const service = services.find((s: any) => s.slug === slug) || serviceItems.find((s: any) => s.slug === slug);
@@ -34,15 +37,7 @@ export async function generateMetadata({ params }: { params: Promise<{ slug: str
     alternates: {
       canonical: seo.canonicalUrl || `${BASE_URL}/services/${slug}`,
     },
-    robots: {
-      index: seo.metaRobotsIndex !== 'noindex',
-      follow: seo.metaRobotsFollow !== 'nofollow',
-      ...(seo.metaRobotsIndex !== 'noindex' && {
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      })
-    }
+    robots: getRobotsMetadata(settings, seo)
   };
 }
 

@@ -13,6 +13,8 @@ import CtaBanner from '@/components/sections/CtaBanner';
 
 export const revalidate = 60; // Cache for 1 minute
 
+import { getRobotsMetadata } from "@/lib/seo";
+
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
   const [content, pageDoc] = await Promise.all([
@@ -20,6 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
     Page.findOne({ slug: 'services' }).lean() as any
   ]);
   
+  const settings = content?.data?.settings;
   const servicesData = content?.data?.services || {};
   const seo = {
     ...(servicesData?.seo || {}),
@@ -48,15 +51,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
       images: [seo.featuredImage || seo.twitterImage || seo.ogImage].filter(Boolean) as string[],
     },
-    robots: {
-      index: seo.metaRobotsIndex !== 'noindex',
-      follow: seo.metaRobotsFollow !== 'nofollow',
-      ...(seo.metaRobotsIndex !== 'noindex' && {
-        'max-video-preview': -1,
-        'max-image-preview': 'large',
-        'max-snippet': -1,
-      })
-    }
+    robots: getRobotsMetadata(settings, seo)
   };
 }
 

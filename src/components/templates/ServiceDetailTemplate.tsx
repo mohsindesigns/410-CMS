@@ -70,8 +70,8 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
     heroSectionLabel: service.heroSectionLabel || serviceDetailPage.heroSectionLabel || "CLINICAL RECOVERY PROTOCOL",
     profileBadgePrefix: service.profileBadgePrefix || serviceDetailPage.profileBadgePrefix || "PROFILE",
     specialtyBadge: service.specialtyBadge || serviceDetailPage.specialtyBadge || "Clinical Specialty",
-    tailoredLabel: service.tailoredLabel || serviceDetailPage.tailoredLabel || "100% Tailored Therapy",
-    tailoredSub: service.tailoredSub || serviceDetailPage.tailoredSub || "Individualized Protocols",
+    tailoredLabel: service.tailoredLabel ?? serviceDetailPage.tailoredLabel ?? "100% Tailored Therapy",
+    tailoredSub: service.tailoredSub ?? serviceDetailPage.tailoredSub ?? "Individualized Protocols",
     specDurationLabel: service.specDurationLabel || serviceDetailPage.specDurationLabel || "Duration",
     specDurationValue: service.specDurationValue || serviceDetailPage.specDurationValue || "60 / 90 Mins",
     specIntensityLabel: service.specIntensityLabel || serviceDetailPage.specIntensityLabel || "Intensity",
@@ -103,7 +103,7 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
     candidateSectionLabel: service.candidateSectionLabel || serviceDetailPage.candidateSectionLabel || "TARGET CANDIDATES",
     candidateTitle1: service.candidateTitle1 || serviceDetailPage.candidateTitle1 || "Who Benefits Most.",
     candidateTitle2: service.candidateTitle2 || serviceDetailPage.candidateTitle2 || "Clinical Indications.",
-    candidateSuitability: service.candidateSuitability || serviceDetailPage.candidateSuitability || "SUITABILITY: OPTIMAL",
+    candidateSuitability: service.candidateSuitability ?? serviceDetailPage.candidateSuitability ?? "SUITABILITY: OPTIMAL",
     protocolSectionLabel: service.protocolSectionLabel || serviceDetailPage.protocolSectionLabel || "02 / SESSION PROTOCOL",
     protocolTitle1: service.protocolTitle1 || serviceDetailPage.protocolTitle1 || "3-Phase Clinical",
     protocolTitle2: service.protocolTitle2 || serviceDetailPage.protocolTitle2 || "Treatment Sequence.",
@@ -453,7 +453,7 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                   </div>
 
                   <div className="mt-8 pt-4 border-t border-border-light/80 flex items-center justify-between text-gold-dark text-[11.5px] font-mono font-bold tracking-wider uppercase relative z-10">
-                    <span>{pg.candidateSuitability}</span>
+                    <span>{profile.suitability || profile.status || pg.candidateSuitability}</span>
                     <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>

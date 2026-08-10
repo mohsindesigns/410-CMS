@@ -142,6 +142,8 @@ const DEFAULT_CLINICAL_FIELDS = {
   overviewTitle2: "Engineered For Recovery.",
   overviewWatermark: "SPECIALIST PRACTICE • EST. 2020",
   overviewSuccessRate: "98% SUCCESS",
+  tailoredLabel: "100% Tailored Therapy",
+  tailoredSub: "Individualized Protocols",
   overviewIntroSuffix: "We map postural compensations and active muscle trigger points to eliminate root-cause pain, flush soreness, and decompress joint structures.",
   overviewCtaText: "BOOK YOUR SESSION NOW",
   overviewHipaaText: "HIPAA Compliant & Certified",
@@ -618,8 +620,18 @@ export default function ServicesAdminPage() {
                         <input type="text" value={form.overviewWatermark || ""} onChange={(e) => setForm({ ...form, overviewWatermark: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
                       </div>
                       <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Success Rate / Floating Badge Text</label>
+                        <label className="text-[13px] font-bold">Success Rate Badge Right Text</label>
                         <input type="text" value={form.overviewSuccessRate || ""} onChange={(e) => setForm({ ...form, overviewSuccessRate: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
+                      </div>
+                    </div>
+                    <div className="grid grid-cols-2 gap-4">
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Floating Badge Title</label>
+                        <input type="text" value={form.tailoredLabel || ""} onChange={(e) => setForm({ ...form, tailoredLabel: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. 100% Tailored Therapy" />
+                      </div>
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Floating Badge Subtitle</label>
+                        <input type="text" value={form.tailoredSub || ""} onChange={(e) => setForm({ ...form, tailoredSub: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Individualized Protocols" />
                       </div>
                     </div>
                     <div className="space-y-1">
@@ -727,10 +739,15 @@ export default function ServicesAdminPage() {
                                 np[pIdx] = { ...np[pIdx], desc: e.target.value };
                                 setForm({ ...form, whoProfiles: np });
                               }} className="w-full border border-[#8c8f94] px-2.5 py-1 text-xs h-16" placeholder="Profile indications and descriptions..." />
+                              <input type="text" value={p.suitability || ""} onChange={(e) => {
+                                const np = [...form.whoProfiles];
+                                np[pIdx] = { ...np[pIdx], suitability: e.target.value };
+                                setForm({ ...form, whoProfiles: np });
+                              }} className="w-full border border-[#8c8f94] px-2.5 py-1 text-xs text-[#be9c25] font-mono" placeholder="Card Suitability Label (optional, e.g. SUITABILITY: OPTIMAL)" />
                             </div>
                           </div>
                         ))}
-                        <button type="button" onClick={() => setForm({ ...form, whoProfiles: [...(form.whoProfiles || []), { label: "", desc: "" }] })} className="text-[#2271b1] text-xs underline font-bold">+ Add Profile</button>
+                        <button type="button" onClick={() => setForm({ ...form, whoProfiles: [...(form.whoProfiles || []), { label: "", desc: "", suitability: "" }] })} className="text-[#2271b1] text-xs underline font-bold">+ Add Profile</button>
                       </div>
                     </div>
                   </div>
