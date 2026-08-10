@@ -488,15 +488,14 @@ export default function ServicesAdminPage() {
                 {/* Line 1: Core Tabs */}
                 <div className="flex flex-wrap border-b border-[#c3c4c7]">
                   {[
-                    { id: "general", label: "General Info" },
-                    { id: "branding-specs", label: "Hero & Specs" },
-                    { id: "overview", label: "Overview" },
-                    { id: "stats-candidates", label: "Stats & Candidates" },
-                    { id: "stepper", label: "Stepper Protocol" },
-                    { id: "benefits", label: "Key Benefits" },
-                    { id: "faq", label: "FAQs" },
-                    { id: "blog", label: "Blog" },
-                    { id: "seo", label: "SEO" }
+                    { id: "general", label: "General Settings" },
+                    { id: "branding-specs", label: "1. Hero Banner" },
+                    { id: "overview", label: "2. Clinical Overview" },
+                    { id: "stats-candidates", label: "3. Stats & Candidates" },
+                    { id: "stepper", label: "4. Treatment Protocol" },
+                    { id: "benefits", label: "5. Key Benefits" },
+                    { id: "faq", label: "6. FAQs & Support" },
+                    { id: "seo", label: "7. SEO Settings" }
                   ].map(tab => (
                     <button
                       key={tab.id}
@@ -517,33 +516,20 @@ export default function ServicesAdminPage() {
               <div className="space-y-6 min-h-[400px]">
                 {activeTab === "general" && (
                   <div className="space-y-4">
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Category Tag</label>
-                        <input type="text" value={form.tag} onChange={(e) => setForm({ ...form, tag: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Menu Icon</label>
-                        <IconSelector value={form.icon} onChange={(v) => setForm({ ...form, icon: v })} />
-                      </div>
+                    <div className="space-y-1">
+                      <label className="text-[13px] font-bold">Menu Icon</label>
+                      <IconSelector value={form.icon} onChange={(v) => setForm({ ...form, icon: v })} />
                     </div>
                     <div className="space-y-1">
-                      <ImageField label="Breadcrumb Banner Image" value={form.breadcrumbImage || ""} onChange={(v) => setForm({ ...form, breadcrumbImage: v })} />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[13px] font-bold">Breadcrumb Overlay Text</label>
-                      <input type="text" placeholder="e.g. Expert Solutions" value={form.breadcrumbText || ""} onChange={(e) => setForm({ ...form, breadcrumbText: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[13px] font-bold">Hero Description / Subtitle</label>
+                      <label className="text-[13px] font-bold">Hero Description / Subtitle Fallback</label>
                       <textarea placeholder="e.g. Professional services with military precision..." value={form.heroDescription || ""} onChange={(e) => setForm({ ...form, heroDescription: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px] h-20" />
                     </div>
                     <div className="space-y-1">
-                      <label className="text-[13px] font-bold">Short Description (Card View)</label>
+                      <label className="text-[13px] font-bold">Primary Service Description</label>
                       <QuillEditor
                         content={form.description}
                         onChange={(v) => setForm({ ...form, description: v })}
-                        placeholder="Write a short description shown on service cards..."
+                        placeholder="Write the main description for the service..."
                       />
                     </div>
                   </div>
@@ -957,35 +943,7 @@ export default function ServicesAdminPage() {
                   </div>
                 )}
 
-                {activeTab === "blog" && (
-                  <div className="space-y-6">
-                    <div className="space-y-4">
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Blog Section Title</label>
-                        <input type="text" value={form.blogSection?.title || ""} onChange={(e) => setForm({ ...form, blogSection: { ...(form.blogSection || {}), title: e.target.value } })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Blog Section Subtitle</label>
-                        <input type="text" value={form.blogSection?.subtitle || ""} onChange={(e) => setForm({ ...form, blogSection: { ...(form.blogSection || {}), subtitle: e.target.value } })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Blog Section Description</label>
-                        <QuillEditor
-                          content={form.blogSection?.description || ""}
-                          onChange={(v) => setForm({ ...form, blogSection: { ...(form.blogSection || {}), description: v } })}
-                          placeholder="Write a description for the blog section..."
-                        />
-                      </div>
-                    </div>
-                    <div className="space-y-4 pt-6 border-t border-[#c3c4c7]">
-                      <h3 className="text-sm font-bold">Select Featured Posts</h3>
-                      <BlogSelector
-                        selectedIds={form.blogSection?.selectedPosts || []}
-                        onChange={(ids) => setForm({ ...form, blogSection: { ...(form.blogSection || {}), selectedPosts: ids } })}
-                      />
-                    </div>
-                  </div>
-                )}
+
 
                 {activeTab === "seo" && (
                   <SeoEditor data={seo} setData={setSeo} pageSlug={form.slug} pageTitle={form.title} pageContent={form} />

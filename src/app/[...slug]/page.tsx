@@ -162,7 +162,12 @@ export default async function DynamicPage({ params }: PageProps) {
         ))
       );
 
-      service.faqs = (service.faqs && service.faqs.length > 0) ? service.faqs : faqs;
+      // service.faq (singular) = items selected via ServiceDetailEditor ContentSelector
+      // service.faqs (plural) = previously merged/global fallback
+      const serviceFaqItems = Array.isArray(service.faq) && service.faq.length > 0
+        ? service.faq
+        : (Array.isArray(service.faqs) && service.faqs.length > 0 ? service.faqs : faqs);
+      service.faqs = serviceFaqItems;
 
       const featuredImage = getAbsoluteUrl(service?.seo?.featuredImage || service?.seo?.ogImage || service?.seo?.twitterImage || service?.image);
 
@@ -171,7 +176,7 @@ export default async function DynamicPage({ params }: PageProps) {
         description: service?.seo?.metaDescription || service?.description || "",
         slug: slug,
         type: "Service",
-        faqs: faqs,
+        faqs: serviceFaqItems,
         breadcrumbTitle: service?.seo?.breadcrumbTitle,
         isService: true,
         image: featuredImage
