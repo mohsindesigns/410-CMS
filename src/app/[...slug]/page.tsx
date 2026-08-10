@@ -6,6 +6,7 @@ import connectToDatabase from '@/lib/mongodb';
 import Page from '@/models/Page';
 import SiteContent from '@/models/Content';
 import { getTemplate } from '@/components/templates/TemplateRegistry';
+import ServiceDetailTemplate from '@/components/templates/ServiceDetailTemplate';
 import { Metadata } from 'next';
 import Script from 'next/script';
 import { generateSchema } from '@/lib/schema-generator';
@@ -15,14 +16,11 @@ interface PageProps {
   params: Promise<{ slug: string[] }>;
 }
 
-
 function getAbsoluteUrl(path: string | undefined) {
   if (!path) return undefined;
   if (path.startsWith('http')) return path;
   return `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 }
-
-// Auto-schema logic moved to centralized generator
 
 import { getRobotsMetadata } from "@/lib/seo";
 
@@ -36,11 +34,56 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     SiteContent.findOne({ key: 'complete_data' }).lean() as any
   ]);
 
-  if (!page) return {};
-
   const settings = content?.data?.settings;
+
+  if (!page) {
+    // Check if matching service exists
+    const services = content?.data?.services?.services || [];
+    const serviceItems = content?.data?.services?.items || [];
+    const service = services.find((s: any) => s.slug === slug) || serviceItems.find((s: any) => s.slug === slug);
+    if (!service) return {};
+
+    const seo = service.seo || {};
+    const title = seo.metaTitle || service.title;
+    const description = seo.metaDescription || service.description || "";
+    const pageUrl = `${BASE_URL}/${slug}/`;
+    const featuredImage = getAbsoluteUrl(seo.featuredImage || seo.ogImage || seo.twitterImage || service.image || service.heroImage);
+
+    return {
+      title: { absolute: title },
+      description,
+      alternates: {
+        canonical: seo.canonicalUrl || pageUrl,
+      },
+      robots: getRobotsMetadata(settings, seo),
+      openGraph: {
+        title: seo.ogTitle || seo.metaTitle || title,
+        description: seo.ogDescription || seo.metaDescription || description,
+        url: pageUrl,
+        siteName: "410 Muscle Therapy",
+        type: "website",
+        images: [
+          {
+            url: featuredImage || `${BASE_URL}/eagle-logo.png`,
+            width: 1200,
+            height: 630,
+            alt: title,
+          }
+        ],
+      },
+      twitter: {
+        card: "summary_large_image",
+        title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || title,
+        description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || description,
+        images: [featuredImage || `${BASE_URL}/eagle-logo.png`],
+        site: "@410MuscleTherapy",
+        creator: "@410MuscleTherapy",
+      },
+    };
+  }
+
   const seo = page.seo || {};
-  const pageUrl = `${BASE_URL}/${slug}`;
+  const pageUrl = `${BASE_URL}/${slug}/`;
 
   return {
     title: {
@@ -83,31 +126,79 @@ export default async function DynamicPage({ params }: PageProps) {
 
   await connectToDatabase();
 
-  // Find the page in MongoDB
+  // 1. Find page in MongoDB Page collection
   const pageDoc = await Page.findOne({
     slug: slug,
     status: 'published'
   }).lean();
 
+  const globalContent = await SiteContent.findOne({ key: 'complete_data' }).lean() as any;
+  const globalData = globalContent?.data || {};
+  const settings = globalData.settings || {};
+
+  // If no Page found, check if a Service matches this slug!
   if (!pageDoc) {
+    const services = globalData.services?.services || [];
+    const serviceItems = globalData.services?.items || [];
+    const serviceDoc =
+      services.find((s: any) => s.slug === slug && s.status !== 'draft') ||
+      serviceItems.find((s: any) => s.slug === slug);
+
+    if (serviceDoc) {
+      if (settings.homepageId && (String(serviceDoc._id) === String(settings.homepageId) || serviceDoc.slug === settings.homepageId)) {
+        permanentRedirect("/");
+      }
+
+      const service = JSON.parse(JSON.stringify(serviceDoc));
+      const allFaqs = globalData.faq?.items || [];
+
+      const faqs = allFaqs.filter((item: any) =>
+        item.visibility === 'global' ||
+        (item.visibility === 'specific' && (
+          item.targetPages?.includes(slug) ||
+          item.targetPages?.includes(`services/${slug}`) ||
+          item.targetPages?.includes(String(serviceDoc._id)) ||
+          item.targetPages?.includes(serviceDoc.slug)
+        ))
+      );
+
+      service.faqs = (service.faqs && service.faqs.length > 0) ? service.faqs : faqs;
+
+      const featuredImage = getAbsoluteUrl(service?.seo?.featuredImage || service?.seo?.ogImage || service?.seo?.twitterImage || service?.image);
+
+      const schema = generateSchema({
+        title: service?.seo?.metaTitle || service?.title || "",
+        description: service?.seo?.metaDescription || service?.description || "",
+        slug: slug,
+        type: "Service",
+        faqs: faqs,
+        breadcrumbTitle: service?.seo?.breadcrumbTitle,
+        isService: true,
+        image: featuredImage
+      });
+
+      return (
+        <main>
+          <Script
+            id="json-ld-schema"
+            type="application/ld+json"
+            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+          />
+          <ServiceDetailTemplate pageData={service} params={Promise.resolve({ slug })} />
+        </main>
+      );
+    }
+
     notFound();
   }
 
   // Convert to plain object to avoid Mongoose serialization issues in Client Components
   const page = JSON.parse(JSON.stringify(pageDoc));
 
-  // Fetch global content for FAQ detection and settings
-  const globalContent = await SiteContent.findOne({ key: 'complete_data' }).lean() as any;
-  const globalData = globalContent?.data || {};
-  const settings = globalData.settings || {};
-
   // If this page is set as the homepage, redirect slug to root /
   if (settings.homepageId && String(pageDoc._id) === String(settings.homepageId)) {
     permanentRedirect("/");
   }
-
-  // Helper to validate FAQ items
-  const isValidFaq = (items: any) => Array.isArray(items) && items.length > 0 && items.every((i: any) => i.question && i.answer);
 
   // Detect FAQs ONLY if this is the FAQ template (as requested)
   if (page.template === 'faq') {
@@ -166,4 +257,3 @@ export default async function DynamicPage({ params }: PageProps) {
     </main>
   );
 }
-

@@ -716,7 +716,7 @@ const ServiceCard = ({ service, index }: { service: any; index: number }) => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.6, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }} className="group" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-      <Link href={`/services/${service.slug}`} className="block h-full">
+      <Link href={`/${service.slug}/`} className="block h-full">
         <div className="flex flex-col h-full">
           <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 shadow-lg transition-all duration-700 group-hover:shadow-2xl">
             <img

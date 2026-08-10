@@ -200,7 +200,7 @@ export default function Footer() {
   const servicesListRaw = (servicesData?.services || []).filter((s: any) => s.status === 'published' || s.status === undefined);
   const servicesDataList = servicesListRaw.slice(0, 6).map((svc: any) => ({
     label: svc.title,
-    href: `/services/${svc.slug}`
+    href: `/${svc.slug}/`
   }));
 
   return (

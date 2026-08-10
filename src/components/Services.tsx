@@ -132,7 +132,7 @@ export default function ServicesSection() {
 
                 {/* Lower CTA Button block (100% Locked Position) */}
                 <div className="pt-2 mt-auto">
-                  <Link href={`/services/${active.slug || active.id}`} className="btn-gold inline-flex items-center justify-center py-3.5 px-6 text-[12px] font-bold uppercase tracking-wider">
+                  <Link href={`/${active.slug || active.id}/`} className="btn-gold inline-flex items-center justify-center py-3.5 px-6 text-[12px] font-bold uppercase tracking-wider">
                     {ctaLearnMore} <ArrowRight size={14} className="ml-2" />
                   </Link>
                 </div>

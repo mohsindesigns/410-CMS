@@ -144,6 +144,21 @@ export function generateSchema(options: SchemaOptions) {
     });
   }
 
+  if (faqs && Array.isArray(faqs) && faqs.length > 0) {
+    graph.push({
+      "@type": "FAQPage",
+      "@id": `${pageUrl}/#faq`,
+      "mainEntity": faqs.map(f => ({
+        "@type": "Question",
+        "name": f.question || (f as any).q || "",
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": (f.answer || (f as any).a || "").replace(/<[^>]*>/g, "").trim()
+        }
+      }))
+    });
+  }
+
   return {
     "@context": "https://schema.org",
     "@graph": graph

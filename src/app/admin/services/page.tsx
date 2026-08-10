@@ -1007,7 +1007,7 @@ export default function ServicesAdminPage() {
                   {form.slug && (
                     <p className="flex items-center gap-1">
                       <strong>Permalink:</strong>
-                      <Link href={`/services/${form.slug}`} target="_blank" className="text-[#2271b1] hover:underline truncate max-w-[150px] inline-flex items-center gap-1">
+                      <Link href={`/${form.slug}/`} target="_blank" className="text-[#2271b1] hover:underline truncate max-w-[150px] inline-flex items-center gap-1">
                         View Service <ExternalLink className="w-3 h-3" />
                       </Link>
                     </p>
@@ -1124,7 +1124,7 @@ export default function ServicesAdminPage() {
                                 {service.status === 'draft' ? 'Publish' : 'Set as Draft'}
                               </button>
                               <span className="text-[#a7aaad]">|</span>
-                              <Link href={`/services/${service.slug}`} target="_blank" className="text-[#2271b1] hover:underline text-[12px]">View</Link>
+                              <Link href={`/${service.slug}/`} target="_blank" className="text-[#2271b1] hover:underline text-[12px]">View</Link>
                               <span className="text-[#a7aaad]">|</span>
                               <button onClick={() => handleDuplicate(idx)} className="text-[#2271b1] hover:underline text-[12px]">Duplicate</button>
                               <span className="text-[#a7aaad]">|</span>

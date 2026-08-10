@@ -45,10 +45,11 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
   }, [pageData, syncParams]);
 
   const servicesList = (servicesData as any).services || [];
-  const service = servicesList.find((s: any) => s.slug === slug) || (servicesData as any).items?.find((s: any) => s.slug === slug);
+  const serviceFromHook = servicesList.find((s: any) => s.slug === slug) || (servicesData as any).items?.find((s: any) => s.slug === slug);
+  const service = { ...(serviceFromHook || {}), ...(pageData || {}) };
 
   useEffect(() => {
-    if (service) {
+    if (service && (service.slug || service.title)) {
       setIsDataLoaded(true);
     }
   }, [service]);

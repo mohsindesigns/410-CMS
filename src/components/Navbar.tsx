@@ -155,7 +155,7 @@ const Navbar = () => {
                               return (
                                 <Link
                                   key={service.slug}
-                                  href={`/services/${service.slug}`}
+                                  href={`/${service.slug}/`}
                                   onMouseEnter={() => setHoveredService(service.title)}
                                   onMouseLeave={() => setHoveredService(null)}
                                   onClick={handleLinkClick}
@@ -353,7 +353,7 @@ const Navbar = () => {
                                 services.map((service: any) => (
                                   <Link
                                     key={service.slug}
-                                    href={`/services/${service.slug}`}
+                                    href={`/${service.slug}/`}
                                     onClick={handleLinkClick}
                                     className="block py-1 text-sm font-medium text-white/60 hover:text-gold transition-colors"
                                   >

@@ -158,7 +158,7 @@ export default function StickyServicesSection() {
                       </div>
 
                       <h3 className="display-heading text-[22px] min-[400px]:text-[26px] md:text-[32px] text-white leading-tight mb-3 group-hover:text-gold transition-colors duration-300">
-                        <Link href={`/services/${service.slug || service.id}`} className="text-white hover:text-gold transition-colors duration-300">
+                        <Link href={`/${service.slug || service.id}/`} className="text-white hover:text-gold transition-colors duration-300">
                           {service.name}
                         </Link>
                       </h3>
@@ -187,7 +187,7 @@ export default function StickyServicesSection() {
                     {/* CTA Buttons */}
                     <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-6">
                       <Link
-                        href={service.heroCtaSecondaryUrl || `/services/${service.slug || service.id}`}
+                        href={service.heroCtaSecondaryUrl || `/${service.slug || service.id}/`}
                         className="btn-gold justify-center text-center w-full sm:w-auto"
                       >
                         {service.heroCtaSecondary || ctaExplore} <ArrowRight size={14} className="ml-1" />
@@ -205,7 +205,7 @@ export default function StickyServicesSection() {
                   </div>
 
                   {/* Image Area (Clickable) */}
-                  <Link href={`/services/${service.slug || service.id}`} className="relative h-[200px] sm:h-[240px] lg:h-auto lg:w-[42%] overflow-hidden bg-black/60 block group/img flex-shrink-0">
+                  <Link href={`/${service.slug || service.id}/`} className="relative h-[200px] sm:h-[240px] lg:h-auto lg:w-[42%] overflow-hidden bg-black/60 block group/img flex-shrink-0">
                     <Image
                       src={service.image || "/images/service-massage.webp"}
                       alt={service.name}
