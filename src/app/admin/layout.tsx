@@ -38,7 +38,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
   const pathname = usePathname();
   const router = useRouter();
 
-  const isPublicPath = pathname === "/admin/login" || pathname === "/admin/forgot-password" || pathname?.startsWith("/admin/reset-password");
+  const isPublicPath = pathname?.startsWith("/admin/login") || pathname?.startsWith("/admin/forgot-password") || pathname?.startsWith("/admin/reset-password");
 
   useEffect(() => {
     document.title = "Eagle Dashboard Mohsin Design";
