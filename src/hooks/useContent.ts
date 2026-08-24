@@ -83,42 +83,24 @@ export const useContent = () => {
             return nav;
         })(),
         hero: (() => {
-            const h = getSafe(completeData, 'hero', { headlines: [], description: "", buttons: [], stats: [], images: [] });
+            const h = getSafe(completeData, 'hero', { description: "" });
             
-            const label = h.badge || h.label || "Performance Recovery Specialist • Est. 2020";
+            const label = h.label || h.badge || "Performance Recovery Specialist • Est. 2020";
             
             const headlines = h.headlines || [];
-            const title1 = headlines[0]?.text || h.title1 || "Recover Faster.";
-            const title2 = headlines[1]?.text || h.title2 || "Perform Higher.";
+            const title1 = h.title1 || headlines[0]?.text || "Recover Faster.";
+            const title2 = h.title2 || headlines[1]?.text || "Perform Higher.";
             
             const buttons = h.buttons || [];
-            const ctaBook = buttons[0]?.text || h.ctaBook || "BOOK RECOVERY SESSION";
-            const ctaServices = buttons[1]?.text || h.ctaServices || "EXPLORE SERVICES";
+            const ctaBook = h.ctaBook || buttons[0]?.text || "BOOK RECOVERY SESSION";
+            const ctaServices = h.ctaServices || buttons[1]?.text || "EXPLORE SERVICES";
             
             const stats = h.stats || [];
-            const socialProofText = stats.length > 0
-                ? `${stats[0].value} ${stats[0].label}`
-                : (h.socialProofText || "Trusted by 500+ athletes & active adults");
+            const socialProofText = h.socialProofText || (stats.length > 0 ? `${stats[0].value} ${stats[0].label}` : "Trusted by 500+ athletes & active adults");
                 
-            const image = h.images?.[0] || h.image || "/images/hero-bg.webp";
-            const imageAlt = h.bgImageAlt || h.imageAlt || "Expert muscle therapy session";
+            const image = h.image || h.images?.[0] || "/images/hero-bg.webp";
+            const imageAlt = h.imageAlt || h.bgImageAlt || "Expert muscle therapy session";
             
-            const mappedHeadlines = headlines.length > 0 ? headlines : [
-                { text: title1, highlight: false },
-                { text: title2, highlight: true }
-            ];
-            
-            const mappedButtons = buttons.length > 0 ? buttons : [
-                { text: ctaBook, href: h.bookingUrl || "/#contact", primary: true, icon: "ArrowRight" },
-                { text: ctaServices, href: "/#services", primary: false, icon: "ArrowRight" }
-            ];
-            
-            const mappedStats = stats.length > 0 ? stats : [
-                { value: "500+", label: "Athletes Treated", icon: "Star" }
-            ];
-            
-            const mappedImages = h.images && h.images.length > 0 ? h.images : [image];
-
             return {
                 ...h,
                 label,
@@ -132,53 +114,84 @@ export const useContent = () => {
                 
                 // Back-compat for admin editor
                 badge: label,
-                headlines: mappedHeadlines,
-                buttons: mappedButtons,
-                stats: mappedStats,
-                images: mappedImages,
+                headlines: [
+                    { text: title1, highlight: false },
+                    { text: title2, highlight: true }
+                ],
+                buttons: [
+                    { text: ctaBook, href: h.bookingUrl || "/#contact", primary: true, icon: "ArrowRight" },
+                    { text: ctaServices, href: "/#services", primary: false, icon: "ArrowRight" }
+                ],
+                stats: stats.length > 0 ? stats : [{ value: "500+", label: "Athletes Treated", icon: "Star" }],
+                images: [image],
                 bgImageAlt: imageAlt
             };
         })(),
         about: getSafe(completeData, 'about'),
+        stats: (() => {
+            const s = getSafe(completeData, 'stats', {});
+            const defaultItems = [
+                { value: "8+", label: "Years of Experience" },
+                { value: "5,000+", label: "Clients Treated" },
+                { value: "15,000+", label: "Sessions Completed" },
+                { value: "100%", label: "Satisfaction Rate" }
+            ];
+            const items = Array.isArray(s.items) && s.items.length > 0 ? s.items : defaultItems;
+            return {
+                ...s,
+                label: s.label || "Our Achievements",
+                titleLine1: s.titleLine1 || "Proven Results.",
+                titleLine2: s.titleLine2 || "Professional",
+                titleItalicWord: s.titleItalicWord || "Standards.",
+                description: s.description || "At 410 Muscle Therapy, we believe that true recovery is built on specialized bodywork and precision movement science.",
+                image: s.image || "/images/blog-3.webp",
+                imageAlt: s.imageAlt || "Clinical sports massage session",
+                items
+            };
+        })(),
         services: (() => {
             const s = getSafe(completeData, 'services', { services: [] });
-            const servicesList = Array.isArray(s.services) && s.services.length > 0 
+            const allServices = Array.isArray(s.services) && s.services.length > 0 
                 ? s.services 
                 : (Array.isArray(s.items) ? s.items : []);
-            
-            const list = {
-                ...s,
-                services: servicesList,
-                items: servicesList
+
+            const formatService = (item: any, i: number) => {
+                const title = item.title || item.name || `Service ${i + 1}`;
+                const name = item.name || item.title || `Service ${i + 1}`;
+                const slug = item.slug || item.id || title.toLowerCase().replace(/\s+/g, '-');
+                const description = item.description || item.heroDescription || "";
+                const image = item.image || item.featuredImage || "/images/service-massage.webp";
+                const rawBenefits = item.benefits || item.focusCards || [];
+                const benefits = Array.isArray(rawBenefits) && rawBenefits.length > 0 
+                    ? rawBenefits 
+                    : ["Targeted Recovery", "Pain Relief", "Mobility Restoration", "Certified Specialists"];
+                return {
+                    ...item,
+                    id: item.id || String(i + 1).padStart(2, '0'),
+                    title,
+                    name,
+                    slug,
+                    description,
+                    image,
+                    benefits
+                };
             };
 
-            const label = list.badge || list.label || "Our Services";
-            const titleLine1 = list.headline?.prefix || list.titleLine1 || "Therapies";
-            const titleLine2 = list.headline?.highlight || list.titleLine2 || "Designed";
-            const titleLine3 = list.headline?.suffix || list.titleLine3 || "Around";
-            const titleItalicWord = list.titleItalicWord || "You";
-            
-            const ctaAll = list.ctaAll || "VIEW ALL SERVICES";
-            const ctaLearnMore = list.ctaLearnMore || "LEARN MORE";
+            const formattedServices = allServices.map((svc: any, i: number) => formatService(svc, i));
+            const rawItems = Array.isArray(s.items) && s.items.length > 0 ? s.items : formattedServices.slice(0, 6);
+            const formattedItems = rawItems.map((svc: any, i: number) => formatService(svc, i));
 
-            if (list && Array.isArray(list.services)) {
-                list.services = list.services.map((item: any) => {
-                    const title = item.title || item.name || "";
-                    const name = item.name || item.title || "";
-                    const slug = item.slug || item.id || "";
-                    return { ...item, title, name, slug };
-                });
-            }
-            if (list && Array.isArray(list.items)) {
-                list.items = list.items.map((item: any) => {
-                    const title = item.title || item.name || "";
-                    const name = item.name || item.title || "";
-                    const slug = item.slug || item.id || "";
-                    return { ...item, title, name, slug };
-                });
-            }
+            const label = s.label || s.badge || "Our Services";
+            const titleLine1 = s.titleLine1 || s.headline?.prefix || "Therapies";
+            const titleLine2 = s.titleLine2 || s.headline?.highlight || "Designed";
+            const titleLine3 = s.titleLine3 || s.headline?.suffix || "Around";
+            const titleItalicWord = s.titleItalicWord || "You";
+            
+            const ctaAll = s.ctaAll || "VIEW ALL SERVICES";
+            const ctaLearnMore = s.ctaLearnMore || "LEARN MORE";
+
             return {
-                ...list,
+                ...s,
                 label,
                 badge: label,
                 titleLine1,
@@ -187,6 +200,8 @@ export const useContent = () => {
                 titleItalicWord,
                 ctaAll,
                 ctaLearnMore,
+                services: formattedServices,
+                items: formattedItems,
                 headline: {
                     prefix: titleLine1,
                     highlight: titleLine2,
@@ -199,37 +214,18 @@ export const useContent = () => {
             const ceo = l.ceo || {};
             const section = l.section || {};
 
-            const label = section.badge || "The Specialist";
-            // Admin editor saves headline as 3 separate fields
-            const titleParts = [section.headlinePrefix, section.headlineHighlight, section.headlineSuffix].filter(Boolean);
-            const title = titleParts.length > 0 ? titleParts.join(" ") : (section.headline || "Meet Antoine Lyles");
-            const titleHighlight = section.headlineHighlight || "";
-            // tagline comes from rich text editor — strip HTML wrapper
-            const rawTagline = ceo.quotes?.[0] || ceo.title || "Performance Recovery Specialist";
-            const tagline = rawTagline.replace(/<[^>]*>/g, '').trim();
-            const image = ceo.image?.src || "/images/theraphist.jpeg";
-            const imageAlt = ceo.image?.alt || ceo.alt || "Antoine Lyles";
+            const label = l.label || section.badge || "The Specialist";
+            const title = l.title || section.headline || "Meet Antoine Lyles";
+            const tagline = l.tagline || (typeof ceo.quotes?.[0] === 'string' ? ceo.quotes[0].replace(/<[^>]*>/g, '').trim() : "Performance Recovery Specialist");
+            const image = l.image || ceo.image?.src || "/images/theraphist.jpeg";
+            const imageAlt = l.imageAlt || ceo.image?.alt || "Antoine Lyles";
 
-            const descRaw = ceo.description || "";
-            // Split into two paragraphs but preserve HTML for rendering
-            const pMatch = descRaw.match(/<p[^>]*>([\s\S]*?)<\/p>/gi);
-            let desc1 = "";
-            let desc2 = "";
-            if (pMatch && pMatch.length >= 2) {
-              desc1 = pMatch[0];
-              desc2 = pMatch.slice(1).join("");
-            } else if (pMatch && pMatch.length === 1) {
-              desc1 = pMatch[0];
-            } else {
-              // No <p> tags — split on double newline
-              const parts = descRaw.split(/\n\n/);
-              desc1 = parts[0] ? `<p>${parts[0].replace(/<[^>]*>/g, '')}</p>` : "";
-              desc2 = parts[1] ? `<p>${parts[1].replace(/<[^>]*>/g, '')}</p>` : "";
-            }
+            const desc1 = l.desc1 || (ceo.description ? ceo.description.split("</p>")[0] + "</p>" : "<p>Antoine Lyles is a certified massage therapist specializing in clinical sports massage, myofascial release, and neuromuscular therapy.</p>");
+            const desc2 = l.desc2 || (ceo.description && ceo.description.includes("</p>") ? ceo.description.split("</p>").slice(1).join("</p>") : "<p>With years of experience working with competitive athletes and active individuals, he delivers targeted protocols designed to restore functional movement.</p>");
 
-            const photoBadge = ceo.badges?.top || "PERFORMANCE RECOVERY SPECIALIST";
-            const signatureName = ceo.name || "Antoine Lyles";
-            const signatureTitle = ceo.title || "Performance Recovery Specialist";
+            const photoBadge = l.photoBadge || ceo.badges?.top || "PERFORMANCE RECOVERY SPECIALIST";
+            const signatureName = l.signatureName || ceo.name || "Antoine Lyles";
+            const signatureTitle = l.signatureTitle || ceo.title || "Performance Recovery Specialist";
             const ctaMore = l.ctaMore || "LEARN MORE ABOUT ANTOINE";
             const ctaLink = l.ctaLink || "";
 
@@ -237,7 +233,6 @@ export const useContent = () => {
                 ...l,
                 label,
                 title,
-                titleHighlight,
                 tagline,
                 desc1,
                 desc2,
@@ -253,14 +248,14 @@ export const useContent = () => {
                 section: {
                     badge: label,
                     headline: title,
-                    description: descRaw
+                    description: `${desc1}${desc2}`
                 },
                 ceo: {
                     ...ceo,
                     name: signatureName,
                     title: signatureTitle,
                     quotes: [tagline],
-                    description: descRaw,
+                    description: `${desc1}${desc2}`,
                     badges: {
                         top: photoBadge,
                         bottom: ceo.badges?.bottom || ""
@@ -295,9 +290,9 @@ export const useContent = () => {
         testimonials: (() => {
             const t = getSafe(completeData, 'testimonials', { items: [], results: [] });
             
-            const label = t.section?.badge || t.label || "Reviews";
-            const title1 = t.section?.headlinePrefix || t.title1 || "Real People.";
-            const title2 = t.section?.headlineHighlight || t.title2 || "Real Results.";
+            const label = t.label || t.section?.badge || "Reviews";
+            const title1 = t.title1 || t.section?.headlinePrefix || "Real People.";
+            const title2 = t.title2 || t.section?.headlineHighlight || "Real Results.";
             const quoteIcon = t.quoteIcon || "\"";
             const dash = t.dash || "—";
             
@@ -447,12 +442,17 @@ export const useContent = () => {
                 faqs: faqObj.items || []
             };
         })(),
-        ctaBanner: getSafe(completeData, 'ctaBanner', {
-            tagline: "Take the First Step",
-            title: "Ready to Feel Your Best?",
-            description: "Book your appointment today and start your journey to a pain-free, stronger you.",
-            button: "BOOK APPOINTMENT"
-        }),
+        ctaBanner: (() => {
+            const cb = getSafe(completeData, 'ctaBanner', {});
+            return {
+                ...cb,
+                tagline: cb.tagline || "Take the First Step",
+                title: cb.title || "Ready to Feel Your Best?",
+                description: cb.description || "Book your appointment today and start your journey to a pain-free, stronger you.",
+                button: cb.button || "BOOK APPOINTMENT",
+                buttonUrl: cb.buttonUrl || cb.btnUrl || "https://www.styleseat.com/m/v/410muscletherapy"
+            };
+        })(),
         footer: {
             ...footer,
             services: footerServices,
@@ -493,16 +493,6 @@ export const useContent = () => {
             buttonText: ""
         }),
         hours: getSafe(completeData, 'hours'),
-        stats: getSafe(completeData, 'stats', {
-            label: "",
-            titleLine1: "",
-            titleLine2: "",
-            titleItalicWord: "",
-            description: "",
-            image: "",
-            imageAlt: "",
-            items: []
-        }),
         contactPage: getSafe(completeData, 'contactPage', {
             header: { badge: "", headline: "", description: "" },
             formFields: [],

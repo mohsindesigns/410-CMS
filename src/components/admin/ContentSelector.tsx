@@ -24,9 +24,13 @@ export default function ContentSelector({ type, selectedItems = [], onSelect, la
         const data = await res.json();
 
         let masterList: any[] = [];
-        if (type === "services") masterList = data.services?.services || [];
+        if (type === "services") {
+          masterList = (Array.isArray(data.services?.services) && data.services.services.length > 0)
+            ? data.services.services
+            : (Array.isArray(data.services?.items) ? data.services.items : []);
+        }
         if (type === "projects") masterList = data.portfolio?.projects || [];
-        if (type === "reviews") masterList = data.testimonials?.testimonials || [];
+        if (type === "reviews") masterList = data.testimonials?.testimonials || data.testimonials?.items || [];
         if (type === "faq") masterList = data.faq?.items || [];
 
         setItems(masterList);
@@ -41,9 +45,13 @@ export default function ContentSelector({ type, selectedItems = [], onSelect, la
   }, [type]);
 
   const getItemKey = (item: any) => {
+    if (!item) return '';
     // For reviews/testimonials, build a composite key since they lack stable IDs
     if (type === 'reviews') {
-      return `${item.name || ''}::${(item.text || '').slice(0, 30)}`;
+      return `${item.name || ''}::${(item.text || item.quote || '').slice(0, 30)}`;
+    }
+    if (type === 'services') {
+      return item.slug || item.id || item.title || item.name || '';
     }
     return item._id || item.id || item.slug || item.title || item.name || item.question || '';
   };

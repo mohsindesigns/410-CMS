@@ -3,1000 +3,1311 @@
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import {
-   Plus, Trash2, Loader2, Image as ImageIcon,
-   LayoutTemplate, Type, Settings, Star,
-   CheckCircle2, List, CircleHelp, Mail, Briefcase,
-   ChevronRight, X
+  Plus, Trash2, Loader2, Image as ImageIcon,
+  LayoutTemplate, Type, Star, Briefcase, Users,
+  List, Mail, BookOpen, ChevronRight, Check
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import ContentSelector from "@/components/admin/ContentSelector";
-import IconSelector from "@/components/admin/IconSelector";
 import ImageField from "@/components/admin/ImageField";
 import BlogSelector from "@/components/admin/BlogSelector";
+
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
-   ssr: false,
-   loading: () => <div className="h-64 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
+  ssr: false,
+  loading: () => <div className="h-40 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
 });
-const QuillEditor = dynamic(() => import("@/components/admin/QuillEditor"), {
-   ssr: false,
-   loading: () => <div className="h-40 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading editor...</div>
-});
+
 import { UI } from "./styles";
 
 export default function HomeEditor({ pageId, data, setData }: { pageId: string, data: any, setData: (d: any) => void }) {
-   const [activeTab, setActiveTab] = useState("hero");
+  const [activeTab, setActiveTab] = useState("hero");
 
-   useEffect(() => {
-      if (data && Object.keys(data).length === 0) {
-         setData({
-            hero: { badge: "", headlines: [{ text: "", highlight: false }], description: "", buttons: [{ text: "", href: "", primary: true }], stats: [], images: [], bgImageAlt: "" },
-            about: { badge: "", headline: { prefix: "", highlight: "", suffix: "" }, description: "", image: { src: "", alt: "", badge: "" }, points: [] },
-            services: { badge: "", headline: { prefix: "", highlight: "", suffix: "" }, description: [], stats: [], services: [] },
-            whyChooseUs: { section: { badge: "", headline: "", description: "" }, features: [], stats: [] },
-            leadership: {
-               section: { badge: "", headline: "", description: "" },
-               ceo: { name: "", title: "", image: { src: "", alt: "" }, badges: { top: "", bottom: "" }, quotes: [""], description: "", socials: [] }
-            },
-            portfolio: { section: { badge: "", headline: "" }, projects: [], button: { text: "", link: "" } },
-            testimonials: { section: { badge: "", headline: "", featured: "" }, stats: { subscribers: "" }, testimonials: [] },
-            quote: { section: { badge: "", headline: "", description: "" }, success: { title: "", message: "", buttonText: "" }, services: [], timelines: [] }
-         });
-      }
-   }, [data, setData]);
-
-   if (!data) return <div className="flex items-center justify-center h-64"><Loader2 className="w-5 h-5 text-[#2271b1] animate-spin" /></div>;
-
-   const updateSection = (section: string | null, field: string | null, value: any) => {
-      setData((prev: any) => {
-         const currentData = prev || {};
-
-         if (!section) {
-            let newValue = value;
-            if (typeof value === 'function') {
-               newValue = value(currentData[field as string]);
-            }
-            return { ...currentData, [field as string]: newValue };
-         }
-
-         const sectionData = currentData[section] || {};
-         let newValue = value;
-         if (typeof value === 'function') {
-            const currentValue = field ? sectionData[field] : sectionData;
-            newValue = value(currentValue);
-         }
-
-         if (field) {
-            return {
-               ...currentData,
-               [section]: {
-                  ...sectionData,
-                  [field]: newValue
-               }
-            };
-         }
-         return {
-            ...currentData,
-            [section]: newValue
-         };
+  useEffect(() => {
+    if (data && Object.keys(data).length === 0) {
+      setData({
+        hero: {
+          label: "Performance Recovery Specialist • Est. 2020",
+          title1: "Recover Faster.",
+          title2: "Perform Higher.",
+          description: "Specialized performance bodywork, mobility restoration, and injury prevention designed for athletes and active adults since 2020.",
+          ctaBook: "BOOK RECOVERY SESSION",
+          ctaServices: "EXPLORE SERVICES",
+          socialProofText: "Trusted by 500+ athletes & active adults",
+          image: "/images/hero-bg.webp",
+          imageAlt: "Expert muscle therapy session"
+        },
+        stats: {
+          label: "Our Achievements",
+          titleLine1: "Proven Results.",
+          titleLine2: "Professional",
+          titleItalicWord: "Standards.",
+          description: "At 410 Muscle Therapy, we believe that true recovery is built on specialized bodywork and precision movement science.",
+          image: "/images/blog-3.webp",
+          imageAlt: "Clinical sports massage session",
+          items: [
+            { value: "8+", label: "Years of Experience" },
+            { value: "5,000+", label: "Clients Treated" },
+            { value: "15,000+", label: "Sessions Completed" },
+            { value: "100%", label: "Satisfaction Rate" }
+          ]
+        },
+        services: {
+          label: "Our Services",
+          titleLine1: "Therapies",
+          titleLine2: "Designed",
+          titleLine3: "Around",
+          titleItalicWord: "You",
+          description: "Experience specialized therapeutic bodywork engineered around your performance and athletic recovery goals.",
+          ctaAll: "VIEW ALL SERVICES",
+          ctaLearnMore: "LEARN MORE",
+          services: [],
+          items: []
+        },
+        leadership: {
+          label: "The Specialist",
+          title: "Meet Antoine Lyles",
+          tagline: "Performance Recovery Specialist",
+          desc1: "<p>Antoine Lyles is a certified massage therapist specializing in clinical sports massage, myofascial release, and neuromuscular therapy.</p>",
+          desc2: "<p>With years of experience working with competitive athletes and active individuals, he delivers targeted protocols designed to restore functional movement.</p>",
+          photoBadge: "PERFORMANCE RECOVERY SPECIALIST",
+          image: "/images/theraphist.jpeg",
+          imageAlt: "Antoine Lyles",
+          ctaMore: "LEARN MORE ABOUT ANTOINE",
+          ctaLink: "",
+          signatureName: "Antoine Lyles",
+          signatureTitle: "Performance Recovery Specialist"
+        },
+        process: {
+          label: "THE CLINICAL PROCESS",
+          title: "Your Recovery Journey.",
+          description: "We analyze your biomechanics, locate the underlying dysfunctions, and apply clinical treatment steps to ensure lasting relief and athletic longevity.",
+          phaseLabel: "PHASE",
+          items: [
+            { id: "01", title: "Assessment", description: "Identify muscular imbalances and structural restrictions.", image: "/images/blog-1.webp", actions: ["Range of Motion Testing", "Postural Alignment Check"] },
+            { id: "02", title: "Targeted Therapy", description: "Address dysfunctions with deep tissue and mobility techniques.", image: "/images/blog-2.webp", actions: ["Trigger Point Releases", "PNF Muscle Stretching"] }
+          ]
+        },
+        testimonials: {
+          label: "Clients Love Us",
+          title1: "Real People.",
+          title2: "Real Results.",
+          testimonials: [],
+          items: [],
+          results: [
+            { label: "Post-Workout Recovery", image: "/images/testimonial-1.webp" },
+            { label: "Shoulder Range Restoration", image: "/images/testimonial-2.webp" }
+          ]
+        },
+        ctaBanner: {
+          tagline: "Take the First Step",
+          title: "Ready to Feel Your Best?",
+          description: "Book your appointment today and start your journey to a pain-free, stronger you.",
+          button: "BOOK APPOINTMENT",
+          buttonUrl: ""
+        },
+        quote: {
+          section: { badge: "GET IN TOUCH", headline: "Have Questions? Let's Connect." },
+          formClinicPortal: "INSTANT ONLINE BOOKING",
+          formClinicPortalSub: "Book directly on StyleSeat portal",
+          formStyleSeatBtn: "BOOK ON STYLESEAT",
+          formBtnSubmit: "SEND MESSAGE",
+          formSuccessToast: "Thank you! Your inquiry has been sent. We will reply within 24 hours.",
+          trustHipa: "HIPAA Compliant & Secure",
+          trustResponse: "Avg Response: 2 Hours",
+          services: [
+            { label: "Corrective Movement Therapy", value: "corrective-movement" },
+            { label: "Maryland Sports Massage", value: "sports-massage" },
+            { label: "Fascial Stretch Therapy", value: "stretch-therapy" },
+            { label: "Deep Tissue Massage", value: "deep-tissue" }
+          ]
+        },
+        faq: {
+          section: { badge: "FAQ", headline: "Frequently Asked Questions" },
+          items: []
+        },
+        blogSection: {
+          subtitle: "FROM THE BLOG",
+          title: "Insights & Recovery Tips",
+          ctaAll: "View All Articles",
+          ctaReadMore: "Read Article",
+          description: "Explore the latest clinical insights, recovery methods, and athletic performance tips from our certified specialists.",
+          selectedPosts: []
+        }
       });
-   };
+    }
+  }, [data, setData]);
 
-   const tabs = [
-      { id: "hero", label: "Home" },
-      { id: "statsBar", label: "Stats Bar" },
-      { id: "about", label: "About" },
-      { id: "services", label: "Services" },
-      { id: "whyChooseUs", label: "Value Props" },
-      { id: "process", label: "How It Works" },
-      { id: "leadership", label: "Leadership" },
-      { id: "portfolio", label: "Work" },
-      { id: "testimonials", label: "Reviews" },
-      { id: "ctaBanner", label: "CTA Banner" },
-      { id: "blog", label: "Blog" },
-      { id: "quote", label: "Contact Form" },
-   ];
+  if (!data) return <div className="flex items-center justify-center h-64"><Loader2 className="w-5 h-5 text-[#2271b1] animate-spin" /></div>;
 
-   return (
-      <div className="bg-white max-w-3xl mx-auto pb-20">
-         {/* WP Tabs */}
-         <div className="flex flex-wrap items-center gap-1 mb-10 text-[13px] border-b border-[#f0f0f1] pb-1 sticky top-0 bg-white z-10 pt-2">
-            {tabs.map((tab: any, idx: number) => (
-               <React.Fragment key={tab.id}>
-                  <button
-                     onClick={() => setActiveTab(tab.id)}
-                     className={`px-1 py-1 transition-colors ${activeTab === tab.id ? 'text-[#1d2327] font-bold border-b-2 border-[#2271b1]' : 'text-[#2271b1] hover:text-[#135e96]'}`}
-                  >
-                     {tab.label}
-                  </button>
-                  {idx < tabs.length - 1 && <span className="text-[#c3c4c7] px-1">|</span>}
-               </React.Fragment>
-            ))}
-         </div>
+  const updateSection = (section: string, field: string | null, value: any) => {
+    setData((prev: any) => {
+      const currentData = prev || {};
+      const sectionData = currentData[section] || {};
+      
+      let newValue = value;
+      if (typeof value === 'function') {
+        const currentValue = field ? sectionData[field] : sectionData;
+        newValue = value(currentValue);
+      }
 
-         <AnimatePresence mode="wait">
-            <motion.div
-               key={activeTab}
-               initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} transition={{ duration: 0.15 }}
-               className="space-y-12"
+      const updatedSection = field ? {
+        ...sectionData,
+        [field]: newValue,
+      } : newValue;
+
+      return {
+        ...currentData,
+        [section]: updatedSection,
+      };
+    });
+  };
+
+  const tabs = [
+    { id: "hero", label: "1. Hero Banner", icon: LayoutTemplate },
+    { id: "stats", label: "2. Stats & Achievements", icon: Star },
+    { id: "services", label: "3. Services Showcase", icon: Briefcase },
+    { id: "leadership", label: "4. Specialist Profile", icon: Users },
+    { id: "process", label: "5. Clinical Process", icon: List },
+    { id: "testimonials", label: "6. Reviews & Results", icon: Star },
+    { id: "ctaBanner", label: "7. CTA Banner", icon: LayoutTemplate },
+    { id: "contact", label: "8. Contact & FAQs", icon: Mail },
+    { id: "blog", label: "9. Blog Insights", icon: BookOpen },
+  ];
+
+  return (
+    <div className="bg-white max-w-4xl mx-auto pb-20">
+      {/* Visual Navigation Tabs */}
+      <div className="flex flex-wrap items-center gap-1.5 mb-8 text-[13px] border-b border-[#f0f0f1] pb-2 sticky top-0 bg-white z-10 pt-2 shadow-sm">
+        {tabs.map((tab: any) => {
+          const Icon = tab.icon;
+          const isActive = activeTab === tab.id;
+          return (
+            <button
+              key={tab.id}
+              onClick={() => setActiveTab(tab.id)}
+              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-t-md font-medium transition-colors ${
+                isActive
+                  ? 'text-[#1d2327] font-bold bg-[#f0f0f1] border-b-2 border-[#2271b1]'
+                  : 'text-[#2271b1] hover:text-[#135e96] hover:bg-[#f6f7f7]'
+              }`}
             >
-               {/* HERO SECTION */}
-               {activeTab === "hero" && (
-                  <div className="space-y-12">
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>1. Branding</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.hero?.badge || ""} onChange={(e) => updateSection("hero", "badge", e.target.value)} className={UI.input} /></div>
-                     </div>
-                     <div className="space-y-8">
-                        <h3 className={UI.sectionHeader}>2. Animated Headline</h3>
-                        <div className="space-y-4">
-                           {(data.hero?.headlines || []).map((h: any, i: number) => (
-                              <div key={i} className={UI.card + " space-y-4"}>
-                                 <div className="flex justify-between items-center border-b border-[#f0f0f1] pb-2">
-                                    <span className="text-[10px] font-bold text-[#646970]">Line #{i + 1}</span>
-                                    <button onClick={() => {
-                                       const newH = data.hero.headlines.filter((_: any, idx: number) => idx !== i); updateSection("hero", "headlines", newH);
-                                    }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                 </div>
-                                 <input type="text" value={h.text || ""} onChange={(e) => {
-                                    const newH = [...data.hero.headlines]; newH[i].text = e.target.value; updateSection("hero", "headlines", newH);
-                                 }} className={UI.input + " font-bold"} />
-                                 <label className="flex items-center gap-2 cursor-pointer text-[12px]">
-                                    <input type="checkbox" checked={h.highlight} onChange={(e) => {
-                                       const newH = [...data.hero.headlines]; newH[i].highlight = e.target.checked; updateSection("hero", "headlines", newH);
-                                    }} /> Highlighted Style
-                                 </label>
-                              </div>
-                           ))}
-                           <button onClick={() => updateSection("hero", "headlines", [...(data.hero?.headlines || []), { text: "", highlight: false }])} className={UI.buttonAdd}>+ Add Line</button>
-                        </div>
-                     </div>
-                     <div className="space-y-6">
-                        <RichTextEditor
-                           label="3. Description Narrative"
-                           content={data.hero?.description || ""}
-                           onChange={(html) => updateSection("hero", "description", html)}
-                        />
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>4. Buttons</h3>
-                        <div className="space-y-4">
-                           {(data.hero?.buttons || []).map((btn: any, i: number) => (
-                              <div key={i} className={UI.card + " space-y-4"}>
-                                 <div className="space-y-1.5"><label className={UI.label}>Text</label><input type="text" value={btn.text || ""} onChange={(e) => { const newB = [...data.hero.buttons]; newB[i].text = e.target.value; updateSection("hero", "buttons", newB); }} className={UI.input} /></div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Link</label><input type="text" value={btn.href || ""} onChange={(e) => { const newB = [...data.hero.buttons]; newB[i].href = e.target.value; updateSection("hero", "buttons", newB); }} className={UI.input} /></div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Icon Name</label><input type="text" value={btn.icon || ""} onChange={(e) => { const newB = [...data.hero.buttons]; newB[i].icon = e.target.value; updateSection("hero", "buttons", newB); }} className={UI.input} placeholder="e.g. ArrowRight" /></div>
-                                 <label className="flex items-center gap-2 cursor-pointer text-[12px]"><input type="checkbox" checked={btn.primary} onChange={(e) => { const newB = [...data.hero.buttons]; newB[i].primary = e.target.checked; updateSection("hero", "buttons", newB); }} /> Primary Style</label>
-                                 <button onClick={() => { const newB = data.hero.buttons.filter((_: any, idx: number) => idx !== i); updateSection("hero", "buttons", newB); }} className="text-[#d63638] text-[11px] font-bold">Remove Button</button>
-                              </div>
-                           ))}
-                           <button onClick={() => updateSection("hero", "buttons", [...(data.hero?.buttons || []), { text: "", href: "", primary: false, icon: "" }])} className={UI.buttonAdd}>+ Add Button</button>
-                        </div>
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>5. Trust Stats</h3>
-                        <div className="space-y-4">
-                           {(data.hero?.stats || []).map((s: any, i: number) => (
-                              <div key={i} className={UI.card + " space-y-4"}>
-                                 <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
-                                    <span className="text-[10px] font-bold text-[#646970] uppercase">Stat #{i + 1}</span>
-                                    <button onClick={() => { updateSection("hero", "stats", (prev: any[]) => prev.filter((_: any, idx: number) => idx !== i)); }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                 </div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Value</label><input type="text" value={s.value || ""} onChange={(e) => { const val = e.target.value; updateSection("hero", "stats", (prev: any[]) => { const newS = [...prev]; newS[i].value = val; return newS; }); }} className={UI.inputLarge} /></div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Label</label><input type="text" value={s.label || ""} onChange={(e) => { const val = e.target.value; updateSection("hero", "stats", (prev: any[]) => { const newS = [...prev]; newS[i].label = val; return newS; }); }} className={UI.input} /></div>
-                                 <IconSelector label="Icon" value={s.icon} onChange={(val) => { updateSection("hero", "stats", (prev: any[]) => { const newS = [...prev]; newS[i].icon = val; return newS; }); }} />
-                              </div>
-                           ))}
-                           <button onClick={() => updateSection("hero", "stats", (prev: any[]) => [...(prev || []), { value: "", label: "", icon: "Star" }])} className={UI.buttonAdd}>+ Add Stat</button>
-                        </div>
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>6. Media</h3>
-                        <ImageField
-                           label="Background Image"
-                           value={data.hero?.images?.[0]}
-                           onChange={(url) => {
-                              updateSection("hero", "images", (prev: any[]) => {
-                                 const next = [...(prev || [])];
-                                 next[0] = url;
-                                 return next;
-                              });
-                           }}
-                           altValue={data.hero?.bgImageAlt || ""}
-                           onAltChange={(alt) => updateSection("hero", "bgImageAlt", alt)}
-                        />
-                     </div>
-                  </div>
-               )}
-
-                {/* STATS BAR SECTION */}
-                {activeTab === "statsBar" && (
-                    <div className="space-y-12">
-                       <div className="space-y-6">
-                          <h3 className={UI.sectionHeader}>Stats Section & Bar Management</h3>
-                          <p className="text-[12px] text-[#646970] -mt-2">Manage both the editorial statistics text/image and the achievements bar items list.</p>
-                       </div>
-                       
-                       {/* Section Texts & Image */}
-                       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-                          <div className={UI.card + " space-y-4"}>
-                             <h4 className="text-[12px] font-bold text-[#1d2327] border-b border-[#f0f0f1] pb-2">Narrative & Text</h4>
-                             <div className="space-y-1.5">
-                                <label className={UI.label}>Section Badge/Label</label>
-                                <input type="text" value={data.stats?.label || ""} onChange={(e) => updateSection("stats", "label", e.target.value)} className={UI.input} />
-                             </div>
-                             <div className="space-y-1.5">
-                                <label className={UI.label}>Headline Line 1</label>
-                                <input type="text" value={data.stats?.titleLine1 || ""} onChange={(e) => updateSection("stats", "titleLine1", e.target.value)} className={UI.input} />
-                             </div>
-                             <div className="space-y-1.5">
-                                <label className={UI.label}>Headline Line 2</label>
-                                <input type="text" value={data.stats?.titleLine2 || ""} onChange={(e) => updateSection("stats", "titleLine2", e.target.value)} className={UI.input} />
-                             </div>
-                             <div className="space-y-1.5">
-                                <label className={UI.label}>Accent Word (Italicized)</label>
-                                <input type="text" value={data.stats?.titleItalicWord || ""} onChange={(e) => updateSection("stats", "titleItalicWord", e.target.value)} className={UI.input + " italic font-serif"} />
-                             </div>
-                             <div className="space-y-1.5">
-                                <label className={UI.label}>Narrative Description</label>
-                                <RichTextEditor 
-                                  content={data.stats?.description || ""} 
-                                  onChange={(val) => updateSection("stats", "description", val)} 
-                                />
-                             </div>
-                          </div>
-                          <div className={UI.card + " space-y-4"}>
-                             <h4 className="text-[12px] font-bold text-[#1d2327] border-b border-[#f0f0f1] pb-2">Editorial Image</h4>
-                             <ImageField 
-                               label="Section Image" 
-                               value={data.stats?.image || ""} 
-                               onChange={(url: string) => updateSection("stats", "image", url)} 
-                               altValue={data.stats?.imageAlt || ""}
-                               onAltChange={(alt: string) => updateSection("stats", "imageAlt", alt)}
-                             />
-                          </div>
-                       </div>
-
-                       <div className="space-y-6">
-                          <h4 className="text-[12px] font-bold text-[#1d2327] border-b border-[#f0f0f1] pb-1">Stats Achievements List (Top 4 stats show horizontally)</h4>
-                          <div className="space-y-4">
-                            {((data.stats?.items) || []).map((s: any, i: number) => (
-                               <div key={i} className={UI.card + " space-y-4 relative group"}>
-                                  <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
-                                     <span className="text-[10px] font-bold text-[#646970] uppercase">Stat #{i + 1}</span>
-                                     <button onClick={() => {
-                                        const newItems = (data.stats?.items || []).filter((_: any, idx: number) => idx !== i);
-                                        updateSection("stats", "items", newItems);
-                                     }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                  </div>
-                                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                                     <div className="space-y-1.5">
-                                        <label className={UI.label}>Value (e.g. 5,000+)</label>
-                                        <input type="text" value={s.value || ""} onChange={(e) => {
-                                           const newItems = [...(data.stats?.items || [])];
-                                           newItems[i] = { ...newItems[i], value: e.target.value };
-                                           updateSection("stats", "items", newItems);
-                                        }} className={UI.inputLarge} />
-                                     </div>
-                                     <div className="space-y-1.5">
-                                        <label className={UI.label}>Label (e.g. Clients Treated)</label>
-                                        <input type="text" value={s.label || ""} onChange={(e) => {
-                                           const newItems = [...(data.stats?.items || [])];
-                                           newItems[i] = { ...newItems[i], label: e.target.value };
-                                           updateSection("stats", "items", newItems);
-                                        }} className={UI.input} />
-                                     </div>
-                                  </div>
-                                  <div className="space-y-1.5">
-                                     <label className={UI.label}>Short Description (Optional)</label>
-                                     <input type="text" value={s.desc || ""} onChange={(e) => {
-                                        const newItems = [...(data.stats?.items || [])];
-                                        newItems[i] = { ...newItems[i], desc: e.target.value };
-                                        updateSection("stats", "items", newItems);
-                                     }} className={UI.input} />
-                                  </div>
-                               </div>
-                            ))}
-                            <button onClick={() => {
-                               const currentItems = data.stats?.items || [];
-                               updateSection("stats", "items", [...currentItems, { value: "", label: "", desc: "" }]);
-                            }} className={UI.buttonAdd}>+ Add Stat</button>
-                         </div>
-                      </div>
-                   </div>
-                )}
-
-               {/* ABOUT SECTION */}
-               {activeTab === "about" && (
-                  <div className="space-y-10">
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>1. Identity</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.about?.badge || ""} onChange={(e) => updateSection("about", "badge", e.target.value)} className={UI.input} /></div>
-                        <div className="space-y-4">
-                           <label className={UI.label}>Headline (Structured)</label>
-                           <div className="space-y-2">
-                              <input type="text" value={data.about?.headline?.prefix || ""} onChange={(e) => updateSection("about", "headline", { ...(data.about?.headline || {}), prefix: e.target.value })} className={UI.input} placeholder="Prefix" />
-                              <input type="text" value={data.about?.headline?.highlight || ""} onChange={(e) => updateSection("about", "headline", { ...(data.about?.headline || {}), highlight: e.target.value })} className={UI.input + " font-bold border-[#2271b1]"} placeholder="Highlighted" />
-                              <input type="text" value={data.about?.headline?.suffix || ""} onChange={(e) => updateSection("about", "headline", { ...(data.about?.headline || {}), suffix: e.target.value })} className={UI.input} placeholder="Suffix" />
-                           </div>
-                        </div>
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>2. Brand Narrative</h3>
-                        <QuillEditor
-                           label="2. Brand Narrative"
-                           content={data.about?.description || ""}
-                           onChange={(html) => updateSection("about", "description", html)}
-                        />
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>3. Action Buttons</h3>
-                        <div className="space-y-4">
-                           {(data.about?.buttons || []).map((btn: any, i: number) => (
-                              <div key={i} className={UI.card + " space-y-4"}>
-                                 <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
-                                    <span className="text-[10px] font-bold text-[#646970] uppercase">Button #{i + 1}</span>
-                                    <button onClick={() => { const newB = data.about.buttons.filter((_: any, idx: number) => idx !== i); updateSection("about", "buttons", newB); }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                 </div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Text</label><input type="text" value={btn.text || ""} onChange={(e) => { const newB = [...data.about.buttons]; newB[i].text = e.target.value; updateSection("about", "buttons", newB); }} className={UI.input} /></div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Link</label><input type="text" value={btn.href || ""} onChange={(e) => { const newB = [...data.about.buttons]; newB[i].href = e.target.value; updateSection("about", "buttons", newB); }} className={UI.input} /></div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Icon Name</label><input type="text" value={btn.icon || ""} onChange={(e) => { const newB = [...data.about.buttons]; newB[i].icon = e.target.value; updateSection("about", "buttons", newB); }} className={UI.input} placeholder="e.g. ArrowRight" /></div>
-                                 <label className="flex items-center gap-2 cursor-pointer text-[12px]"><input type="checkbox" checked={btn.primary || false} onChange={(e) => { const newB = [...data.about.buttons]; newB[i].primary = e.target.checked; updateSection("about", "buttons", newB); }} /> Primary Style</label>
-                              </div>
-                           ))}
-                           <button onClick={() => updateSection("about", "buttons", [...(data.about?.buttons || []), { text: "", href: "", primary: false, icon: "ArrowRight" }])} className={UI.buttonAdd}>+ Add Button</button>
-                        </div>
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>4. Stats</h3>
-                        <div className="space-y-4">
-                           {(data.about?.stats || []).map((s: any, i: number) => (
-                              <div key={i} className={UI.card + " space-y-4"}>
-                                 <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
-                                    <span className="text-[10px] font-bold text-[#646970] uppercase">Stat #{i + 1}</span>
-                                    <button onClick={() => { const newS = data.about.stats.filter((_: any, idx: number) => idx !== i); updateSection("about", "stats", newS); }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                 </div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Value</label><input type="number" value={s.value || 0} onChange={(e) => { const newS = [...data.about.stats]; newS[i].value = parseInt(e.target.value); updateSection("about", "stats", newS); }} className={UI.inputLarge} /></div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Suffix (e.g. +, %)</label><input type="text" value={s.suffix || ""} onChange={(e) => { const newS = [...data.about.stats]; newS[i].suffix = e.target.value; updateSection("about", "stats", newS); }} className={UI.input} /></div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Label</label><input type="text" value={s.label || ""} onChange={(e) => { const newS = [...data.about.stats]; newS[i].label = e.target.value; updateSection("about", "stats", newS); }} className={UI.input} /></div>
-                              </div>
-                           ))}
-                           <button onClick={() => updateSection("about", "stats", [...(data.about?.stats || []), { value: 0, suffix: "+", label: "" }])} className={UI.buttonAdd}>+ Add Stat</button>
-                        </div>
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>5. Trust Badges</h3>
-                        <div className={UI.card + " space-y-4"}>
-                           <div className="space-y-1.5"><label className={UI.label}>Happy Clients Count</label><input type="number" value={data.about?.trustBadges?.happyClients || 0} onChange={(e) => updateSection("about", "trustBadges", { ...(data.about?.trustBadges || {}), happyClients: parseInt(e.target.value) })} className={UI.inputLarge} /></div>
-                           <div className="space-y-1.5"><label className={UI.label}>Emergency Availability</label><input type="text" value={data.about?.trustBadges?.emergency || ""} onChange={(e) => updateSection("about", "trustBadges", { ...(data.about?.trustBadges || {}), emergency: e.target.value })} className={UI.input} placeholder="e.g. 24/7" /></div>
-                        </div>
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>6. Core Values</h3>
-                        <div className="space-y-3">
-                           {(data.about?.coreValues || []).map((v: string, i: number) => (
-                              <div key={i} className="flex gap-2">
-                                 <input type="text" value={v} onChange={(e) => { const newV = [...data.about.coreValues]; newV[i] = e.target.value; updateSection("about", "coreValues", newV); }} className={UI.input} />
-                                 <button onClick={() => { const newV = data.about.coreValues.filter((_: any, idx: number) => idx !== i); updateSection("about", "coreValues", newV); }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                              </div>
-                           ))}
-                           <button onClick={() => updateSection("about", "coreValues", [...(data.about?.coreValues || []), ""])} className="text-[#2271b1] text-[12px] font-bold uppercase">+ Add Value</button>
-                        </div>
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>7. Media</h3>
-                        <ImageField
-                           label="Section Image"
-                           value={data.about?.image?.src || ""}
-                           onChange={(url) => updateSection("about", "image", { ...(data.about?.image || {}), src: url })}
-                           altValue={data.about?.image?.alt || ""}
-                           onAltChange={(alt) => updateSection("about", "image", { ...(data.about?.image || {}), alt: alt })}
-                        />
-                        <div className="space-y-1.5"><label className={UI.label}>Floating Badge</label><input type="text" value={data.about?.image?.badge || ""} onChange={(e) => updateSection("about", "image", { ...(data.about?.image || {}), badge: e.target.value })} className={UI.input} /></div>
-                     </div>
-                  </div>
-               )}
-
-               {/* SERVICES SECTION */}
-               {activeTab === "services" && (
-                  <div className="space-y-12">
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>1. Intro</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.services?.badge || ""} onChange={(e) => updateSection("services", "badge", e.target.value)} className={UI.input} /></div>
-                        <div className="space-y-2">
-                           <input type="text" value={data.services?.headline?.prefix || ""} onChange={(e) => updateSection("services", "headline", { ...(data.services?.headline || {}), prefix: e.target.value })} className={UI.input} />
-                           <input type="text" value={data.services?.headline?.highlight || ""} onChange={(e) => updateSection("services", "headline", { ...(data.services?.headline || {}), highlight: e.target.value })} className={UI.input + " font-bold border-[#2271b1]"} />
-                           <input type="text" value={data.services?.headline?.suffix || ""} onChange={(e) => updateSection("services", "headline", { ...(data.services?.headline || {}), suffix: e.target.value })} className={UI.input} />
-                        </div>
-                        <QuillEditor
-                           label="Description Narrative"
-                           content={Array.isArray(data.services?.description) ? data.services.description.join("") : (data.services?.description || "")}
-                           onChange={(html) => updateSection("services", "description", html)}
-                        />
-                        <div className="space-y-1.5">
-                           <label className={UI.label}>Description Highlight Text</label>
-                           <input
-                              type="text"
-                              value={data.services?.highlightText || ""}
-                              onChange={(e) => updateSection("services", "highlightText", e.target.value)}
-                              className={UI.input}
-                              placeholder="e.g. Veteran Owned • Licensed • Bonded & Insured"
-                           />
-                           <p className="text-[11px] text-[#646970] italic">
-                              This text will be displayed with primary highlight styles right below the description paragraphs on the public site.
-                           </p>
-                        </div>
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>2. Metrics</h3>
-                        <div className="space-y-4">
-                           {(data.services?.stats || []).map((s: any, i: number) => (
-                              <div key={i} className={UI.card + " space-y-3"}>
-                                 <div className="space-y-1.5"><label className={UI.label}>Value</label><input type="number" step="0.1" value={s.value ?? 0} onChange={(e) => { const newS = [...data.services.stats]; newS[i].value = parseFloat(e.target.value); updateSection("services", "stats", newS); }} className={UI.inputLarge} /></div>
-                                 <div className="space-y-1.5"><label className={UI.label}>Label</label><input type="text" value={s.label || ""} onChange={(e) => { const newS = [...data.services.stats]; newS[i].label = e.target.value; updateSection("services", "stats", newS); }} className={UI.input} /></div>
-                                 <button onClick={() => { const newS = data.services.stats.filter((_: any, idx: number) => idx !== i); updateSection("services", "stats", newS); }} className="text-[#d63638] text-[11px] font-bold">Remove</button>
-                              </div>
-                           ))}
-                           <button onClick={() => updateSection("services", "stats", [...(data.services?.stats || []), { value: 0, label: "" }])} className={UI.buttonAdd}>+ Add Metric</button>
-                        </div>
-                     </div>
-                     <div className="space-y-6 pt-10 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>3. Selection</h3>
-                        <ContentSelector type="services" label="Featured Services" selectedItems={data.services?.services} onSelect={(items) => updateSection("services", "services", items)} />
-                     </div>
-                     <div className="space-y-6 pt-10 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>4. Section Image</h3>
-                        <ImageField
-                           label="Section Image"
-                           value={data.services?.image?.src || ""}
-                           onChange={(url) => {
-                              const currentImage = typeof data.services?.image === 'object' && data.services?.image !== null ? data.services.image : {};
-                              updateSection("services", "image", { ...currentImage, src: url });
-                           }}
-                           altValue={data.services?.image?.alt || ""}
-                           onAltChange={(alt) => {
-                              const currentImage = typeof data.services?.image === 'object' && data.services?.image !== null ? data.services.image : {};
-                              updateSection("services", "image", { ...currentImage, alt: alt });
-                           }}
-                           description="This image appears on the right side of the Services section on the homepage."
-                        />
-                     </div>
-                  </div>
-               )}
-
-               {/* WHY CHOOSE US */}
-               {activeTab === "whyChooseUs" && (
-                  <div className="space-y-12">
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>1. Narrative</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.whyChooseUs?.section?.badge || ""} onChange={(e) => updateSection("whyChooseUs", "section", { ...(data.whyChooseUs?.section || {}), badge: e.target.value })} className={UI.input} /></div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Prefix (plain text)</label>
-                            <input type="text" value={data.whyChooseUs?.section?.headlinePrefix || ""} onChange={(e) => updateSection("whyChooseUs", "section", { ...(data.whyChooseUs?.section || {}), headlinePrefix: e.target.value })} className={UI.input} placeholder="e.g. Why Homeowners" />
-                         </div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Highlight <span className="text-primary font-bold">(shown in primary color)</span></label>
-                            <input type="text" value={data.whyChooseUs?.section?.headlineHighlight || ""} onChange={(e) => updateSection("whyChooseUs", "section", { ...(data.whyChooseUs?.section || {}), headlineHighlight: e.target.value })} className={UI.input + " font-bold border-[#2271b1]"} placeholder="e.g. Choose Us" />
-                         </div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Suffix (plain text)</label>
-                            <input type="text" value={data.whyChooseUs?.section?.headlineSuffix || ""} onChange={(e) => updateSection("whyChooseUs", "section", { ...(data.whyChooseUs?.section || {}), headlineSuffix: e.target.value })} className={UI.input} placeholder="e.g. Over Anyone Else" />
-                         </div>
-                        <RichTextEditor
-                           label="Intro Narrative"
-                           content={data.whyChooseUs?.section?.description || ""}
-                           onChange={(html) => updateSection("whyChooseUs", "section", { ...(data.whyChooseUs?.section || {}), description: html })}
-                        />
-                     </div>
-                     <div className="space-y-8">
-                        <h3 className={UI.sectionHeader}>2. Features</h3>
-                        <div className="space-y-4">
-                           {(data.whyChooseUs?.features || []).map((f: any, i: number) => (
-                              <div key={i} className={UI.card + " space-y-4"}>
-                                 <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
-                                    <span className="text-[10px] font-bold">Feature #{i + 1}</span>
-                                    <button onClick={() => { const newF = data.whyChooseUs.features.filter((_: any, idx: number) => idx !== i); updateSection("whyChooseUs", "features", newF); }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                 </div>
-                                 <IconSelector label="Icon" value={f.icon || ""} onChange={(val) => { const newF = [...data.whyChooseUs.features]; newF[i].icon = val; updateSection("whyChooseUs", "features", newF); }} />
-                                 <input type="text" value={f.title || ""} onChange={(e) => { const newF = [...data.whyChooseUs.features]; newF[i].title = e.target.value; updateSection("whyChooseUs", "features", newF); }} className={UI.input + " font-bold"} placeholder="Title" />
-                                 <RichTextEditor
-                                    label="Feature Detail"
-                                    content={f.description}
-                                    onChange={(html) => { const newF = [...data.whyChooseUs.features]; newF[i].description = html; updateSection("whyChooseUs", "features", newF); }}
-                                 />
-                              </div>
-                           ))}
-                           <button onClick={() => updateSection("whyChooseUs", "features", [...(data.whyChooseUs?.features || []), { title: "", description: "", icon: "Star" }])} className={UI.buttonAdd}>+ Add Feature</button>
-                        </div>
-                     </div>
-                     <div className="space-y-6 pt-10 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>3. Metrics</h3>
-                        <div className="space-y-4">
-                           {(data.whyChooseUs?.stats || []).map((s: any, i: number) => (
-                              <div key={i} className={UI.card + " space-y-4"}>
-                                 <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
-                                    <span className="text-[10px] font-bold text-[#646970] uppercase">Metric #{i + 1}</span>
-                                    <button onClick={() => { const newS = data.whyChooseUs.stats.filter((_: any, idx: number) => idx !== i); updateSection("whyChooseUs", "stats", newS); }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                 </div>
-                                 <div className="space-y-1.5">
-                                    <label className={UI.label}>Value</label>
-                                    <input type="text" value={s.value || ""} onChange={(e) => { const newS = [...data.whyChooseUs.stats]; newS[i].value = e.target.value; updateSection("whyChooseUs", "stats", newS); }} className={UI.inputLarge} placeholder="e.g. 500" />
-                                 </div>
-                                 <div className="space-y-1.5">
-                                    <label className={UI.label}>Suffix (e.g. +, %)</label>
-                                    <input type="text" value={s.suffix || ""} onChange={(e) => { const newS = [...data.whyChooseUs.stats]; newS[i].suffix = e.target.value; updateSection("whyChooseUs", "stats", newS); }} className={UI.input} placeholder="e.g. +" />
-                                 </div>
-                                 <div className="space-y-1.5">
-                                    <label className={UI.label}>Label</label>
-                                    <input type="text" value={s.label || ""} onChange={(e) => { const newS = [...data.whyChooseUs.stats]; newS[i].label = e.target.value; updateSection("whyChooseUs", "stats", newS); }} className={UI.input} />
-                                 </div>
-                              </div>
-                           ))}
-                           <button onClick={() => updateSection("whyChooseUs", "stats", [...(data.whyChooseUs?.stats || []), { value: "", suffix: "", label: "" }])} className={UI.buttonAdd}>+ Add Metric</button>
-                        </div>
-                     </div>
-                   </div>
-                )}
-
-                {/* PROCESS (HOW IT WORKS) SECTION */}
-                {activeTab === "process" && (
-                   <div className="space-y-12">
-                      <div className="space-y-6">
-                         <h3 className={UI.sectionHeader}>1. Section Intro</h3>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Intro Badge</label>
-                            <input type="text" value={data.process?.label || ""} onChange={(e) => updateSection("process", "label", e.target.value)} className={UI.input} />
-                         </div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline Title</label>
-                            <input type="text" value={data.process?.title || ""} onChange={(e) => updateSection("process", "title", e.target.value)} className={UI.input} />
-                         </div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Description Text</label>
-                            <textarea value={data.process?.description || ""} onChange={(e) => updateSection("process", "description", e.target.value)} className={UI.input + " h-24"} />
-                         </div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Step ID Prefix Label (e.g. PHASE or STEP)</label>
-                            <input type="text" value={data.process?.phaseLabel || ""} onChange={(e) => updateSection("process", "phaseLabel", e.target.value)} className={UI.input} />
-                         </div>
-                      </div>
-
-                      <div className="space-y-8 pt-10 border-t border-[#f0f0f1]">
-                         <h3 className={UI.sectionHeader}>2. Process Steps</h3>
-                         <div className="space-y-6">
-                            {(data.process?.items || []).map((step: any, i: number) => (
-                               <div key={i} className={UI.card + " space-y-4"}>
-                                  <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
-                                     <span className="text-[10px] font-bold text-[#646970] uppercase">Step #{i + 1} Details</span>
-                                     <button onClick={() => {
-                                        const newItems = data.process.items.filter((_: any, idx: number) => idx !== i);
-                                        updateSection("process", "items", newItems);
-                                     }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                  </div>
-                                  <div className="grid grid-cols-2 gap-4">
-                                     <div className="space-y-1.5">
-                                        <label className={UI.label}>Step ID (e.g. 01)</label>
-                                        <input type="text" value={step.id || ""} onChange={(e) => {
-                                           const newItems = [...data.process.items];
-                                           newItems[i] = { ...newItems[i], id: e.target.value };
-                                           updateSection("process", "items", newItems);
-                                        }} className={UI.input} />
-                                     </div>
-                                     <div className="space-y-1.5">
-                                        <label className={UI.label}>Step Title</label>
-                                        <input type="text" value={step.title || ""} onChange={(e) => {
-                                           const newItems = [...data.process.items];
-                                           newItems[i] = { ...newItems[i], title: e.target.value };
-                                           updateSection("process", "items", newItems);
-                                        }} className={UI.input} />
-                                     </div>
-                                  </div>
-
-                                  <div className="space-y-1.5">
-                                     <label className={UI.label}>Step Narrative</label>
-                                     <textarea value={step.description || ""} onChange={(e) => {
-                                        const newItems = [...data.process.items];
-                                        newItems[i] = { ...newItems[i], description: e.target.value };
-                                        updateSection("process", "items", newItems);
-                                     }} className={UI.input + " h-20"} />
-                                  </div>
-
-                                  <ImageField
-                                     label="Step Preview Image"
-                                     value={step.image || ""}
-                                     onChange={(url) => {
-                                        const newItems = [...data.process.items];
-                                        newItems[i] = { ...newItems[i], image: url };
-                                        updateSection("process", "items", newItems);
-                                     }}
-                                     altValue={step.title || ""}
-                                     onAltChange={() => {}}
-                                  />
-
-                                  <div className="space-y-1.5">
-                                     <label className={UI.label}>Checklist Action Items (One per line)</label>
-                                     <textarea
-                                        value={Array.isArray(step.actions) ? step.actions.join("\n") : (step.actions || "")}
-                                        onChange={(e) => {
-                                           const newItems = [...data.process.items];
-                                           newItems[i] = { ...newItems[i], actions: e.target.value.split("\n").filter(Boolean) };
-                                           updateSection("process", "items", newItems);
-                                        }}
-                                        className={UI.input + " h-24 font-mono text-xs"}
-                                        placeholder="e.g. Check item 1&#10;Check item 2"
-                                     />
-                                  </div>
-                               </div>
-                            ))}
-                            <button onClick={() => {
-                               const currentItems = data.process?.items || [];
-                               updateSection("process", "items", [...currentItems, { id: `0${currentItems.length + 1}`, title: "", description: "", image: "", actions: [] }]);
-                            }} className={UI.buttonAdd}>+ Add Step</button>
-                         </div>
-                      </div>
-                   </div>
-                )}
-
-                {/* LEADERSHIP SECTION */}
-               {activeTab === "leadership" && (
-                  <div className="space-y-12">
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>1. Section Intro</h3>
-                        <div className="space-y-1.5">
-                           <label className={UI.label}>Badge</label>
-                           <input type="text" value={data.leadership?.section?.badge || ""} onChange={(e) => updateSection("leadership", "section", { ...(data.leadership?.section || {}), badge: e.target.value })} className={UI.input} placeholder="e.g. OUR LEADERSHIP" />
-                        </div>
-                        <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Prefix (plain text)</label>
-                            <input type="text" value={data.leadership?.section?.headlinePrefix || ""} onChange={(e) => updateSection("leadership", "section", { ...(data.leadership?.section || {}), headlinePrefix: e.target.value })} className={UI.input} placeholder="e.g. Driven by" />
-                         </div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Highlight <span className="text-primary font-bold">(shown in primary color)</span></label>
-                            <input type="text" value={data.leadership?.section?.headlineHighlight || ""} onChange={(e) => updateSection("leadership", "section", { ...(data.leadership?.section || {}), headlineHighlight: e.target.value })} className={UI.input + " font-bold border-[#2271b1]"} placeholder="e.g. Passion" />
-                         </div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Suffix (plain text)</label>
-                            <input type="text" value={data.leadership?.section?.headlineSuffix || ""} onChange={(e) => updateSection("leadership", "section", { ...(data.leadership?.section || {}), headlineSuffix: e.target.value })} className={UI.input} placeholder="e.g. & Purpose" />
-                         </div>
-                        <QuillEditor
-                           label="Description Paragraph"
-                           content={data.leadership?.section?.description || ""}
-                           onChange={(html) => updateSection("leadership", "section", { ...(data.leadership?.section || {}), description: html })}
-                        />
-                     </div>
-
-                     <div className="space-y-8 pt-10 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>2. Leader Details</h3>
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Name</label>
-                              <input type="text" value={data.leadership?.ceo?.name || ""} onChange={(e) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), name: e.target.value })} className={UI.input} />
-                           </div>
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Title</label>
-                              <input type="text" value={data.leadership?.ceo?.title || ""} onChange={(e) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), title: e.target.value })} className={UI.input} />
-                           </div>
-                        </div>
-
-                        <div className="space-y-6">
-                           <ImageField
-                              label="Leader Portrait"
-                              value={data.leadership?.ceo?.image?.src || ""}
-                              onChange={(url) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), image: { ...(data.leadership?.ceo?.image || {}), src: url } })}
-                              altValue={data.leadership?.ceo?.image?.alt || ""}
-                              onAltChange={(alt) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), image: { ...(data.leadership?.ceo?.image || {}), alt: alt } })}
-                           />
-                           <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                              <div className="space-y-1.5">
-                                 <label className={UI.label}>Top Badge</label>
-                                 <input type="text" value={data.leadership?.ceo?.badges?.top || ""} onChange={(e) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), badges: { ...(data.leadership?.ceo?.badges || {}), top: e.target.value } })} className={UI.input} />
-                              </div>
-                              <div className="space-y-1.5">
-                                 <label className={UI.label}>Bottom Badge</label>
-                                 <input type="text" value={data.leadership?.ceo?.badges?.bottom || ""} onChange={(e) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), badges: { ...(data.leadership?.ceo?.badges || {}), bottom: e.target.value } })} className={UI.input} />
-                              </div>
-                           </div>
-                        </div>
-
-                        <QuillEditor
-                           label="Leader Quote"
-                           content={data.leadership?.ceo?.quotes?.[0] || ""}
-                           onChange={(html) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), quotes: [html] })}
-                        />
-
-                        <QuillEditor
-                           label="Full Biography/Description"
-                           content={data.leadership?.ceo?.description || ""}
-                           onChange={(html) => updateSection("leadership", "ceo", { ...(data.leadership?.ceo || {}), description: html })}
-                        />
-
-                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-4 border-t border-[#f0f0f1]">
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>CTA Button Label</label>
-                              <input type="text" value={data.leadership?.ctaMore || ""} onChange={(e) => updateSection("leadership", "ctaMore", e.target.value)} className={UI.input} placeholder="e.g. LEARN MORE ABOUT ANTOINE" />
-                           </div>
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>CTA Button Link (Optional override)</label>
-                              <input type="text" value={data.leadership?.ctaLink || ""} onChange={(e) => updateSection("leadership", "ctaLink", e.target.value)} className={UI.input} placeholder="Defaults to Booking URL" />
-                           </div>
-                        </div>
-
-                        <div className="space-y-4">
-                           <div className="flex justify-between items-center">
-                              <label className={UI.label}>Social Links</label>
-                              <button onClick={() => {
-                                 const socials = [...(data.leadership?.ceo?.socials || [])];
-                                 socials.push({ icon: "Linkedin", url: "" });
-                                 updateSection("leadership", "ceo", { ...data.leadership.ceo, socials });
-                              }} className={UI.buttonAdd}>+ Add Social</button>
-                           </div>
-                           <div className="space-y-2">
-                              {(data.leadership?.ceo?.socials || []).map((s: any, i: number) => (
-                                 <div key={i} className="flex gap-2 items-center bg-[#f6f7f7] p-2 border border-[#c3c4c7]">
-                                    <input type="text" value={s.icon} onChange={(e) => {
-                                       const ns = [...data.leadership.ceo.socials]; ns[i].icon = e.target.value; updateSection("leadership", "ceo", { ...data.leadership.ceo, socials: ns });
-                                    }} className={UI.input + " w-24"} placeholder="Icon (e.g. Linkedin)" />
-                                    <input type="text" value={s.url} onChange={(e) => {
-                                       const ns = [...data.leadership.ceo.socials]; ns[i].url = e.target.value; updateSection("leadership", "ceo", { ...data.leadership.ceo, socials: ns });
-                                    }} className={UI.input + " flex-1"} placeholder="URL" />
-                                    <button onClick={() => {
-                                       const ns = data.leadership.ceo.socials.filter((_: any, idx: number) => idx !== i); updateSection("leadership", "ceo", { ...data.leadership.ceo, socials: ns });
-                                    }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                 </div>
-                              ))}
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               )}
-
-               {/* PORTFOLIO SECTION */}
-               {activeTab === "portfolio" && (
-                  <div className="space-y-12">
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>1. Branding</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.portfolio?.section?.badge || ""} onChange={(e) => updateSection("portfolio", "section", { ...(data.portfolio?.section || {}), badge: e.target.value })} className={UI.input} /></div>
-                        <div className="space-y-1.5"><label className={UI.label}>Headline</label><input type="text" value={data.portfolio?.section?.headline || ""} onChange={(e) => updateSection("portfolio", "section", { ...(data.portfolio?.section || {}), headline: e.target.value })} className={UI.inputLarge} /></div>
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>2. Work Selection</h3>
-                        <ContentSelector type="projects" label="Featured Projects" selectedItems={data.portfolio?.projects} onSelect={(items) => updateSection("portfolio", "projects", items)} />
-                     </div>
-                     <div className="space-y-6 pt-10 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>3. Button</h3>
-                        <div className="space-y-4">
-                           <div className="space-y-1.5"><label className={UI.label}>Text</label><input type="text" value={data.portfolio?.button?.text || ""} onChange={(e) => updateSection("portfolio", "button", { ...(data.portfolio?.button || {}), text: e.target.value })} className={UI.input} /></div>
-                           <div className="space-y-1.5"><label className={UI.label}>Link</label><input type="text" value={data.portfolio?.button?.link || ""} onChange={(e) => updateSection("portfolio", "button", { ...(data.portfolio?.button || {}), link: e.target.value })} className={UI.input} /></div>
-                        </div>
-                     </div>
-                  </div>
-               )}
-
-               {/* TESTIMONIALS */}
-               {activeTab === "testimonials" && (
-                  <div className="space-y-12">
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>1. Branding</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.testimonials?.section?.badge || ""} onChange={(e) => updateSection("testimonials", "section", { ...(data.testimonials?.section || {}), badge: e.target.value })} className={UI.input} /></div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Prefix (plain text)</label>
-                            <input type="text" value={data.testimonials?.section?.headlinePrefix || ""} onChange={(e) => updateSection("testimonials", "section", { ...(data.testimonials?.section || {}), headlinePrefix: e.target.value })} className={UI.input} placeholder="e.g. What Our" />
-                         </div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Highlight <span className="text-primary font-bold">(shown in primary color)</span></label>
-                            <input type="text" value={data.testimonials?.section?.headlineHighlight || ""} onChange={(e) => updateSection("testimonials", "section", { ...(data.testimonials?.section || {}), headlineHighlight: e.target.value })} className={UI.input + " font-bold border-[#2271b1]"} placeholder="e.g. Clients" />
-                         </div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Suffix (plain text)</label>
-                            <input type="text" value={data.testimonials?.section?.headlineSuffix || ""} onChange={(e) => updateSection("testimonials", "section", { ...(data.testimonials?.section || {}), headlineSuffix: e.target.value })} className={UI.input} placeholder="e.g. Say About Us" />
-                         </div>
-                        <div className="space-y-1.5"><label className={UI.label}>Seal Text</label><input type="text" value={data.testimonials?.section?.featured || ""} onChange={(e) => updateSection("testimonials", "section", { ...(data.testimonials?.section || {}), featured: e.target.value })} className={UI.input} /></div>
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>2. Selection</h3>
-                        <ContentSelector type="reviews" label="Client Reviews" selectedItems={data.testimonials?.testimonials} onSelect={(items) => updateSection("testimonials", "testimonials", items)} />
-                     </div>
-                     <div className="space-y-6 pt-10 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>3. Global Metric</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Happy Client Count</label><input type="text" value={data.testimonials?.stats?.subscribers || ""} onChange={(e) => updateSection("testimonials", "stats", { ...(data.testimonials?.stats || {}), subscribers: e.target.value })} className={UI.inputLarge} /></div>
-                     </div>
-                     <div className="space-y-6 pt-10 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>4. Results Gallery Grid (6 Images)</h3>
-                        <div className="space-y-4">
-                           {(data.testimonials?.results || []).map((res: any, i: number) => (
-                              <div key={i} className={UI.card + " space-y-4"}>
-                                 <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
-                                    <span className="text-[10px] font-bold text-[#646970] uppercase">Result Card #{i + 1}</span>
-                                    <button onClick={() => {
-                                       const newRes = data.testimonials.results.filter((_: any, idx: number) => idx !== i);
-                                       updateSection("testimonials", "results", newRes);
-                                    }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                 </div>
-                                 <div className="space-y-1.5">
-                                    <label className={UI.label}>Caption Label</label>
-                                    <input type="text" value={res.label || ""} onChange={(e) => {
-                                       const newRes = [...data.testimonials.results];
-                                       newRes[i] = { ...newRes[i], label: e.target.value };
-                                       updateSection("testimonials", "results", newRes);
-                                    }} className={UI.input} />
-                                 </div>
-                                 <ImageField
-                                    label="Result Image"
-                                    value={res.image || ""}
-                                    onChange={(url) => {
-                                       const newRes = [...data.testimonials.results];
-                                       newRes[i] = { ...newRes[i], image: url };
-                                       updateSection("testimonials", "results", newRes);
-                                    }}
-                                    altValue={res.label || ""}
-                                    onAltChange={() => {}}
-                                 />
-                              </div>
-                           ))}
-                           <button onClick={() => {
-                              const currentRes = data.testimonials?.results || [];
-                              updateSection("testimonials", "results", [...currentRes, { id: currentRes.length + 1, label: "", image: "" }]);
-                           }} className={UI.buttonAdd}>+ Add Result Card</button>
-                        </div>
-                     </div>
-                  </div>
-               )}
-
-               {/* CTA BANNER SECTION */}
-               {activeTab === "ctaBanner" && (
-                  <div className="space-y-6">
-                     <h3 className={UI.sectionHeader}>CTA Banner Details</h3>
-                     <div className="space-y-1.5">
-                        <label className={UI.label}>Tagline Prefix</label>
-                        <input type="text" value={data.ctaBanner?.tagline || ""} onChange={(e) => updateSection("ctaBanner", "tagline", e.target.value)} className={UI.input} />
-                     </div>
-                     <div className="space-y-1.5">
-                        <label className={UI.label}>Headline Title</label>
-                        <input type="text" value={data.ctaBanner?.title || ""} onChange={(e) => updateSection("ctaBanner", "title", e.target.value)} className={UI.input} />
-                     </div>
-                     <div className="space-y-1.5">
-                        <label className={UI.label}>Description Narrative</label>
-                        <textarea value={data.ctaBanner?.description || ""} onChange={(e) => updateSection("ctaBanner", "description", e.target.value)} className={UI.input + " h-24"} />
-                     </div>
-                     <div className="space-y-1.5">
-                        <label className={UI.label}>Button Text Label</label>
-                        <input type="text" value={data.ctaBanner?.button || ""} onChange={(e) => updateSection("ctaBanner", "button", e.target.value)} className={UI.input} />
-                     </div>
-                  </div>
-               )}
-
-               {/* QUOTE SECTION */}
-               {activeTab === "quote" && (
-                  <div className="space-y-12">
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>1. Narrative</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Badge</label><input type="text" value={data.quote?.section?.badge || ""} onChange={(e) => updateSection("quote", "section", { ...(data.quote?.section || {}), badge: e.target.value })} className={UI.input} /></div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Prefix (plain text)</label>
-                            <input type="text" value={data.quote?.section?.headlinePrefix || ""} onChange={(e) => updateSection("quote", "section", { ...(data.quote?.section || {}), headlinePrefix: e.target.value })} className={UI.input} placeholder="e.g. Ready to" />
-                         </div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Highlight <span className="text-primary font-bold">(shown in primary color)</span></label>
-                            <input type="text" value={data.quote?.section?.headlineHighlight || ""} onChange={(e) => updateSection("quote", "section", { ...(data.quote?.section || {}), headlineHighlight: e.target.value })} className={UI.input + " font-bold border-[#2271b1]"} placeholder="e.g. Begin" />
-                         </div>
-                         <div className="space-y-1.5">
-                            <label className={UI.label}>Headline — Suffix (plain text)</label>
-                            <input type="text" value={data.quote?.section?.headlineSuffix || ""} onChange={(e) => updateSection("quote", "section", { ...(data.quote?.section || {}), headlineSuffix: e.target.value })} className={UI.input} placeholder="e.g. Your Project?" />
-                         </div>
-                        <RichTextEditor
-                           label="Intro Narrative"
-                           content={data.quote?.section?.description || ""}
-                           onChange={(html) => updateSection("quote", "section", { ...(data.quote?.section || {}), description: html })}
-                        />
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>2. Success State</h3>
-                        <div className={UI.card + " space-y-4"}>
-                           <div className="space-y-1.5"><label className={UI.label}>Title</label><input type="text" value={data.quote?.success?.title || ""} onChange={(e) => updateSection("quote", "success", { ...(data.quote?.success || {}), title: e.target.value })} className={UI.input} /></div>
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Message</label>
-                              <RichTextEditor
-                                 content={data.quote?.success?.message || ""}
-                                 onChange={(html) => updateSection("quote", "success", { ...(data.quote?.success || {}), message: html })}
-                              />
-                           </div>
-                           <div className="space-y-1.5"><label className={UI.label}>Button Text</label><input type="text" value={data.quote?.success?.buttonText || ""} onChange={(e) => updateSection("quote", "success", { ...(data.quote?.success || {}), buttonText: e.target.value })} className={UI.input} /></div>
-                        </div>
-                     </div>
-                     <div className="space-y-8 pt-10 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>3. Options</h3>
-                        <div className="space-y-8">
-                           <div className="space-y-4">
-                              <label className={UI.label}>Project Types</label>
-                              <div className="space-y-2">
-                                 {(data.quote?.services || []).map((s: any, i: number) => (
-                                    <div key={i} className="flex gap-2 bg-[#f6f7f7] p-2 border border-[#c3c4c7]">
-                                       <input type="text" value={s.title || ""} onChange={(e) => { const newS = [...data.quote.services]; newS[i].title = e.target.value; updateSection("quote", "services", newS); }} className="flex-1 bg-transparent border-none text-[13px] font-bold outline-none" />
-                                       <button onClick={() => { const newS = data.quote.services.filter((_: any, idx: number) => idx !== i); updateSection("quote", "services", newS); }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                    </div>
-                                 ))}
-                                 <button onClick={() => updateSection("quote", "services", [...(data.quote?.services || []), { title: "New Service", id: Date.now() }])} className="text-[#2271b1] text-[12px] font-bold">+ Add Service</button>
-                              </div>
-                           </div>
-                           <div className="space-y-4 border-t border-[#f0f0f1] pt-6">
-                              <label className={UI.label}>Timelines</label>
-                              <div className="space-y-2">
-                                 {(data.quote?.timelines || []).map((t: any, i: number) => (
-                                    <div key={i} className="flex gap-2 bg-[#f6f7f7] p-2 border border-[#c3c4c7]">
-                                       <input type="text" value={t.label || ""} onChange={(e) => { const newT = [...data.quote.timelines]; newT[i].label = e.target.value; updateSection("quote", "timelines", newT); }} className="flex-1 bg-transparent border-none text-[13px] font-bold outline-none" />
-                                       <button onClick={() => { const newT = data.quote.timelines.filter((_: any, idx: number) => idx !== i); updateSection("quote", "timelines", newT); }} className="text-[#d63638]"><Trash2 className="w-4 h-4" /></button>
-                                    </div>
-                                 ))}
-                                 <button onClick={() => updateSection("quote", "timelines", [...(data.quote?.timelines || []), { label: "Immediate", value: "immediate" }])} className="text-[#2271b1] text-[12px] font-bold">+ Add Timeline</button>
-                              </div>
-                           </div>
-                        </div>
-                     </div>
-                     <div className="space-y-6 pt-10 border-t border-[#f0f0f1]">
-                        <h3 className={UI.sectionHeader}>4. Booking Banner & Trust Badges</h3>
-                        <div className="grid grid-cols-2 gap-4">
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Booking Banner Tag</label>
-                              <input type="text" value={data.quote?.formClinicPortal || ""} onChange={(e) => updateSection("quote", "formClinicPortal", e.target.value)} className={UI.input} placeholder="e.g. INSTANT ONLINE BOOKING" />
-                           </div>
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Booking Banner Description</label>
-                              <input type="text" value={data.quote?.formClinicPortalSub || ""} onChange={(e) => updateSection("quote", "formClinicPortalSub", e.target.value)} className={UI.input} placeholder="e.g. Book directly on StyleSeat portal" />
-                           </div>
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Booking Button Text</label>
-                              <input type="text" value={data.quote?.formStyleSeatBtn || ""} onChange={(e) => updateSection("quote", "formStyleSeatBtn", e.target.value)} className={UI.input} placeholder="e.g. BOOK ON STYLESEAT" />
-                           </div>
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Submit Button Label</label>
-                              <input type="text" value={data.quote?.formBtnSubmit || ""} onChange={(e) => updateSection("quote", "formBtnSubmit", e.target.value)} className={UI.input} placeholder="e.g. SEND MESSAGE" />
-                           </div>
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Security / HIPAA Label</label>
-                              <input type="text" value={data.quote?.trustHipa || ""} onChange={(e) => updateSection("quote", "trustHipa", e.target.value)} className={UI.input} placeholder="e.g. HIPAA Compliant & Secure" />
-                           </div>
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>Response Time Label</label>
-                              <input type="text" value={data.quote?.trustResponse || ""} onChange={(e) => updateSection("quote", "trustResponse", e.target.value)} className={UI.input} placeholder="e.g. Avg Response: 2 Hours" />
-                           </div>
-                        </div>
-                     </div>
-                  </div>
-               )}
-
-               {/* BLOG SECTION */}
-               {activeTab === "blog" && (
-                  <div className="space-y-12">
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>1. Header</h3>
-                        <div className="space-y-1.5"><label className={UI.label}>Badge / Label</label><input type="text" value={data.blogSection?.subtitle || ""} onChange={(e) => updateSection("blogSection", "subtitle", e.target.value)} className={UI.input} /></div>
-                        <div className="space-y-1.5"><label className={UI.label}>Headline</label><input type="text" value={data.blogSection?.title || ""} onChange={(e) => updateSection("blogSection", "title", e.target.value)} className={UI.inputLarge} /></div>
-                        <div className="grid grid-cols-2 gap-4">
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>"View All" Button Text</label>
-                              <input type="text" value={data.blogSection?.ctaAll || ""} onChange={(e) => updateSection("blogSection", "ctaAll", e.target.value)} className={UI.input} placeholder="e.g. View All Articles" />
-                           </div>
-                           <div className="space-y-1.5">
-                              <label className={UI.label}>"Read More" Link Text</label>
-                              <input type="text" value={data.blogSection?.ctaReadMore || ""} onChange={(e) => updateSection("blogSection", "ctaReadMore", e.target.value)} className={UI.input} placeholder="e.g. Read Article" />
-                           </div>
-                        </div>
-                        <RichTextEditor
-                           label="Description Narrative"
-                           content={data.blogSection?.description || ""}
-                           onChange={(html) => updateSection("blogSection", "description", html)}
-                        />
-                     </div>
-                     <div className="space-y-6">
-                        <h3 className={UI.sectionHeader}>2. Selected Posts</h3>
-                        <BlogSelector
-                           selectedIds={data.blogSection?.selectedPosts || []}
-                           onChange={(ids) => updateSection("blogSection", "selectedPosts", ids)}
-                        />
-                     </div>
-                  </div>
-               )}
-            </motion.div>
-         </AnimatePresence>
+              <Icon size={14} className={isActive ? "text-[#2271b1]" : "opacity-70"} />
+              {tab.label}
+            </button>
+          );
+        })}
       </div>
-   );
+
+      <AnimatePresence mode="wait">
+        <motion.div
+          key={activeTab}
+          initial={{ opacity: 0, y: 4 }}
+          animate={{ opacity: 1, y: 0 }}
+          exit={{ opacity: 0, y: -4 }}
+          transition={{ duration: 0.15 }}
+          className="space-y-10"
+        >
+
+          {/* ═══════════════════════════════════════════════════════════════
+              1. HERO SECTION
+          ═══════════════════════════════════════════════════════════════ */}
+          {activeTab === "hero" && (
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <h3 className={UI.sectionHeader}>1. Section Branding & Labels</h3>
+                <div className={UI.card + " space-y-4"}>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Top Badge / Label</label>
+                    <input
+                      type="text"
+                      value={data.hero?.label || data.hero?.badge || ""}
+                      onChange={(e) => {
+                        updateSection("hero", "label", e.target.value);
+                        updateSection("hero", "badge", e.target.value);
+                      }}
+                      className={UI.input}
+                      placeholder="e.g. Performance Recovery Specialist • Est. 2020"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Headline — Line 1</label>
+                      <input
+                        type="text"
+                        value={data.hero?.title1 || ""}
+                        onChange={(e) => updateSection("hero", "title1", e.target.value)}
+                        className={UI.input + " font-bold"}
+                        placeholder="e.g. Recover Faster."
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Headline — Line 2 (Highlighted)</label>
+                      <input
+                        type="text"
+                        value={data.hero?.title2 || ""}
+                        onChange={(e) => updateSection("hero", "title2", e.target.value)}
+                        className={UI.input + " font-bold text-[#2271b1]"}
+                        placeholder="e.g. Perform Higher."
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Hero Description Narrative</label>
+                    <textarea
+                      value={data.hero?.description || ""}
+                      onChange={(e) => updateSection("hero", "description", e.target.value)}
+                      className={UI.input + " h-24"}
+                      placeholder="Specialized performance bodywork, mobility restoration, and injury prevention..."
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className={UI.sectionHeader}>2. Call To Action & Social Proof</h3>
+                <div className={UI.card + " space-y-4"}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Primary Button Label (Booking)</label>
+                      <input
+                        type="text"
+                        value={data.hero?.ctaBook || ""}
+                        onChange={(e) => updateSection("hero", "ctaBook", e.target.value)}
+                        className={UI.input}
+                        placeholder="e.g. BOOK RECOVERY SESSION"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Secondary Button Label (Services)</label>
+                      <input
+                        type="text"
+                        value={data.hero?.ctaServices || ""}
+                        onChange={(e) => updateSection("hero", "ctaServices", e.target.value)}
+                        className={UI.input}
+                        placeholder="e.g. EXPLORE SERVICES"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Social Proof Trust Badge Text</label>
+                    <input
+                      type="text"
+                      value={data.hero?.socialProofText || ""}
+                      onChange={(e) => updateSection("hero", "socialProofText", e.target.value)}
+                      className={UI.input}
+                      placeholder="e.g. Trusted by 500+ athletes & active adults"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className={UI.sectionHeader}>3. Hero Background Image</h3>
+                <div className={UI.card + " space-y-4"}>
+                  <ImageField
+                    label="Background Photography"
+                    value={data.hero?.image || data.hero?.images?.[0] || ""}
+                    onChange={(url) => {
+                      updateSection("hero", "image", url);
+                      updateSection("hero", "images", [url]);
+                    }}
+                    altValue={data.hero?.imageAlt || data.hero?.bgImageAlt || ""}
+                    onAltChange={(alt) => {
+                      updateSection("hero", "imageAlt", alt);
+                      updateSection("hero", "bgImageAlt", alt);
+                    }}
+                    description="High resolution photo with dark contrast for hero background."
+                  />
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════
+              2. STATS BAR & ACHIEVEMENTS SECTION
+          ═══════════════════════════════════════════════════════════════ */}
+          {activeTab === "stats" && (
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <h3 className={UI.sectionHeader}>1. Horizontal Highlight Statistics Bar (4 Items)</h3>
+                <p className="text-[12px] text-[#646970] -mt-2">These 4 stats are displayed in the quick horizontal strip right under the hero section.</p>
+                <div className="space-y-3">
+                  {(data.stats?.items || []).map((s: any, i: number) => (
+                    <div key={i} className={UI.card + " flex items-center gap-4 relative"}>
+                      <span className="text-[11px] font-bold text-[#646970] w-6 flex-shrink-0">#{i + 1}</span>
+                      <div className="flex-1 grid grid-cols-1 sm:grid-cols-2 gap-3">
+                        <div>
+                          <label className={UI.label}>Value (e.g. 8+, 5,000+)</label>
+                          <input
+                            type="text"
+                            value={s.value || ""}
+                            onChange={(e) => {
+                              const newItems = [...(data.stats?.items || [])];
+                              newItems[i] = { ...newItems[i], value: e.target.value };
+                              updateSection("stats", "items", newItems);
+                            }}
+                            className={UI.inputLarge}
+                          />
+                        </div>
+                        <div>
+                          <label className={UI.label}>Label (e.g. Years of Experience)</label>
+                          <input
+                            type="text"
+                            value={s.label || ""}
+                            onChange={(e) => {
+                              const newItems = [...(data.stats?.items || [])];
+                              newItems[i] = { ...newItems[i], label: e.target.value };
+                              updateSection("stats", "items", newItems);
+                            }}
+                            className={UI.input}
+                          />
+                        </div>
+                      </div>
+                      <button
+                        onClick={() => {
+                          const newItems = (data.stats?.items || []).filter((_: any, idx: number) => idx !== i);
+                          updateSection("stats", "items", newItems);
+                        }}
+                        className="text-[#d63638] hover:bg-red-50 p-2 rounded"
+                        title="Remove Stat"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    onClick={() => {
+                      const current = data.stats?.items || [];
+                      updateSection("stats", "items", [...current, { value: "", label: "" }]);
+                    }}
+                    className={UI.buttonAdd}
+                  >
+                    + Add Stat Item
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-6 border-t border-[#f0f0f1]">
+                <h3 className={UI.sectionHeader}>2. Achievements Editorial Block ("Our Achievements")</h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className={UI.card + " space-y-4"}>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Section Label / Badge</label>
+                      <input
+                        type="text"
+                        value={data.stats?.label || ""}
+                        onChange={(e) => updateSection("stats", "label", e.target.value)}
+                        className={UI.input}
+                        placeholder="e.g. Our Achievements"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Headline Line 1</label>
+                      <input
+                        type="text"
+                        value={data.stats?.titleLine1 || ""}
+                        onChange={(e) => updateSection("stats", "titleLine1", e.target.value)}
+                        className={UI.input + " font-bold"}
+                        placeholder="e.g. Proven Results."
+                      />
+                    </div>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div className="space-y-1.5">
+                        <label className={UI.label}>Headline Line 2</label>
+                        <input
+                          type="text"
+                          value={data.stats?.titleLine2 || ""}
+                          onChange={(e) => updateSection("stats", "titleLine2", e.target.value)}
+                          className={UI.input + " font-bold"}
+                          placeholder="e.g. Professional"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className={UI.label}>Accent Word (Italic)</label>
+                        <input
+                          type="text"
+                          value={data.stats?.titleItalicWord || ""}
+                          onChange={(e) => updateSection("stats", "titleItalicWord", e.target.value)}
+                          className={UI.input + " font-serif italic text-gold"}
+                          placeholder="e.g. Standards."
+                        />
+                      </div>
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Narrative Paragraph</label>
+                      <textarea
+                        value={data.stats?.description || ""}
+                        onChange={(e) => updateSection("stats", "description", e.target.value)}
+                        className={UI.input + " h-24"}
+                        placeholder="At 410 Muscle Therapy, we believe that true recovery is built on..."
+                      />
+                    </div>
+                  </div>
+
+                  <div className={UI.card + " space-y-4"}>
+                    <ImageField
+                      label="Editorial Action Photo"
+                      value={data.stats?.image || ""}
+                      onChange={(url) => updateSection("stats", "image", url)}
+                      altValue={data.stats?.imageAlt || ""}
+                      onAltChange={(alt) => updateSection("stats", "imageAlt", alt)}
+                      description="Photo displayed in the framed luxury corner-bracket box."
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════
+              3. SERVICES SHOWCASE SECTION
+          ═══════════════════════════════════════════════════════════════ */}
+          {activeTab === "services" && (
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <h3 className={UI.sectionHeader}>1. Section Intro & Headlines</h3>
+                <div className={UI.card + " space-y-4"}>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Section Badge / Label</label>
+                    <input
+                      type="text"
+                      value={data.services?.label || data.services?.badge || ""}
+                      onChange={(e) => {
+                        updateSection("services", "label", e.target.value);
+                        updateSection("services", "badge", e.target.value);
+                      }}
+                      className={UI.input}
+                      placeholder="e.g. Our Services"
+                    />
+                  </div>
+                  <div className="grid grid-cols-2 sm:grid-cols-4 gap-3">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Title Word 1</label>
+                      <input
+                        type="text"
+                        value={data.services?.titleLine1 || ""}
+                        onChange={(e) => updateSection("services", "titleLine1", e.target.value)}
+                        className={UI.input}
+                        placeholder="Therapies"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Title Word 2</label>
+                      <input
+                        type="text"
+                        value={data.services?.titleLine2 || ""}
+                        onChange={(e) => updateSection("services", "titleLine2", e.target.value)}
+                        className={UI.input}
+                        placeholder="Designed"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Title Word 3</label>
+                      <input
+                        type="text"
+                        value={data.services?.titleLine3 || ""}
+                        onChange={(e) => updateSection("services", "titleLine3", e.target.value)}
+                        className={UI.input}
+                        placeholder="Around"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Accent Word (Italic)</label>
+                      <input
+                        type="text"
+                        value={data.services?.titleItalicWord || ""}
+                        onChange={(e) => updateSection("services", "titleItalicWord", e.target.value)}
+                        className={UI.input + " font-serif italic text-gold"}
+                        placeholder="You"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Intro Narrative</label>
+                    <textarea
+                      value={typeof data.services?.description === 'string' ? data.services.description : ""}
+                      onChange={(e) => updateSection("services", "description", e.target.value)}
+                      className={UI.input + " h-20"}
+                      placeholder="Experience specialized therapeutic bodywork engineered around your goals..."
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#f0f0f1]">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>"View All" Button Label</label>
+                      <input
+                        type="text"
+                        value={data.services?.ctaAll || ""}
+                        onChange={(e) => updateSection("services", "ctaAll", e.target.value)}
+                        className={UI.input}
+                        placeholder="e.g. VIEW ALL SERVICES"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>"Learn More" Button Label</label>
+                      <input
+                        type="text"
+                        value={data.services?.ctaLearnMore || ""}
+                        onChange={(e) => updateSection("services", "ctaLearnMore", e.target.value)}
+                        className={UI.input}
+                        placeholder="e.g. LEARN MORE"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-[#f0f0f1]">
+                <h3 className={UI.sectionHeader}>2. Featured Services Selection</h3>
+                <p className="text-[12px] text-[#646970] -mt-2">Select and order the services shown in the interactive left-to-right preview selector on the homepage.</p>
+                <ContentSelector
+                  type="services"
+                  label="Select Services to Feature on Homepage"
+                  selectedItems={data.services?.items || []}
+                  onSelect={(items) => {
+                    updateSection("services", "items", items);
+                  }}
+                />
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════
+              4. SPECIALIST PROFILE SECTION (Antoine Lyles)
+          ═══════════════════════════════════════════════════════════════ */}
+          {activeTab === "leadership" && (
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <h3 className={UI.sectionHeader}>1. Specialist Identity & Titles</h3>
+                <div className={UI.card + " space-y-4"}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Section Badge / Label</label>
+                      <input
+                        type="text"
+                        value={data.leadership?.label || ""}
+                        onChange={(e) => updateSection("leadership", "label", e.target.value)}
+                        className={UI.input}
+                        placeholder="e.g. The Specialist"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Main Title Headline</label>
+                      <input
+                        type="text"
+                        value={data.leadership?.title || ""}
+                        onChange={(e) => updateSection("leadership", "title", e.target.value)}
+                        className={UI.input + " font-bold"}
+                        placeholder="e.g. Meet Antoine Lyles"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Tagline / Subtitle (Gold Serif)</label>
+                    <input
+                      type="text"
+                      value={data.leadership?.tagline || ""}
+                      onChange={(e) => updateSection("leadership", "tagline", e.target.value)}
+                      className={UI.input + " font-serif italic text-gold-dark"}
+                      placeholder="e.g. Performance Recovery Specialist"
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className={UI.sectionHeader}>2. Biography & Narrative</h3>
+                <div className={UI.card + " space-y-4"}>
+                  <RichTextEditor
+                    label="First Paragraph Narrative"
+                    content={data.leadership?.desc1 || ""}
+                    onChange={(html) => updateSection("leadership", "desc1", html)}
+                  />
+                  <RichTextEditor
+                    label="Second Paragraph Narrative"
+                    content={data.leadership?.desc2 || ""}
+                    onChange={(html) => updateSection("leadership", "desc2", html)}
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-4">
+                <h3 className={UI.sectionHeader}>3. Specialist Photo & Signature</h3>
+                <div className={UI.card + " space-y-4"}>
+                  <ImageField
+                    label="Therapist Portrait Image"
+                    value={data.leadership?.image || ""}
+                    onChange={(url) => updateSection("leadership", "image", url)}
+                    altValue={data.leadership?.imageAlt || ""}
+                    onAltChange={(alt) => updateSection("leadership", "imageAlt", alt)}
+                  />
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Floating Photo Tag (Badge)</label>
+                    <input
+                      type="text"
+                      value={data.leadership?.photoBadge || ""}
+                      onChange={(e) => updateSection("leadership", "photoBadge", e.target.value)}
+                      className={UI.input}
+                      placeholder="e.g. PERFORMANCE RECOVERY SPECIALIST"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#f0f0f1]">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>CTA Button Label</label>
+                      <input
+                        type="text"
+                        value={data.leadership?.ctaMore || ""}
+                        onChange={(e) => updateSection("leadership", "ctaMore", e.target.value)}
+                        className={UI.input}
+                        placeholder="e.g. LEARN MORE ABOUT ANTOINE"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>CTA Custom URL (Optional override)</label>
+                      <input
+                        type="text"
+                        value={data.leadership?.ctaLink || ""}
+                        onChange={(e) => updateSection("leadership", "ctaLink", e.target.value)}
+                        className={UI.input}
+                        placeholder="Defaults to StyleSeat Booking"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════
+              5. CLINICAL PROCESS (HOW IT WORKS) SECTION
+          ═══════════════════════════════════════════════════════════════ */}
+          {activeTab === "process" && (
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <h3 className={UI.sectionHeader}>1. Section Intro</h3>
+                <div className={UI.card + " space-y-4"}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Intro Badge</label>
+                      <input
+                        type="text"
+                        value={data.process?.label || ""}
+                        onChange={(e) => updateSection("process", "label", e.target.value)}
+                        className={UI.input}
+                        placeholder="e.g. THE CLINICAL PROCESS"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Headline Title</label>
+                      <input
+                        type="text"
+                        value={data.process?.title || ""}
+                        onChange={(e) => updateSection("process", "title", e.target.value)}
+                        className={UI.input + " font-bold"}
+                        placeholder="e.g. Your Recovery Journey."
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Section Description</label>
+                    <textarea
+                      value={data.process?.description || ""}
+                      onChange={(e) => updateSection("process", "description", e.target.value)}
+                      className={UI.input + " h-20"}
+                      placeholder="We analyze your biomechanics, locate the underlying dysfunctions..."
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Step Prefix (e.g. PHASE or STEP)</label>
+                    <input
+                      type="text"
+                      value={data.process?.phaseLabel || "PHASE"}
+                      onChange={(e) => updateSection("process", "phaseLabel", e.target.value)}
+                      className={UI.input}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-[#f0f0f1]">
+                <h3 className={UI.sectionHeader}>2. Clinical Journey Steps</h3>
+                <div className="space-y-4">
+                  {(data.process?.items || []).map((step: any, i: number) => (
+                    <div key={i} className={UI.card + " space-y-4 relative"}>
+                      <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                        <span className="text-[10px] font-bold text-[#646970] uppercase">Step #{i + 1}</span>
+                        <button
+                          onClick={() => {
+                            const newItems = data.process.items.filter((_: any, idx: number) => idx !== i);
+                            updateSection("process", "items", newItems);
+                          }}
+                          className="text-[#d63638] hover:bg-red-50 p-1.5 rounded"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="grid grid-cols-3 gap-3">
+                        <div className="space-y-1.5">
+                          <label className={UI.label}>Number (e.g. 01)</label>
+                          <input
+                            type="text"
+                            value={step.id || ""}
+                            onChange={(e) => {
+                              const newItems = [...data.process.items];
+                              newItems[i] = { ...newItems[i], id: e.target.value };
+                              updateSection("process", "items", newItems);
+                            }}
+                            className={UI.input}
+                          />
+                        </div>
+                        <div className="col-span-2 space-y-1.5">
+                          <label className={UI.label}>Step Title</label>
+                          <input
+                            type="text"
+                            value={step.title || ""}
+                            onChange={(e) => {
+                              const newItems = [...data.process.items];
+                              newItems[i] = { ...newItems[i], title: e.target.value };
+                              updateSection("process", "items", newItems);
+                            }}
+                            className={UI.input + " font-bold"}
+                          />
+                        </div>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className={UI.label}>Step Description</label>
+                        <textarea
+                          value={step.description || ""}
+                          onChange={(e) => {
+                            const newItems = [...data.process.items];
+                            newItems[i] = { ...newItems[i], description: e.target.value };
+                            updateSection("process", "items", newItems);
+                          }}
+                          className={UI.input + " h-20"}
+                        />
+                      </div>
+                      <ImageField
+                        label="Step Action Photo"
+                        value={step.image || ""}
+                        onChange={(url) => {
+                          const newItems = [...data.process.items];
+                          newItems[i] = { ...newItems[i], image: url };
+                          updateSection("process", "items", newItems);
+                        }}
+                        altValue={step.title || ""}
+                        onAltChange={() => {}}
+                      />
+                      <div className="space-y-1.5">
+                        <label className={UI.label}>Checklist Action Items (One item per line)</label>
+                        <textarea
+                          value={Array.isArray(step.actions) ? step.actions.join("\n") : (step.actions || "")}
+                          onChange={(e) => {
+                            const newItems = [...data.process.items];
+                            newItems[i] = { ...newItems[i], actions: e.target.value.split("\n").filter(Boolean) };
+                            updateSection("process", "items", newItems);
+                          }}
+                          className={UI.input + " h-24 font-mono text-xs"}
+                          placeholder="Range of Motion Testing&#10;Postural Alignment Check"
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    onClick={() => {
+                      const current = data.process?.items || [];
+                      updateSection("process", "items", [
+                        ...current,
+                        { id: `0${current.length + 1}`, title: "", description: "", image: "", actions: [] }
+                      ]);
+                    }}
+                    className={UI.buttonAdd}
+                  >
+                    + Add Process Step
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════
+              6. TESTIMONIALS & RESULTS GALLERY SECTION
+          ═══════════════════════════════════════════════════════════════ */}
+          {activeTab === "testimonials" && (
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <h3 className={UI.sectionHeader}>1. Section Headlines</h3>
+                <div className={UI.card + " space-y-4"}>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Section Badge / Label</label>
+                    <input
+                      type="text"
+                      value={data.testimonials?.label || ""}
+                      onChange={(e) => updateSection("testimonials", "label", e.target.value)}
+                      className={UI.input}
+                      placeholder="e.g. Clients Love Us"
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Headline Line 1</label>
+                      <input
+                        type="text"
+                        value={data.testimonials?.title1 || ""}
+                        onChange={(e) => updateSection("testimonials", "title1", e.target.value)}
+                        className={UI.input + " font-bold"}
+                        placeholder="e.g. Real People."
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Headline Line 2 (Italic)</label>
+                      <input
+                        type="text"
+                        value={data.testimonials?.title2 || ""}
+                        onChange={(e) => updateSection("testimonials", "title2", e.target.value)}
+                        className={UI.input + " font-serif italic text-gold"}
+                        placeholder="e.g. Real Results."
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-[#f0f0f1]">
+                <h3 className={UI.sectionHeader}>2. Featured Client Testimonials Selection</h3>
+                <ContentSelector
+                  type="reviews"
+                  label="Select Customer Reviews to Display"
+                  selectedItems={data.testimonials?.testimonials || data.testimonials?.items || []}
+                  onSelect={(items) => {
+                    updateSection("testimonials", "testimonials", items);
+                    updateSection("testimonials", "items", items);
+                  }}
+                />
+              </div>
+
+              <div className="space-y-4 pt-6 border-t border-[#f0f0f1]">
+                <h3 className={UI.sectionHeader}>3. Results Visual Showcase Cards</h3>
+                <p className="text-[12px] text-[#646970] -mt-2">Photos shown in the luxury results cards alongside client reviews.</p>
+                <div className="space-y-4">
+                  {(data.testimonials?.results || []).map((res: any, i: number) => (
+                    <div key={i} className={UI.card + " space-y-4 relative"}>
+                      <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                        <span className="text-[10px] font-bold text-[#646970] uppercase">Result Card #{i + 1}</span>
+                        <button
+                          onClick={() => {
+                            const newRes = data.testimonials.results.filter((_: any, idx: number) => idx !== i);
+                            updateSection("testimonials", "results", newRes);
+                          }}
+                          className="text-[#d63638] hover:bg-red-50 p-1.5 rounded"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className={UI.label}>Caption Label</label>
+                        <input
+                          type="text"
+                          value={res.label || ""}
+                          onChange={(e) => {
+                            const newRes = [...data.testimonials.results];
+                            newRes[i] = { ...newRes[i], label: e.target.value };
+                            updateSection("testimonials", "results", newRes);
+                          }}
+                          className={UI.input}
+                          placeholder="e.g. Shoulder Range Restoration"
+                        />
+                      </div>
+                      <ImageField
+                        label="Result Photo"
+                        value={res.image || ""}
+                        onChange={(url) => {
+                          const newRes = [...data.testimonials.results];
+                          newRes[i] = { ...newRes[i], image: url };
+                          updateSection("testimonials", "results", newRes);
+                        }}
+                        altValue={res.label || ""}
+                        onAltChange={() => {}}
+                      />
+                    </div>
+                  ))}
+                  <button
+                    onClick={() => {
+                      const current = data.testimonials?.results || [];
+                      updateSection("testimonials", "results", [...current, { label: "", image: "" }]);
+                    }}
+                    className={UI.buttonAdd}
+                  >
+                    + Add Result Card
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════
+              7. CTA CONVERSION BANNER SECTION
+          ═══════════════════════════════════════════════════════════════ */}
+          {activeTab === "ctaBanner" && (
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <h3 className={UI.sectionHeader}>Gold Strip Conversion Banner</h3>
+                <div className={UI.card + " space-y-4"}>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Tagline Prefix</label>
+                    <input
+                      type="text"
+                      value={data.ctaBanner?.tagline || ""}
+                      onChange={(e) => updateSection("ctaBanner", "tagline", e.target.value)}
+                      className={UI.input}
+                      placeholder="e.g. Take the First Step"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Headline Title</label>
+                    <input
+                      type="text"
+                      value={data.ctaBanner?.title || ""}
+                      onChange={(e) => updateSection("ctaBanner", "title", e.target.value)}
+                      className={UI.input + " font-bold text-lg"}
+                      placeholder="e.g. Ready to Feel Your Best?"
+                    />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Description Narrative</label>
+                    <textarea
+                      value={data.ctaBanner?.description || ""}
+                      onChange={(e) => updateSection("ctaBanner", "description", e.target.value)}
+                      className={UI.input + " h-20"}
+                      placeholder="Book your appointment today and start your journey..."
+                    />
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 pt-2 border-t border-[#f0f0f1]">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Button Text Label</label>
+                      <input
+                        type="text"
+                        value={data.ctaBanner?.button || ""}
+                        onChange={(e) => updateSection("ctaBanner", "button", e.target.value)}
+                        className={UI.input}
+                        placeholder="e.g. BOOK APPOINTMENT"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Button Link URL (Optional override)</label>
+                      <input
+                        type="text"
+                        value={data.ctaBanner?.buttonUrl || data.ctaBanner?.btnUrl || ""}
+                        onChange={(e) => {
+                          updateSection("ctaBanner", "buttonUrl", e.target.value);
+                          updateSection("ctaBanner", "btnUrl", e.target.value);
+                        }}
+                        className={UI.input}
+                        placeholder="Defaults to StyleSeat booking"
+                      />
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════
+              8. CONTACT FORM & FAQ SECTION (QAForm)
+          ═══════════════════════════════════════════════════════════════ */}
+          {activeTab === "contact" && (
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <h3 className={UI.sectionHeader}>1. Luxury Contact Form & StyleSeat Portal</h3>
+                <div className={UI.card + " space-y-4"}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Form Section Badge</label>
+                      <input
+                        type="text"
+                        value={data.quote?.section?.badge || "GET IN TOUCH"}
+                        onChange={(e) => updateSection("quote", "section", { ...(data.quote?.section || {}), badge: e.target.value })}
+                        className={UI.input}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Form Headline</label>
+                      <input
+                        type="text"
+                        value={data.quote?.section?.headline || "Have Questions? Let's Connect."}
+                        onChange={(e) => updateSection("quote", "section", { ...(data.quote?.section || {}), headline: e.target.value })}
+                        className={UI.input + " font-bold"}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-[#f0f0f1]">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Instant Booking Tag</label>
+                      <input
+                        type="text"
+                        value={data.quote?.formClinicPortal || "INSTANT ONLINE BOOKING"}
+                        onChange={(e) => updateSection("quote", "formClinicPortal", e.target.value)}
+                        className={UI.input}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Instant Booking Subtitle</label>
+                      <input
+                        type="text"
+                        value={data.quote?.formClinicPortalSub || "Book directly on StyleSeat portal"}
+                        onChange={(e) => updateSection("quote", "formClinicPortalSub", e.target.value)}
+                        className={UI.input}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>StyleSeat Button Label</label>
+                      <input
+                        type="text"
+                        value={data.quote?.formStyleSeatBtn || "BOOK ON STYLESEAT"}
+                        onChange={(e) => updateSection("quote", "formStyleSeatBtn", e.target.value)}
+                        className={UI.input}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-2 border-t border-[#f0f0f1]">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Submit Button Label</label>
+                      <input
+                        type="text"
+                        value={data.quote?.formBtnSubmit || "SEND MESSAGE"}
+                        onChange={(e) => updateSection("quote", "formBtnSubmit", e.target.value)}
+                        className={UI.input}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>HIPAA Trust Text</label>
+                      <input
+                        type="text"
+                        value={data.quote?.trustHipa || "HIPAA Compliant & Secure"}
+                        onChange={(e) => updateSection("quote", "trustHipa", e.target.value)}
+                        className={UI.input}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Response Time Text</label>
+                      <input
+                        type="text"
+                        value={data.quote?.trustResponse || "Avg Response: 2 Hours"}
+                        onChange={(e) => updateSection("quote", "trustResponse", e.target.value)}
+                        className={UI.input}
+                      />
+                    </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Success Toast Notification</label>
+                    <input
+                      type="text"
+                      value={data.quote?.formSuccessToast || "Thank you! Your inquiry has been sent. We will reply within 24 hours."}
+                      onChange={(e) => updateSection("quote", "formSuccessToast", e.target.value)}
+                      className={UI.input}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-6 border-t border-[#f0f0f1]">
+                <h3 className={UI.sectionHeader}>2. Form Service Categories Dropdown Options</h3>
+                <div className="space-y-3">
+                  {(data.quote?.services || []).map((s: any, i: number) => (
+                    <div key={i} className="flex gap-2 items-center">
+                      <input
+                        type="text"
+                        value={typeof s === 'string' ? s : (s.label || s.title || "")}
+                        onChange={(e) => {
+                          const newServices = [...(data.quote?.services || [])];
+                          newServices[i] = { label: e.target.value, value: e.target.value.toLowerCase().replace(/\s+/g, '-') };
+                          updateSection("quote", "services", newServices);
+                        }}
+                        className={UI.input}
+                        placeholder="Service Category Name"
+                      />
+                      <button
+                        onClick={() => {
+                          const newServices = data.quote.services.filter((_: any, idx: number) => idx !== i);
+                          updateSection("quote", "services", newServices);
+                        }}
+                        className="text-[#d63638] hover:bg-red-50 p-2 rounded"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </div>
+                  ))}
+                  <button
+                    onClick={() => {
+                      const current = data.quote?.services || [];
+                      updateSection("quote", "services", [...current, { label: "New Therapy Category", value: "new-category" }]);
+                    }}
+                    className={UI.buttonAdd}
+                  >
+                    + Add Dropdown Option
+                  </button>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-6 border-t border-[#f0f0f1]">
+                <h3 className={UI.sectionHeader}>3. Homepage FAQ Accordion</h3>
+                <div className={UI.card + " space-y-4"}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>FAQ Badge</label>
+                      <input
+                        type="text"
+                        value={data.faq?.section?.badge || "FAQ"}
+                        onChange={(e) => updateSection("faq", "section", { ...(data.faq?.section || {}), badge: e.target.value })}
+                        className={UI.input}
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>FAQ Section Title</label>
+                      <input
+                        type="text"
+                        value={data.faq?.section?.headline || data.faq?.section?.title || "Frequently Asked Questions"}
+                        onChange={(e) => updateSection("faq", "section", { ...(data.faq?.section || {}), headline: e.target.value, title: e.target.value })}
+                        className={UI.input + " font-bold"}
+                      />
+                    </div>
+                  </div>
+                </div>
+
+                <div className="space-y-3">
+                  {(data.faq?.items || []).map((faq: any, i: number) => (
+                    <div key={i} className={UI.card + " space-y-3 relative"}>
+                      <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
+                        <span className="text-[10px] font-bold text-[#646970] uppercase">Question #{i + 1}</span>
+                        <button
+                          onClick={() => {
+                            const newFaqs = data.faq.items.filter((_: any, idx: number) => idx !== i);
+                            updateSection("faq", "items", newFaqs);
+                          }}
+                          className="text-[#d63638] hover:bg-red-50 p-1.5 rounded"
+                        >
+                          <Trash2 className="w-4 h-4" />
+                        </button>
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className={UI.label}>Question</label>
+                        <input
+                          type="text"
+                          value={faq.question || faq.q || ""}
+                          onChange={(e) => {
+                            const newFaqs = [...data.faq.items];
+                            newFaqs[i] = { ...newFaqs[i], question: e.target.value, q: e.target.value };
+                            updateSection("faq", "items", newFaqs);
+                          }}
+                          className={UI.input + " font-bold"}
+                          placeholder="e.g. What should I wear to my first session?"
+                        />
+                      </div>
+                      <div className="space-y-1.5">
+                        <label className={UI.label}>Answer</label>
+                        <textarea
+                          value={faq.answer || faq.a || ""}
+                          onChange={(e) => {
+                            const newFaqs = [...data.faq.items];
+                            newFaqs[i] = { ...newFaqs[i], answer: e.target.value, a: e.target.value };
+                            updateSection("faq", "items", newFaqs);
+                          }}
+                          className={UI.input + " h-24"}
+                          placeholder="Wear comfortable athletic clothing..."
+                        />
+                      </div>
+                    </div>
+                  ))}
+                  <button
+                    onClick={() => {
+                      const current = data.faq?.items || [];
+                      updateSection("faq", "items", [...current, { question: "", answer: "" }]);
+                    }}
+                    className={UI.buttonAdd}
+                  >
+                    + Add FAQ Item
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
+
+          {/* ═══════════════════════════════════════════════════════════════
+              9. BLOG INSIGHTS SECTION
+          ═══════════════════════════════════════════════════════════════ */}
+          {activeTab === "blog" && (
+            <div className="space-y-8">
+              <div className="space-y-4">
+                <h3 className={UI.sectionHeader}>1. Section Intro & Headlines</h3>
+                <div className={UI.card + " space-y-4"}>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Badge / Subtitle</label>
+                      <input
+                        type="text"
+                        value={data.blogSection?.subtitle || ""}
+                        onChange={(e) => updateSection("blogSection", "subtitle", e.target.value)}
+                        className={UI.input}
+                        placeholder="e.g. FROM THE BLOG"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Headline Title</label>
+                      <input
+                        type="text"
+                        value={data.blogSection?.title || ""}
+                        onChange={(e) => updateSection("blogSection", "title", e.target.value)}
+                        className={UI.input + " font-bold"}
+                        placeholder="e.g. Insights & Recovery Tips"
+                      />
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>"View All" Button Text</label>
+                      <input
+                        type="text"
+                        value={data.blogSection?.ctaAll || ""}
+                        onChange={(e) => updateSection("blogSection", "ctaAll", e.target.value)}
+                        className={UI.input}
+                        placeholder="e.g. View All Articles"
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>"Read More" Link Text</label>
+                      <input
+                        type="text"
+                        value={data.blogSection?.ctaReadMore || ""}
+                        onChange={(e) => updateSection("blogSection", "ctaReadMore", e.target.value)}
+                        className={UI.input}
+                        placeholder="e.g. Read Article"
+                      />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Description Narrative (Optional)</label>
+                    <textarea
+                      value={data.blogSection?.description || ""}
+                      onChange={(e) => updateSection("blogSection", "description", e.target.value)}
+                      className={UI.input + " h-20"}
+                    />
+                  </div>
+                </div>
+              </div>
+
+              <div className="space-y-4 pt-4 border-t border-[#f0f0f1]">
+                <h3 className={UI.sectionHeader}>2. Featured Blog Posts Selection</h3>
+                <BlogSelector
+                  selectedIds={data.blogSection?.selectedPosts || []}
+                  onChange={(ids) => updateSection("blogSection", "selectedPosts", ids)}
+                />
+              </div>
+            </div>
+          )}
+
+        </motion.div>
+      </AnimatePresence>
+    </div>
+  );
 }

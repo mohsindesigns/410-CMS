@@ -1710,4 +1710,8 @@ async function seedAll() {
   }
 }
 
-seedAll();
+if (require.main === module) {
+  seedAll();
+}
+
+module.exports = { services };

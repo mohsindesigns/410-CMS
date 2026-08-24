@@ -69,6 +69,21 @@ export async function PATCH(
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
     });
 
+    if (updatedPage && (updatedPage.template === 'home' || updatedPage.slug === '/' || updatedPage.slug === 'home') && content) {
+      try {
+        const SiteContent = (await import('@/models/Content')).default;
+        const currentSiteDoc = await SiteContent.findOne({ key: 'complete_data' });
+        const mergedData = { ...(currentSiteDoc?.data || {}), ...content };
+        await SiteContent.updateOne(
+          { key: 'complete_data' },
+          { $set: { data: mergedData, lastUpdated: new Date() } },
+          { upsert: true }
+        );
+      } catch (err) {
+        console.error('Failed to sync page content to complete_data:', err);
+      }
+    }
+
     if (updatedPage && updatedPage.slug) {
       try {
         const { revalidatePath } = await import('next/cache');
