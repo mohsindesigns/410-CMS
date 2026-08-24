@@ -116,7 +116,7 @@ export default function TestimonialsSection() {
                 <div className="img-testimonial-tile relative w-full h-full">
                   <Image
                     src={result.image || "/images/placeholder.svg"}
-                    alt={result.label || "Testimonial result"}
+                    alt={result.label || result.caption || "Testimonial result"}
                     fill
                     sizes="(max-width: 640px) 45vw, 20vw"
                     className="object-cover group-hover:scale-105 transition-transform duration-500"
@@ -133,7 +133,7 @@ export default function TestimonialsSection() {
 
                 {/* Caption */}
                 <p className="absolute bottom-3 left-2.5 right-2.5 text-white text-[10.5px] min-[400px]:text-[11.5px] font-semibold leading-tight opacity-90 group-hover:opacity-100 transition-opacity">
-                  {result.label}
+                  {result.label || result.caption}
                 </p>
               </div>
             ))}

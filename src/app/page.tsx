@@ -203,7 +203,7 @@ export default async function Index() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
       />
-      <HomeTemplate pageData={homePage ? { ...homePage, content: { ...(content?.data || {}), ...(homePage.content || {}) } } : undefined} />
+      <HomeTemplate pageData={{ ...(homePage || {}), content: { ...(content?.data || {}), ...(homePage?.content || {}) } }} />
     </>
   );
 }

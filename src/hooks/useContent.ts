@@ -374,11 +374,23 @@ export const useContent = () => {
             const faqObj = getSafe(completeData, 'faq', { section: { badge: "", headline: "", description: "" }, items: [] });
             const quoteObj = getSafe(completeData, 'quote', { section: { badge: "", headline: "", description: "" }, services: [] });
             
-            const faqLabel = faqObj.section?.badge || "FAQ";
-            const faqTitle = faqObj.section?.headline || "Frequently Asked Questions";
+            const faqLabel = faqObj.section?.badge || faqObj.badge || "FAQ";
+            const faqTitle = faqObj.section?.headline || faqObj.title || faqObj.section?.title || "Frequently Asked Questions";
+            const faqDescription = faqObj.section?.description || faqObj.description || "";
+
+            const rawFaqItems = Array.isArray(faqObj.items) && faqObj.items.length > 0
+              ? faqObj.items
+              : (Array.isArray(completeData?.faqs) ? completeData.faqs : []);
+
+            const formattedFaqs = rawFaqItems.map((f: any) => ({
+              q: f.q || f.question || "",
+              a: f.a || f.answer || "",
+              question: f.question || f.q || "",
+              answer: f.answer || f.a || ""
+            }));
             
-            const formLabel = quoteObj.section?.badge || "GET IN TOUCH";
-            const formTitle = quoteObj.section?.headline || "Have Questions? Let's Connect.";
+            const formLabel = quoteObj.section?.badge || quoteObj.badge || "GET IN TOUCH";
+            const formTitle = quoteObj.section?.headline || quoteObj.title || "Have Questions? Let's Connect.";
             
             const formClinicPortal = quoteObj.formClinicPortal || "INSTANT ONLINE BOOKING";
             const formClinicPortalSub = quoteObj.formClinicPortalSub || "Book directly on StyleSeat portal";
@@ -413,11 +425,12 @@ export const useContent = () => {
                 ];
                 
             return {
-                label: "GET IN TOUCH",
-                title: "Have Questions? Let's Connect.",
+                label: formLabel,
+                title: formTitle,
                 description: "",
                 faqLabel,
                 faqTitle,
+                faqDescription,
                 formLabel,
                 formTitle,
                 formClinicPortal,
@@ -439,7 +452,7 @@ export const useContent = () => {
                 trustHipa,
                 trustResponse,
                 formServicesOptions,
-                faqs: faqObj.items || []
+                faqs: formattedFaqs
             };
         })(),
         ctaBanner: (() => {

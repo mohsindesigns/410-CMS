@@ -54,7 +54,13 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
         description={pageData?.content?.blogSection?.description || blogSection?.description}
         ctaAll={pageData?.content?.blogSection?.ctaAll || blogSection?.ctaAll}
         ctaReadMore={pageData?.content?.blogSection?.ctaReadMore || blogSection?.ctaReadMore}
-        posts={allBlogs.filter((p: any) => (pageData?.content?.blogSection?.selectedPosts || []).includes(p._id))}
+        posts={(() => {
+          const selected = pageData?.content?.blogSection?.selectedPosts || blogSection?.selectedPosts || [];
+          const filtered = Array.isArray(selected) && selected.length > 0 
+            ? allBlogs.filter((p: any) => selected.map(String).includes(String(p._id)))
+            : [];
+          return filtered.length > 0 ? filtered : (allBlogs.length > 0 ? allBlogs.slice(0, 3) : []);
+        })()}
       />
 
 

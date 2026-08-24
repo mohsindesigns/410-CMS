@@ -62,6 +62,16 @@ export async function PUT(req: NextRequest) {
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
     });
 
+    try {
+      const Page = (await import('@/models/Page')).default;
+      await Page.updateOne(
+        { $or: [{ slug: 'home' }, { slug: '/' }, { template: 'home' }] },
+        { $set: { content: sanitizedBody, updatedAt: new Date() } }
+      );
+    } catch (pageErr) {
+      console.error('Failed to sync content to home Page doc:', pageErr);
+    }
+
     const { revalidatePath } = await import('next/cache');
     revalidatePath('/');
     revalidatePath('/services');

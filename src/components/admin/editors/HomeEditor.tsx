@@ -796,18 +796,76 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                         altValue={step.title || ""}
                         onAltChange={() => {}}
                       />
-                      <div className="space-y-1.5">
-                        <label className={UI.label}>Checklist Action Items (One item per line)</label>
-                        <textarea
-                          value={Array.isArray(step.actions) ? step.actions.join("\n") : (step.actions || "")}
-                          onChange={(e) => {
-                            const newItems = [...data.process.items];
-                            newItems[i] = { ...newItems[i], actions: e.target.value.split("\n").filter(Boolean) };
-                            updateSection("process", "items", newItems);
-                          }}
-                          className={UI.input + " h-24 font-mono text-xs"}
-                          placeholder="Range of Motion Testing&#10;Postural Alignment Check"
-                        />
+                      <div className="space-y-2 pt-1">
+                        <div className="flex justify-between items-center">
+                          <label className={UI.label}>Checklist Action Items</label>
+                          <button
+                            type="button"
+                            onClick={() => {
+                              const newItems = [...data.process.items];
+                              const currentActions = Array.isArray(newItems[i].actions)
+                                ? [...newItems[i].actions]
+                                : (typeof newItems[i].actions === 'string' ? newItems[i].actions.split("\n").filter(Boolean) : []);
+                              newItems[i] = { ...newItems[i], actions: [...currentActions, ""] };
+                              updateSection("process", "items", newItems);
+                            }}
+                            className="text-[#2271b1] hover:underline text-xs font-semibold"
+                          >
+                            + Add Action Item
+                          </button>
+                        </div>
+                        <div className="space-y-2">
+                          {(Array.isArray(step.actions) && step.actions.length > 0
+                            ? step.actions
+                            : (typeof step.actions === 'string' && step.actions.trim() ? step.actions.split("\n").filter(Boolean) : [""])
+                          ).map((act: string, actIdx: number) => (
+                            <div key={actIdx} className="flex gap-2 items-center">
+                              <input
+                                type="text"
+                                value={act}
+                                onChange={(e) => {
+                                  const newItems = [...data.process.items];
+                                  const rawActions = Array.isArray(newItems[i].actions)
+                                    ? [...newItems[i].actions]
+                                    : (typeof newItems[i].actions === 'string' ? newItems[i].actions.split("\n").filter(Boolean) : []);
+                                  rawActions[actIdx] = e.target.value;
+                                  newItems[i] = { ...newItems[i], actions: rawActions };
+                                  updateSection("process", "items", newItems);
+                                }}
+                                onKeyDown={(e) => {
+                                  if (e.key === "Enter") {
+                                    e.preventDefault();
+                                    const newItems = [...data.process.items];
+                                    const rawActions = Array.isArray(newItems[i].actions)
+                                      ? [...newItems[i].actions]
+                                      : (typeof newItems[i].actions === 'string' ? newItems[i].actions.split("\n").filter(Boolean) : []);
+                                    rawActions.splice(actIdx + 1, 0, "");
+                                    newItems[i] = { ...newItems[i], actions: rawActions };
+                                    updateSection("process", "items", newItems);
+                                  }
+                                }}
+                                className={UI.input + " text-xs"}
+                                placeholder={`Action Item #${actIdx + 1} (e.g. Range of Motion Testing)`}
+                              />
+                              <button
+                                type="button"
+                                onClick={() => {
+                                  const newItems = [...data.process.items];
+                                  const rawActions = Array.isArray(newItems[i].actions)
+                                    ? [...newItems[i].actions]
+                                    : (typeof newItems[i].actions === 'string' ? newItems[i].actions.split("\n").filter(Boolean) : []);
+                                  rawActions.splice(actIdx, 1);
+                                  newItems[i] = { ...newItems[i], actions: rawActions };
+                                  updateSection("process", "items", newItems);
+                                }}
+                                className="text-[#d63638] hover:bg-red-50 p-1.5 rounded"
+                                title="Remove Action Item"
+                              >
+                                <Trash2 className="w-3.5 h-3.5" />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
                       </div>
                     </div>
                   ))}

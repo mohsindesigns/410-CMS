@@ -8,10 +8,10 @@ import { useContent } from "../hooks/useContent";
 import { stripHtml } from "../lib/utils";
 
 const stepImages = [
-  "/images/blog-1.webp",
-  "/images/blog-2.webp",
-  "/images/service-massage.webp",
-  "/images/testimonial-3.webp",
+  "/uploads/blog/what-to-expect-during-a-deep-tissue-massage.jpg.jpeg",
+  "/uploads/blog/how-corrective-movement-helps-improve-posture-mobility.jpg.jpeg",
+  "/uploads/blog/deep-tissue-massage.jpg",
+  "/uploads/blog/fascial-stretch-therapy-explained-benefits-process.jpg.jpeg",
 ];
 
 export default function HowItWorksSection() {

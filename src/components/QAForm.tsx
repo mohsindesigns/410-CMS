@@ -42,14 +42,18 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
   } = contactFaq || {};
 
   // Read page-specific overrides if editing or viewing on a specific page
-  const pageFaqs = pageData?.content?.faqs || pageData?.faqs || pageData?.faq;
-  const activeFaqs = Array.isArray(pageFaqs) && pageFaqs.length > 0
-    ? pageFaqs.map((f: any) => ({ q: f.q || f.question || "", a: f.a || f.answer || "" }))
-    : faqs;
+  const pageFaqSection = pageData?.content?.faq;
+  const rawPageFaqs = Array.isArray(pageFaqSection?.items) && pageFaqSection.items.length > 0
+    ? pageFaqSection.items
+    : (Array.isArray(pageData?.content?.faqs) ? pageData.content.faqs : (Array.isArray(pageData?.faqs) ? pageData.faqs : []));
 
-  const activeFaqLabel = pageData?.content?.faqBadge || pageData?.faqBadge || faqLabel;
-  const activeFaqTitle = pageData?.content?.faqTitle || pageData?.faqTitle || faqTitle;
-  const activeFaqDescription = pageData?.content?.faqDescription || pageData?.faqDescription || "";
+  const activeFaqs = rawPageFaqs.length > 0
+    ? rawPageFaqs.map((f: any) => ({ q: f.q || f.question || "", a: f.a || f.answer || "" }))
+    : (Array.isArray(faqs) ? faqs : []);
+
+  const activeFaqLabel = pageFaqSection?.section?.badge || pageFaqSection?.badge || pageData?.content?.faqBadge || pageData?.faqBadge || faqLabel;
+  const activeFaqTitle = pageFaqSection?.section?.headline || pageFaqSection?.title || pageData?.content?.faqTitle || pageData?.faqTitle || faqTitle;
+  const activeFaqDescription = pageFaqSection?.section?.description || pageFaqSection?.description || pageData?.content?.faqDescription || pageData?.faqDescription || "";
 
   const [formData, setFormData] = useState({
     name: "",
