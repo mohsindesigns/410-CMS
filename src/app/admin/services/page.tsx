@@ -20,20 +20,15 @@ import {
   ClipboardCheck as ClipboardCheckIcon, FileText as FileTextIcon,
   Hammer as HammerIcon, CheckCircle as CheckCircleIcon, Check as CheckIcon,
   ArrowRight as ArrowRightIcon, Users as UsersIcon, TrendingUp as TrendingUpIcon,
-  BadgeCheck as BadgeCheckIcon, Star as StarIcon, Clock as ClockIcon,
-  Warehouse, Factory, Store, Landmark, Castle, Mountain, Trees,
-  ThermometerSnowflake, Droplet, FlameKindling, Lightbulb, Power,
-  WashingMachine, Microwave, Speaker, Camera, Video, Monitor,
-  Smartphone, Tablet, Laptop, Headphones, Wallet, CreditCard,
-  ShoppingCart, Gift, Coffee, Utensils, Pizza, Beer
+  BadgeCheck as BadgeCheckIcon, Star as StarIcon, Clock as ClockIcon
 } from "lucide-react";
 import * as LucideIcons from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import ImageField from "@/components/admin/ImageField";
 import SeoEditor from "@/components/admin/SeoEditor";
-import BlogSelector from "@/components/admin/BlogSelector";
 import dynamic from "next/dynamic";
+
 const QuillEditor = dynamic(() => import("@/components/admin/QuillEditor"), {
   ssr: false,
   loading: () => <div className="h-48 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Editor...</div>
@@ -47,29 +42,7 @@ const ICON_LIST = Array.from(new Set([
   "Ruler", "Paintbrush", "Wind", "Flame", "Thermometer", "Users",
   "Shovel", "Fence", "Drill", "Square", "Box", "Construction", "Tool",
   "Map", "MapPin", "Search", "Settings", "Phone", "Mail", "Globe", "Layers",
-  "Warehouse", "Factory", "Store", "Landmark", "Castle", "Mountain", "Trees",
-  "Droplet", "FlameKindling", "Lightbulb", "Power",
-  "WashingMachine", "Microwave", "Speaker", "Camera", "Video", "Monitor",
-  "Smartphone", "Tablet", "Laptop", "Headphones", "Wallet", "CreditCard",
-  "ShoppingCart", "Gift", "Coffee", "Utensils", "Pizza", "Beer",
-  "Activity", "Anchor", "Aperture", "Archive", "AtSign", "Bell", "Bluetooth",
-  "Book", "Bookmark", "Briefcase", "Calendar", "Cast", "Cloud", "Code",
-  "Compass", "Copy", "Cpu", "Database", "Disc", "Download", "Edit", "ExternalLink",
-  "Eye", "Facebook", "Feather", "File", "Filter", "Flag", "Folder",
-  "Github", "Gitlab", "Grid", "HardDrive", "Hash", "Heart", "HelpCircle",
-  "Image", "Inbox", "Instagram", "Key", "LifeBuoy", "Link", "Linkedin",
-  "List", "Loader", "Lock", "LogIn", "LogOut", "Maximize", "Menu", "MessageCircle",
-  "MessageSquare", "Mic", "Minimize", "Minus", "Moon", "MoreHorizontal", "MoreVertical",
-  "MousePointer", "Music", "Navigation", "Octagon", "Package", "Paperclip", "Pause",
-  "Percent", "PieChart", "Play", "Plus", "Pocket", "Printer", "Radio",
-  "RefreshCcw", "Repeat", "Rewind", "RotateCcw", "RotateCw", "Rss", "Save", "Scissors",
-  "Send", "Server", "Share", "ShoppingBag",
-  "Shuffle", "SkipBack", "SkipForward", "Slack", "Sliders", "Smile", 
-  "SkipBack", "SkipForward", "Sunrise", "Sunset", "Tag",
-  "Target", "Terminal", "ThumbsDown", "ThumbsUp", "ToggleLeft",
-  "ToggleRight", "Trash", "Trello", "TrendingDown", "Triangle",
-  "Tv", "Twitter", "Type", "Umbrella", "Underline", "Unlock", "Upload", "User",
-  "Voicemail", "Volume", "Watch", "Wifi", "X", "Youtube"
+  "Activity", "Heart", "Target", "Zap", "Star"
 ]));
 
 const IconComponentMap: Record<string, any> = LucideIcons;
@@ -97,6 +70,7 @@ function IconSelector({ value, onChange }: { value: string, onChange: (v: string
               return (
                 <button
                   key={iconName}
+                  type="button"
                   onClick={() => {
                     onChange(iconName);
                     setIsOpen(false);
@@ -119,140 +93,176 @@ function IconSelector({ value, onChange }: { value: string, onChange: (v: string
   );
 }
 
-const DEFAULT_CLINICAL_FIELDS = {
+const DEFAULT_SERVICE_FIELDS = {
+  // 1. Hero
+  backLink: "Back to All Services",
   heroSectionLabel: "CLINICAL RECOVERY PROTOCOL",
-  heroDescriptionSuffix: "Targeted manual therapy engineered to eliminate chronic pain, unlock joint mobility, and accelerate athletic recovery.",
+  heroDescription: "Targeted manual therapy engineered to eliminate chronic pain, unlock joint mobility, and accelerate athletic recovery.",
   specDurationValue: "60 / 90 Mins",
   specIntensityValue: "Targeted Deep",
   specFocusValue: "Trigger Mapping",
   bookingCta: "Book Appointment Now",
+  bookingCtaUrl: "",
   heroCtaSecondary: "SEE HOW IT HELPS",
-  
-  statsItem1Val: "98%",
-  statsItem1Label: "Pain Relief Success",
-  statsItem2Val: "5,000+",
-  statsItem2Label: "Sessions Completed",
-  statsItem3Val: "Est. 2020",
-  statsItem3Label: "Clinical Standard",
-  statsItem4Val: "100%",
-  statsItem4Label: "Targeted Protocols",
-  
-  overviewSectionLabel: "WHY THIS THERAPY WORKS",
+  heroCtaSecondaryUrl: "#overview",
+
+  // 2. Stats
+  statsItem1Val: "8 Yrs",
+  statsItem1Label: "Clinical Experience",
+  statsItem2Val: "5.0 ★",
+  statsItem2Label: "Google Reviews",
+  statsItem3Val: "100%",
+  statsItem3Label: "Satisfaction Guarantee",
+  statsItem4Val: "5,000+",
+  statsItem4Label: "Sessions Completed",
+
+  // 3. Clinical Overview & Patterns
+  overviewSectionLabel: "FIX THE PATTERNS THAT KEEP PAIN RETURNING",
   overviewTitle1: "Targeted Bodywork.",
   overviewTitle2: "Engineered For Recovery.",
   overviewWatermark: "SPECIALIST PRACTICE • EST. 2020",
-  overviewSuccessRate: "98% SUCCESS",
+  overviewSuccessRate: "5.0 RATED PRACTICE",
   tailoredLabel: "100% Tailored Therapy",
   tailoredSub: "Individualized Protocols",
-  overviewIntroSuffix: "We map postural compensations and active muscle trigger points to eliminate root-cause pain, flush soreness, and decompress joint structures.",
+  overviewDescription: "We look at mobility, stability, posture, soft-tissue restrictions, and movement habits. Then we pair bodywork with guided exercises that help your body share the load more comfortably.",
   overviewCtaText: "BOOK YOUR SESSION NOW",
-  overviewHipaaText: "HIPAA Compliant & Certified",
-  
-  candidateSectionLabel: "TARGET CANDIDATES",
-  candidateTitle1: "Who Benefits Most.",
-  candidateTitle2: "Clinical Indications.",
-  candidateSuitability: "SUITABILITY: OPTIMAL",
-  profileBadgePrefix: "PROFILE",
-  whoProfiles: [
+  overviewCtaUrl: "",
+  overviewHipaaText: "100% Satisfaction Guaranteed & Certified",
+  benefits: [
     {
-      label: "Athletes",
-      desc: "Competitive athletes needing accelerated recovery between high-intensity training sessions."
+      title: "Recurring Low Back Tightness",
+      description: "When the hips stay stiff, the lower back may do more work than you want. We use mobility drills, breathing techniques, and controlled movement exercises."
     },
     {
-      label: "Desk Professionals",
-      desc: "Individuals suffering from postural neck, shoulder, or lower back tightness from prolonged sitting."
+      title: "Hips That Feel Stuck",
+      description: "Limited hip range of motion can change how you walk or squat. We use soft-tissue work, mobility exercises, and simple control drills."
     },
     {
-      label: "Chronic Pain Sufferers",
-      desc: "Anyone dealing with persistent muscle knots, joint stiffness, or old injury scar tissue buildup."
+      title: "Neck And Shoulder Strain",
+      description: "Long desk hours or overhead work can overload the neck. We work on upper-back mobility, shoulder-blade control, and tight tissue."
     },
     {
-      label: "Post-Rehab Patients",
-      desc: "People looking to safely regain full range of motion following physical therapy or injury rehabilitation."
+      title: "Posture And Compensation Patterns",
+      description: "We look for compensation patterns and practice balance, coordination, and joint control to support daily movement."
     }
   ],
-  
-  protocolSectionLabel: "02 / SESSION PROTOCOL",
-  protocolTitle1: "3-Phase Clinical",
-  protocolTitle2: "Treatment Sequence.",
-  protocolPhasePrefix: "PHASE 0",
-  protocolDurations: ["15 MIN", "45 MIN", "15 MIN"],
-  protocolBannerBadge: "CLINICAL EXCELLENCE",
-  protocolBannerTitlePrefix: "Ready to experience",
-  protocolBannerTitleSuffix: "?",
-  protocolBannerCta: "BOOK YOUR SESSION NOW",
-  
+
+  // 4. Candidates & Why Us
+  candidateSectionLabel: "WHY 410 MUSCLE THERAPY FEELS DIFFERENT",
+  candidateTitle1: "Targeted Care.",
+  candidateTitle2: "Built Around You.",
+  candidateDescription: "Movement work shaped around what your body can comfortably do. The goal is useful progress, not a rushed routine or generic adjustment.",
+  profileBadgePrefix: "ADVANTAGE",
+  candidateSuitability: "CLINICAL STANDARD",
+  whoProfiles: [
+    {
+      label: "Eight Years Of Experience",
+      desc: "Eight years of professional experience guide every session. Skilled observation and hands-on work matter when pain has several contributors.",
+      suitability: "CERTIFIED CARE"
+    },
+    {
+      label: "Five-Star Reputation",
+      desc: "A 5.0 Google rating gives you added confidence before you book. Clients praise our targeted muscle work and lasting relief.",
+      suitability: "5.0 ★ RATED"
+    },
+    {
+      label: "Guaranteed Client Satisfaction",
+      desc: "Backed by a 100% Customer Satisfaction Guarantee. We explain each technique, invite feedback on pressure, and adjust accordingly.",
+      suitability: "100% GUARANTEED"
+    },
+    {
+      label: "York Road Convenience",
+      desc: "At 1301 York Rd., Timonium, MD, we serve Towson, Lutherville, Cockeysville, and Baltimore County with dedicated one-on-one care.",
+      suitability: "TIMONIUM, MD"
+    }
+  ],
+
+  // 5. Treatment Protocol (Stepper)
+  protocolSectionLabel: "SESSION WORKFLOW PROTOCOL",
+  protocolTitle1: "What Your Session",
+  protocolTitle2: "Looks Like.",
+  protocolDescription: "Your visit follows a clear path: listen, observe, release, practice, and retest so you always know what we are working on and why.",
+  protocolPhasePrefix: "STEP",
+  protocolDurations: ["15 MIN", "30 MIN", "30 MIN", "15 MIN"],
   sessionSteps: [
     {
       num: "01",
-      title: "Postural & Palpation Assessment",
-      desc: "We begin with an active range-of-motion test and palpation to pinpoint tight muscle groups and trigger points."
+      title: "Talk And Screen",
+      desc: "We discuss what hurts and when it shows up. Your movement assessment in Timonium includes standing, walking, reaching, or squatting."
     },
     {
       num: "02",
-      title: "Targeted Clinical Bodywork",
-      desc: "Hands-on application of deep tissue pressure, myofascial release, and cross-fiber friction adjusted to your comfort level."
+      title: "Release Restricted Tissue",
+      desc: "Hands-on work focuses on tight areas, deep muscle knots, and stuck fascia matched to your comfortable pressure level."
     },
     {
       num: "03",
-      title: "Post-Session Recovery Plan",
-      desc: "We measure mobility improvements post-therapy and provide personalized home stretching recommendations."
+      title: "Practice Better Patterns",
+      desc: "We work on breathing, hip control, shoulder mechanics, balance, or core stability drills connected to daily life."
+    },
+    {
+      num: "04",
+      title: "Retest And Plan",
+      desc: "We repeat the movement that mattered most, evaluate changes, and provide practical next steps to practice between sessions."
     }
   ],
-  
-  benefits: [
+  protocolBannerBadge: "MOVE BETTER STARTING RIGHT HERE",
+  protocolBannerTitlePrefix: "Ready to experience",
+  protocolBannerTitleSuffix: "?",
+  protocolBannerCta: "BOOK YOUR APPOINTMENT",
+  protocolBannerCtaUrl: "",
+
+  // 6. FAQs
+  faqBadge: "FAQ",
+  faqTitle: "Frequently Asked Questions",
+  faqDescription: "Everything you need to know about your session and our clinical approach.",
+  faq: [
     {
-      title: "Decompress Joint Structures",
-      description: "Gentle traction and targeted pressure release compression in spinal and peripheral joints."
+      question: "What is corrective movement therapy, and who is it for?",
+      answer: "Corrective movement therapy looks at how you move through simple tasks and mobility drills. It suits active adults with stiffness or inefficient movement habits."
     },
     {
-      title: "Flush Inflammatory Waste",
-      description: "Deep strokes stimulate lymphatic drainage and blood flow to clear metabolic waste products."
+      question: "How is corrective movement therapy different from physical therapy?",
+      answer: "Physical therapy is licensed medical healthcare for diagnosed injuries and rehabilitation. Corrective movement focuses on soft tissue feel, movement mechanics, and safe exercise cues."
     },
     {
-      title: "Restore Myofascial Glide",
-      description: "Manual shearing releases adhesions between muscle layers to allow smooth mechanical motion."
+      question: "Can corrective movement therapy help recurring back pain or sciatica?",
+      answer: "Research supports guided movement for chronic non-specific discomfort. We keep movement comfortable and refer to medical providers when red flags appear."
     },
     {
-      title: "Accelerate Athletic Recovery",
-      description: "Faster tissue repair and reduced muscle soreness between intense training sessions."
+      question: "What happens at the first session, and what should I wear?",
+      answer: "We discuss symptoms, evaluate movement, apply targeted hands-on work, and practice drills. Wear comfortable clothing that lets you bend and move freely."
+    },
+    {
+      question: "How many sessions will I need, and do I need a referral?",
+      answer: "There is no fixed count. We plan your visits based on response. No medical referral is required to book a session."
     }
-  ]
+  ],
+  faqSchemaMarkup: ""
 };
 
 export default function ServicesAdminPage() {
   const [data, setData] = useState<any>(null);
   const [services, setServices] = useState<any[]>([]);
   const [isEditing, setIsEditing] = useState<number | null>(null);
-  const [activeTab, setActiveTab] = useState("general");
+  const [activeTab, setActiveTab] = useState("hero");
   const [seo, setSeo] = useState<any>({});
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
   const [filter, setFilter] = useState("all");
   const [search, setSearch] = useState("");
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
-  const [actionLoading, setActionLoading] = useState(false);
   const [bulkAction, setBulkAction] = useState("");
   const [quickEditing, setQuickEditing] = useState<any>(null);
 
   const [form, setForm] = useState<any>({
     title: "",
     slug: "",
-    tagline: "",
-    description: "",
     image: "",
-    icon: "Layout",
+    icon: "Activity",
     tag: "",
     status: "published",
-    bookingCtaUrl: "",
-    heroCtaSecondaryUrl: "",
-    faq: [],
-    faqSchemaMarkup: "",
-    faqBadge: "",
-    faqTitle: "",
-    faqDescription: "",
-    blogSection: { title: "", subtitle: "", description: "", selectedPosts: [] },
-    ...DEFAULT_CLINICAL_FIELDS
+    ...DEFAULT_SERVICE_FIELDS
   });
 
   useEffect(() => {
@@ -263,7 +273,7 @@ export default function ServicesAdminPage() {
   }, []);
 
   useEffect(() => {
-    if (isEditing !== null && form.title && !form.id) { // Only auto-slug for new ones
+    if (isEditing !== null && form.title && !form.id) {
       const generatedSlug = form.title.toLowerCase().replace(/[^a-z0-9 ]/g, "").replace(/\s+/g, "-");
       if (form.slug !== generatedSlug) setForm((prev: any) => ({ ...prev, slug: generatedSlug }));
     }
@@ -277,7 +287,7 @@ export default function ServicesAdminPage() {
       if (res.ok) {
         setData(updatedData);
         setServices(newServices);
-        setToast({ type: "ok", msg: "Services updated." });
+        setToast({ type: "ok", msg: "Services saved successfully." });
         setTimeout(() => setToast(null), 3000);
         if (keepEditingIdx !== undefined) {
           setIsEditing(keepEditingIdx);
@@ -307,7 +317,6 @@ export default function ServicesAdminPage() {
   const handleSaveService = () => {
     if (!form.title || !form.slug) return alert("Title and slug are required.");
 
-    // Validate bulk FAQ JSON-LD schema markup
     const bulkSchema = (form.faqSchemaMarkup || "").trim();
     if (bulkSchema) {
       try {
@@ -326,9 +335,13 @@ export default function ServicesAdminPage() {
       }
     }
 
-
     const newServices = [...services];
-    const serviceData = { ...form, seo: seo, id: form.id || Date.now().toString(), number: form.number || (services.length + 1).toString().padStart(2, '0') };
+    const serviceData = {
+      ...form,
+      seo: seo,
+      id: form.id || Date.now().toString(),
+      number: form.number || (services.length + 1).toString().padStart(2, '0')
+    };
     
     let targetIdx = isEditing;
     if (isEditing !== null && isEditing < services.length) {
@@ -343,25 +356,18 @@ export default function ServicesAdminPage() {
   const handleEdit = (service: any) => {
     const originalIdx = services.findIndex(orig => orig.id === service.id);
     setForm({
-      ...DEFAULT_CLINICAL_FIELDS,
+      ...DEFAULT_SERVICE_FIELDS,
       ...service,
-      bookingCtaUrl: service.bookingCtaUrl || "",
-      heroCtaSecondaryUrl: service.heroCtaSecondaryUrl || "",
-      stats: service.stats || [],
-      benefits: service.benefits || [],
-      process: service.process || [],
-      faq: service.faq || [],
-      faqSchemaMarkup: service.faqSchemaMarkup || "",
-      faqBadge: service.faqBadge || "",
-      faqTitle: service.faqTitle || "",
-      faqDescription: service.faqDescription || "",
-      whoProfiles: service.whoProfiles || DEFAULT_CLINICAL_FIELDS.whoProfiles,
-      sessionSteps: service.sessionSteps || DEFAULT_CLINICAL_FIELDS.sessionSteps,
-      protocolDurations: service.protocolDurations || DEFAULT_CLINICAL_FIELDS.protocolDurations
+      // Ensure arrays fall back gracefully
+      benefits: (service.benefits && service.benefits.length > 0) ? service.benefits : DEFAULT_SERVICE_FIELDS.benefits,
+      whoProfiles: (service.whoProfiles && service.whoProfiles.length > 0) ? service.whoProfiles : DEFAULT_SERVICE_FIELDS.whoProfiles,
+      sessionSteps: (service.sessionSteps && service.sessionSteps.length > 0) ? service.sessionSteps : (service.process || DEFAULT_SERVICE_FIELDS.sessionSteps),
+      protocolDurations: (service.protocolDurations && service.protocolDurations.length > 0) ? service.protocolDurations : DEFAULT_SERVICE_FIELDS.protocolDurations,
+      faq: (service.faq && service.faq.length > 0) ? service.faq : (service.faqs || DEFAULT_SERVICE_FIELDS.faq)
     });
     setSeo(service.seo || {});
     setIsEditing(originalIdx);
-    setActiveTab("general");
+    setActiveTab("hero");
   };
 
   const toggleStatus = (service: any) => {
@@ -408,10 +414,8 @@ export default function ServicesAdminPage() {
     setSelectedIds([]);
   };
 
-
-
   const filteredServices = services.filter(s => {
-    const matchesSearch = s.title.toLowerCase().includes(search.toLowerCase());
+    const matchesSearch = s.title?.toLowerCase().includes(search.toLowerCase());
     const isTrashed = s.isTrashed === true;
 
     if (filter === 'trash') return matchesSearch && isTrashed;
@@ -424,7 +428,7 @@ export default function ServicesAdminPage() {
 
   return (
     <div className="space-y-4">
-      {/* WP Header Area */}
+      {/* Header */}
       <div className="flex items-center gap-4 mb-2">
         <h1 className="text-[23px] font-normal text-[#1d2327] font-serif m-0">Services</h1>
         {isEditing === null && (
@@ -434,26 +438,18 @@ export default function ServicesAdminPage() {
               setForm({
                 title: "",
                 slug: "",
-                tagline: "",
-                description: "",
                 image: "",
-                icon: "Layout",
+                icon: "Activity",
                 tag: "",
                 status: "published",
-                faq: [],
-                faqSchemaMarkup: "",
-                faqBadge: "",
-                faqTitle: "",
-                faqDescription: "",
-                blogSection: { title: "", subtitle: "", description: "", selectedPosts: [] },
-                ...DEFAULT_CLINICAL_FIELDS
+                ...DEFAULT_SERVICE_FIELDS
               });
               setSeo({});
-              setActiveTab("general");
+              setActiveTab("hero");
             }}
             className="bg-white border border-[#2271b1] text-[#2271b1] hover:bg-[#f6f7f7] hover:text-[#135e96] hover:border-[#135e96] px-2 py-1 text-[13px] rounded-[3px] transition-colors"
           >
-            Add New
+            Add New Service
           </button>
         )}
       </div>
@@ -471,526 +467,666 @@ export default function ServicesAdminPage() {
             <ChevronRight className="w-3.5 h-3.5 text-[#646970] shrink-0" />
             <span className="text-[#646970] truncate">{form.title || "New Service"}</span>
           </div>
+          
           <div className="grid grid-cols-1 lg:grid-cols-4 gap-6 items-start">
-          {/* Left Form Content */}
-          <div className="lg:col-span-3 space-y-6">
-            <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-sm p-6">
-              <input
-                type="text"
-                value={form.title}
-                onChange={(e) => setForm({ ...form, title: e.target.value })}
-                className="w-full border border-[#8c8f94] px-3 py-2 text-[18px] font-medium rounded-[3px] focus:border-[#2271b1] outline-none mb-4"
-                placeholder="Enter service title here"
-              />
+            {/* Left Form Content */}
+            <div className="lg:col-span-3 space-y-6">
+              <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-sm p-6">
+                <input
+                  type="text"
+                  value={form.title}
+                  onChange={(e) => setForm({ ...form, title: e.target.value })}
+                  className="w-full border border-[#8c8f94] px-3 py-2 text-[18px] font-medium rounded-[3px] focus:border-[#2271b1] outline-none mb-4"
+                  placeholder="Enter service title here (e.g., Corrective Movement Therapy Maryland)"
+                />
 
-              {/* WP-Style Tabs for Service Editor */}
-              <div className="space-y-4 mb-6">
-                {/* Line 1: Core Tabs */}
-                <div className="flex flex-wrap border-b border-[#c3c4c7]">
-                  {[
-                    { id: "general", label: "General Settings" },
-                    { id: "branding-specs", label: "1. Hero Banner" },
-                    { id: "overview", label: "2. Clinical Overview" },
-                    { id: "stats-candidates", label: "3. Stats & Candidates" },
-                    { id: "stepper", label: "4. Treatment Protocol" },
-                    { id: "benefits", label: "5. Key Benefits" },
-                    { id: "faq", label: "6. FAQs & Support" },
-                    { id: "seo", label: "7. SEO Settings" }
-                  ].map(tab => (
-                    <button
-                      key={tab.id}
-                      type="button"
-                      onClick={() => setActiveTab(tab.id)}
-                      className={`px-4 py-2 text-[13px] border-b-2 transition-all ${
-                        activeTab === tab.id
-                          ? 'border-[#2271b1] text-[#1d2327] font-bold'
-                          : 'border-transparent text-[#2271b1] hover:text-[#135e96]'
-                      }`}
-                    >
-                      {tab.label}
-                    </button>
-                  ))}
+                {/* WP-Style Tabs for Service Editor (1:1 with Frontend Layout) */}
+                <div className="space-y-4 mb-6">
+                  <div className="flex flex-wrap border-b border-[#c3c4c7]">
+                    {[
+                      { id: "hero", label: "1. Hero Banner" },
+                      { id: "stats", label: "2. Highlight Stats" },
+                      { id: "overview", label: "3. Clinical Overview & Focus Areas" },
+                      { id: "candidates", label: "4. Why Us & Candidates" },
+                      { id: "stepper", label: "5. Treatment Protocol" },
+                      { id: "faq", label: "6. FAQs & Support" },
+                      { id: "seo", label: "7. SEO Settings" }
+                    ].map(tab => (
+                      <button
+                        key={tab.id}
+                        type="button"
+                        onClick={() => setActiveTab(tab.id)}
+                        className={`px-4 py-2 text-[13px] border-b-2 transition-all ${
+                          activeTab === tab.id
+                            ? 'border-[#2271b1] text-[#1d2327] font-bold'
+                            : 'border-transparent text-[#2271b1] hover:text-[#135e96]'
+                        }`}
+                      >
+                        {tab.label}
+                      </button>
+                    ))}
+                  </div>
                 </div>
-              </div>
 
-              <div className="space-y-6 min-h-[400px]">
-                {activeTab === "general" && (
-                  <div className="space-y-4">
-                    <div className="space-y-1">
-                      <label className="text-[13px] font-bold">Menu Icon</label>
-                      <IconSelector value={form.icon} onChange={(v) => setForm({ ...form, icon: v })} />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[13px] font-bold">Hero Description / Subtitle Fallback</label>
-                      <textarea placeholder="e.g. Professional services with military precision..." value={form.heroDescription || ""} onChange={(e) => setForm({ ...form, heroDescription: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px] h-20" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[13px] font-bold">Primary Service Description</label>
-                      <QuillEditor
-                        content={form.description}
-                        onChange={(v) => setForm({ ...form, description: v })}
-                        placeholder="Write the main description for the service..."
-                      />
-                    </div>
-                  </div>
-                )}
-                {activeTab === "branding-specs" && (
-                  <div className="space-y-4">
-                    <div className="space-y-1">
-                      <label className="text-[13px] font-bold">Hero Section Label / Badge</label>
-                      <input type="text" value={form.heroSectionLabel || ""} onChange={(e) => setForm({ ...form, heroSectionLabel: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[13px] font-bold">Hero Description Suffix</label>
-                      <textarea value={form.heroDescriptionSuffix || ""} onChange={(e) => setForm({ ...form, heroDescriptionSuffix: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px] h-20" />
-                    </div>
-                    <div className="grid grid-cols-3 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Duration Value</label>
-                        <input type="text" value={form.specDurationValue || ""} onChange={(e) => setForm({ ...form, specDurationValue: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. 60 / 90 Mins" />
+                <div className="space-y-6 min-h-[400px]">
+                  {/* 1. HERO BANNER */}
+                  {activeTab === "hero" && (
+                    <div className="space-y-5">
+                      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Permalink Slug</label>
+                          <input type="text" value={form.slug || ""} onChange={(e) => setForm({ ...form, slug: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. corrective-movement-therapy-maryland" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Category Tag</label>
+                          <input type="text" value={form.tag || ""} onChange={(e) => setForm({ ...form, tag: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Movement Therapy" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Menu Icon</label>
+                          <div><IconSelector value={form.icon} onChange={(v) => setForm({ ...form, icon: v })} /></div>
+                        </div>
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Intensity Value</label>
-                        <input type="text" value={form.specIntensityValue || ""} onChange={(e) => setForm({ ...form, specIntensityValue: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Targeted Deep" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Focus Value</label>
-                        <input type="text" value={form.specFocusValue || ""} onChange={(e) => setForm({ ...form, specFocusValue: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Trigger Mapping" />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Primary Booking CTA text</label>
-                        <input type="text" value={form.bookingCta || ""} onChange={(e) => setForm({ ...form, bookingCta: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Primary Booking CTA Link (URL)</label>
-                        <input type="text" placeholder="Defaults to global booking link" value={form.bookingCtaUrl || ""} onChange={(e) => setForm({ ...form, bookingCtaUrl: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Secondary CTA button text</label>
-                        <input type="text" value={form.heroCtaSecondary || ""} onChange={(e) => setForm({ ...form, heroCtaSecondary: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Secondary CTA Link (URL)</label>
-                        <input type="text" placeholder="Defaults to /services/slug" value={form.heroCtaSecondaryUrl || ""} onChange={(e) => setForm({ ...form, heroCtaSecondaryUrl: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                      </div>
-                    </div>
-                  </div>
-                )}
 
-                {activeTab === "overview" && (
-                  <div className="space-y-4">
-                    <div className="space-y-1">
-                      <label className="text-[13px] font-bold">Overview Badge / Label</label>
-                      <input type="text" value={form.overviewSectionLabel || ""} onChange={(e) => setForm({ ...form, overviewSectionLabel: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Overview Title (Part 1 - Regular)</label>
-                        <input type="text" value={form.overviewTitle1 || ""} onChange={(e) => setForm({ ...form, overviewTitle1: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Breadcrumb Backlink Text</label>
+                          <input type="text" value={form.backLink || ""} onChange={(e) => setForm({ ...form, backLink: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Back to All Services" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Hero Section Label / Badge</label>
+                          <input type="text" value={form.heroSectionLabel || ""} onChange={(e) => setForm({ ...form, heroSectionLabel: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. CLINICAL RECOVERY PROTOCOL" />
+                        </div>
                       </div>
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Overview Title (Part 2 - Gold Italic)</label>
-                        <input type="text" value={form.overviewTitle2 || ""} onChange={(e) => setForm({ ...form, overviewTitle2: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <ImageField label="Overview Background/Featured Image" value={form.image || ""} onChange={(url) => setForm({ ...form, image: url })} />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Overview Watermark Text</label>
-                        <input type="text" value={form.overviewWatermark || ""} onChange={(e) => setForm({ ...form, overviewWatermark: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Success Rate Badge Right Text</label>
-                        <input type="text" value={form.overviewSuccessRate || ""} onChange={(e) => setForm({ ...form, overviewSuccessRate: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                      </div>
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Floating Badge Title</label>
-                        <input type="text" value={form.tailoredLabel || ""} onChange={(e) => setForm({ ...form, tailoredLabel: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. 100% Tailored Therapy" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Floating Badge Subtitle</label>
-                        <input type="text" value={form.tailoredSub || ""} onChange={(e) => setForm({ ...form, tailoredSub: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Individualized Protocols" />
-                      </div>
-                    </div>
-                    <div className="space-y-1">
-                      <label className="text-[13px] font-bold">Overview Description / Suffix</label>
-                      <textarea value={form.overviewIntroSuffix || ""} onChange={(e) => setForm({ ...form, overviewIntroSuffix: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px] h-20" />
-                    </div>
-                    <div className="grid grid-cols-2 gap-4">
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Overview CTA Button Text</label>
-                        <input type="text" value={form.overviewCtaText || ""} onChange={(e) => setForm({ ...form, overviewCtaText: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[13px] font-bold">Overview HIPAA / Security text</label>
-                        <input type="text" value={form.overviewHipaaText || ""} onChange={(e) => setForm({ ...form, overviewHipaaText: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" />
-                      </div>
-                    </div>
-                  </div>
-                )}
 
-                {activeTab === "stats-candidates" && (
-                  <div className="space-y-8">
-                    {/* 4 Stats Cards */}
-                    <div className="bg-[#f6f7f7] border border-[#c3c4c7] p-4 rounded-sm space-y-4">
-                      <h3 className="text-[14px] font-bold border-b border-[#c3c4c7] pb-2 text-[#1d2327]">Highlight Stats Strip (4 Items)</h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold block">Stat 1 Value & Label</label>
-                          <div className="flex gap-2">
-                            <input type="text" value={form.statsItem1Val || ""} onChange={(e) => setForm({ ...form, statsItem1Val: e.target.value })} className="w-24 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="e.g. 98%" />
-                            <input type="text" value={form.statsItem1Label || ""} onChange={(e) => setForm({ ...form, statsItem1Label: e.target.value })} className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="e.g. Pain Relief" />
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Hero Subtitle / Description (Supports Markdown Links)</label>
+                        <textarea
+                          value={form.heroDescription || ""}
+                          onChange={(e) => setForm({ ...form, heroDescription: e.target.value })}
+                          className="w-full border border-[#8c8f94] px-3 py-2 text-[14px] rounded-[3px] h-24"
+                          placeholder="e.g. Tight hips, aching shoulders, back pain, or sciatica can keep returning. Corrective movement therapy sessions in Maryland at [410 Muscle Therapy](https://410-muscletherapy.com/) look beyond the sore spot..."
+                        />
+                        <p className="text-[11px] text-[#646970]">You can use markdown links like <code>[Link Text](https://url.com)</code> to insert clickable links.</p>
+                      </div>
+
+                      <div className="border-t border-[#f0f0f1] pt-4">
+                        <h4 className="text-[13px] font-bold mb-2 text-[#1d2327]">Quick Specifications Strip</h4>
+                        <div className="grid grid-cols-3 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-[12px] font-bold text-[#646970]">Duration</label>
+                            <input type="text" value={form.specDurationValue || ""} onChange={(e) => setForm({ ...form, specDurationValue: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. 60 / 90 Mins" />
                           </div>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold block">Stat 2 Value & Label</label>
-                          <div className="flex gap-2">
-                            <input type="text" value={form.statsItem2Val || ""} onChange={(e) => setForm({ ...form, statsItem2Val: e.target.value })} className="w-24 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="e.g. 5,000+" />
-                            <input type="text" value={form.statsItem2Label || ""} onChange={(e) => setForm({ ...form, statsItem2Label: e.target.value })} className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="e.g. Sessions" />
+                          <div className="space-y-1">
+                            <label className="text-[12px] font-bold text-[#646970]">Intensity</label>
+                            <input type="text" value={form.specIntensityValue || ""} onChange={(e) => setForm({ ...form, specIntensityValue: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Targeted Deep" />
                           </div>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold block">Stat 3 Value & Label</label>
-                          <div className="flex gap-2">
-                            <input type="text" value={form.statsItem3Val || ""} onChange={(e) => setForm({ ...form, statsItem3Val: e.target.value })} className="w-24 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="e.g. Est. 2020" />
-                            <input type="text" value={form.statsItem3Label || ""} onChange={(e) => setForm({ ...form, statsItem3Label: e.target.value })} className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="e.g. Standard" />
-                          </div>
-                        </div>
-                        <div className="space-y-2">
-                          <label className="text-xs font-bold block">Stat 4 Value & Label</label>
-                          <div className="flex gap-2">
-                            <input type="text" value={form.statsItem4Val || ""} onChange={(e) => setForm({ ...form, statsItem4Val: e.target.value })} className="w-24 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="e.g. 100%" />
-                            <input type="text" value={form.statsItem4Label || ""} onChange={(e) => setForm({ ...form, statsItem4Label: e.target.value })} className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="e.g. Protocols" />
+                          <div className="space-y-1">
+                            <label className="text-[12px] font-bold text-[#646970]">Focus</label>
+                            <input type="text" value={form.specFocusValue || ""} onChange={(e) => setForm({ ...form, specFocusValue: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Trigger Mapping" />
                           </div>
                         </div>
                       </div>
+
+                      <div className="border-t border-[#f0f0f1] pt-4">
+                        <h4 className="text-[13px] font-bold mb-2 text-[#1d2327]">Call-to-Action Buttons & Links</h4>
+                        <div className="grid grid-cols-2 gap-4 mb-4">
+                          <div className="space-y-1">
+                            <label className="text-[12px] font-bold text-[#646970]">Primary Booking Button Text</label>
+                            <input type="text" value={form.bookingCta || ""} onChange={(e) => setForm({ ...form, bookingCta: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Book Appointment Now" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[12px] font-bold text-[#646970]">Primary Booking URL (Leave blank for default portal)</label>
+                            <input type="text" value={form.bookingCtaUrl || ""} onChange={(e) => setForm({ ...form, bookingCtaUrl: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="https://www.styleseat.com/m/v/410muscletherapy" />
+                          </div>
+                        </div>
+                        <div className="grid grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-[12px] font-bold text-[#646970]">Secondary Button Text</label>
+                            <input type="text" value={form.heroCtaSecondary || ""} onChange={(e) => setForm({ ...form, heroCtaSecondary: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. SEE HOW IT HELPS" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[12px] font-bold text-[#646970]">Secondary Button Link / Anchor</label>
+                            <input type="text" value={form.heroCtaSecondaryUrl || ""} onChange={(e) => setForm({ ...form, heroCtaSecondaryUrl: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="#overview" />
+                          </div>
+                        </div>
+                      </div>
+
+                      <div className="border-t border-[#f0f0f1] pt-4">
+                        <ImageField label="Hero & Overview Featured Image" value={form.image || ""} onChange={(url) => setForm({ ...form, image: url })} />
+                      </div>
                     </div>
+                  )}
 
-                    {/* Candidates Section Config */}
-                    <div className="space-y-4">
-                      <h3 className="text-[14px] font-bold border-b border-[#c3c4c7] pb-2 text-[#1d2327]">Target Candidates Section Config</h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-xs font-bold">Candidates Badge / Label</label>
-                          <input type="text" value={form.candidateSectionLabel || ""} onChange={(e) => setForm({ ...form, candidateSectionLabel: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1 text-xs rounded-[2px]" />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-xs font-bold">Profiles Badge Prefix</label>
-                          <input type="text" value={form.profileBadgePrefix || ""} onChange={(e) => setForm({ ...form, profileBadgePrefix: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1 text-xs rounded-[2px]" />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-3 gap-2">
-                        <div className="space-y-1">
-                          <label className="text-xs font-bold">Heading Part 1</label>
-                          <input type="text" value={form.candidateTitle1 || ""} onChange={(e) => setForm({ ...form, candidateTitle1: e.target.value })} className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[2px]" />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-xs font-bold">Heading Part 2 (Italic)</label>
-                          <input type="text" value={form.candidateTitle2 || ""} onChange={(e) => setForm({ ...form, candidateTitle2: e.target.value })} className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[2px]" />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-xs font-bold">Suitability Footer Label</label>
-                          <input type="text" value={form.candidateSuitability || ""} onChange={(e) => setForm({ ...form, candidateSuitability: e.target.value })} className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[2px]" />
-                        </div>
-                      </div>
-
-                      {/* Repeatable Profiles */}
-                      <div className="space-y-3 pt-4">
-                        <h4 className="text-xs font-bold border-b border-[#f0f0f1] pb-1 text-[#646970] uppercase tracking-wider">Candidate Profiles</h4>
-                        {(form.whoProfiles || []).map((p: any, pIdx: number) => (
-                          <div key={pIdx} className="bg-white border border-[#c3c4c7] p-3 rounded-sm space-y-2">
-                            <div className="flex gap-2 justify-between">
-                              <span className="text-[10px] font-mono font-bold text-[#2271b1]">PROFILE #{pIdx + 1}</span>
-                              <button type="button" onClick={() => {
-                                const np = form.whoProfiles.filter((_: any, idx: number) => idx !== pIdx);
-                                setForm({ ...form, whoProfiles: np });
-                              }} className="text-[#d63638] text-xs">Remove</button>
-                            </div>
-                            <div className="space-y-1.5">
-                              <input type="text" value={p.label || ""} onChange={(e) => {
-                                const np = [...form.whoProfiles];
-                                np[pIdx] = { ...np[pIdx], label: e.target.value };
-                                setForm({ ...form, whoProfiles: np });
-                              }} className="w-full border border-[#8c8f94] px-2.5 py-1 text-xs font-bold" placeholder="Profile Title (e.g. Athletes)" />
-                              <textarea value={p.desc || ""} onChange={(e) => {
-                                const np = [...form.whoProfiles];
-                                np[pIdx] = { ...np[pIdx], desc: e.target.value };
-                                setForm({ ...form, whoProfiles: np });
-                              }} className="w-full border border-[#8c8f94] px-2.5 py-1 text-xs h-16" placeholder="Profile indications and descriptions..." />
-                              <input type="text" value={p.suitability || ""} onChange={(e) => {
-                                const np = [...form.whoProfiles];
-                                np[pIdx] = { ...np[pIdx], suitability: e.target.value };
-                                setForm({ ...form, whoProfiles: np });
-                              }} className="w-full border border-[#8c8f94] px-2.5 py-1 text-xs text-[#be9c25] font-mono" placeholder="Card Suitability Label (optional, e.g. SUITABILITY: OPTIMAL)" />
+                  {/* 2. HIGHLIGHT STATS */}
+                  {activeTab === "stats" && (
+                    <div className="space-y-6">
+                      <div className="bg-[#f6f7f7] border border-[#c3c4c7] p-4 rounded-sm space-y-4">
+                        <h3 className="text-[14px] font-bold border-b border-[#c3c4c7] pb-2 text-[#1d2327]">Highlight Stats Strip (4 Metric Items)</h3>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-6">
+                          <div className="space-y-2 bg-white p-3 border border-[#c3c4c7] rounded-sm">
+                            <label className="text-xs font-bold block text-[#2271b1]">Stat 1 (e.g. 8 Yrs Experience)</label>
+                            <div className="flex gap-2">
+                              <input type="text" value={form.statsItem1Val || ""} onChange={(e) => setForm({ ...form, statsItem1Val: e.target.value })} className="w-28 border border-[#8c8f94] px-2 py-1 text-xs font-bold" placeholder="8 Yrs" />
+                              <input type="text" value={form.statsItem1Label || ""} onChange={(e) => setForm({ ...form, statsItem1Label: e.target.value })} className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="Clinical Experience" />
                             </div>
                           </div>
-                        ))}
-                        <button type="button" onClick={() => setForm({ ...form, whoProfiles: [...(form.whoProfiles || []), { label: "", desc: "", suitability: "" }] })} className="text-[#2271b1] text-xs underline font-bold">+ Add Profile</button>
+                          <div className="space-y-2 bg-white p-3 border border-[#c3c4c7] rounded-sm">
+                            <label className="text-xs font-bold block text-[#2271b1]">Stat 2 (e.g. 5.0 Google Rating)</label>
+                            <div className="flex gap-2">
+                              <input type="text" value={form.statsItem2Val || ""} onChange={(e) => setForm({ ...form, statsItem2Val: e.target.value })} className="w-28 border border-[#8c8f94] px-2 py-1 text-xs font-bold" placeholder="5.0 ★" />
+                              <input type="text" value={form.statsItem2Label || ""} onChange={(e) => setForm({ ...form, statsItem2Label: e.target.value })} className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="Google Reviews" />
+                            </div>
+                          </div>
+                          <div className="space-y-2 bg-white p-3 border border-[#c3c4c7] rounded-sm">
+                            <label className="text-xs font-bold block text-[#2271b1]">Stat 3 (e.g. 100% Satisfaction Guarantee)</label>
+                            <div className="flex gap-2">
+                              <input type="text" value={form.statsItem3Val || ""} onChange={(e) => setForm({ ...form, statsItem3Val: e.target.value })} className="w-28 border border-[#8c8f94] px-2 py-1 text-xs font-bold" placeholder="100%" />
+                              <input type="text" value={form.statsItem3Label || ""} onChange={(e) => setForm({ ...form, statsItem3Label: e.target.value })} className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="Satisfaction Guarantee" />
+                            </div>
+                          </div>
+                          <div className="space-y-2 bg-white p-3 border border-[#c3c4c7] rounded-sm">
+                            <label className="text-xs font-bold block text-[#2271b1]">Stat 4 (e.g. 5,000+ Completed Sessions)</label>
+                            <div className="flex gap-2">
+                              <input type="text" value={form.statsItem4Val || ""} onChange={(e) => setForm({ ...form, statsItem4Val: e.target.value })} className="w-28 border border-[#8c8f94] px-2 py-1 text-xs font-bold" placeholder="5,000+" />
+                              <input type="text" value={form.statsItem4Label || ""} onChange={(e) => setForm({ ...form, statsItem4Label: e.target.value })} className="flex-1 border border-[#8c8f94] px-2 py-1 text-xs" placeholder="Sessions Completed" />
+                            </div>
+                          </div>
+                        </div>
                       </div>
                     </div>
-                  </div>
-                )}
+                  )}
 
-                {activeTab === "stepper" && (
-                  <div className="space-y-8">
-                    {/* Stepper Section Config */}
-                    <div className="space-y-4">
-                      <h3 className="text-[14px] font-bold border-b border-[#c3c4c7] pb-2 text-[#1d2327]">Stepper Section Config</h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-xs font-bold">Stepper Section Badge</label>
-                          <input type="text" value={form.protocolSectionLabel || ""} onChange={(e) => setForm({ ...form, protocolSectionLabel: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1 text-xs rounded-[2px]" />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-xs font-bold">Phase Prefix Label</label>
-                          <input type="text" value={form.protocolPhasePrefix || ""} onChange={(e) => setForm({ ...form, protocolPhasePrefix: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1 text-xs rounded-[2px]" />
-                        </div>
+                  {/* 3. CLINICAL OVERVIEW & FOCUS AREAS */}
+                  {activeTab === "overview" && (
+                    <div className="space-y-6">
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Overview Section Label / Badge</label>
+                        <input type="text" value={form.overviewSectionLabel || ""} onChange={(e) => setForm({ ...form, overviewSectionLabel: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. FIX THE PATTERNS THAT KEEP PAIN RETURNING" />
                       </div>
-                      <div className="grid grid-cols-2 gap-4">
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1">
-                          <label className="text-xs font-bold">Heading Part 1</label>
-                          <input type="text" value={form.protocolTitle1 || ""} onChange={(e) => setForm({ ...form, protocolTitle1: e.target.value })} className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[2px]" />
+                          <label className="text-[13px] font-bold">Heading Part 1 (Regular)</label>
+                          <input type="text" value={form.overviewTitle1 || ""} onChange={(e) => setForm({ ...form, overviewTitle1: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Fix The Patterns That" />
                         </div>
                         <div className="space-y-1">
-                          <label className="text-xs font-bold">Heading Part 2 (Gold Italic)</label>
-                          <input type="text" value={form.protocolTitle2 || ""} onChange={(e) => setForm({ ...form, protocolTitle2: e.target.value })} className="w-full border border-[#8c8f94] px-2 py-1 text-xs rounded-[2px]" />
+                          <label className="text-[13px] font-bold">Heading Part 2 (Gold Italic)</label>
+                          <input type="text" value={form.overviewTitle2 || ""} onChange={(e) => setForm({ ...form, overviewTitle2: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Keep Pain Returning." />
                         </div>
                       </div>
 
-                      {/* Step Sequence Details */}
-                      <div className="space-y-4 pt-4">
-                        <h4 className="text-xs font-bold border-b border-[#f0f0f1] pb-1 text-[#646970] uppercase tracking-wider">Stepper Treatment Phases</h4>
-                        {(form.sessionSteps || []).map((step: any, sIdx: number) => (
-                          <div key={sIdx} className="bg-white border border-[#c3c4c7] p-4 rounded-sm space-y-4">
-                            <div className="flex justify-between items-center border-b border-[#f0f0f1] pb-2">
-                              <span className="text-[11px] font-mono font-bold text-[#2271b1]">PHASE {step.num || `0${sIdx+1}`}</span>
-                              <div className="flex gap-4 items-center">
-                                <div className="space-y-0.5">
-                                  <label className="text-[10px] text-[#646970]">Phase Duration</label>
-                                  <input type="text" value={form.protocolDurations?.[sIdx] || ""} onChange={(e) => {
-                                    const nd = [...(form.protocolDurations || ["15 MIN", "45 MIN", "15 MIN"])];
-                                    nd[sIdx] = e.target.value;
-                                    setForm({ ...form, protocolDurations: nd });
-                                  }} className="w-20 border border-[#8c8f94] px-2 py-0.5 text-xs text-center font-mono" placeholder="15 MIN" />
-                                </div>
+                      <div className="grid grid-cols-1 sm:grid-cols-4 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Photo Watermark Tag Text</label>
+                          <input type="text" value={form.overviewWatermark || ""} onChange={(e) => setForm({ ...form, overviewWatermark: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. SPECIALIST PRACTICE • EST. 2020" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Floating Badge Title</label>
+                          <input type="text" value={form.tailoredLabel || ""} onChange={(e) => setForm({ ...form, tailoredLabel: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. 100% Tailored Therapy" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Floating Badge Subtitle</label>
+                          <input type="text" value={form.tailoredSub || ""} onChange={(e) => setForm({ ...form, tailoredSub: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Individualized Protocols" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Success/Rating Badge</label>
+                          <input type="text" value={form.overviewSuccessRate || ""} onChange={(e) => setForm({ ...form, overviewSuccessRate: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. 5.0 RATED PRACTICE" />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Clinical Overview Narrative / Description</label>
+                        <QuillEditor
+                          content={form.overviewDescription || form.description || ""}
+                          onChange={(v) => setForm({ ...form, overviewDescription: v, description: v })}
+                          placeholder="e.g. Corrective movement therapy in Maryland starts with a question: What keeps making this area work too hard?..."
+                        />
+                      </div>
+
+                      {/* Targeted Patterns / Benefits Cards */}
+                      <div className="border-t border-[#c3c4c7] pt-6 space-y-4">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h3 className="text-[14px] font-bold text-[#1d2327]">Targeted Patterns & Focus Areas Cards</h3>
+                            <p className="text-[12px] text-[#646970]">Add specific pain points and conditions addressed (e.g. Low Back, Stiff Hips, Neck Strain, Sciatica).</p>
+                          </div>
+                          <button type="button" onClick={() => setForm({ ...form, benefits: [...(form.benefits || []), { title: "", description: "" }] })} className="text-[#2271b1] text-xs font-bold underline">+ Add Focus Area</button>
+                        </div>
+
+                        <div className="space-y-4">
+                          {(form.benefits || []).map((b: any, i: number) => (
+                            <div key={i} className="bg-[#f6f7f7] border border-[#c3c4c7] p-4 rounded-sm space-y-3">
+                              <div className="flex justify-between items-center border-b border-[#c3c4c7] pb-1">
+                                <span className="text-[11px] font-mono font-bold text-[#2271b1]">PATTERN / BENEFIT #{i+1}</span>
                                 <button type="button" onClick={() => {
-                                  const ns = form.sessionSteps.filter((_: any, idx: number) => idx !== sIdx);
-                                  setForm({ ...form, sessionSteps: ns });
+                                  const nb = form.benefits.filter((_: any, idx: number) => idx !== i);
+                                  setForm({ ...form, benefits: nb });
                                 }} className="text-[#d63638] text-xs">Remove</button>
                               </div>
-                            </div>
-                            <div className="grid grid-cols-1 gap-2">
-                              <div className="space-y-1">
-                                <label className="text-[11px] text-[#646970]">Step Title</label>
-                                <input type="text" value={step.title || ""} onChange={(e) => {
-                                  const ns = [...form.sessionSteps];
-                                  ns[sIdx] = { ...ns[sIdx], title: e.target.value };
-                                  setForm({ ...form, sessionSteps: ns });
-                                }} className="w-full border border-[#8c8f94] px-2 py-1 text-xs font-bold" />
+                              <div className="space-y-2">
+                                <input
+                                  type="text"
+                                  value={b.title || ""}
+                                  onChange={(e) => {
+                                    const nb = [...form.benefits];
+                                    nb[i] = { ...nb[i], title: e.target.value };
+                                    setForm({ ...form, benefits: nb });
+                                  }}
+                                  className="w-full border border-[#8c8f94] px-3 py-1 text-xs font-bold"
+                                  placeholder="Focus Area Title (e.g. Recurring Low Back Tightness)"
+                                />
+                                <textarea
+                                  value={b.description || ""}
+                                  onChange={(e) => {
+                                    const nb = [...form.benefits];
+                                    nb[i] = { ...nb[i], description: e.target.value };
+                                    setForm({ ...form, benefits: nb });
+                                  }}
+                                  className="w-full border border-[#8c8f94] px-3 py-1.5 text-xs h-20"
+                                  placeholder="Description with optional markdown link (e.g. When the hips stay stiff... For added work, [Maryland stretch therapy](https://410-muscletherapy.com/maryland-stretch-therapy/) may also support...)"
+                                />
                               </div>
-                              <div className="space-y-1">
-                                <label className="text-[11px] text-[#646970]">Step Description</label>
-                                <textarea value={step.desc || ""} onChange={(e) => {
-                                  const ns = [...form.sessionSteps];
-                                  ns[sIdx] = { ...ns[sIdx], desc: e.target.value };
-                                  setForm({ ...form, sessionSteps: ns });
-                                }} className="w-full border border-[#8c8f94] px-2 py-1 text-xs h-16" />
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      <div className="border-t border-[#c3c4c7] pt-4 grid grid-cols-1 sm:grid-cols-3 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Overview CTA Button Text</label>
+                          <input type="text" value={form.overviewCtaText || ""} onChange={(e) => setForm({ ...form, overviewCtaText: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="BOOK YOUR SESSION NOW" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Overview CTA Link URL</label>
+                          <input type="text" value={form.overviewCtaUrl || ""} onChange={(e) => setForm({ ...form, overviewCtaUrl: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="Defaults to Booking URL" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Security / Guarantee Text</label>
+                          <input type="text" value={form.overviewHipaaText || ""} onChange={(e) => setForm({ ...form, overviewHipaaText: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="100% Satisfaction Guaranteed & Certified" />
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 4. WHY US & CANDIDATES */}
+                  {activeTab === "candidates" && (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Section Label / Badge</label>
+                          <input type="text" value={form.candidateSectionLabel || ""} onChange={(e) => setForm({ ...form, candidateSectionLabel: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. WHY 410 MUSCLE THERAPY FEELS DIFFERENT" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Profile / Advantage Badge Prefix</label>
+                          <input type="text" value={form.profileBadgePrefix || ""} onChange={(e) => setForm({ ...form, profileBadgePrefix: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. ADVANTAGE or PROFILE" />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Heading Part 1 (Regular)</label>
+                          <input type="text" value={form.candidateTitle1 || ""} onChange={(e) => setForm({ ...form, candidateTitle1: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Targeted Care." />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Heading Part 2 (Gold Italic)</label>
+                          <input type="text" value={form.candidateTitle2 || ""} onChange={(e) => setForm({ ...form, candidateTitle2: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Built Around You." />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Section Narrative / Subtitle Description</label>
+                        <textarea
+                          value={form.candidateDescription || ""}
+                          onChange={(e) => setForm({ ...form, candidateDescription: e.target.value })}
+                          className="w-full border border-[#8c8f94] px-3 py-2 text-[14px] rounded-[3px] h-20"
+                          placeholder="e.g. At 410 Muscle Therapy, our corrective movement therapy in Maryland is designed for people who want more than a feel-good hour..."
+                        />
+                      </div>
+
+                      {/* Repeatable Cards (Ordered: Title -> Description -> Footer Badge) */}
+                      <div className="border-t border-[#c3c4c7] pt-6 space-y-4">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h3 className="text-[14px] font-bold text-[#1d2327]">Differentiators / Candidate Profiles Cards</h3>
+                            <p className="text-[12px] text-[#646970]">Add experience points, guarantees, location convenience, or client profiles.</p>
+                          </div>
+                          <button type="button" onClick={() => setForm({ ...form, whoProfiles: [...(form.whoProfiles || []), { label: "", desc: "", suitability: "SUITABILITY: OPTIMAL" }] })} className="text-[#2271b1] text-xs font-bold underline">+ Add Card</button>
+                        </div>
+
+                        <div className="space-y-4">
+                          {(form.whoProfiles || []).map((p: any, pIdx: number) => (
+                            <div key={pIdx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-4 rounded-sm space-y-3">
+                              <div className="flex justify-between items-center border-b border-[#c3c4c7] pb-1">
+                                <span className="text-[11px] font-mono font-bold text-[#2271b1]">CARD #{pIdx + 1}</span>
+                                <button type="button" onClick={() => {
+                                  const np = form.whoProfiles.filter((_: any, idx: number) => idx !== pIdx);
+                                  setForm({ ...form, whoProfiles: np });
+                                }} className="text-[#d63638] text-xs">Remove</button>
+                              </div>
+                              <div className="space-y-2">
+                                <div className="space-y-1">
+                                  <label className="text-[11px] font-bold text-[#646970]">Card Title</label>
+                                  <input
+                                    type="text"
+                                    value={p.label || ""}
+                                    onChange={(e) => {
+                                      const np = [...form.whoProfiles];
+                                      np[pIdx] = { ...np[pIdx], label: e.target.value };
+                                      setForm({ ...form, whoProfiles: np });
+                                    }}
+                                    className="w-full border border-[#8c8f94] px-2.5 py-1 text-xs font-bold"
+                                    placeholder="Title (e.g. Eight Years Of Experience)"
+                                  />
+                                </div>
+                                <div className="space-y-1">
+                                  <label className="text-[11px] font-bold text-[#646970]">Card Description</label>
+                                  <textarea
+                                    value={p.desc || ""}
+                                    onChange={(e) => {
+                                      const np = [...form.whoProfiles];
+                                      np[pIdx] = { ...np[pIdx], desc: e.target.value };
+                                      setForm({ ...form, whoProfiles: np });
+                                    }}
+                                    className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs h-20"
+                                    placeholder="Description with optional links (e.g. Eight years of professional experience... and [deep tissue massage Maryland](https://410-muscletherapy.com/deep-tissue-massage-maryland/) may help...)"
+                                  />
+                                </div>
+                                <div className="space-y-1">
+                                  <label className="text-[11px] font-bold text-[#646970]">Card Footer Badge Tag</label>
+                                  <input
+                                    type="text"
+                                    value={p.suitability || ""}
+                                    onChange={(e) => {
+                                      const np = [...form.whoProfiles];
+                                      np[pIdx] = { ...np[pIdx], suitability: e.target.value };
+                                      setForm({ ...form, whoProfiles: np });
+                                    }}
+                                    className="w-full border border-[#8c8f94] px-2.5 py-1 text-xs text-[#be9c25] font-mono"
+                                    placeholder="Footer Tag (e.g. CERTIFIED CARE or 5.0 ★ RATED)"
+                                  />
+                                </div>
                               </div>
                             </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 5. TREATMENT PROTOCOL */}
+                  {activeTab === "stepper" && (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Protocol Section Label</label>
+                          <input type="text" value={form.protocolSectionLabel || ""} onChange={(e) => setForm({ ...form, protocolSectionLabel: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. SESSION WORKFLOW PROTOCOL" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Phase Prefix Label</label>
+                          <input type="text" value={form.protocolPhasePrefix || ""} onChange={(e) => setForm({ ...form, protocolPhasePrefix: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. STEP" />
+                        </div>
+                      </div>
+
+                      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Heading Part 1 (Regular)</label>
+                          <input type="text" value={form.protocolTitle1 || ""} onChange={(e) => setForm({ ...form, protocolTitle1: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. What Your Session" />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[13px] font-bold">Heading Part 2 (Gold Italic)</label>
+                          <input type="text" value={form.protocolTitle2 || ""} onChange={(e) => setForm({ ...form, protocolTitle2: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Looks Like." />
+                        </div>
+                      </div>
+
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Protocol Intro Description</label>
+                        <textarea
+                          value={form.protocolDescription || ""}
+                          onChange={(e) => setForm({ ...form, protocolDescription: e.target.value })}
+                          className="w-full border border-[#8c8f94] px-3 py-2 text-[14px] rounded-[3px] h-20"
+                          placeholder="e.g. Your corrective movement therapy visit follows a clear path: listen, observe, release, practice, and retest..."
+                        />
+                      </div>
+
+                      {/* Repeatable Treatment Steps */}
+                      <div className="border-t border-[#c3c4c7] pt-6 space-y-4">
+                        <div className="flex justify-between items-center">
+                          <div>
+                            <h3 className="text-[14px] font-bold text-[#1d2327]">Treatment Workflow Steps</h3>
+                            <p className="text-[12px] text-[#646970]">Configure the sequential steps for the treatment session.</p>
+                          </div>
+                          <button type="button" onClick={() => {
+                            const nextNum = `0${(form.sessionSteps || []).length + 1}`;
+                            setForm({
+                              ...form,
+                              sessionSteps: [...(form.sessionSteps || []), { num: nextNum, title: "", desc: "" }],
+                              protocolDurations: [...(form.protocolDurations || []), "15 MIN"]
+                            });
+                          }} className="text-[#2271b1] text-xs font-bold underline">+ Add Step</button>
+                        </div>
+
+                        <div className="space-y-4">
+                          {(form.sessionSteps || []).map((step: any, sIdx: number) => (
+                            <div key={sIdx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-4 rounded-sm space-y-3">
+                              <div className="flex justify-between items-center border-b border-[#c3c4c7] pb-2">
+                                <span className="text-[11px] font-mono font-bold text-[#2271b1]">STEP {step.num || `0${sIdx+1}`}</span>
+                                <div className="flex gap-4 items-center">
+                                  <div className="flex items-center gap-2">
+                                    <label className="text-[11px] font-bold text-[#646970]">Duration Pill:</label>
+                                    <input
+                                      type="text"
+                                      value={form.protocolDurations?.[sIdx] || "15 MIN"}
+                                      onChange={(e) => {
+                                        const nd = [...(form.protocolDurations || ["15 MIN", "30 MIN", "30 MIN", "15 MIN"])];
+                                        nd[sIdx] = e.target.value;
+                                        setForm({ ...form, protocolDurations: nd });
+                                      }}
+                                      className="w-24 border border-[#8c8f94] px-2 py-0.5 text-xs text-center font-mono"
+                                      placeholder="15 MIN"
+                                    />
+                                  </div>
+                                  <button type="button" onClick={() => {
+                                    const ns = form.sessionSteps.filter((_: any, idx: number) => idx !== sIdx);
+                                    const nd = (form.protocolDurations || []).filter((_: any, idx: number) => idx !== sIdx);
+                                    setForm({ ...form, sessionSteps: ns, protocolDurations: nd });
+                                  }} className="text-[#d63638] text-xs">Remove</button>
+                                </div>
+                              </div>
+                              <div className="space-y-2">
+                                <input
+                                  type="text"
+                                  value={step.title || ""}
+                                  onChange={(e) => {
+                                    const ns = [...form.sessionSteps];
+                                    ns[sIdx] = { ...ns[sIdx], title: e.target.value };
+                                    setForm({ ...form, sessionSteps: ns });
+                                  }}
+                                  className="w-full border border-[#8c8f94] px-2.5 py-1 text-xs font-bold"
+                                  placeholder="Step Title (e.g. Talk And Screen)"
+                                />
+                                <textarea
+                                  value={step.desc || ""}
+                                  onChange={(e) => {
+                                    const ns = [...form.sessionSteps];
+                                    ns[sIdx] = { ...ns[sIdx], desc: e.target.value };
+                                    setForm({ ...form, sessionSteps: ns });
+                                  }}
+                                  className="w-full border border-[#8c8f94] px-2.5 py-1.5 text-xs h-20"
+                                  placeholder="Step description with optional markdown links (e.g. Hands-on work focuses on tight areas... [myofascial release therapy Maryland](https://410-muscletherapy.com/myofascial-release-maryland/) may also support...)"
+                                />
+                              </div>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+
+                      {/* Bottom Banner Config */}
+                      <div className="border-t border-[#c3c4c7] pt-6 space-y-4">
+                        <h3 className="text-[14px] font-bold border-b border-[#c3c4c7] pb-2 text-[#1d2327]">Bottom CTA Stepper Banner ("Move Better Starting Right Here")</h3>
+                        
+                        <div className="space-y-1">
+                          <label className="text-[12px] font-bold">Banner Top Badge</label>
+                          <input type="text" value={form.protocolBannerBadge || ""} onChange={(e) => setForm({ ...form, protocolBannerBadge: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. MOVE BETTER STARTING RIGHT HERE" />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-[12px] font-bold">Banner Title Prefix</label>
+                            <input type="text" value={form.protocolBannerTitlePrefix || ""} onChange={(e) => setForm({ ...form, protocolBannerTitlePrefix: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Ready to experience" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[12px] font-bold">Banner Title Suffix</label>
+                            <input type="text" value={form.protocolBannerTitleSuffix || ""} onChange={(e) => setForm({ ...form, protocolBannerTitleSuffix: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. ?" />
+                          </div>
+                        </div>
+
+                        <div className="space-y-1">
+                          <label className="text-[12px] font-bold">Banner Description / Narrative (Supports phone & address)</label>
+                          <textarea
+                            value={form.protocolBannerDescription || ""}
+                            onChange={(e) => setForm({ ...form, protocolBannerDescription: e.target.value })}
+                            className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px] h-16"
+                            placeholder="e.g. Call 443-473-2322 or book your session at 1301 York Rd., 8th Floor, Suite 48, Timonium, MD, today and start moving with more confidence."
+                          />
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-[12px] font-bold">Banner CTA Button Text</label>
+                            <input type="text" value={form.protocolBannerCta || ""} onChange={(e) => setForm({ ...form, protocolBannerCta: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. BOOK YOUR APPOINTMENT" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[12px] font-bold">Banner Custom URL (Optional)</label>
+                            <input type="text" value={form.protocolBannerCtaUrl || ""} onChange={(e) => setForm({ ...form, protocolBannerCtaUrl: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="Defaults to booking URL" />
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  )}
+
+                  {/* 6. FAQS & SUPPORT */}
+                  {activeTab === "faq" && (
+                    <div className="space-y-6">
+                      <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-4 border-b border-[#c3c4c7]">
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">FAQ Badge</label>
+                          <input
+                            type="text"
+                            value={form.faqBadge || ""}
+                            onChange={(e) => setForm({ ...form, faqBadge: e.target.value })}
+                            placeholder="e.g. FAQ"
+                            className="w-full border border-[#8c8f94] px-2 py-1.5 text-[13px] rounded-sm outline-none bg-white"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">FAQ Section Heading</label>
+                          <input
+                            type="text"
+                            value={form.faqTitle || ""}
+                            onChange={(e) => setForm({ ...form, faqTitle: e.target.value })}
+                            placeholder="e.g. Frequently Asked Questions"
+                            className="w-full border border-[#8c8f94] px-2 py-1.5 text-[13px] rounded-sm outline-none bg-white"
+                          />
+                        </div>
+                        <div className="space-y-1">
+                          <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">FAQ Description</label>
+                          <input
+                            type="text"
+                            value={form.faqDescription || ""}
+                            onChange={(e) => setForm({ ...form, faqDescription: e.target.value })}
+                            placeholder="e.g. Answers to common questions..."
+                            className="w-full border border-[#8c8f94] px-2 py-1.5 text-[13px] rounded-sm outline-none bg-white"
+                          />
+                        </div>
+                      </div>
+
+                      <div className="flex justify-between items-center">
+                        <h4 className="text-[13px] font-bold text-[#1d2327]">Service-Specific FAQs ({form.faq?.length || 0})</h4>
+                        <button type="button" onClick={() => setForm({ ...form, faq: [...(form.faq || []), { question: "", answer: "" }] })} className="text-[#2271b1] text-xs font-bold underline">+ Add FAQ Item</button>
+                      </div>
+
+                      <div className="space-y-4">
+                        {(form.faq || []).map((item: any, i: number) => (
+                          <div key={i} className="bg-white border border-[#c3c4c7] p-4 space-y-3 shadow-sm rounded-sm">
+                            <div className="flex justify-between items-center">
+                              <span className="text-[11px] font-mono font-bold text-[#2271b1]">QUESTION #{i+1}</span>
+                              <button type="button" onClick={() => { const nf = form.faq.filter((_: any, idx: number) => idx !== i); setForm({ ...form, faq: nf }); }} className="text-[#d63638] text-xs">Remove FAQ</button>
+                            </div>
+                            <input
+                              value={item.question || ""}
+                              onChange={(e) => { const nf = [...form.faq]; nf[i] = { ...nf[i], question: e.target.value }; setForm({ ...form, faq: nf }); }}
+                              placeholder="Enter Question (e.g. What is corrective movement therapy, and who is it for?)"
+                              className="w-full border border-[#8c8f94] px-3 py-1.5 text-xs font-bold"
+                            />
+                            <QuillEditor
+                              content={item.answer || ""}
+                              onChange={(v) => { const nf = [...form.faq]; nf[i] = { ...nf[i], answer: v }; setForm({ ...form, faq: nf }); }}
+                              placeholder="Write the detailed answer here (supports links)..."
+                            />
                           </div>
                         ))}
-                        <button type="button" onClick={() => {
-                          const nextNum = `0${(form.sessionSteps || []).length + 1}`;
-                          setForm({ ...form, sessionSteps: [...(form.sessionSteps || []), { num: nextNum, title: "", desc: "" }] });
-                        }} className="text-[#2271b1] text-xs underline font-bold">+ Add Step</button>
                       </div>
-                    </div>
 
-                    {/* Banner Config */}
-                    <div className="space-y-4 border-t border-[#c3c4c7] pt-6">
-                      <h3 className="text-[14px] font-bold border-b border-[#c3c4c7] pb-2 text-[#1d2327]">Bottom CTA Stepper Banner</h3>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-xs font-bold">Banner Top Badge</label>
-                          <input type="text" value={form.protocolBannerBadge || ""} onChange={(e) => setForm({ ...form, protocolBannerBadge: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1 text-xs rounded-[2px]" />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-xs font-bold">Banner Button CTA text</label>
-                          <input type="text" value={form.protocolBannerCta || ""} onChange={(e) => setForm({ ...form, protocolBannerCta: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1 text-xs rounded-[2px]" />
-                        </div>
-                      </div>
-                      <div className="grid grid-cols-2 gap-4">
-                        <div className="space-y-1">
-                          <label className="text-xs font-bold">Title Prefix (e.g. Ready to experience)</label>
-                          <input type="text" value={form.protocolBannerTitlePrefix || ""} onChange={(e) => setForm({ ...form, protocolBannerTitlePrefix: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1 text-xs rounded-[2px]" />
-                        </div>
-                        <div className="space-y-1">
-                          <label className="text-xs font-bold">Title Suffix (e.g. ?)</label>
-                          <input type="text" value={form.protocolBannerTitleSuffix || ""} onChange={(e) => setForm({ ...form, protocolBannerTitleSuffix: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1 text-xs rounded-[2px]" />
-                        </div>
-                      </div>
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === "benefits" && (
-                  <div className="space-y-6">
-                    <div className="flex justify-between items-center border-b border-[#c3c4c7] pb-2">
-                      <h3 className="text-[14px] font-bold text-[#1d2327]">Key Clinical Benefits</h3>
-                      <button type="button" onClick={() => setForm({ ...form, benefits: [...(form.benefits || []), { title: "", description: "" }] })} className="text-[#2271b1] text-xs underline font-bold">+ Add Benefit</button>
-                    </div>
-                    <div className="space-y-4">
-                      {(form.benefits || []).map((b: any, i: number) => (
-                        <div key={i} className="bg-[#f6f7f7] border border-[#c3c4c7] p-4 rounded-sm space-y-4">
-                          <div className="flex justify-between items-center border-b border-[#c3c4c7] pb-1">
-                            <span className="text-[11px] font-mono font-bold text-[#2271b1]">BENEFIT #{i+1}</span>
-                            <button type="button" onClick={() => {
-                              const nb = form.benefits.filter((_: any, idx: number) => idx !== i);
-                              setForm({ ...form, benefits: nb });
-                            }} className="text-[#d63638] text-xs">Remove</button>
-                          </div>
-                          <div className="space-y-2">
-                            <div className="space-y-1">
-                              <label className="text-xs font-bold">Title</label>
-                              <input type="text" value={b.title || ""} onChange={(e) => {
-                                const nb = [...form.benefits];
-                                nb[i] = { ...nb[i], title: e.target.value };
-                                setForm({ ...form, benefits: nb });
-                              }} className="w-full border border-[#8c8f94] px-3 py-1 text-xs" />
-                            </div>
-                            <div className="space-y-1">
-                              <label className="text-xs font-bold">Description</label>
-                              <textarea value={b.description || ""} onChange={(e) => {
-                                const nb = [...form.benefits];
-                                nb[i] = { ...nb[i], description: e.target.value };
-                                setForm({ ...form, benefits: nb });
-                              }} className="w-full border border-[#8c8f94] px-3 py-1 text-xs h-16" />
-                            </div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                )}
-
-                {activeTab === "faq" && (
-                  <div className="space-y-4">
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-4 border-b border-[#c3c4c7]">
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">FAQ Section Badge</label>
-                        <input
-                          type="text"
-                          value={form.faqBadge || ""}
-                          onChange={(e) => setForm({ ...form, faqBadge: e.target.value })}
-                          placeholder="e.g. Got Questions?"
-                          className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-sm focus:border-[#2271b1] outline-none bg-white"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">FAQ Section Heading</label>
-                        <input
-                          type="text"
-                          value={form.faqTitle || ""}
-                          onChange={(e) => setForm({ ...form, faqTitle: e.target.value })}
-                          placeholder="e.g. Frequently Asked Questions"
-                          className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-sm focus:border-[#2271b1] outline-none bg-white"
-                        />
-                      </div>
-                      <div className="space-y-1">
-                        <label className="text-[11px] font-bold uppercase tracking-wider text-slate-400">FAQ Section Description</label>
-                        <input
-                          type="text"
-                          value={form.faqDescription || ""}
-                          onChange={(e) => setForm({ ...form, faqDescription: e.target.value })}
-                          placeholder="e.g. Answers to common questions..."
-                          className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-sm focus:border-[#2271b1] outline-none bg-white"
+                      <div className="pt-4 border-t border-[#c3c4c7] space-y-1">
+                        <label className="text-[13px] font-bold">FAQ Schema Markup (Bulk JSON-LD)</label>
+                        <p className="text-[11px] text-[#646970]">Optional custom JSON-LD schema block covering all FAQs for this service.</p>
+                        <textarea
+                          value={form.faqSchemaMarkup || ""}
+                          onChange={(e) => setForm({ ...form, faqSchemaMarkup: e.target.value })}
+                          placeholder='e.g. {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [...]}'
+                          className="w-full border border-[#8c8f94] px-2 py-1.5 text-xs font-mono"
+                          rows={6}
                         />
                       </div>
                     </div>
+                  )}
 
-                    <button onClick={() => setForm({ ...form, faq: [...(form.faq || []), { question: "", answer: "" }] })} className="text-[#2271b1] text-xs underline font-bold">+ Add FAQ Item</button>
-                    {form.faq?.map((item: any, i: number) => (
-                      <div key={i} className="bg-white border border-[#c3c4c7] p-4 space-y-3 shadow-sm">
-                        <input value={item.question} onChange={(e) => { const nf = [...form.faq]; nf[i] = { ...nf[i], question: e.target.value }; setForm({ ...form, faq: nf }); }} placeholder="Question" className="w-full border border-[#8c8f94] px-2 py-1 text-xs font-bold" />
-                        <QuillEditor
-                          content={item.answer}
-                          onChange={(v) => { const nf = [...form.faq]; nf[i] = { ...nf[i], answer: v }; setForm({ ...form, faq: nf }); }}
-                          placeholder="Write the answer to this FAQ..."
-                        />
-                        <button onClick={() => { const nf = form.faq.filter((_: any, idx: number) => idx !== i); setForm({ ...form, faq: nf }); }} className="text-[#d63638] text-xs">Remove FAQ</button>
-                      </div>
-                    ))}
-
-                    <div className="pt-4 border-t border-[#c3c4c7] space-y-1">
-                      <label className="text-[13px] font-bold">FAQ Schema Markup (Bulk JSON-LD)</label>
-                      <p className="text-[11px] text-[#646970]">Paste a single JSON-LD schema block covering all FAQs for this service.</p>
-                      <textarea
-                        value={form.faqSchemaMarkup || ""}
-                        onChange={(e) => setForm({ ...form, faqSchemaMarkup: e.target.value })}
-                        placeholder='e.g. {"@context": "https://schema.org", "@type": "FAQPage", "mainEntity": [...]}'
-                        className="w-full border border-[#8c8f94] px-2 py-1.5 text-xs font-mono"
-                        rows={8}
-                      />
-                    </div>
-                  </div>
-                )}
-
-
-
-                {activeTab === "seo" && (
-                  <SeoEditor data={seo} setData={setSeo} pageSlug={form.slug} pageTitle={form.title} pageContent={form} />
-                )}
-              </div>
-            </div>
-          </div>
-
-          {/* Sidebar: Publish Box */}
-          <div className="lg:col-span-1 space-y-6 sticky top-4">
-            <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-sm overflow-hidden">
-              <div className="px-3 py-2 border-b border-[#c3c4c7] bg-[#f6f7f7]">
-                <h2 className="text-[14px] font-semibold text-[#1d2327]">Publish</h2>
-              </div>
-              <div className="p-4 space-y-4 text-[13px] text-[#2c3338]">
-                <div className="flex flex-col gap-2">
-                  <p><strong>Status:</strong> {form.status === 'published' ? 'Published' : 'Draft'} <Link href="#" className="text-[#2271b1] underline ml-1">Edit</Link></p>
-                  <p><strong>Visibility:</strong> Public <Link href="#" className="text-[#2271b1] underline ml-1">Edit</Link></p>
-                  {form.slug && (
-                    <p className="flex items-center gap-1">
-                      <strong>Permalink:</strong>
-                      <Link href={`/${form.slug}/`} target="_blank" className="text-[#2271b1] hover:underline truncate max-w-[150px] inline-flex items-center gap-1">
-                        View Service <ExternalLink className="w-3 h-3" />
-                      </Link>
-                    </p>
+                  {/* 7. SEO SETTINGS */}
+                  {activeTab === "seo" && (
+                    <SeoEditor data={seo} setData={setSeo} pageSlug={form.slug} pageTitle={form.title} pageContent={form} />
                   )}
                 </div>
               </div>
-              <div className="px-3 py-2 bg-[#f6f7f7] border-t border-[#c3c4c7] flex justify-between items-center">
-                <button onClick={() => setIsEditing(null)} className="text-[#d63638] underline text-[13px]">Cancel</button>
-                <button
-                  onClick={handleSaveService}
-                  disabled={saving}
-                  className="bg-[#2271b1] text-white px-4 py-1.5 rounded-[3px] text-[13px] font-semibold border border-[#2271b1] hover:bg-[#135e96] flex items-center gap-2"
-                >
-                  {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
-                  {isEditing !== null && isEditing < services.length ? "Update" : "Publish"}
-                </button>
+            </div>
+
+            {/* Sidebar: Publish Box */}
+            <div className="lg:col-span-1 space-y-6 sticky top-4">
+              <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-sm overflow-hidden">
+                <div className="px-3 py-2 border-b border-[#c3c4c7] bg-[#f6f7f7]">
+                  <h2 className="text-[14px] font-semibold text-[#1d2327]">Publish</h2>
+                </div>
+                <div className="p-4 space-y-4 text-[13px] text-[#2c3338]">
+                  <div className="flex flex-col gap-2">
+                    <p><strong>Status:</strong> {form.status === 'published' ? 'Published' : 'Draft'} <button type="button" onClick={() => setForm({ ...form, status: form.status === 'published' ? 'draft' : 'published' })} className="text-[#2271b1] underline ml-1">Toggle</button></p>
+                    <p><strong>Visibility:</strong> Public</p>
+                    {form.slug && (
+                      <p className="flex items-center gap-1">
+                        <strong>Permalink:</strong>
+                        <Link href={`/${form.slug}/`} target="_blank" className="text-[#2271b1] hover:underline truncate max-w-[150px] inline-flex items-center gap-1">
+                          View Page <ExternalLink className="w-3 h-3" />
+                        </Link>
+                      </p>
+                    )}
+                  </div>
+                </div>
+                <div className="px-3 py-2 bg-[#f6f7f7] border-t border-[#c3c4c7] flex justify-between items-center">
+                  <button onClick={() => setIsEditing(null)} className="text-[#d63638] underline text-[13px]">Cancel</button>
+                  <button
+                    onClick={handleSaveService}
+                    disabled={saving}
+                    className="bg-[#2271b1] text-white px-4 py-1.5 rounded-[3px] text-[13px] font-semibold border border-[#2271b1] hover:bg-[#135e96] flex items-center gap-2"
+                  >
+                    {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+                    {isEditing !== null && isEditing < services.length ? "Update" : "Publish"}
+                  </button>
+                </div>
               </div>
             </div>
           </div>
-        </div>
         </div>
       ) : (
         /* WP List View */
         <div className="space-y-4">
-          {/* Filter Links */}
           <div className="flex items-center gap-2 text-[13px] mb-2">
             <button onClick={() => setFilter("all")} className={`${filter === 'all' ? 'text-black font-bold' : 'text-[#2271b1] hover:text-[#135e96] underline decoration-transparent hover:decoration-current'}`}>
               All <span className="text-[#646970] font-normal">({services.length})</span>

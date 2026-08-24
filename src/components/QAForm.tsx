@@ -49,6 +49,7 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
 
   const activeFaqLabel = pageData?.content?.faqBadge || pageData?.faqBadge || faqLabel;
   const activeFaqTitle = pageData?.content?.faqTitle || pageData?.faqTitle || faqTitle;
+  const activeFaqDescription = pageData?.content?.faqDescription || pageData?.faqDescription || "";
 
   const [formData, setFormData] = useState({
     name: "",
@@ -268,7 +269,7 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
           {/* ── Right Column: Editorial Underlined FAQs ── */}
           <div className="w-full">
             <p className="section-label text-gold-dark mb-4">{activeFaqLabel}</p>
-            <h2 className="display-heading text-[30px] min-[400px]:text-[36px] md:text-[44px] text-dark leading-tight mb-10 text-left">
+            <h2 className="display-heading text-[30px] min-[400px]:text-[36px] md:text-[44px] text-dark leading-tight mb-4 text-left">
               {activeFaqTitle.includes(" ") ? (
                 <>
                   {activeFaqTitle.substring(0, activeFaqTitle.lastIndexOf(" "))} {" "}
@@ -278,6 +279,11 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
                 activeFaqTitle
               )}
             </h2>
+            {activeFaqDescription && (
+              <p className="text-dark/65 text-[14px] md:text-[15.5px] font-light leading-relaxed mb-8 text-left">
+                {activeFaqDescription}
+              </p>
+            )}
 
             {/* Accordion Layout */}
             <div className="flex flex-col border-t border-brand-border-muted text-left">
