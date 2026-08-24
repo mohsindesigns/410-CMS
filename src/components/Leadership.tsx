@@ -107,26 +107,19 @@ export default function Leadership() {
             )}
 
             {/* Signature + CTA Row */}
+            {/* CTA Action Row */}
             <motion.div
               variants={itemVariants}
-              className="flex flex-col sm:flex-row items-center justify-between gap-6 pt-8 border-t border-border-light mt-auto"
+              className="pt-6 border-t border-border-light/60 mt-auto"
             >
               <a
                 href={bookingUrl}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="btn-gold w-full sm:w-auto justify-center text-center cursor-pointer"
+                className="btn-gold inline-flex w-full sm:w-auto justify-center text-center cursor-pointer"
               >
                 {ctaMore} <ArrowRight size={14} className="ml-1" />
               </a>
-              <div className="text-center sm:text-right flex flex-col items-center sm:items-end">
-                <p className="font-signature text-[38px] min-[360px]:text-[48px] md:text-[56px] text-gold-dark leading-none mb-1 select-none">
-                  {signatureName}
-                </p>
-                <p className="text-dark/50 text-[11.5px] uppercase tracking-wider font-semibold">
-                  {signatureTitle}
-                </p>
-              </div>
             </motion.div>
           </motion.div>
 

@@ -141,15 +141,15 @@ const Navbar = () => {
                       {activeMegaMenu === `mega-${linkIdx}` && (
                         <motion.div
                           ref={megaMenuRef}
-                          initial={{ opacity: 0, y: 15, x: "-50%" }}
+                          initial={{ opacity: 0, y: 12, x: "-50%" }}
                           animate={{ opacity: 1, y: 0, x: "-50%" }}
-                          exit={{ opacity: 0, y: 10, x: "-50%" }}
+                          exit={{ opacity: 0, y: 8, x: "-50%" }}
                           onMouseEnter={handleMegaMenuMouseEnter}
                           onMouseLeave={handleMegaMenuMouseLeave}
-                          className="absolute left-1/2 top-full mt-2 w-[800px] bg-dark rounded-2xl shadow-[0_20px_50px_rgba(0,0,0,0.85)] border border-border-dark p-8"
+                          className="absolute left-1/2 top-full mt-2 w-[920px] max-w-[95vw] max-h-[85vh] overflow-y-auto bg-dark rounded-2xl shadow-[0_24px_60px_rgba(0,0,0,0.9)] border border-border-dark p-5 md:p-6 custom-scrollbar"
                           style={{ zIndex: 1000 }}
                         >
-                          <div className="grid grid-cols-3 gap-6">
+                          <div className="grid grid-cols-2 lg:grid-cols-3 gap-3">
                             {services.map((service: any) => {
                               const isThisHovered = hoveredService === service.title;
                               return (
@@ -159,22 +159,34 @@ const Navbar = () => {
                                   onMouseEnter={() => setHoveredService(service.title)}
                                   onMouseLeave={() => setHoveredService(null)}
                                   onClick={handleLinkClick}
-                                  className="group block p-4 rounded-xl hover:bg-white/5 transition-all duration-300 border border-transparent hover:border-white/10"
+                                  className="group flex items-start gap-3 p-2.5 rounded-xl hover:bg-white/[0.06] transition-all duration-200 border border-transparent hover:border-white/10"
                                 >
-                                  <div className="flex items-center space-x-4 mb-3">
-                                    <div className={`h-12 w-12 rounded-xl flex items-center justify-center transition-all duration-300 ${isThisHovered ? "bg-gold shadow-lg shadow-gold/25" : "bg-white/10"}`}>
-                                      <Icon name={service.icon} className={`h-6 w-6 transition-colors duration-300 ${isThisHovered ? "text-dark" : "text-white"}`} />
-                                    </div>
-                                    <h3 className={`font-bold transition-colors ${isThisHovered ? "text-gold" : "text-white"}`}>
+                                  <div className={`h-9 w-9 min-w-[36px] rounded-lg flex items-center justify-center transition-all duration-200 mt-0.5 ${isThisHovered ? "bg-gold text-dark shadow-md shadow-gold/20" : "bg-white/10 text-white"}`}>
+                                    <Icon name={service.icon} className="h-4 w-4" />
+                                  </div>
+                                  <div className="flex-1 min-w-0">
+                                    <h3 className={`text-[13px] font-semibold transition-colors leading-snug truncate ${isThisHovered ? "text-gold" : "text-white"}`}>
                                       {service.title}
                                     </h3>
+                                    <p className="text-white/45 text-[11px] leading-tight line-clamp-1 mt-0.5 font-light">
+                                      {stripHtml(service.heroDescription || service.description || "Specialized clinical therapy protocol")}
+                                    </p>
                                   </div>
-                                  <p className="text-white/60 text-xs leading-relaxed line-clamp-2">
-                                    {stripHtml(service.description)}
-                                  </p>
                                 </Link>
                               );
                             })}
+                          </div>
+
+                          {/* Megamenu Footer */}
+                          <div className="mt-4 pt-3.5 border-t border-border-dark/80 flex items-center justify-between text-xs px-1">
+                            <span className="text-white/40 font-light">Explore all individualized clinical bodywork options</span>
+                            <Link
+                              href="/services"
+                              onClick={handleLinkClick}
+                              className="text-gold hover:text-gold-light font-bold flex items-center gap-1.5 transition-colors uppercase tracking-wider text-[11px]"
+                            >
+                              All Services Index <ArrowRight size={13} />
+                            </Link>
                           </div>
                         </motion.div>
                       )}

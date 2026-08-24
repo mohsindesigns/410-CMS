@@ -27,8 +27,8 @@ export default function ServicesSection() {
     <section id="services" className="bg-dark py-20 md:py-28 overflow-hidden">
       <div className="site-container">
         
-        {/* Strictly Locked 540px Fixed Height Grid - Absolutely Zero Height Shift */}
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-0 items-stretch h-auto lg:h-[540px]">
+        {/* Flexible Minimum Height Grid - Zero Text Clipping */}
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 lg:gap-0 items-stretch h-auto lg:min-h-[580px]">
 
           {/* ── Col 1: Intro / Section Title ── */}
           <div className="w-full lg:pr-8 lg:border-r border-border-dark flex flex-col justify-between py-2 h-full">
@@ -110,18 +110,18 @@ export default function ServicesSection() {
                   </div>
 
                   <h3 className="display-heading text-[22px] md:text-[25px] text-white mb-2 leading-tight">{stripHtml(active.name)}</h3>
-                  <p className="text-white/60 text-[13px] leading-relaxed mb-4 font-light h-[54px] overflow-hidden">
+                  <p className="text-white/70 text-[13.5px] leading-[1.65] mb-5 font-light min-h-[58px]">
                     {stripHtml(active.description)}
                   </p>
 
-                  {/* Strictly 4 benefits for 100% height uniformity */}
+                  {/* Strictly 4 benefits for clean visual consistency */}
                   {active.benefits && (
-                    <div className="flex flex-col gap-2 h-[130px] justify-start">
+                    <div className="flex flex-col gap-2.5 min-h-[110px] justify-start mb-6">
                       {active.benefits.slice(0, 4).map((b: any, idx: number) => {
                         const benefitText = typeof b === 'string' ? b : (b.title || b.name || b.label || "");
                         return (
-                          <div key={idx} className="flex items-center gap-2.5 text-white/75 text-[12.5px]">
-                            <CheckCircle2 size={13} className="text-gold flex-shrink-0" />
+                          <div key={idx} className="flex items-center gap-2.5 text-white/80 text-[13px]">
+                            <CheckCircle2 size={14} className="text-gold flex-shrink-0" />
                             <span className="truncate">{stripHtml(benefitText)}</span>
                           </div>
                         );
