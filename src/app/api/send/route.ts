@@ -30,25 +30,16 @@ export async function POST(request: Request) {
       const file = formData.get('attachment') as File;
       if (file && file.size > 0) {
         const buffer = Buffer.from(await file.arrayBuffer());
-
-        // Save file to public/uploads
-        const filename = Date.now() + "_" + file.name.replace(/[^a-zA-Z0-9.]/g, "_");
-        const uploadDir = path.join(process.cwd(), "public", "uploads");
-        if (!existsSync(uploadDir)) {
-          await mkdir(uploadDir, { recursive: true });
-        }
-        const filePath = path.join(uploadDir, filename);
-        await writeFile(filePath, buffer);
-
-        attachmentUrl = `/uploads/${filename}`;
-        console.log('File saved to:', filePath);
-        console.log('Attachment URL set to:', attachmentUrl);
+        const { uploadFile } = await import('@/lib/storage');
+        const { url } = await uploadFile(file, buffer);
+        attachmentUrl = url;
 
         attachments.push({
           filename: file.name,
           content: buffer.toString('base64'),
         });
       } else {
+
         console.log('No file attachment found in multipart data');
       }
 
