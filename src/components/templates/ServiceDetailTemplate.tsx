@@ -61,34 +61,27 @@ function sh(html: string | undefined | null): string {
 
 export default function ServiceDetailTemplate({ pageData, params: syncParams }: { pageData?: any, params?: any }) {
   const { services: servicesData, globalMetadata, serviceDetailPage: globalServiceDetailPage } = useContent();
-  const [slug, setSlug] = useState<string | null>(null);
-  const [isDataLoaded, setIsDataLoaded] = useState(false);
 
-  useEffect(() => {
-    if (pageData?.slug) setSlug(pageData.slug);
-    else if (syncParams?.slug) {
-      const pSlug = syncParams.slug;
-      setSlug(Array.isArray(pSlug) ? pSlug.join('/') : pSlug);
-    }
-  }, [pageData, syncParams]);
+  const resolvedSlug = pageData?.slug || (syncParams?.slug ? (Array.isArray(syncParams.slug) ? syncParams.slug.join('/') : syncParams.slug) : null);
+  const servicesList = (servicesData as any)?.services || [];
+  const serviceFromHook = resolvedSlug ? (servicesList.find((s: any) => s.slug === resolvedSlug) || (servicesData as any)?.items?.find((s: any) => s.slug === resolvedSlug)) : null;
 
-  const servicesList = (servicesData as any).services || [];
-  const serviceFromHook = servicesList.find((s: any) => s.slug === slug) || (servicesData as any).items?.find((s: any) => s.slug === slug);
-  const service = { ...(serviceFromHook || {}), ...(pageData || {}) };
+  const pageDataInner = {
+    ...(pageData?.data || {}),
+    ...(pageData?.content?.data || {}),
+    ...(pageData || {})
+  };
 
-  useEffect(() => {
-    if (service && (service.slug || service.title)) {
-      setIsDataLoaded(true);
-    }
-  }, [service]);
+  const service = { ...(serviceFromHook || {}), ...(pageDataInner || {}) };
 
-  if (!service || !isDataLoaded) {
+  if (!service || (!service.slug && !service.title && !service.id)) {
     return (
       <main className="bg-dark min-h-screen pt-[140px] flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-gold border-t-transparent rounded-full animate-spin" />
       </main>
     );
   }
+
 
   const pageContent = pageData?.content || {};
   const serviceDetailPage = pageContent.serviceDetailPage || globalServiceDetailPage || {};

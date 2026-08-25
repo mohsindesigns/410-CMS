@@ -42,18 +42,56 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
   } = contactFaq || {};
 
   // Read page-specific overrides if editing or viewing on a specific page
-  const pageFaqSection = pageData?.content?.faq;
-  const rawPageFaqs = Array.isArray(pageFaqSection?.items) && pageFaqSection.items.length > 0
-    ? pageFaqSection.items
-    : (Array.isArray(pageData?.content?.faqs) ? pageData.content.faqs : (Array.isArray(pageData?.faqs) ? pageData.faqs : []));
+  const rawPageFaqs: any[] = (() => {
+    if (Array.isArray(pageData?.faq) && pageData.faq.length > 0) return pageData.faq;
+    if (Array.isArray(pageData?.faqs) && pageData.faqs.length > 0) return pageData.faqs;
+    if (Array.isArray(pageData?.data?.faq) && pageData.data.faq.length > 0) return pageData.data.faq;
+    if (Array.isArray(pageData?.data?.faqs) && pageData.data.faqs.length > 0) return pageData.data.faqs;
+    if (Array.isArray(pageData?.content?.faq) && pageData.content.faq.length > 0) return pageData.content.faq;
+    if (Array.isArray(pageData?.content?.faqs) && pageData.content.faqs.length > 0) return pageData.content.faqs;
+    if (Array.isArray(pageData?.content?.faq?.items) && pageData.content.faq.items.length > 0) return pageData.content.faq.items;
+    if (Array.isArray(pageData?.content?.data?.faq) && pageData.content.data.faq.length > 0) return pageData.content.data.faq;
+    if (Array.isArray(pageData?.content?.data?.faqs) && pageData.content.data.faqs.length > 0) return pageData.content.data.faqs;
+    return [];
+  })();
 
   const activeFaqs = rawPageFaqs.length > 0
-    ? rawPageFaqs.map((f: any) => ({ q: f.q || f.question || "", a: f.a || f.answer || "" }))
+    ? rawPageFaqs
+        .filter((f: any) => f && (f.q || f.question || f.title || f.a || f.answer || f.desc || f.description))
+        .map((f: any) => ({
+          q: f.q || f.question || f.title || "",
+          a: f.a || f.answer || f.desc || f.description || ""
+        }))
     : (Array.isArray(faqs) ? faqs : []);
 
-  const activeFaqLabel = pageFaqSection?.section?.badge || pageFaqSection?.badge || pageData?.content?.faqBadge || pageData?.faqBadge || faqLabel;
-  const activeFaqTitle = pageFaqSection?.section?.headline || pageFaqSection?.title || pageData?.content?.faqTitle || pageData?.faqTitle || faqTitle;
-  const activeFaqDescription = pageFaqSection?.section?.description || pageFaqSection?.description || pageData?.content?.faqDescription || pageData?.faqDescription || "";
+  const activeFaqLabel = 
+    pageData?.faqBadge || 
+    pageData?.data?.faqBadge || 
+    pageData?.content?.faqBadge || 
+    pageData?.content?.data?.faqBadge || 
+    pageData?.content?.faq?.section?.badge || 
+    pageData?.content?.faq?.badge || 
+    faqLabel;
+
+  const activeFaqTitle = 
+    pageData?.faqTitle || 
+    pageData?.data?.faqTitle || 
+    pageData?.content?.faqTitle || 
+    pageData?.content?.data?.faqTitle || 
+    pageData?.content?.faq?.section?.headline || 
+    pageData?.content?.faq?.section?.title || 
+    pageData?.content?.faq?.title || 
+    faqTitle;
+
+  const activeFaqDescription = 
+    pageData?.faqDescription || 
+    pageData?.data?.faqDescription || 
+    pageData?.content?.faqDescription || 
+    pageData?.content?.data?.faqDescription || 
+    pageData?.content?.faq?.section?.description || 
+    pageData?.content?.faq?.description || 
+    "";
+
 
   const [formData, setFormData] = useState({
     name: "",

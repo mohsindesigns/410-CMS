@@ -11,19 +11,17 @@ const PUBLIC_PATHS = [
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
 
-  // 1. Check for global redirects (only for public pages, not API, admin, next assets, uploads)
-  if (
-    !pathname.startsWith('/admin') &&
-    !pathname.startsWith('/api') &&
-    !pathname.startsWith('/_next') &&
-    !pathname.startsWith('/uploads') &&
-    !pathname.startsWith('/assets') &&
-    pathname !== '/favicon.ico' &&
-    pathname !== '/sitemap.xml' &&
-    pathname !== '/robots.txt' &&
-    pathname !== '/llms.txt' &&
-    pathname !== '/llms.tsxt'
-  ) {
+  const isStaticAsset =
+    pathname.startsWith('/_next') ||
+    pathname.startsWith('/api') ||
+    pathname.startsWith('/uploads') ||
+    pathname.startsWith('/assets') ||
+    pathname.startsWith('/images') ||
+    /\.(png|jpg|jpeg|gif|svg|ico|webp|js|css|map|json|woff|woff2|ttf|eot|txt|xml)$/i.test(pathname);
+
+  // 1. Check for global redirects (only for public HTML pages)
+  if (!pathname.startsWith('/admin') && !isStaticAsset) {
+
     try {
       // Use INTERNAL_API_URL to avoid external round-trip through Cloudflare in production.
       // In local dev this falls back to the request origin (e.g. http://localhost:3000).
@@ -54,14 +52,20 @@ export async function middleware(req: NextRequest) {
 
   // 2. Only run authentication on /admin routes
   if (pathname.startsWith('/admin')) {
-    // Allow login page through without auth
-    if (PUBLIC_PATHS.some((p) => pathname.startsWith(p))) return NextResponse.next();
+    const normalizedPath = pathname.replace(/\/+$/, '') || '/admin';
+
+    // Allow public admin pages (login, forgot-password, reset-password) through without auth
+    if (PUBLIC_PATHS.some((p) => normalizedPath === p || normalizedPath.startsWith(p + '/'))) {
+      return NextResponse.next();
+    }
 
     // Check for session cookie
     const session = req.cookies.get(ADMIN_COOKIE);
     if (!session?.value) {
       const loginUrl = new URL('/admin/login', req.url);
-      loginUrl.searchParams.set('from', pathname);
+      if (pathname !== '/admin' && pathname !== '/admin/') {
+        loginUrl.searchParams.set('from', pathname);
+      }
       return NextResponse.redirect(loginUrl);
     }
 
@@ -72,7 +76,7 @@ export async function middleware(req: NextRequest) {
         throw new Error('Invalid token');
       }
       return NextResponse.next();
-    } catch (error) {
+    } catch {
       const loginUrl = new URL('/admin/login', req.url);
       const res = NextResponse.redirect(loginUrl);
       res.cookies.delete(ADMIN_COOKIE);
@@ -82,6 +86,7 @@ export async function middleware(req: NextRequest) {
 
   return NextResponse.next();
 }
+
 
 export const config = {
   matcher: [

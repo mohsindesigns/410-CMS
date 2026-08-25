@@ -30,20 +30,24 @@ function LoginForm() {
     setLoading(true);
 
     try {
-      const res = await fetch("/api/admin/login", {
+      const res = await fetch("/api/admin/login/", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
+        credentials: "include",
         body: JSON.stringify({ username, password }),
       });
 
       const data = await res.json();
 
       if (res.ok && data.success) {
-        router.push(from);
-        router.refresh();
+        let dest = from && from !== '/admin/login' && from !== '/admin/login/' ? from : '/admin/';
+        if (!dest.endsWith('/') && !dest.includes('?')) dest += '/';
+        window.location.href = dest;
       } else {
         setError(data.error || "Invalid credentials. Please try again.");
       }
+
+
     } catch {
       setError("Network error. Please check your connection.");
     } finally {

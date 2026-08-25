@@ -205,41 +205,79 @@ export default async function DynamicPage({ params }: PageProps) {
     permanentRedirect("/");
   }
 
-  // Detect FAQs ONLY if this is the FAQ template (as requested)
-  if (page.template === 'faq') {
-    const pageSpecificFaqs = page.content?.faqs || [];
+  // Detect FAQs for service-detail or faq templates
+  let pageFaqs: any[] = [];
+  if (page.template === 'service-detail') {
+    const services = globalData.services?.services || [];
+    const serviceItems = globalData.services?.items || [];
+    const matchingService =
+      services.find((s: any) => s.slug === slug || String(s.id) === String(page._id) || String(s._id) === String(page._id)) ||
+      serviceItems.find((s: any) => s.slug === slug);
+
+    const rawFaqs = 
+      matchingService?.faq || 
+      matchingService?.faqs || 
+      page.data?.faq || 
+      page.data?.faqs || 
+      page.content?.faq || 
+      page.content?.faqs || 
+      page.faq || 
+      page.faqs || 
+      [];
+
+    if (Array.isArray(rawFaqs) && rawFaqs.length > 0) {
+      pageFaqs = rawFaqs;
+      page.faq = rawFaqs;
+      page.faqs = rawFaqs;
+    }
+  } else if (page.template === 'faq') {
+    const pageSpecificFaqs = page.content?.faqs || page.data?.faqs || page.faqs || [];
     if (Array.isArray(pageSpecificFaqs) && pageSpecificFaqs.length > 0) {
+      pageFaqs = pageSpecificFaqs;
       page.faqs = pageSpecificFaqs;
     } else {
       const allFaqs = globalData.faq?.items || [];
-      page.faqs = allFaqs.filter((item: any) =>
+      pageFaqs = allFaqs.filter((item: any) =>
         item.visibility === 'global' ||
         (item.visibility === 'specific' && item.targetPages?.includes(slug))
       );
+      page.faqs = pageFaqs;
     }
   }
 
   // Determine page type for schema
   let pageType: any = "WebPage";
+  if (page.template === 'service-detail') pageType = "Service";
   if (page.template === 'about') pageType = "AboutPage";
   if (page.template === 'contact') pageType = "ContactPage";
   if (page.template === 'gallery') pageType = "CollectionPage";
 
   // Determine featured image for schema (Manual SEO Featured Image > OG Image > Hero Image)
-  const featuredImage = getAbsoluteUrl(page.seo?.featuredImage || page.seo?.ogImage || page.seo?.twitterImage || page.content?.hero?.image);
+  const featuredImage = getAbsoluteUrl(page.seo?.featuredImage || page.seo?.ogImage || page.seo?.twitterImage || page.content?.hero?.image || page.data?.image);
 
   const schema = generateSchema({
     title: page.seo?.metaTitle || page.title,
-    description: page.seo?.metaDescription || "",
+    description: page.seo?.metaDescription || page.data?.description || "",
     slug: page.slug,
     type: pageType,
-    faqs: page.faqs,
+    faqs: pageFaqs.length > 0 ? pageFaqs : undefined,
     breadcrumbTitle: page.seo?.breadcrumbTitle,
+    isService: page.template === 'service-detail',
     image: featuredImage
   });
 
   // Use TemplateWrapper to handle local content context overrides
   const { TemplateWrapper } = await import('@/components/templates/TemplateRegistry');
+
+  const mergedPageData = {
+    ...(page.data || {}),
+    ...page,
+    content: {
+      ...globalData,
+      ...(page.data || {}),
+      ...(page.content || {})
+    }
+  };
 
   return (
     <main>
@@ -250,15 +288,10 @@ export default async function DynamicPage({ params }: PageProps) {
       />
       <TemplateWrapper
         templateName={page.template}
-        pageData={{
-          ...page,
-          content: {
-            ...globalData,
-            ...(page.content || {})
-          }
-        }}
+        pageData={mergedPageData}
         params={resolvedParams}
       />
     </main>
   );
 }
+
