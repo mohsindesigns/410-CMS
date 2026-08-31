@@ -290,7 +290,7 @@ export function generateSchema(options: SchemaOptions) {
   };
 
   // 4. BreadcrumbList Schema
-  const pathSegments = safeSlug.split('/').filter(Boolean);
+  const pathSegments = (isService ? [safeSlug.replace(/^services\//, '').replace(/^\/+|\/+$/g, '')] : safeSlug.split('/')).filter(Boolean);
   const breadcrumbList = pathSegments.length > 0 ? {
     "@type": "BreadcrumbList",
     "@id": `${pageUrl}#breadcrumb`,

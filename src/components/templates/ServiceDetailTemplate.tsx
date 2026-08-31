@@ -284,11 +284,7 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                   Home
                 </Link>
                 <span className="text-gold/50">/</span>
-                <Link href="/services/" className="hover:text-gold transition-colors text-white/70">
-                  Services
-                </Link>
-                <span className="text-gold/50">/</span>
-                <span className="text-gold font-medium truncate max-w-[200px] sm:max-w-none">
+                <span className="text-gold font-medium truncate max-w-[280px] sm:max-w-none">
                   {serviceName}
                 </span>
               </nav>
