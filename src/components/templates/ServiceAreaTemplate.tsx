@@ -202,9 +202,9 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
   };
 
   const cta = content.cta || {
-    headline: "Ready to Start Your Project?",
-    description: "Whether you need a minor repair or a complete roof replacement, our expert team is ready to protect your home. Contact us today for an elite-grade service experience.",
-    buttonText: "Schedule Free Inspection",
+    headline: "Ready to Restore Peak Performance?",
+    description: "Whether you need rapid sports recovery, joint decompression, or chronic pain elimination, our expert clinic is ready to help.",
+    buttonText: "Book Your Session",
     buttonHref: "#contact"
   };
 

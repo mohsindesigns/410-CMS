@@ -5,7 +5,6 @@ import { Metadata } from "next";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
 import Page from "@/models/Page";
-import Script from "next/script";
 import { generateSchema } from "@/lib/schema-generator";
 import { TemplateWrapper } from "@/components/templates/TemplateRegistry";
 import ServiceDetailTemplate from "@/components/templates/ServiceDetailTemplate";
@@ -172,7 +171,7 @@ export default async function Index() {
       });
       return (
         <>
-          <Script id="json-ld-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+          <script id="json-ld-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
           <TemplateWrapper 
             templateName={page.template} 
             pageData={{
@@ -205,7 +204,7 @@ export default async function Index() {
       });
       return (
         <>
-          <Script id="json-ld-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+          <script id="json-ld-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
           <ServiceDetailTemplate params={Promise.resolve({ slug: service.slug })} />
         </>
       );
@@ -221,9 +220,19 @@ export default async function Index() {
   }).lean();
   const homePage = homePageDoc ? JSON.parse(JSON.stringify(homePageDoc)) : null;
 
+  const homeSeo = homePage?.seo || homeData?.seo || {};
+  const metaTitle = homeSeo.metaTitle || homePage?.title || settings?.siteTitle || "410 Muscle Therapy";
+  const metaDescription =
+    homeSeo.metaDescription ||
+    homePage?.content?.hero?.description ||
+    homeData?.hero?.description ||
+    homeData?.hero?.subheadline ||
+    settings?.siteDescription ||
+    "Specialized performance recovery bodywork, mobility restoration, and injury prevention for athletes and active adults in Maryland.";
+
   const schema = generateSchema({
-    title: settings?.siteTitle || "410 Muscle Therapy",
-    description: homeData?.hero?.subheadline || "Specialized performance recovery bodywork, mobility restoration, and injury prevention for athletes and active adults in Maryland.",
+    title: metaTitle,
+    description: metaDescription,
     slug: "/",
     type: "WebPage",
     faqs: faqs,
@@ -232,7 +241,7 @@ export default async function Index() {
 
   return (
     <>
-      <Script
+      <script
         id="json-ld-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}

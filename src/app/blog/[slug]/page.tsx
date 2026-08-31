@@ -8,7 +8,6 @@ import Post from '@/models/Post';
 import { Calendar, User, Tag as TagIcon, Clock, BookOpen, ArrowLeft, ArrowRight, Share2, Facebook, Twitter, Linkedin, MapPin } from 'lucide-react';
 import Link from 'next/link';
 import Image from 'next/image';
-import Script from 'next/script';
 import ReadingProgress from '@/components/blog/ReadingProgress';
 import ShareButton from '@/components/blog/ShareButton';
 import PageInlineFaqs from '@/components/PageInlineFaqs';
@@ -33,7 +32,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   if (!post) return { title: 'Post Not Found' };
 
   const settings = content?.data?.settings;
-  const url = `${BASE_URL}/blog/${slug}`;
+  const url = `${BASE_URL}/blog/${slug}/`;
 
   return {
     title: {
@@ -88,7 +87,7 @@ export default async function BlogPostPage({ params }: Props) {
   console.log(`[Blog Debug] FAQ Count: ${post.faq?.length || 0}`);
   if (post.faq?.length > 0) console.log(`[Blog Debug] First FAQ: ${post.faq[0].question}`);
 
-  const url = `${BASE_URL}/blog/${slug}`;
+  const url = `${BASE_URL}/blog/${slug}/`;
   const wordCount = post.content ? post.content.split(/\s+/).length : 0;
   const publishDate = post.publishedAt?.toISOString();
   const modifiedDate = (post.updatedAt || post.publishedAt)?.toISOString();
@@ -100,7 +99,7 @@ export default async function BlogPostPage({ params }: Props) {
     '@graph': [
       {
         '@type': 'Article',
-        '@id': `${url}/#article`,
+        '@id': `${url}#article`,
         'isPartOf': { '@id': url },
         'author': {
           '@id': `${BASE_URL}/#/schema/person/${post.author?._id || 'admin'}`
@@ -111,7 +110,7 @@ export default async function BlogPostPage({ params }: Props) {
         'mainEntityOfPage': { '@id': url },
         'wordCount': wordCount,
         'publisher': { '@id': `${BASE_URL}/#organization` },
-        'image': { '@id': `${url}/#primaryimage` },
+        'image': { '@id': `${url}#primaryimage` },
         'thumbnailUrl': featuredImage,
         'keywords': post.tags?.map((t: any) => t.name).join(', '),
         'inLanguage': 'en-US'
@@ -147,7 +146,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   return (
     <article className="bg-dark min-h-screen pt-[140px] pb-24 relative">
-      <Script
+      <script
         id="blog-post-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}

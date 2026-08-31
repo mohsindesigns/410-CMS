@@ -3,7 +3,6 @@ export const revalidate = 60; // Cache for 1 minute
 import { Metadata } from "next";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
-import Script from "next/script";
 import { generateSchema } from "@/lib/schema-generator";
 import { BASE_URL } from "@/lib/constants";
 
@@ -106,7 +105,7 @@ export default async function GalleryPage() {
 
   return (
     <>
-      <Script
+      <script
         id="json-ld-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}

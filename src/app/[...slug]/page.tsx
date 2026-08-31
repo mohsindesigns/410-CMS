@@ -8,7 +8,6 @@ import SiteContent from '@/models/Content';
 import { getTemplate } from '@/components/templates/TemplateRegistry';
 import ServiceDetailTemplate from '@/components/templates/ServiceDetailTemplate';
 import { Metadata } from 'next';
-import Script from 'next/script';
 import { generateSchema } from '@/lib/schema-generator';
 import { BASE_URL } from '@/lib/constants';
 
@@ -184,7 +183,7 @@ export default async function DynamicPage({ params }: PageProps) {
 
       return (
         <main>
-          <Script
+          <script
             id="json-ld-schema"
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
@@ -281,7 +280,7 @@ export default async function DynamicPage({ params }: PageProps) {
 
   return (
     <main>
-      <Script
+      <script
         id="json-ld-schema"
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
