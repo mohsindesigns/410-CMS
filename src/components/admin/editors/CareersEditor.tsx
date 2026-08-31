@@ -24,9 +24,9 @@ export default function CareersEditor({ pageId, data, setData }: { pageId: strin
          careers: {
            section: { badge: "Join 410 Muscle Therapy", headline: "Expert hands with Visionary minds", description: "Build your future with a team that values precision, integrity, and craftsmanship." },
            roles: [
-             { label: "Project Manager", value: "project-manager" },
-             { label: "Roofing Specialist", value: "roofing-specialist" },
-             { label: "Sales Consultant", value: "sales-consultant" }
+             { label: "Licensed Massage Therapist", value: "licensed-massage-therapist" },
+             { label: "Fascial Stretch Specialist", value: "fascial-stretch-specialist" },
+             { label: "Performance Recovery Coach", value: "performance-recovery-coach" }
            ],
            success: { title: "Application Received", description: "Thank you for your interest. Our recruitment team will review your profile and reach out shortly." },
            labels: { name: "Full Name", email: "Email Address", phone: "Phone Number", role: "Position Applied For", summary: "Tell us about your experience" }

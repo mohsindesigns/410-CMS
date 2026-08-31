@@ -122,7 +122,7 @@ export default function SeoEditor({ data, setData, pageSlug, pageTitle, pageCont
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-5">
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-bold text-[#1d2327] uppercase tracking-wide">Focus Keyword</label>
-                    <input type="text" value={data.focusKeyword || ""} onChange={(e) => updateField('focusKeyword', e.target.value)} className="w-full border border-[#c3c4c7] px-3 py-2 text-[14px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none" placeholder="e.g. roofing st louis" />
+                    <input type="text" value={data.focusKeyword || ""} onChange={(e) => updateField('focusKeyword', e.target.value)} className="w-full border border-[#c3c4c7] px-3 py-2 text-[14px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none" placeholder="e.g. sports massage maryland" />
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-bold text-[#1d2327] uppercase tracking-wide">Secondary Keywords</label>

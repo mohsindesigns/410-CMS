@@ -24,7 +24,7 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
     if (data && Object.keys(data).length === 0) {
        setData({
          contactPage: {
-           header: { badge: "Contact Us", headline: "Expert hands with Visionary minds", description: "Get in touch with St. Louis's leading roofing and exterior specialists." },
+           header: { badge: "Contact Us", headline: "Expert hands with Visionary minds", description: "Get in touch with Maryland's leading clinical performance and sports massage specialists." },
            formFields: [
              { name: "name", label: "Full Name", type: "text", required: true, icon: "User" },
              { name: "email", label: "Email Address", type: "email", required: true, icon: "Mail" },

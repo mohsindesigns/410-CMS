@@ -10,13 +10,6 @@ import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
 import owner from "@/assets/ownerupdatedimage.jpeg";
-import roofingImg from '../../assets/roof1.jpg.jpeg';
-import windowsImg from '../../assets/window5.jpeg';
-import decksImg from '../../assets/outdoor-sitting-desk.png';
-import commercialImg from '../../assets/commercial-tpo.png';
-import sidingImg from '../../assets/siding5.jpg.jpeg';
-import gutter from '../../assets/gutterinstallation.jpg.jpeg';
-import pvcdecks from '../../assets/pvcdecks.jpg.jpeg';
 
 import {
   ShieldCheck,
@@ -60,15 +53,7 @@ const iconMap: Record<string, any> = {
   Scale, Gem, Zap, Target: LucideTarget, Sparkles, TrendingUp, BadgeCheck, ShieldCheck, Globe: GlobeIcon, Quote, Linkedin, Mail, Flag
 };
 
-const imageMap: Record<string, any> = {
-  'Residential Roofing': roofingImg,
-  'Windows & Doors': windowsImg,
-  'Custom Decks': decksImg,
-  'Commercial Roofing': commercialImg,
-  'Siding, Soffit & Fascia': sidingImg,
-  'Gutters & Protection': gutter,
-  'PVC Decking': pvcdecks,
-};
+const imageMap: Record<string, any> = {};
 
 // ==================== STAT COUNTER COMPONENT ====================
 const StatCounter = ({ value, label, suffix = "", delay = 0, iconName, description }: {
@@ -687,7 +672,7 @@ const ServiceCard = ({ service, index }: { service: any; index: number }) => {
   if (!service) return null;
 
   // Get the image - prioritize overviewImage, then fall back to imported images
-  let serviceImage: string | any = roofingImg; // default fallback
+  let serviceImage: string | any = owner; // default fallback
 
   // Try to get overviewImage first (could be string URL)
   if (service.overviewImage) {

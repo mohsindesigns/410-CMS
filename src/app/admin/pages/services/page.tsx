@@ -392,7 +392,7 @@ export default function ServicesPageEditor() {
   const blogSection = data.services?.blogSection || {
     title: "Latest from the Blog",
     subtitle: "Insights & News",
-    description: "Stay updated with the latest trends, tips, and news from the roofing and construction industry.",
+    description: "Stay updated with the latest insights, recovery techniques, and clinical bodywork tips for peak performance.",
     selectedPosts: []
   };
 

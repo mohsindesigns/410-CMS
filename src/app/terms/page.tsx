@@ -50,33 +50,33 @@ export default function TermsPage() {
                 1. Introduction
               </h2>
               <p className="text-muted-foreground leading-relaxed mb-4">
-                Welcome to 410 Muscle Therapy. By accessing or using our website, services, or products, you agree to be bound by these Terms and Conditions.
+                Welcome to 410 Muscle Therapy. By accessing or using our website, booking services, or purchasing products, you agree to be bound by these Terms and Conditions.
               </p>
               <p className="text-muted-foreground leading-relaxed">
-                410 Muscle Therapy provides both <span className="text-primary font-medium">roofing and exterior remodeling services</span> (primary business) and <span className="text-primary font-medium">branded merchandise</span> (secondary business). These Terms apply to both our services and products.
+                410 Muscle Therapy provides <span className="text-primary font-medium">clinical bodywork, mobility restoration, and athletic recovery services</span> (primary business) and <span className="text-primary font-medium">specialty wellness products</span> (secondary business). These Terms apply to all our client sessions, consultations, and products.
               </p>
             </div>
 
-            {/* Roofing Services */}
+            {/* Muscle Therapy Services */}
             <div className="bg-card rounded-2xl border border-border p-6 md:p-8">
               <h2 className="text-xl md:text-2xl font-bold text-foreground mb-4 flex items-center gap-2">
-                <Icon name="Home" className="w-5 h-5 text-primary" />
-                2. Roofing & Exterior Services
+                <Icon name="Activity" className="w-5 h-5 text-primary" />
+                2. Clinical Bodywork & Therapy Services
               </h2>
               
-              <h3 className="text-lg font-semibold text-foreground mt-4 mb-2">2.1 Service Estimates</h3>
+              <h3 className="text-lg font-semibold text-foreground mt-4 mb-2">2.1 Appointments & Intake</h3>
               <ul className="space-y-2 text-muted-foreground mb-4">
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                  <span>All estimates are valid for 30 days from the date provided</span>
+                  <span>All clients must complete a health intake assessment before receiving bodywork</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                  <span>Final pricing may vary based on actual job conditions discovered during work</span>
+                  <span>Please arrive 10 minutes prior to your scheduled session</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                  <span>A written contract will be provided before any work begins</span>
+                  <span>Sessions are customized based on individual biomechanical and recovery goals</span>
                 </li>
               </ul>
 
@@ -84,47 +84,27 @@ export default function TermsPage() {
               <ul className="space-y-2 text-muted-foreground mb-4">
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                  <span>A deposit may be required before work commences</span>
+                  <span>Payment is due upon completion of each therapy session or at package booking</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                  <span>Final payment is due upon completion of work</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Icon name="Check" className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                  <span>Accepted payment methods: Cash, Check, Credit Card, Financing (if available)</span>
+                  <span>Accepted payment methods: Credit Card, Debit, Cash, and approved digital methods</span>
                 </li>
               </ul>
 
-              <h3 className="text-lg font-semibold text-foreground mt-4 mb-2">2.3 Warranties</h3>
-              <ul className="space-y-2 text-muted-foreground mb-4">
-                <li className="flex items-start gap-2">
-                  <Icon name="Check" className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                  <span>Workmanship warranty details are specified in your service contract</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Icon name="Check" className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                  <span>Material warranties are provided by the manufacturer</span>
-                </li>
-                <li className="flex items-start gap-2">
-                  <Icon name="Check" className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                  <span>Warranty claims must be reported in writing within the warranty period</span>
-                </li>
-              </ul>
-
-              <h3 className="text-lg font-semibold text-foreground mt-4 mb-2">2.4 Cancellation & Refunds</h3>
+              <h3 className="text-lg font-semibold text-foreground mt-4 mb-2">2.3 Cancellation & Rescheduling</h3>
               <ul className="space-y-2 text-muted-foreground">
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                  <span>You may cancel services within 3 business days of signing the contract</span>
+                  <span>We request at least 24 hours advance notice for cancellations or rescheduling</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                  <span>Cancellation after materials have been ordered may incur restocking fees</span>
+                  <span>Late cancellations or missed appointments may be subject to a cancellation fee</span>
                 </li>
                 <li className="flex items-start gap-2">
                   <Icon name="Check" className="w-4 h-4 text-primary mt-1 flex-shrink-0" />
-                  <span>Completed work is non-refundable</span>
+                  <span>Pre-paid sessions may be rescheduled with proper advance notice</span>
                 </li>
               </ul>
             </div>
@@ -277,11 +257,11 @@ export default function TermsPage() {
                 <ul className="space-y-2 ml-4">
                   <li className="flex items-start gap-2">
                     <Icon name="Check" className="w-3 h-3 text-primary mt-1 flex-shrink-0" />
-                    <span>Service updates and appointment reminders (roofing customers)</span>
+                    <span>Service updates and appointment reminders</span>
                   </li>
                   <li className="flex items-start gap-2">
                     <Icon name="Check" className="w-3 h-3 text-primary mt-1 flex-shrink-0" />
-                    <span>Order confirmations and shipping updates (merchandise customers)</span>
+                    <span>Order confirmations and product updates</span>
                   </li>
                 </ul>
                 <p className="mt-3">Message frequency varies. Message and data rates may apply.</p>

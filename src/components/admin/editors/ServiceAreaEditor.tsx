@@ -61,34 +61,34 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
           ...data,
           hero: data.hero || {
             headline: data.hero?.headline || "Our Service Areas",
-            description: data.hero?.description || "Proudly serving St. Louis, St. Charles, and surrounding Missouri communities with elite, veteran-owned roofing and home improvements.",
+            description: data.hero?.description || "Proudly serving Timonium, Baltimore County, and surrounding Maryland communities with elite sports massage, mobility restoration, and clinical muscle therapy.",
             image: data.hero?.image || "/images/service-area-hero.jpg"
           },
           stats: data.stats || [
-            { value: "15+", label: "Years of Local Expertise" },
-            { value: "500+", label: "Premium Roofs Installed" },
-            { value: "100%", label: "Veteran-Owned & Operated" }
+            { value: "6+", label: "Years of Specialized Practice" },
+            { value: "1,500+", label: "Athletes & Clients Restored" },
+            { value: "100%", label: "Customized Recovery Plans" }
           ],
           process: data.process || data.processSteps || [
-            { title: "Free Inspection", description: "We perform a highly detailed visual inspection of your entire roof, shingle layers, gutters, and attic structure." },
-            { title: "Custom Quote", description: "Receive an itemized, fully transparent project quote detailing premium materials, scopes, and warranty parameters." },
-            { title: "Elite Install", description: "Our certified expert crews complete your roofing or siding replacement with ultimate military precision and focus." },
-            { title: "Final Sign-Off", description: "We execute a deep ground clean-up and a final walkthrough with you to verify that our work exceeds your expectations." }
+            { title: "Functional Assessment", description: "We evaluate your movement biomechanics, range of motion, muscle imbalances, and pain triggers." },
+            { title: "Targeted Protocol", description: "Receive a personalized manual therapy strategy integrating myofascial release, deep tissue, and stretching." },
+            { title: "Clinical Bodywork", description: "Expert hands-on therapeutic treatment designed to release dense restrictions and restore tissue glide." },
+            { title: "Movement Re-Education", description: "Post-treatment corrective mobility drills to maintain long-term alignment and injury resilience." }
           ],
           processSection: data.processSection || {
-            headline: "Our Core Blueprint",
-            title: "Our Elite 4-Step Process"
+            headline: "Our Recovery Blueprint",
+            title: "Our 4-Step Clinical Recovery Process"
           },
           regions: data.regions || [
             {
-              name: "St. Louis County",
-              cities: ["Chesterfield", "Wildwood", "Ballwin", "Kirkwood", "Webster Groves", "Florissant", "Hazelwood", "Maryland Heights", "Eureka", "Fenton", "Ladue", "Clayton"],
-              zipcodes: ["63017", "63005", "63011", "63021", "63122", "63119", "63031", "63042", "63043", "63025", "63026", "63124", "63105"]
+              name: "Baltimore County",
+              cities: ["Timonium", "Towson", "Lutherville", "Cockeysville", "Hunt Valley", "Pikesville", "Owings Mills", "White Marsh", "Catonsville"],
+              zipcodes: ["21093", "21204", "21094", "21030", "21031", "21208", "21117", "21236", "21228"]
             },
             {
-              name: "St. Charles County",
-              cities: ["St. Charles", "St. Peters", "O'Fallon", "Wentzville", "Lake St. Louis", "Cottleville", "Weldon Spring", "Defiance"],
-              zipcodes: ["63301", "63303", "63304", "63376", "63366", "63368", "63385", "63367"]
+              name: "Howard County",
+              cities: ["Columbia", "Ellicott City", "Clarksville", "Marriottsville", "Fulton"],
+              zipcodes: ["21044", "21042", "21029", "21104", "20759"]
             }
           ],
           regionsSection: data.regionsSection || {
@@ -97,56 +97,56 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
           },
           map: data.map || {
             headline: "Our Coverage Area",
-            title: "Our Operational Coverage Map",
-            description: "Centrally dispatched to provide lightning-fast storm response, professional inspections, and veteran-grade roof installations across all primary Missouri counties.",
-            iframeUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d199426.6823901614!2d-90.3835467!3d38.6531004!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x54eab584e432360b%3A0x1c3bb99243deb742!2sSt.+Louis%2C+MO!5e0!3m2!1sen!2sus!4v1700000000000",
+            title: "Serving Greater Maryland",
+            description: "Centrally located in Timonium, Maryland, providing elite sports recovery, fascial stretch therapy, and clinical bodywork across Baltimore and surrounding counties.",
+            iframeUrl: "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d98687.20815410942!2d-76.6908587!3d39.4357022!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c80e1b69829983%3A0xd65352c8bdfc7857!2sTimonium%2C%20MD!5e0!3m2!1sen!2sus!4v1700000000000",
             bullet1Title: "Primary Coverage Area",
-            bullet1Text: "St. Louis, St. Charles, Jefferson & surrounding communities.",
-            bullet2Title: "Operation Hours",
-            bullet2Text: "Mon - Sat: 7:00 AM - 6:00 PM (Emergency storm response 24/7)",
-            bullet3Title: "Direct Office Hotline",
-            bullet3Text: "(636) 293-9977"
+            bullet1Text: "Timonium, Baltimore County, Howard County & surrounding Maryland communities.",
+            bullet2Title: "Clinic Hours",
+            bullet2Text: "Mon - Sat: 8:00 AM - 7:00 PM (By Appointment)",
+            bullet3Title: "Direct Contact Hotline",
+            bullet3Text: "(410) 555-0199"
           },
           materials: data.materials || {
-            headline: "Certified Excellence",
-            title: "Premium Materials We Install",
+            headline: "Clinical Modalities",
+            title: "Advanced Therapies We Provide",
             items: [
-              { title: "Asphalt Shingles", description: "Architectural shingles engineered for ultimate storm protection, wind resilience, and custom color coordination to match your house aesthetics.", icon: "Building" },
-              { title: "Standing Seam Metal", description: "High-end modern architectural profile that offers complete storm immunity, maximum energy efficiency, and a lifetime of zero maintenance.", icon: "Flame" },
-              { title: "High-End Siding", description: "Fiber cement siding configured to stand strong against moisture rot, pests, and high wind impacts, instantly boosting your curb appeal.", icon: "PencilRuler" },
-              { title: "Seamless Gutters", description: "High-capacity aluminum water drainage channels manufactured custom on-site to perfectly fit your roof perimeter and protect your soil foundations.", icon: "Droplets" }
+              { title: "Sports Massage", description: "Pre-event and post-event athletic bodywork targeting high-demand muscle groups.", icon: "Activity" },
+              { title: "Fascial Stretch Therapy", description: "Table-based assisted stretching to decompress joints and lengthen fascial nets.", icon: "Heart" },
+              { title: "Cupping Therapy", description: "Decompressive negative pressure to stimulate blood flow and lymphatic drainage.", icon: "Flame" },
+              { title: "Corrective Movement", description: "Functional neuromuscular training to eliminate compensatory movement patterns.", icon: "Target" }
             ]
           },
           servicesSection: data.servicesSection || {
             headline: "What We Provide",
-            title: "Services We Provide in This Area",
+            title: "Specialized Services in Maryland",
             items: [
-              { title: "Residential Roofing", description: "Pristine asphalt shingle and standing seam metal roof replacements designed for ultimate local storm immunity.", buttonText: "Explore Service", buttonHref: "/services/residential-roofing", icon: "Home" },
-              { title: "Commercial Roofing", description: "Heavy-duty TPO, EPDM, and flat roof coatings configured for Missouri commercial properties and corporate facilities.", buttonText: "Explore Service", buttonHref: "/services/commercial-roofing", icon: "Building" },
-              { title: "Seamless Gutters", description: "Custom on-site rolled high-capacity aluminum gutter installations to secure proper rain drainage controls.", buttonText: "Explore Service", buttonHref: "/services/seamless-gutters", icon: "Droplets" }
+              { title: "Sports Massage", description: "Pre-event and post-event athletic bodywork targeting high-demand muscle groups.", buttonText: "Explore Service", buttonHref: "/maryland-sports-massage-therapist/", icon: "Activity" },
+              { title: "Fascial Stretch Therapy", description: "Table-based assisted stretching to decompress joints and lengthen fascial nets.", buttonText: "Explore Service", buttonHref: "/maryland-fascial-stretch-therapy/", icon: "Heart" },
+              { title: "Deep Tissue Massage", description: "Focused structural pressure targeting chronic muscular restrictions.", buttonText: "Explore Service", buttonHref: "/deep-tissue-massage-maryland/", icon: "Target" }
             ]
           },
           whyChoose: data.whyChoose || {
             headline: "Why Choose Us",
-            title: "Elite Missouri Roofing Quality",
+            title: "Elite Clinical Performance Standards",
             items: [
-              { title: "Licensed & Fully Insured", description: "Complete compliance for your peace of mind. We hold full general liability, workers' comp, and active licensing across all service counties.", icon: "Shield" },
-              { title: "Rapid Storm Dispatch", description: "Expedited emergency tarping and inspections. St. Louis storm damage requires immediate action, and our teams respond directly inside our operational radius.", icon: "Clock" },
-              { title: "Veteran Owned Standards", description: "Applying military precision, honor, and elite craftsmanship to every shingle repair, gutter build, and residential siding replacement.", icon: "Award" }
+              { title: "Licensed & Certified Specialists", description: "Advanced certifications in orthopedic massage, neuromuscular therapy, and assisted stretching.", icon: "Shield" },
+              { title: "Individualized Protocols", description: "Every session is strictly customized to your specific biomechanics, sport, and recovery goals.", icon: "Clock" },
+              { title: "Proven Track Record", description: "Trusted by collegiate athletes, fitness competitors, and active adults across Maryland.", icon: "Award" }
             ]
           },
           overview: data.overview || {
             headline: "Local Overview",
-            title: "Elite Roofing & Restoration in This Community",
-            description: "<p>Proudly providing premium residential roofing, standing seam metal builds, siding updates, and gutter cleanups to Missouri homeowners. We combine veteran precision with durable local materials.</p>",
-            buttonText: "Schedule Free Inspection",
+            title: "Performance Recovery & Clinical Bodywork in This Community",
+            description: "<p>Proudly providing specialized orthopedic bodywork, mobility restoration, and injury prevention to Maryland athletes and active adults.</p>",
+            buttonText: "Schedule Session",
             buttonHref: "#contact",
             image: "/images/service-area-overview.jpg"
           },
           cta: data.cta || {
-            headline: "Ready to Start Your Project?",
-            description: "Whether you need a minor repair or a complete roof replacement, our expert team is ready to protect your home. Contact us today for an elite-grade service experience.",
-            buttonText: "Schedule Free Inspection",
+            headline: "Ready to Restore Peak Performance?",
+            description: "Whether you need rapid sports recovery, joint decompression, or chronic pain elimination, our expert clinic is ready to help.",
+            buttonText: "Book Your Session",
             buttonHref: "#contact"
           }
         });

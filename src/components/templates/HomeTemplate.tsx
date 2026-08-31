@@ -2,7 +2,7 @@
 
 import dynamic from "next/dynamic";
 import Hero from "@/components/Hero";
-import AggressiveRoofingSection from "@/components/RoofingExperts";
+import StatsSection from "@/components/StatsSection";
 import Services from "@/components/Services";
 
 
@@ -27,8 +27,8 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
     <div className="relative">
       <Hero />
       <StatsBar />
-      <section id="roofingexperts">
-        <AggressiveRoofingSection />
+      <section id="achievements">
+        <StatsSection />
       </section>
       <section id="services">
         <Services />
