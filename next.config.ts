@@ -2,7 +2,6 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   trailingSlash: true,
-  skipTrailingSlashRedirect: true,
   images: {
     remotePatterns: [
       {
@@ -35,7 +34,7 @@ const nextConfig: NextConfig = {
     return [
       {
         source: '/contact',
-        destination: '/contact-us',
+        destination: '/contact-us/',
         permanent: true,
       },
     ];

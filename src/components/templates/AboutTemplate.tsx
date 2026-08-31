@@ -805,7 +805,7 @@ const ServicesSection = ({ content: passedContent, featuredServices: passedFeatu
           ))}
         </div>
         <div className="text-center mt-12 sm:mt-16">
-          <Link href="/services">
+          <Link href="/services/">
             <motion.button whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="group relative px-8 py-4 bg-primary text-primary-foreground font-semibold rounded-full overflow-hidden shadow-lg">
               <span className="relative z-10 flex items-center gap-2">View All Services <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" /></span>
             </motion.button>

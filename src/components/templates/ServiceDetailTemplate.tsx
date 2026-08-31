@@ -277,13 +277,27 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
           <div className="absolute top-1/2 left-1/3 -translate-y-1/2 w-[450px] h-[450px] bg-gold/[0.07] rounded-full blur-[140px] pointer-events-none z-0" />
 
           <div className="site-container relative z-10 w-full text-left">
-            {/* Top Breadcrumb Link */}
-            <div className="mb-6">
+            {/* Breadcrumbs & Navigation */}
+            <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
+              <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[11.5px] sm:text-[12px] font-mono tracking-wider text-white/50">
+                <Link href="/" className="hover:text-gold transition-colors text-white/70">
+                  Home
+                </Link>
+                <span className="text-gold/50">/</span>
+                <Link href="/services/" className="hover:text-gold transition-colors text-white/70">
+                  Services
+                </Link>
+                <span className="text-gold/50">/</span>
+                <span className="text-gold font-medium truncate max-w-[200px] sm:max-w-none">
+                  {serviceName}
+                </span>
+              </nav>
+
               <Link
-                href="/services"
-                className="inline-flex items-center gap-2 text-white/60 hover:text-gold text-[11.5px] font-bold tracking-[0.2em] uppercase transition-colors"
+                href="/services/"
+                className="hidden sm:inline-flex items-center gap-2 text-white/60 hover:text-gold text-[11px] font-bold tracking-[0.2em] uppercase transition-colors"
               >
-                <ArrowLeft size={14} className="text-gold" />
+                <ArrowLeft size={13} className="text-gold" />
                 {pg.backLink}
               </Link>
             </div>

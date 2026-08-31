@@ -30,7 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
   // Resolve gallery Page data
   const galleryData = pageContent.galleryPage || globalData.galleryPage || globalData.portfolio || {};
   const seo = page?.seo || galleryData?.seo || {};
-  const pageUrl = `${BASE_URL}/gallery`;
+  const pageUrl = `${BASE_URL}/gallery/`;
 
   const metaTitle = seo.metaTitle || 
                     galleryData?.header?.title || 

@@ -62,10 +62,18 @@ const Navbar = () => {
     }
   };
 
-  const isLinkActive = (href: string) => {
-    if (href === '/') return pathname === '/';
+  const normalizeNavHref = (href: string) => {
+    if (!href) return "/";
+    if (href.startsWith("http") || href.startsWith("#") || href.includes("?") || href.endsWith("/")) return href;
+    return `${href}/`;
+  };
+
+  const isLinkActive = (rawHref: string) => {
+    const href = normalizeNavHref(rawHref);
+    if (href === '/') return pathname === '/' || pathname === '';
     if (href.startsWith('/#')) return false;
-    return pathname.startsWith(href);
+    const cleanPath = pathname.endsWith('/') ? pathname : `${pathname}/`;
+    return cleanPath.startsWith(href);
   };
 
   return (
@@ -107,6 +115,7 @@ const Navbar = () => {
           <ul className="hidden md:flex items-center gap-7">
             {(companyLinks || []).map((link: any, linkIdx: number) => {
               const active = isLinkActive(link.href);
+              const linkHref = normalizeNavHref(link.href);
 
               // Case 1: Mega Menu
               if (link.useMegaMenu) {
@@ -181,7 +190,7 @@ const Navbar = () => {
                           <div className="mt-4 pt-3.5 border-t border-border-dark/80 flex items-center justify-between text-xs px-1">
                             <span className="text-white/40 font-light">Explore all individualized clinical bodywork options</span>
                             <Link
-                              href="/services"
+                              href="/services/"
                               onClick={handleLinkClick}
                               className="text-gold hover:text-gold-light font-bold flex items-center gap-1.5 transition-colors uppercase tracking-wider text-[11px]"
                             >
@@ -213,7 +222,7 @@ const Navbar = () => {
                         {link.subLinks.map((subLink: any, sIdx: number) => (
                           <Link
                             key={sIdx}
-                            href={subLink.href}
+                            href={normalizeNavHref(subLink.href)}
                             className="flex items-center space-x-2 px-4 py-2 text-sm font-medium text-white/70 hover:text-gold hover:bg-white/5 transition-colors"
                             onClick={handleLinkClick}
                           >
@@ -242,7 +251,7 @@ const Navbar = () => {
                     </a>
                   ) : (
                     <Link
-                      href={link.href}
+                      href={linkHref}
                       onClick={handleLinkClick}
                       className={`flex items-center gap-1 text-[13.5px] font-medium transition-colors duration-200
                         ${active
@@ -312,6 +321,7 @@ const Navbar = () => {
                   const hasSubLinks = link.subLinks && link.subLinks.length > 0;
                   const isExpanded = expandedMobileLink === link.label;
                   const isExternal = link.href.startsWith('http');
+                  const linkHref = normalizeNavHref(link.href);
 
                   return (
                     <li key={linkIdx} className="flex flex-col">
@@ -328,7 +338,7 @@ const Navbar = () => {
                           </a>
                         ) : (
                           <Link
-                            href={link.href}
+                            href={linkHref}
                             onClick={handleLinkClick}
                             className={`block text-[15px] font-medium transition-colors
                               ${active ? 'text-gold' : 'text-white/70 hover:text-white'}`}
@@ -376,7 +386,7 @@ const Navbar = () => {
                                 link.subLinks.map((subLink: any, sIdx: number) => (
                                   <Link
                                     key={sIdx}
-                                    href={subLink.href}
+                                    href={normalizeNavHref(subLink.href)}
                                     onClick={handleLinkClick}
                                     className="block py-1 text-sm font-medium text-white/60 hover:text-gold transition-colors"
                                   >

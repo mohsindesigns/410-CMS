@@ -162,7 +162,7 @@ export default async function BlogPostPage({ params }: Props) {
         {/* Top Bar Navigation */}
         <div className="mb-10 lg:mb-16 text-left">
           <Link 
-            href="/blog" 
+            href="/blog/" 
             className="inline-flex items-center gap-2 text-white/50 hover:text-gold text-[12px] font-bold tracking-widest uppercase transition-colors"
           >
             <ArrowLeft size={16} />

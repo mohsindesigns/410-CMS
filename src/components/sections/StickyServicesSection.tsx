@@ -187,10 +187,10 @@ export default function StickyServicesSection() {
                     {/* CTA Buttons */}
                     <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-6">
                       <Link
-                        href={service.heroCtaSecondaryUrl || `/${service.slug || service.id}/`}
+                        href={(!service.heroCtaSecondaryUrl || service.heroCtaSecondaryUrl.startsWith('#')) ? `/${service.slug || service.id}/` : service.heroCtaSecondaryUrl}
                         className="btn-gold justify-center text-center w-full sm:w-auto"
                       >
-                        {service.heroCtaSecondary || ctaExplore} <ArrowRight size={14} className="ml-1" />
+                        {service.heroCtaSecondary && !service.heroCtaSecondary.toLowerCase().includes('help') ? service.heroCtaSecondary : ctaExplore} <ArrowRight size={14} className="ml-1" />
                       </Link>
 
                       <a

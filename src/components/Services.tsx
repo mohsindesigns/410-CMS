@@ -44,7 +44,7 @@ export default function ServicesSection() {
             </div>
             
             <div className="pt-6 border-t border-border-dark/60 mt-auto">
-              <Link href="/services" className="btn-outline-white text-[11px] w-full justify-center text-center">
+              <Link href="/services/" className="btn-outline-white text-[11px] w-full justify-center text-center">
                 {ctaAll} <ArrowRight size={14} className="ml-1.5" />
               </Link>
             </div>
@@ -132,8 +132,19 @@ export default function ServicesSection() {
 
                 {/* Lower CTA Button block (100% Locked Position) */}
                 <div className="pt-2 mt-auto">
-                  <Link href={`/${active.slug || active.id}/`} className="btn-gold inline-flex items-center justify-center py-3.5 px-6 text-[12px] font-bold uppercase tracking-wider">
-                    {ctaLearnMore} <ArrowRight size={14} className="ml-2" />
+                  <Link
+                    href={`/${active.slug || active.id}/`}
+                    className="btn-gold inline-flex items-center justify-center py-3 px-5 text-[11.5px] font-bold uppercase tracking-wider group/btn"
+                  >
+                    <span>
+                      {(() => {
+                        const rawTitle = stripHtml(active.name || active.title || "");
+                        if (!rawTitle) return ctaLearnMore || "Explore Service";
+                        const shortTitle = rawTitle.replace(/\s*(maryland|baltimore|timonium|clinic)\s*/gi, " ").trim();
+                        return `Explore ${shortTitle}`;
+                      })()}
+                    </span>
+                    <ArrowRight size={13} className="ml-2 group-hover/btn:translate-x-1 transition-transform duration-200" />
                   </Link>
                 </div>
               </motion.div>

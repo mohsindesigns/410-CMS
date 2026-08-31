@@ -7,7 +7,6 @@ import { BASE_URL } from '@/lib/constants';
 import ServicesHeroSection from '@/components/sections/ServicesHeroSection';
 import StickyServicesSection from '@/components/sections/StickyServicesSection';
 import WhyChooseUsSection from '@/components/sections/WhyChooseUsSection';
-import HowItWorksSection from '@/components/sections/HowItWorksSection';
 import ContactFaqSection from '@/components/sections/ContactFaqSection';
 import CtaBanner from '@/components/sections/CtaBanner';
 
@@ -28,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
     ...(servicesData?.seo || {}),
     ...(pageDoc?.seo || {})
   };
-  const pageUrl = `${BASE_URL}/services`;
+  const pageUrl = `${BASE_URL}/services/`;
 
   return {
     title: {
@@ -59,17 +58,29 @@ import { ContentProvider } from '@/context/ContentContext';
 
 export default async function ServicesPage() {
   await connectToDatabase();
-  const pageDoc = await Page.findOne({ slug: 'services' }).lean() as any;
+  const [content, pageDoc] = await Promise.all([
+    SiteContent.findOne({ key: 'complete_data' }).lean() as any,
+    Page.findOne({ slug: 'services' }).lean() as any
+  ]);
+
+  const globalData = content?.data ? JSON.parse(JSON.stringify(content.data)) : {};
   const pageContent = pageDoc?.content ? JSON.parse(JSON.stringify(pageDoc.content)) : {};
+  const mergedData = {
+    ...globalData,
+    ...pageContent,
+    whyChooseUs: {
+      ...(globalData.whyChooseUs || {}),
+      ...(pageContent.whyChooseUs || {})
+    }
+  };
 
   return (
-    <ContentProvider initialData={pageContent}>
+    <ContentProvider initialData={mergedData}>
       <main>
         <ServicesHeroSection />
         <WhyChooseUsSection />
         <StickyServicesSection />
         <CtaBanner />
-        <HowItWorksSection />
         <ContactFaqSection />
       </main>
     </ContentProvider>

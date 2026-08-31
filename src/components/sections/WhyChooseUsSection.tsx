@@ -7,24 +7,54 @@ const iconMap: Record<string, any> = {
   Star, Shield, Award, Users, Clock, Flame, Zap, CheckCircle2
 };
 
+const cleanTextOrFallback = (rawHtml: string | undefined | null, fallback: string): string => {
+  if (!rawHtml) return fallback;
+  const stripped = String(rawHtml).replace(/<[^>]*>/g, '').replace(/&nbsp;/g, ' ').trim();
+  if (!stripped) return fallback;
+  // If rawHtml has no HTML wrapper tags, wrap in <p>
+  if (!/<[a-z][\s\S]*>/i.test(rawHtml)) {
+    return `<p>${rawHtml}</p>`;
+  }
+  return rawHtml;
+};
+
 export default function WhyChooseUsSection() {
   const { whyChooseUs } = useContent();
   
   const badge = whyChooseUs?.section?.badge || "WHY CHOOSE US";
   const headline = whyChooseUs?.section?.headline || "Designed for Maximum Performance";
-  const description = whyChooseUs?.section?.description || "We blend clinical orthopedic massage with modern recovery science to get you back to your best self.";
+  const rawDescription = whyChooseUs?.section?.description || whyChooseUs?.description || "";
+  const description = cleanTextOrFallback(
+    rawDescription,
+    "We blend clinical orthopedic massage with modern recovery science to get you back to your best self."
+  );
   
-  const features = whyChooseUs?.features || [
-    { title: "Clinical Expertise", description: "Specialized in soft-tissue dysfunction and chronic pain patterns.", icon: "Shield" },
-    { title: "Personalized Approach", description: "Every session is custom-tailored to your specific athletic goals.", icon: "Zap" },
-    { title: "Recovery Focused", description: "Designed to accelerate muscle repair and restore range of motion.", icon: "Flame" }
-  ];
+  const rawFeatures = Array.isArray(whyChooseUs?.features) && whyChooseUs.features.length > 0
+    ? whyChooseUs.features
+    : [
+        { title: "Clinical Expertise", description: "Specialized in soft-tissue dysfunction and chronic pain patterns.", icon: "Shield" },
+        { title: "Personalized Approach", description: "Every session is custom-tailored to your specific athletic goals.", icon: "Zap" },
+        { title: "Recovery Focused", description: "Designed to accelerate muscle repair and restore range of motion.", icon: "Flame" }
+      ];
 
-  const stats = whyChooseUs?.stats || [
-    { value: "500", suffix: "+", label: "Athletes Treated" },
-    { value: "5", suffix: "/5", label: "Client Rating" },
-    { value: "100", suffix: "%", label: "Satisfaction Guarantee" }
-  ];
+  const features = rawFeatures.map((f: any, idx: number) => ({
+    title: f.title || f.name || `Advantage ${idx + 1}`,
+    description: cleanTextOrFallback(
+      f.description || f.desc || "",
+      "Specialized therapeutic care tailored to your exact athletic recovery needs."
+    ),
+    icon: f.icon || "Shield"
+  }));
+
+  const rawStats = Array.isArray(whyChooseUs?.stats) && whyChooseUs.stats.length > 0
+    ? whyChooseUs.stats
+    : [
+        { value: "500", suffix: "+", label: "Athletes Treated" },
+        { value: "5", suffix: "/5", label: "Client Rating" },
+        { value: "100", suffix: "%", label: "Satisfaction Guarantee" }
+      ];
+
+  const stats = rawStats;
 
   return (
     <section className="bg-dark border-b border-border-dark py-16 md:py-24 relative overflow-hidden">
@@ -42,7 +72,7 @@ export default function WhyChooseUsSection() {
                 {headline}
               </h2>
               <div 
-                className="text-white/60 text-[14px] md:text-[15px] leading-relaxed mb-8"
+                className="text-white/70 text-[14px] md:text-[15px] leading-relaxed mb-8 [&_p]:text-white/70 [&_p]:mb-3 [&_p:last-child]:mb-0 font-light"
                 dangerouslySetInnerHTML={{ __html: description }}
               />
             </div>
@@ -73,18 +103,20 @@ export default function WhyChooseUsSection() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ delay: idx * 0.1 }}
-                  className="bg-white/[0.02] border border-white/5 p-6 rounded-xl hover:border-gold/30 hover:bg-white/[0.04] transition-all duration-300 group"
+                  className="bg-white/[0.02] border border-white/5 p-6 rounded-xl hover:border-gold/30 hover:bg-white/[0.04] transition-all duration-300 group flex flex-col justify-between"
                 >
-                  <div className="w-10 h-10 bg-gold/10 rounded-lg flex items-center justify-center text-gold mb-4 group-hover:bg-gold group-hover:text-dark transition-all duration-300">
-                    <IconComponent size={20} />
+                  <div>
+                    <div className="w-10 h-10 bg-gold/10 rounded-lg flex items-center justify-center text-gold mb-4 group-hover:bg-gold group-hover:text-dark transition-all duration-300">
+                      <IconComponent size={20} />
+                    </div>
+                    <h3 className="text-white font-bold text-[16px] mb-2 group-hover:text-gold transition-colors">
+                      {feature.title}
+                    </h3>
+                    <div 
+                      className="text-white/60 text-[13px] leading-relaxed font-light [&_p]:text-white/60 [&_p]:mb-2 [&_p:last-child]:mb-0"
+                      dangerouslySetInnerHTML={{ __html: feature.description }}
+                    />
                   </div>
-                  <h3 className="text-white font-bold text-[16px] mb-2 group-hover:text-gold transition-colors">
-                    {feature.title}
-                  </h3>
-                  <div 
-                    className="text-white/50 text-[13px] leading-relaxed font-light [&_p]:text-white/50"
-                    dangerouslySetInnerHTML={{ __html: feature.description }}
-                  />
                 </motion.div>
               );
             })}

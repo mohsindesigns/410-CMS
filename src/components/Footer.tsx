@@ -192,10 +192,16 @@ export default function Footer() {
   const copyrightText: string = stripHtml(bottomInfo.copyright || (footer as any)?.copyright || "© 2024 Muscle Therapy. All Rights Reserved.");
 
   const companyLinks = navbar?.companyLinks || navbar?.links || [];
-  const quickLinksData = companyLinks.map((link: any) => ({
-    label: link.label,
-    href: link.href
-  }));
+  const quickLinksData = companyLinks.map((link: any) => {
+    let href = link.href || "/";
+    if (href.startsWith("/") && !href.endsWith("/") && !href.includes("#") && !href.includes("?")) {
+      href = `${href}/`;
+    }
+    return {
+      label: link.label,
+      href
+    };
+  });
 
   const servicesListRaw = (servicesData?.services || []).filter((s: any) => s.status === 'published' || s.status === undefined);
   const servicesDataList = servicesListRaw.slice(0, 6).map((svc: any) => ({
@@ -308,11 +314,25 @@ export default function Footer() {
 
           {/* ── Bottom bar ───────────────────────────── */}
           <div className="flex flex-col sm:flex-row items-center justify-between py-6 gap-3 text-center sm:text-left">
-            <p className="text-white/40 text-[12px]">{copyrightText}</p>
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-white/40 text-[12px]">
+              <p>{copyrightText}</p>
+              <span className="hidden sm:inline text-white/20">•</span>
+              <p className="text-white/40">
+                Designed & Developed by{" "}
+                <a
+                  href="https://410-cms.vercel.app/"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="text-gold hover:text-white font-medium underline decoration-gold/40 hover:decoration-white transition-colors"
+                >
+                  Mohsin Design
+                </a>
+              </p>
+            </div>
             <div className="flex items-center gap-4 sm:gap-6">
-              <Link href="/contact" className="text-white/40 text-[12px] hover:text-white/70 transition-colors">{privacy}</Link>
+              <Link href="/privacy/" className="text-white/40 text-[12px] hover:text-white/70 transition-colors">{privacy}</Link>
               <span className="text-white/15">{divider}</span>
-              <Link href="/contact" className="text-white/40 text-[12px] hover:text-white/70 transition-colors">{terms}</Link>
+              <Link href="/terms/" className="text-white/40 text-[12px] hover:text-white/70 transition-colors">{terms}</Link>
             </div>
           </div>
 

@@ -14,11 +14,19 @@ import { getRobotsMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
-  const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
+  const [content, homePageDoc] = await Promise.all([
+    SiteContent.findOne({ key: "complete_data" }).lean() as any,
+    Page.findOne({
+      $or: [{ slug: "/" }, { slug: "home" }, { title: /^home$/i }],
+      status: "published",
+      isTrashed: { $ne: true },
+    }).lean() as any
+  ]);
+
   const settings = content?.data?.settings;
   const homepageId = settings?.homepageId;
 
-  const pageUrl = BASE_URL;
+  const pageUrl = `${BASE_URL}/`;
 
   let metadata: Metadata = {
     metadataBase: new URL(BASE_URL),
@@ -39,24 +47,28 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (homepageId) {
     // Check if it's a page
-    const page = await Page.findById(homepageId).lean();
+    const page = await Page.findById(homepageId).lean() as any;
     if (page) {
       const seo = page.seo || {};
+      const metaDescription = seo.metaDescription || page.content?.hero?.description || settings?.siteDescription || "";
       return {
         ...metadata,
         title: { absolute: seo.metaTitle || page.title },
-        description: seo.metaDescription,
+        description: metaDescription,
+        alternates: {
+          canonical: seo.canonicalUrl || pageUrl,
+        },
         openGraph: {
           ...metadata.openGraph,
           title: seo.ogTitle || seo.metaTitle || page.title,
-          description: seo.ogDescription || seo.metaDescription,
-          images: seo.featuredImage ? [{ url: seo.featuredImage }] : [],
+          description: seo.ogDescription || seo.metaDescription || metaDescription,
+          images: seo.featuredImage ? [{ url: seo.featuredImage }] : [`${BASE_URL}/eagle-logo.png`],
         },
         twitter: {
           ...metadata.twitter,
           title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || page.title,
-          description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
-          images: [seo.featuredImage || seo.twitterImage || seo.ogImage].filter(Boolean) as string[],
+          description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || metaDescription,
+          images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/eagle-logo.png`].filter(Boolean) as string[],
         },
         robots: getRobotsMetadata(settings, seo)
       };
@@ -65,41 +77,63 @@ export async function generateMetadata(): Promise<Metadata> {
     const service = content?.data?.services?.services?.find((s: any) => s._id === homepageId || s.slug === homepageId);
     if (service) {
       const seo = service.seo || {};
+      const metaDescription = seo.metaDescription || service.description || "";
       return {
         ...metadata,
         title: { absolute: seo.metaTitle || service.title },
-        description: seo.metaDescription || service.description,
+        description: metaDescription,
+        alternates: {
+          canonical: seo.canonicalUrl || pageUrl,
+        },
         openGraph: {
           ...metadata.openGraph,
           title: seo.ogTitle || seo.metaTitle || service.title,
-          description: seo.ogDescription || seo.metaDescription || service.description,
-          images: seo.featuredImage ? [{ url: seo.featuredImage }] : [],
+          description: seo.ogDescription || seo.metaDescription || metaDescription,
+          images: seo.featuredImage ? [{ url: seo.featuredImage }] : [`${BASE_URL}/eagle-logo.png`],
         },
         twitter: {
           ...metadata.twitter,
           title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || service.title,
-          description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || service.description,
-          images: [seo.featuredImage || seo.twitterImage || seo.ogImage].filter(Boolean) as string[],
+          description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || metaDescription,
+          images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/eagle-logo.png`].filter(Boolean) as string[],
         },
         robots: getRobotsMetadata(settings, seo)
       };
     }
   }
 
-  // Default to Home data
+  // Check homePageDoc from Page collection or homeData from SiteContent
   const homeData = content?.data?.home;
-  const seo = homeData?.seo || {};
+  const seo = homePageDoc?.seo || homeData?.seo || {};
+  const metaTitle = seo.metaTitle || homePageDoc?.title || homeData?.hero?.headline || settings?.siteTitle || "410 Muscle Therapy";
+  const metaDescription =
+    seo.metaDescription ||
+    homePageDoc?.content?.hero?.description ||
+    homeData?.hero?.description ||
+    homeData?.hero?.subheadline ||
+    settings?.siteDescription ||
+    "Specialized performance bodywork, mobility restoration, and injury prevention designed for athletes and active adults.";
+
   return {
     ...metadata,
     title: {
-      absolute: seo.metaTitle || homeData?.hero?.headline || settings?.siteTitle
+      absolute: metaTitle
     },
-    description: seo.metaDescription || homeData?.hero?.subheadline,
+    description: metaDescription,
+    alternates: {
+      canonical: seo.canonicalUrl || pageUrl,
+    },
     openGraph: {
       ...metadata.openGraph,
-      title: seo.ogTitle || seo.metaTitle || homeData?.hero?.headline || settings?.siteTitle,
-      description: seo.ogDescription || seo.metaDescription || homeData?.hero?.subheadline,
+      title: seo.ogTitle || seo.metaTitle || metaTitle,
+      description: seo.ogDescription || seo.metaDescription || metaDescription,
       images: [seo.featuredImage || `${BASE_URL}/eagle-logo.png`].filter(Boolean) as string[],
+    },
+    twitter: {
+      ...metadata.twitter,
+      title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || metaTitle,
+      description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || metaDescription,
+      images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/eagle-logo.png`].filter(Boolean) as string[],
     },
     robots: getRobotsMetadata(settings, seo)
   };

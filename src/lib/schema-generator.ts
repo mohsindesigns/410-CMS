@@ -16,7 +16,7 @@ export function generateSchema(options: SchemaOptions) {
   const { title, description, slug = "", type = "WebPage", faqs, breadcrumbTitle, isService, image } = options;
   const safeSlug = String(slug || "");
   const normalizedSlug = safeSlug.startsWith('/') ? safeSlug : `/${safeSlug}`;
-  const pageUrl = `${BASE_URL}${normalizedSlug === '/' ? '' : normalizedSlug}`;
+  const pageUrl = normalizedSlug === '/' ? `${BASE_URL}/` : `${BASE_URL}${normalizedSlug.endsWith('/') ? normalizedSlug : `${normalizedSlug}/`}`;
 
   // 1. Organization Schema
   const organizationSchema = {
