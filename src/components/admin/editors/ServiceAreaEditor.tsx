@@ -27,19 +27,19 @@ interface Region {
 
 // Icon library items with live icon rendering
 const AVAILABLE_ICONS = [
-  { name: "Home", label: "Residential Roofing", icon: Home },
-  { name: "Building2", label: "Commercial Roofing", icon: Building2 },
+  { name: "Activity", label: "Sports Massage", icon: Home },
+  { name: "Heart", label: "Fascial Stretch", icon: Building2 },
   { name: "Building", label: "Property / Office", icon: Building },
-  { name: "Droplets", label: "Seamless Gutters", icon: Droplets },
-  { name: "Shield", label: "Storm Protection", icon: ShieldCheck },
+  { name: "Droplets", label: "Recovery / Cupping", icon: Droplets },
+  { name: "Shield", label: "Injury Prevention", icon: ShieldCheck },
   { name: "Award", label: "Elite / Quality", icon: Award },
-  { name: "Clock", label: "Rapid Response", icon: Clock },
-  { name: "BadgeCheck", label: "Veteran Owned", icon: BadgeCheck },
+  { name: "Clock", label: "Rapid Recovery", icon: Clock },
+  { name: "BadgeCheck", label: "Certified Specialist", icon: BadgeCheck },
   { name: "TrendingUp", label: "Energy Efficiency", icon: TrendingUp },
   { name: "Star", label: "5-Star Rating", icon: Star },
   { name: "Users", label: "Local Crew", icon: Users },
-  { name: "Layout", label: "Modern Siding", icon: Layout },
-  { name: "TreePine", label: "Cedar Siding", icon: TreePine },
+  { name: "Layout", label: "Myofascial Release", icon: Layout },
+  { name: "TreePine", label: "Postural Restoration", icon: TreePine },
   { name: "Wrench", label: "Expert Repairs", icon: Wrench },
   { name: "ClipboardList", label: "Free Inspection", icon: ClipboardList },
   { name: "ShieldAlert", label: "Storm Damage", icon: ShieldAlert },
@@ -684,7 +684,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                             <label className="text-[11px] font-bold text-slate-600">Button Link <span className="text-slate-400 font-normal">(optional)</span></label>
                             <input
                               type="text"
-                              placeholder="e.g. /services/residential-roofing"
+                              placeholder="e.g. /maryland-sports-massage-therapist/"
                               value={item.buttonHref || ""}
                               onChange={(e) => {
                                 const newItems = [...data.materials.items];
@@ -856,7 +856,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                                   updateField("servicesSection", "items", newItems);
                                 }}
                                 className={UI.input}
-                                placeholder="e.g. /services/residential-roofing"
+                                placeholder="e.g. /maryland-sports-massage-therapist/"
                               />
                             </div>
                           </div>
@@ -948,7 +948,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                                 updateField("regions", null, newRegions);
                               }}
                               className={UI.input + " font-bold"}
-                              placeholder="e.g. St. Louis County"
+                              placeholder="e.g. Baltimore County"
                             />
                           </div>
 
@@ -975,7 +975,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                               }}
                               className={UI.textarea}
                               rows={2}
-                              placeholder="63017, 63005, 63011, 63021"
+                              placeholder="21093, 21204, 21094, 21030"
                             />
                             <p className="text-[10px] text-slate-400 mt-1">Separate zip codes with commas. Used for coverage verification lookup.</p>
                           </div>
@@ -1005,7 +1005,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                       <label className={UI.label}>Section Main Title</label>
                       <input
                         type="text"
-                        value={data.whyChoose?.title || "Elite Missouri Roofing Quality"}
+                        value={data.whyChoose?.title || "Elite Clinical Performance Standards"}
                         onChange={(e) => updateField("whyChoose", "title", e.target.value)}
                         className={UI.input}
                       />
@@ -1157,7 +1157,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                         value={data.overview?.image || ""}
                         onChange={(e) => updateField("overview", "image", e.target.value)}
                         className={UI.input}
-                        placeholder="e.g. /images/roofing-about.jpg"
+                        placeholder="e.g. /uploads/blog/2_massage-service.jpg"
                       />
                       <button
                         type="button"

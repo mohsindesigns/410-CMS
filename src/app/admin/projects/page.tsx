@@ -114,11 +114,11 @@ export default function ProjectsAdminPage() {
                     <div className="grid grid-cols-2 gap-4">
                        <div className="space-y-1">
                           <label className="text-[13px] font-bold">Category</label>
-                          <input type="text" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. ROOFING" />
-                       </div>
-                       <div className="space-y-1">
-                          <label className="text-[13px] font-bold">Location</label>
-                          <input type="text" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Dallas, TX" />
+                           <input type="text" value={form.category} onChange={(e) => setForm({ ...form, category: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. SPORTS MASSAGE" />
+                        </div>
+                        <div className="space-y-1">
+                           <label className="text-[13px] font-bold">Location</label>
+                           <input type="text" value={form.location} onChange={(e) => setForm({ ...form, location: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. Timonium, MD" />
                        </div>
                     </div>
 

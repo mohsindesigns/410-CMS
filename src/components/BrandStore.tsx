@@ -93,7 +93,7 @@ export default function BrandStore() {
                     >
                         Premium hoodies • Tees • Hats • Bags
                         <br />
-                        Made to order • Veteran owned
+                        Made to order • Official Gear
                     </motion.p>
                 </motion.div>
 

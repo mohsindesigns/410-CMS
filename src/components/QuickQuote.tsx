@@ -147,7 +147,7 @@ ${formData.message}
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 ⏱️ Submitted: ${new Date().toLocaleString()}
 🌐 Source: Quick Quote Widget
-🇺🇸 Veteran Owned & Operated
+⚡ 410 Muscle Therapy • Performance Bodywork
 ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
     `;
 
@@ -746,9 +746,9 @@ ${formData.message}
                                                 className="flex items-center justify-center gap-4 pt-4 text-xs"
                                             >
                                                 {(quickQuote.badges || [
-                                                    { text: "Free estimate", icon: "Check" },
-                                                    { text: "4-8h response", icon: "Clock" },
-                                                    { text: "Veteran owned", icon: "Flag" }
+                                                    { text: "Free consultation", icon: "Check" },
+                                                    { text: "Rapid response", icon: "Clock" },
+                                                    { text: "Certified specialists", icon: "BadgeCheck" }
                                                 ]).map((badge: any, idx: number) => (
                                                     <div key={idx} className="flex items-center gap-2">
                                                         <div className="w-1.5 h-1.5 bg-primary rounded-full" />

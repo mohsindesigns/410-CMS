@@ -24,7 +24,7 @@ export default function GalleryEditor({ pageId, data, setData }: { pageId: strin
     if (data && Object.keys(data).length === 0) {
        setData({
          galleryPage: {
-           header: { badge: "Our Work", titlePrefix: "Project", titleHighlight: "Gallery", titleSuffix: "", description: "Browse our completed projects across St. Louis." }
+           header: { badge: "Our Work", titlePrefix: "Clinical", titleHighlight: "Gallery", titleSuffix: "", description: "Browse our client recovery journeys, bodywork sessions, and mobility results across Maryland." }
          },
          portfolio: {
            projects: []

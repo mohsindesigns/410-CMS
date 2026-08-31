@@ -61,7 +61,7 @@ export const useContent = () => {
     footerContact.address = footerContact.address || info.address || footer?.address || "";
     footerContact.hours = footerContact.hours || info.hours || footer?.hours || "";
 
-    const footerCompany = getSafe(footer, 'company', { name: "410 Muscle Therapy", tagline: "Veteran Owned & Operated", description: "", logo: "" });
+    const footerCompany = getSafe(footer, 'company', { name: "410 Muscle Therapy", tagline: "Performance Recovery & Clinical Bodywork", description: "", logo: "" });
     const footerBottom = getSafe(footer, 'bottom', { copyright: "© 2026 410 Muscle Therapy", rights: "All Rights Reserved", tagline: "", links: [] });
     const footerMarquee = getSafe(footer, 'marquee', { texts: [], speed: 30, repeats: 8 });
     const footerCertifications = getSafe(footer, 'certifications', []);
@@ -499,7 +499,7 @@ export const useContent = () => {
             ...(completeData?.recognition ? { recognition: completeData.recognition } : {}),
         },
         images: getSafe(completeData, 'images', {}),
-        loader: getSafe(completeData, 'loader', { company: { name: "410 Muscle Therapy", tagline: "Veteran Owned" }, phases: { simpleDark: 200, roofDraw: 300, logoText: 400, ready: 100 } }),
+        loader: getSafe(completeData, 'loader', { company: { name: "410 Muscle Therapy", tagline: "Performance Recovery Specialist" }, phases: { simpleDark: 200, logoText: 400, ready: 100 } }),
         quickQuote: getSafe(completeData, 'quickQuote', {
             title: "",
             description: "",

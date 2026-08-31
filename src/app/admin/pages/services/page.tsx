@@ -302,10 +302,10 @@ export default function ServicesPageEditor() {
   const updateStatItem = (index: number, field: string, value: any) => {
     setData((prev: any) => {
       const stats = [...(prev.services?.stats || [
-        { value: "50", suffix: "+", label: "Years Combined Experience", description: "Industry expertise across our team", icon: "Clock" },
-        { value: "1,000", suffix: "+", label: "Homes Transformed", description: "Satisfied homeowners", icon: "Home" },
-        { value: "100", suffix: "%", label: "Veteran Owned", description: "Proudly serving our community", icon: "BadgeCheck" },
-        { value: "10", suffix: "YR", label: "Year Workmanship Guarantee", description: "Peace of mind guaranteed", icon: "Shield" }
+        { value: "15", suffix: "+", label: "Years Clinical Experience", description: "Specialized bodywork expertise", icon: "Clock" },
+        { value: "1,500", suffix: "+", label: "Athletes Restored", description: "Satisfied clients across Maryland", icon: "Users" },
+        { value: "100", suffix: "%", label: "Certified Specialists", description: "Licensed manual therapists", icon: "BadgeCheck" },
+        { value: "100", suffix: "%", label: "Customized Protocols", description: "Tailored to your biomechanics", icon: "Shield" }
       ])];
       if (!stats[index]) stats[index] = {};
       stats[index] = { ...stats[index], [field]: value };
@@ -369,23 +369,23 @@ export default function ServicesPageEditor() {
   };
 
   const stats = data.services?.stats || [
-    { value: "50", suffix: "+", label: "Years Combined Experience", description: "Industry expertise across our team", icon: "Clock" },
-    { value: "1,000", suffix: "+", label: "Homes Transformed", description: "Satisfied homeowners", icon: "Home" },
-    { value: "100", suffix: "%", label: "Veteran Owned", description: "Proudly serving our community", icon: "BadgeCheck" },
-    { value: "10", suffix: "YR", label: "Year Workmanship Guarantee", description: "Peace of mind guaranteed", icon: "Shield" }
+    { value: "15", suffix: "+", label: "Years Clinical Experience", description: "Specialized bodywork expertise", icon: "Clock" },
+    { value: "1,500", suffix: "+", label: "Athletes Restored", description: "Satisfied clients across Maryland", icon: "Users" },
+    { value: "100", suffix: "%", label: "Certified Specialists", description: "Licensed manual therapists", icon: "BadgeCheck" },
+    { value: "100", suffix: "%", label: "Customized Protocols", description: "Tailored to your biomechanics", icon: "Shield" }
   ];
 
   const gridSection = data.services?.gridSection || {
     badge: "410 Muscle Therapy",
     headline: "World Class <span class='text-primary'>Capabilities</span>",
-    description: "Every detail matters when it comes to structural integrity. Our team brings military-grade standards to every project across the St. Louis area."
+    description: "Every session is customized to your body mechanics. Our clinical specialists bring elite standards to every treatment across Maryland."
   };
 
   const cta = data.services?.cta || {
     ratingText: "500+ 5-Star Reviews",
-    title: "Ready for Your Free Estimate?",
-    description: "Transform your home with St. Louis's expert builders. Contact us today for quality craftsmanship and unparalleled service.",
-    buttonText: "Get Free Estimate",
+    title: "Ready to Restore Your Peak Mobility?",
+    description: "Elevate your performance and recovery with Maryland's dedicated bodywork specialists. Schedule your session today.",
+    buttonText: "Book Session",
     buttonLink: "/contact-us"
   };
 
@@ -758,7 +758,7 @@ export default function ServicesPageEditor() {
                 <div className="bg-primary/5 p-6 rounded-2xl border border-primary/10 flex items-start gap-4">
                   <HelpCircle className="w-6 h-6 text-primary flex-shrink-0 mt-0.5" />
                   <p className="text-slate-600 text-sm font-medium">
-                    Note: To edit, create, or rearrange the individual capability cards (like Roofing, Windows, siding etc.), go to the 
+                    Note: To edit, create, or rearrange the individual capability cards (like Sports Massage, Cupping, Fascial Stretch etc.), go to the 
                     <Link href="/admin/services" className="text-primary font-bold hover:underline ml-1">Services Management</Link> section.
                   </p>
                 </div>
@@ -901,7 +901,7 @@ export default function ServicesPageEditor() {
                           <RichTextEditor
                             content={faqItem.question || ""}
                             onChange={(val) => updateFaqItem(index, "question", val)}
-                            placeholder="e.g. What types of roofing services do you offer?"
+                            placeholder="e.g. What types of massage and bodywork services do you offer?"
                           />
                         </div>
 
@@ -910,7 +910,7 @@ export default function ServicesPageEditor() {
                           <RichTextEditor
                             content={faqItem.answer || ""}
                             onChange={(val) => updateFaqItem(index, "answer", val)}
-                            placeholder="e.g. We provide comprehensive roofing services, including residential roofing, TPO commercial roofing, roof inspections, and repairs."
+                            placeholder="e.g. We provide comprehensive clinical bodywork services, including sports massage, fascial stretch therapy, cupping, and corrective movement."
                           />
                         </div>
 

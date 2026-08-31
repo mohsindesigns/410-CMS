@@ -145,7 +145,7 @@ export async function POST(request: Request) {
     html += `
         <p style="font-size: 12px; color: #666; margin-top: 30px; border-top: 1px solid #eee; padding-top: 10px;">
           ⏱️ Submitted: ${new Date().toLocaleString()}<br>
-          🇺🇸 Veteran Owned & Operated
+          ⚡ 410 Muscle Therapy • Performance Recovery
         </p>
       </div>
     `;

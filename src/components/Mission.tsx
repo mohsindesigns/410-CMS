@@ -39,11 +39,11 @@ const Mission = () => {
 
         <div className="md:col-span-6 md:col-start-7 order-1 md:order-2">
           <div className="accent-line mb-6 mission-copy" />
-          <h2 className="heading-lg text-foreground mb-8 mission-headline">Soaring Beyond<br />Expectations.</h2>
+          <h2 className="heading-lg text-foreground mb-8 mission-headline">Performance Beyond<br />Limits.</h2>
           <div className="space-y-6">
-            <p className="body-lg text-foreground/90 mission-copy">410 Muscle Therapy was founded to do more than just build roofs, windows, decks, and siding. We are here to build a movement.</p>
-            <p className="body-sm text-muted-foreground mission-copy">Born in St. Charles, Missouri, 410 Muscle Therapy was launched by Brandon Anderson, a U.S. Army veteran who brings battlefield discipline and boardroom precision to every project.</p>
-            <p className="body-sm text-muted-foreground mission-copy italic border-l-2 border-primary/30 pl-4">"We don't just build homes. We restore trust, craftsmanship, and honor to the remodeling industry."</p>
+            <p className="body-lg text-foreground/90 mission-copy">410 Muscle Therapy was founded to provide elite clinical bodywork, mobility restoration, and injury prevention designed for peak athletic longevity.</p>
+            <p className="body-sm text-muted-foreground mission-copy">Based in Timonium, Maryland, 410 Muscle Therapy delivers targeted manual therapy, fascial stretch, and biomechanical recovery to athletes and active adults across Maryland.</p>
+            <p className="body-sm text-muted-foreground mission-copy italic border-l-2 border-primary/30 pl-4">"We don't just treat symptoms. We optimize human movement, restore tissue glide, and empower athletes to perform at their absolute best."</p>
           </div>
         </div>
       </div>
