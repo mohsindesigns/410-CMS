@@ -201,7 +201,7 @@ export default async function DynamicPage({ params }: PageProps) {
     }).lean();
 
     if (postDoc) {
-      permanentRedirect(`/blog/${postDoc.slug}/`);
+      permanentRedirect(`/blogs/${postDoc.slug}/`);
     }
 
     notFound();

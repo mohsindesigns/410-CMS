@@ -162,7 +162,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
         </div>
         <div className="flex items-center gap-3">
           {id && (
-            <Link href={`/blog/${post.slug}`} target="_blank" className="flex items-center gap-1.5 text-[#2271b1] text-[13px] hover:text-[#135e96]">
+            <Link href={`/blogs/${post.slug}/`} target="_blank" className="flex items-center gap-1.5 text-[#2271b1] text-[13px] hover:text-[#135e96]">
               <ExternalLink className="w-4 h-4" /> View Post
             </Link>
           )}
@@ -193,7 +193,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
 
           <div className="flex items-center gap-1 text-[12px] text-[#646970]">
             <strong>Permalink:</strong>
-            <span className="bg-[#f0f0f1] px-1 rounded border border-[#c3c4c7] truncate max-w-[200px] sm:max-w-md">{BASE_URL}/blog/{post.slug}</span>
+            <span className="bg-[#f0f0f1] px-1 rounded border border-[#c3c4c7] truncate max-w-[200px] sm:max-w-md">{BASE_URL}/blogs/{post.slug}/</span>
             <button onClick={() => {
               const s = prompt("Enter slug:", post.slug);
               if (s) setPost({ ...post, slug: s });
@@ -391,7 +391,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
               </div>
               {post.slug && (
                 <div className="pt-1">
-                  <Link href={`/blog/${post.slug}`} target="_blank" className="text-[#2271b1] hover:underline flex items-center gap-1">
+                  <Link href={`/blogs/${post.slug}/`} target="_blank" className="text-[#2271b1] hover:underline flex items-center gap-1">
                     <ExternalLink className="w-3 h-3" /> View Post
                   </Link>
                 </div>

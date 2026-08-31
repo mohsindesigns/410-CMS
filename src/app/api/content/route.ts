@@ -75,8 +75,10 @@ export async function PUT(req: NextRequest) {
     const { revalidatePath } = await import('next/cache');
     revalidatePath('/');
     revalidatePath('/services');
+    revalidatePath('/blogs');
     revalidatePath('/blog');
     revalidatePath('/services/[slug]', 'page');
+    revalidatePath('/blogs/[slug]', 'page');
     revalidatePath('/blog/[slug]', 'page');
 
     return NextResponse.json({ success: true, result });

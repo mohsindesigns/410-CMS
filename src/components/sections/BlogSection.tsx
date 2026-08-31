@@ -35,7 +35,7 @@ export default function BlogSection({
   ctaAll = "View All Articles",
   ctaReadMore = "Read Article",
   posts = [],
-  viewAllLink = "/blog",
+  viewAllLink = "/blogs/",
 }: BlogSectionProps) {
   const [currentIndex, setCurrentIndex] = useState(0);
   const [cardsPerView, setCardsPerView] = useState(3);
@@ -134,7 +134,7 @@ export default function BlogSection({
               // Clean HTML from excerpt
               const rawExcerpt = post.excerpt || "";
               const cleanExcerpt = rawExcerpt.replace(/<[^>]*>?/gm, "").trim();
-              const postUrl = `/blog/${post.slug}`;
+              const postUrl = `/blogs/${post.slug}/`;
 
               return (
                 <div

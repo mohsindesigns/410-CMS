@@ -298,7 +298,7 @@ export default function BlogPosts() {
                           <button onClick={() => deletePost(post._id)} className="text-[#d63638] hover:text-[#b32d2e]">Trash</button>
                         )}
                         <span className="text-[#c3c4c7]">|</span>
-                        <Link href={`/blog/${post.slug}`} target="_blank" className="text-[#2271b1] hover:text-[#135e96]">View</Link>
+                        <Link href={`/blogs/${post.slug}/`} target="_blank" className="text-[#2271b1] hover:text-[#135e96]">View</Link>
                         <span className="text-[#c3c4c7]">|</span>
                         <button onClick={() => duplicatePost(post._id)} className="text-[#2271b1] hover:text-[#135e96]">Duplicate</button>
                       </div>

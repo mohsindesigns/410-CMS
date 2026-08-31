@@ -69,7 +69,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       priority: 0.8,
     },
     {
-      url: `${BASE_URL}/blog/`,
+      url: `${BASE_URL}/blogs/`,
       lastModified: now,
       changeFrequency: 'daily',
       priority: 0.7,
@@ -94,7 +94,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     const slug = String(post.slug || '').replace(/^\/+/, '').replace(/\/+$/, '');
 
     return {
-      url: `${BASE_URL}/blog/${slug}/`,
+      url: `${BASE_URL}/blogs/${slug}/`,
       lastModified: post.updatedAt ? new Date(post.updatedAt).toISOString() : now,
       changeFrequency: 'weekly' as const,
       priority: 0.75,
