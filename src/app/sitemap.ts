@@ -82,9 +82,11 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       .replace(/^\/+/, '')
       .replace(/\/+$|^services\//, '');
 
+    const serviceModified = service.updatedAt ? new Date(service.updatedAt).toISOString() : (service.publishedAt ? new Date(service.publishedAt).toISOString() : now);
+
     return {
       url: `${BASE_URL}/${slug}/`,
-      lastModified: now,
+      lastModified: serviceModified,
       changeFrequency: 'weekly' as const,
       priority: 0.85,
     };

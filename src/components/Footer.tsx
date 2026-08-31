@@ -65,7 +65,7 @@ function SocialIcons({ socialItems }: { socialItems?: any[] }) {
         const iconName = s.icon || s.platform || '';
         // Format to PascalCase to match Lucide icon export names
         const formattedIconName = iconName.charAt(0).toUpperCase() + iconName.slice(1);
-        
+
         let IconComponent = (LucideIcons as any)[formattedIconName];
 
         // Specific fallbacks for common lowercase names if not direct match
@@ -113,7 +113,7 @@ function MapPlaceholder({ addressText, iframeHtml }: { addressText: string; ifra
       .replace(/width="[^"]*"/i, 'width="100%"')
       .replace(/height="[^"]*"/i, 'height="100%"');
     return (
-      <div 
+      <div
         className="mt-5 h-[160px] w-full rounded-md overflow-hidden border border-white/10 relative"
         dangerouslySetInnerHTML={{ __html: styledIframe }}
       />
@@ -141,7 +141,7 @@ export default function Footer() {
   const bottomInfo = footer?.bottom || {};
   const socialLinks: any[] = Array.isArray(rawFooter.social) ? rawFooter.social
     : Array.isArray((footer as any)?.social) ? (footer as any).social
-    : [];
+      : [];
 
   if (typeof window !== 'undefined') {
     // eslint-disable-next-line no-console
@@ -190,7 +190,7 @@ export default function Footer() {
     hoursText = "Mon–Sat: 8:00 AM – 7:00 PM";
   }
 
-  const copyrightText: string = stripHtml(bottomInfo.copyright || (footer as any)?.copyright || "© 2025 410 Muscle Therapy. All Rights Reserved.");
+  const copyrightText: string = stripHtml(bottomInfo.copyright || (footer as any)?.copyright || "© 2026 410 Muscle Therapy. All Rights Reserved.");
 
   const companyLinks = navbar?.companyLinks || navbar?.links || [];
   const quickLinksData = companyLinks.map((link: any) => {

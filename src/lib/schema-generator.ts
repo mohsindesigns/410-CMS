@@ -5,12 +5,14 @@ interface SchemaOptions {
   title: string;
   description: string;
   slug: string;
-  type?: "WebPage" | "AboutPage" | "ContactPage" | "CollectionPage" | "Service";
+  type?: "WebPage" | "AboutPage" | "ContactPage" | "CollectionPage" | "Service" | "Article" | "BlogPosting";
   faqs?: Array<{ question: string; answer: string }>;
   breadcrumbTitle?: string;
   isService?: boolean;
   image?: string;
   servicesList?: Array<{ name: string; description?: string }>;
+  datePublished?: string;
+  dateModified?: string;
 }
 
 export function getHomepageSchemas(servicesList?: Array<{ name: string }>, faqs?: Array<{ question?: string; answer?: string; q?: string; a?: string }>) {
@@ -216,7 +218,19 @@ export function getHomepageSchemas(servicesList?: Array<{ name: string }>, faqs?
 }
 
 export function generateSchema(options: SchemaOptions) {
-  const { title, description, slug = "", type = "WebPage", faqs, breadcrumbTitle, isService, image, servicesList } = options;
+  const {
+    title,
+    description,
+    slug = "",
+    type = "WebPage",
+    faqs,
+    breadcrumbTitle,
+    isService,
+    image,
+    servicesList,
+    datePublished = "2025-02-07T15:28:30+00:00",
+    dateModified = "2026-07-24T16:08:21+00:00"
+  } = options;
   const safeSlug = String(slug || "");
   const normalizedSlug = safeSlug.startsWith('/') ? safeSlug : `/${safeSlug}`;
   const isRoot = normalizedSlug === '/' || normalizedSlug === '';
@@ -320,6 +334,9 @@ export function generateSchema(options: SchemaOptions) {
     "url": pageUrl,
     "name": title,
     "description": description,
+    "datePublished": datePublished,
+    "dateModified": dateModified,
+    "inLanguage": "en",
     "isPartOf": { "@id": `${BASE_URL}/#website` },
     ...(breadcrumbList ? { "breadcrumb": { "@id": `${pageUrl}#breadcrumb` } } : {}),
     ...(image ? {
@@ -338,6 +355,21 @@ export function generateSchema(options: SchemaOptions) {
     mainEntitySchema["serviceType"] = title;
   }
 
+  // Companion WebPage schema for Service pages so both Service & WebPage have dates & relations
+  const companionWebPageSchema: any = isService ? {
+    "@type": "WebPage",
+    "@id": `${pageUrl}`,
+    "url": pageUrl,
+    "name": `${title} in Timonium Maryland | 410 Muscle Therapy`,
+    "description": description,
+    "datePublished": datePublished,
+    "dateModified": dateModified,
+    "inLanguage": "en",
+    "isPartOf": { "@id": `${BASE_URL}/#website` },
+    "about": { "@id": `${pageUrl}#service` },
+    ...(breadcrumbList ? { "breadcrumb": { "@id": `${pageUrl}#breadcrumb` } } : {})
+  } : null;
+
   const graph: any[] = [
     organizationSchema,
     localBusinessSchema,
@@ -346,6 +378,10 @@ export function generateSchema(options: SchemaOptions) {
 
   if (breadcrumbList) {
     graph.push(breadcrumbList);
+  }
+
+  if (companionWebPageSchema) {
+    graph.push(companionWebPageSchema);
   }
 
   graph.push(mainEntitySchema);

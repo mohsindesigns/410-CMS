@@ -28,6 +28,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
   const pageUrl = `${BASE_URL}/blogs/`;
 
+  const publishedTime = (pageDoc?.publishedAt || pageDoc?.createdAt ? new Date(pageDoc.publishedAt || pageDoc.createdAt) : new Date("2025-02-07T15:28:30Z")).toISOString();
+  const modifiedTime = (pageDoc?.updatedAt || pageDoc?.publishedAt || pageDoc?.createdAt ? new Date(pageDoc.updatedAt || pageDoc.publishedAt || pageDoc.createdAt) : new Date("2026-07-24T16:08:21Z")).toISOString();
+
   return {
     title: {
       absolute: seo.metaTitle || pageDoc?.title || "Our Blogs | 410 Muscle Therapy"
@@ -43,6 +46,10 @@ export async function generateMetadata(): Promise<Metadata> {
       type: 'website',
       images: seo.featuredImage ? [{ url: seo.featuredImage }] : [`${BASE_URL}/logo.png`],
     },
+    other: {
+      'article:published_time': publishedTime,
+      'article:modified_time': modifiedTime,
+    },
     twitter: {
       card: 'summary_large_image',
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || "Our Blogs | 410 Muscle Therapy",
@@ -54,6 +61,8 @@ export async function generateMetadata(): Promise<Metadata> {
     robots: getRobotsMetadata(settings, seo)
   };
 }
+
+import { generateSchema } from '@/lib/schema-generator';
 
 export default async function BlogsIndexPage() {
   await connectToDatabase();
@@ -87,8 +96,28 @@ export default async function BlogsIndexPage() {
       .filter(Boolean);
   }
 
+  const seo = {
+    ...(globalBlogsPage?.seo || {}),
+    ...(pageDoc?.seo || {})
+  };
+
+  const schema = generateSchema({
+    title: seo.metaTitle || pageDoc?.title || "Our Blogs | 410 Muscle Therapy",
+    description: seo.metaDescription || description || "Explore our latest articles, insights, and clinical recovery tips.",
+    slug: "blogs",
+    type: "CollectionPage",
+    breadcrumbTitle: "Blogs",
+    datePublished: (pageDoc?.publishedAt || pageDoc?.createdAt ? new Date(pageDoc.publishedAt || pageDoc.createdAt) : new Date("2025-02-07T15:28:30Z")).toISOString(),
+    dateModified: (pageDoc?.updatedAt || pageDoc?.publishedAt || pageDoc?.createdAt ? new Date(pageDoc.updatedAt || pageDoc.publishedAt || pageDoc.createdAt) : new Date("2026-07-24T16:08:21Z")).toISOString()
+  });
+
   return (
     <main className="bg-dark min-h-screen pt-[140px] pb-24 relative overflow-hidden">
+      <script
+        id="blogs-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
       {/* Subtle background texture */}
       <div className="absolute inset-0 opacity-[0.03] bg-radial-dots-gold pointer-events-none" />
 

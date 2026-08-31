@@ -179,7 +179,9 @@ export default async function DynamicPage({ params }: PageProps) {
         faqs: serviceFaqItems,
         breadcrumbTitle: service?.seo?.breadcrumbTitle,
         isService: true,
-        image: featuredImage
+        image: featuredImage,
+        datePublished: (service.publishedAt || service.createdAt ? new Date(service.publishedAt || service.createdAt) : new Date("2025-02-07T15:28:30Z")).toISOString(),
+        dateModified: (service.updatedAt || service.publishedAt || service.createdAt ? new Date(service.updatedAt || service.publishedAt || service.createdAt) : new Date("2026-07-24T16:08:21Z")).toISOString()
       });
 
       return (
@@ -273,7 +275,9 @@ export default async function DynamicPage({ params }: PageProps) {
     faqs: pageFaqs.length > 0 ? pageFaqs : undefined,
     breadcrumbTitle: page.seo?.breadcrumbTitle,
     isService: page.template === 'service-detail',
-    image: featuredImage
+    image: featuredImage,
+    datePublished: (page.publishedAt || page.createdAt ? new Date(page.publishedAt || page.createdAt) : new Date("2025-02-07T15:28:30Z")).toISOString(),
+    dateModified: (page.updatedAt || page.publishedAt || page.createdAt ? new Date(page.updatedAt || page.publishedAt || page.createdAt) : new Date("2026-07-24T16:08:21Z")).toISOString()
   });
 
   // Use TemplateWrapper to handle local content context overrides

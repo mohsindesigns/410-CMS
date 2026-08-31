@@ -82,8 +82,8 @@ export default async function BlogPostPage({ params }: Props) {
 
   const url = `${BASE_URL}/blogs/${slug}/`;
   const wordCount = post.content ? post.content.split(/\s+/).length : 0;
-  const publishDate = post.publishedAt?.toISOString();
-  const modifiedDate = (post.updatedAt || post.publishedAt)?.toISOString();
+  const publishDate = (post.publishedAt || post.createdAt || post.date ? new Date(post.publishedAt || post.createdAt || post.date) : new Date("2025-02-07T15:28:30Z")).toISOString();
+  const modifiedDate = (post.updatedAt || post.publishedAt || post.createdAt ? new Date(post.updatedAt || post.publishedAt || post.createdAt) : new Date("2026-07-24T16:08:21Z")).toISOString();
   const featuredImage = post.featuredImage || `${BASE_URL}/logo.png`;
 
   // Advanced Schema.org Graph JSON-LD
@@ -91,11 +91,50 @@ export default async function BlogPostPage({ params }: Props) {
     '@context': 'https://schema.org',
     '@graph': [
       {
+        '@type': 'WebPage',
+        '@id': url,
+        'url': url,
+        'name': `${post.title} | 410 Muscle Therapy`,
+        'isPartOf': { '@id': `${BASE_URL}/#website` },
+        'primaryImageOfPage': { '@id': `${url}#primaryimage` },
+        'datePublished': publishDate,
+        'dateModified': modifiedDate,
+        'description': post.seo?.metaDescription || post.excerpt,
+        'breadcrumb': { '@id': `${url}#breadcrumb` },
+        'inLanguage': 'en-US'
+      },
+      {
+        '@type': 'BreadcrumbList',
+        '@id': `${url}#breadcrumb`,
+        'itemListElement': [
+          {
+            '@type': 'ListItem',
+            'position': 1,
+            'name': 'Home',
+            'item': `${BASE_URL}/`
+          },
+          {
+            '@type': 'ListItem',
+            'position': 2,
+            'name': 'Blogs',
+            'item': `${BASE_URL}/blogs/`
+          },
+          {
+            '@type': 'ListItem',
+            'position': 3,
+            'name': post.title,
+            'item': url
+          }
+        ]
+      },
+      {
         '@type': 'Article',
         '@id': `${url}#article`,
         'isPartOf': { '@id': url },
         'author': {
-          '@id': `${BASE_URL}/#/schema/person/${post.author?._id || 'admin'}`
+          '@type': 'Person',
+          '@id': `${BASE_URL}/#/schema/person/${post.author?._id || 'antoine-lyles'}`,
+          'name': typeof post.author === 'string' ? post.author : (post.author?.name || 'Antoine Lyles')
         },
         'headline': post.title,
         'datePublished': publishDate,
@@ -103,7 +142,11 @@ export default async function BlogPostPage({ params }: Props) {
         'mainEntityOfPage': { '@id': url },
         'wordCount': wordCount,
         'publisher': { '@id': `${BASE_URL}/#organization` },
-        'image': { '@id': `${url}#primaryimage` },
+        'image': {
+          '@type': 'ImageObject',
+          '@id': `${url}#primaryimage`,
+          'url': featuredImage
+        },
         'thumbnailUrl': featuredImage,
         'keywords': post.tags?.map((t: any) => t.name).join(', '),
         'inLanguage': 'en-US'
