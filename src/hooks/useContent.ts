@@ -177,9 +177,15 @@ export const useContent = () => {
                 };
             };
 
-            const formattedServices = allServices.map((svc: any, i: number) => formatService(svc, i));
+            const sortAscending = (a: any, b: any) => {
+                const numA = parseInt(a.number || a.id || '99', 10);
+                const numB = parseInt(b.number || b.id || '99', 10);
+                return numA - numB;
+            };
+
+            const formattedServices = allServices.map((svc: any, i: number) => formatService(svc, i)).sort(sortAscending);
             const rawItems = Array.isArray(s.items) && s.items.length > 0 ? s.items : formattedServices.slice(0, 6);
-            const formattedItems = rawItems.map((svc: any, i: number) => formatService(svc, i));
+            const formattedItems = rawItems.map((svc: any, i: number) => formatService(svc, i)).sort(sortAscending);
 
             const label = s.label || s.badge || "Our Services";
             const titleLine1 = s.titleLine1 || s.headline?.prefix || "Therapies";

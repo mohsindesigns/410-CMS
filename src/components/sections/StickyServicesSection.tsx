@@ -9,9 +9,17 @@ import { motion } from 'framer-motion';
 export default function StickyServicesSection() {
   const { services: servicesData, globalMetadata } = useContent();
   
-  // Filter active and published services dynamically
-  const rawItems = servicesData?.items || [];
-  const items = rawItems.filter((s: any) => s.status === 'published' || s.status === undefined);
+  // Filter active and published services dynamically, ensuring ascending numerical order (01 to 10)
+  const rawItems = (servicesData?.services && Array.isArray(servicesData.services) && servicesData.services.length > 0)
+    ? servicesData.services
+    : (servicesData?.items || []);
+  const items = rawItems
+    .filter((s: any) => s.status === 'published' || s.status === undefined)
+    .sort((a: any, b: any) => {
+      const numA = parseInt(a.number || a.id || '99', 10);
+      const numB = parseInt(b.number || b.id || '99', 10);
+      return numA - numB;
+    });
 
   const stickyLabel = servicesData?.badge || "EXPERTISE";
   const stickyHeading = servicesData?.titleLine1 || "Our Services";
