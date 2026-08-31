@@ -5,7 +5,7 @@ import { Metadata } from "next";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
 import Page from "@/models/Page";
-import { generateSchema } from "@/lib/schema-generator";
+import { getHomepageSchemas } from "@/lib/schema-generator";
 import { TemplateWrapper } from "@/components/templates/TemplateRegistry";
 import ServiceDetailTemplate from "@/components/templates/ServiceDetailTemplate";
 import { BASE_URL } from "@/lib/constants";
@@ -24,7 +24,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
   const settings = content?.data?.settings;
   const homepageId = settings?.homepageId;
-
   const pageUrl = `${BASE_URL}/`;
 
   let metadata: Metadata = {
@@ -72,6 +71,7 @@ export async function generateMetadata(): Promise<Metadata> {
         robots: getRobotsMetadata(settings, seo)
       };
     }
+
     // Check if it's a service
     const service = content?.data?.services?.services?.find((s: any) => s._id === homepageId || s.slug === homepageId);
     if (service) {
@@ -104,56 +104,93 @@ export async function generateMetadata(): Promise<Metadata> {
   // Check homePageDoc from Page collection or homeData from SiteContent
   const homeData = content?.data?.home;
   const seo = homePageDoc?.seo || homeData?.seo || {};
-  const metaTitle = seo.metaTitle || homePageDoc?.title || homeData?.hero?.headline || settings?.siteTitle || "410 Muscle Therapy";
+  const metaTitle =
+    seo.metaTitle ||
+    homePageDoc?.title ||
+    homeData?.seo?.metaTitle ||
+    settings?.siteTitle ||
+    "Massage Therapy in Timonium Maryland | 410 Muscle Therapy";
+
   const metaDescription =
     seo.metaDescription ||
     homePageDoc?.content?.hero?.description ||
+    homeData?.seo?.metaDescription ||
     homeData?.hero?.description ||
     homeData?.hero?.subheadline ||
     settings?.siteDescription ||
-    "Specialized performance bodywork, mobility restoration, and injury prevention designed for athletes and active adults.";
+    "Get real pain relief with massage therapy Timonium Maryland. 410 Muscle Therapy melts deep knots, eases stiffness and gets you moving. Book your session now.";
 
   return {
     ...metadata,
     title: {
-      absolute: metaTitle
+      absolute: metaTitle,
     },
     description: metaDescription,
+    robots: getRobotsMetadata(settings, seo),
     alternates: {
       canonical: seo.canonicalUrl || pageUrl,
     },
     openGraph: {
-      ...metadata.openGraph,
-      title: seo.ogTitle || seo.metaTitle || metaTitle,
-      description: seo.ogDescription || seo.metaDescription || metaDescription,
-      images: [seo.featuredImage || `${BASE_URL}/logo.png`].filter(Boolean) as string[],
+      title: seo.ogTitle || metaTitle,
+      description: seo.ogDescription || metaDescription,
+      url: pageUrl,
+      type: "website",
+      siteName: "410 Muscle Therapy",
+      images: [
+        {
+          url: seo.ogImage || seo.featuredImage || settings?.favicon || `${BASE_URL}/logo.png`,
+          width: 1200,
+          height: 630,
+          alt: "410 Muscle Therapy – Performance Recovery & Clinical Bodywork Maryland",
+          type: "image/png",
+        },
+      ],
     },
     twitter: {
-      ...metadata.twitter,
-      title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || metaTitle,
-      description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || metaDescription,
-      images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/logo.png`].filter(Boolean) as string[],
+      card: "summary_large_image",
+      title: seo.twitterTitle || seo.ogTitle || metaTitle,
+      description: seo.twitterDescription || seo.ogDescription || metaDescription,
+      images: [seo.twitterImage || seo.ogImage || seo.featuredImage || settings?.favicon || `${BASE_URL}/logo.png`],
+      creator: "@410MuscleTherapy",
+      site: "@410MuscleTherapy",
     },
-    robots: getRobotsMetadata(settings, seo)
   };
 }
 
-export default async function Index() {
+export default async function HomePage() {
   await connectToDatabase();
-  const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
-  const settings = content?.data?.settings;
-  const homepageId = settings?.homepageId;
+  const content = await SiteContent.findOne({ key: 'complete_data' });
+  const settings = content?.data?.settings || {};
+  const homepageId = settings.homepageId;
 
-  // Detect FAQs for Homepage (Global + specific to home)
-  const allFaqs = content?.data?.faq?.items || [];
-  const faqs = allFaqs.filter((item: any) => 
-    item.visibility === 'global' || 
-    (item.visibility === 'specific' && item.targetPages?.includes('home'))
+  const servicesList = (content?.data?.services?.services || content?.data?.services?.items || []).map((s: any) => ({
+    name: s.title || s.name
+  }));
+
+  const { yoastGraph, serviceSchema, localBusinessSchema } = getHomepageSchemas(servicesList);
+
+  const schemaScripts = (
+    <>
+      <script
+        id="yoast-schema-graph"
+        type="application/ld+json"
+        className="yoast-schema-graph"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(yoastGraph) }}
+      />
+      <script
+        id="service-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
+      />
+      <script
+        id="localbusiness-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+      />
+    </>
   );
 
   if (homepageId) {
-    // Check if it's a page
-    // Check if it's a page and ensure it's published and not trashed
     const pageDoc = await Page.findOne({ 
       _id: homepageId, 
       status: 'published', 
@@ -161,17 +198,9 @@ export default async function Index() {
     }).lean();
     if (pageDoc) {
       const page = JSON.parse(JSON.stringify(pageDoc));
-      const schema = generateSchema({
-        title: page.seo?.metaTitle || page.title,
-        description: page.seo?.metaDescription || "",
-        slug: "/",
-        type: "WebPage",
-        faqs: faqs,
-        image: `${BASE_URL}/logo.png`
-      });
       return (
         <>
-          <script id="json-ld-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+          {schemaScripts}
           <TemplateWrapper 
             templateName={page.template} 
             pageData={{
@@ -187,32 +216,20 @@ export default async function Index() {
       );
     }
 
-    // Check if it's a service
-    // Check if it's a service and ensure it's not a draft
     const serviceDoc = content?.data?.services?.services?.find((s: any) => 
       (s._id === homepageId || s.slug === homepageId) && s.status !== 'draft'
     );
     if (serviceDoc) {
-      const service = JSON.parse(JSON.stringify(serviceDoc));
-      const schema = generateSchema({
-        title: service.seo?.metaTitle || service.title,
-        description: service.seo?.metaDescription || service.description || "",
-        slug: "/",
-        type: "Service",
-        faqs: faqs,
-        image: `${BASE_URL}/logo.png`
-      });
       return (
         <>
-          <script id="json-ld-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
-          <ServiceDetailTemplate params={Promise.resolve({ slug: service.slug })} />
+          {schemaScripts}
+          <ServiceDetailTemplate params={Promise.resolve({ slug: serviceDoc.slug })} />
         </>
       );
     }
   }
 
-  // Default Home Template — try to find a home page document for page-specific FAQs
-  const homeData = content?.data?.home;
+  // Default Home Template — try to find a home page document
   const homePageDoc = await Page.findOne({
     $or: [{ slug: "/" }, { slug: "home" }, { title: /^home$/i }],
     status: "published",
@@ -220,37 +237,9 @@ export default async function Index() {
   }).lean();
   const homePage = homePageDoc ? JSON.parse(JSON.stringify(homePageDoc)) : null;
 
-  const homeSeo = homePage?.seo || homeData?.seo || {};
-  const metaTitle = homeSeo.metaTitle || homePage?.title || settings?.siteTitle || "410 Muscle Therapy";
-  const metaDescription =
-    homeSeo.metaDescription ||
-    homePage?.content?.hero?.description ||
-    homeData?.hero?.description ||
-    homeData?.hero?.subheadline ||
-    settings?.siteDescription ||
-    "Specialized performance recovery bodywork, mobility restoration, and injury prevention for athletes and active adults in Maryland.";
-
-  const servicesList = (content?.data?.services?.services || content?.data?.services?.items || []).map((s: any) => ({
-    name: s.title || s.name
-  }));
-
-  const schema = generateSchema({
-    title: metaTitle,
-    description: metaDescription,
-    slug: "/",
-    type: "WebPage",
-    faqs: faqs,
-    servicesList: servicesList,
-    image: `${BASE_URL}/logo.png`
-  });
-
   return (
     <>
-      <script
-        id="json-ld-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-      />
+      {schemaScripts}
       <HomeTemplate pageData={{ ...(homePage || {}), content: { ...(content?.data || {}), ...(homePage?.content || {}) } }} />
     </>
   );
