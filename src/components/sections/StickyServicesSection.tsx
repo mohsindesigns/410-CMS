@@ -28,38 +28,38 @@ export default function StickyServicesSection() {
     }
   }, [items, activeId]);
 
-  // Bulletproof Sentinel-based Observer for 100% synchronized sidebar active state
+  // Bulletproof Observer for synchronized sidebar active state
   useEffect(() => {
-    const sentinels = document.querySelectorAll('.service-sentinel');
-    if (!sentinels.length) return;
+    const cards = document.querySelectorAll('.service-card-item');
+    if (!cards.length) return;
 
     const observer = new IntersectionObserver(
       (entries) => {
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
-            const serviceId = entry.target.getAttribute('data-service-id');
-            if (serviceId) {
-              setActiveId(serviceId);
+            const cardId = entry.target.id.replace('card-', '');
+            if (cardId) {
+              setActiveId(cardId);
             }
           }
         });
       },
       {
-        rootMargin: '-130px 0px -70% 0px',
-        threshold: 0
+        rootMargin: '-15% 0px -50% 0px',
+        threshold: 0.1
       }
     );
 
-    sentinels.forEach((s) => observer.observe(s));
+    cards.forEach((c) => observer.observe(c));
     return () => observer.disconnect();
   }, [items]);
 
   const handleNavClick = (e: any, id: string) => {
     e.preventDefault();
     setActiveId(id);
-    const sentinel = document.querySelector(`[data-service-id="${id}"]`);
-    if (sentinel) {
-      const targetY = sentinel.getBoundingClientRect().top + window.pageYOffset - 130;
+    const card = document.getElementById(`card-${id}`);
+    if (card) {
+      const targetY = card.getBoundingClientRect().top + window.pageYOffset - 120;
       window.scrollTo({ top: targetY, behavior: 'smooth' });
     }
   };
@@ -69,22 +69,22 @@ export default function StickyServicesSection() {
       {/* Subtle Ambient Background Glow */}
       <div className="absolute inset-0 bg-[radial-gradient(circle_at_top_right,_var(--tw-gradient-stops))] from-gold/10 via-transparent to-transparent pointer-events-none" />
 
-      <div className="site-container relative flex flex-col lg:flex-row gap-12 lg:gap-16">
+      <div className="site-container relative flex flex-col lg:flex-row gap-10 lg:gap-14">
 
         {/* Left Sticky Sidebar — hidden on mobile, sticky on desktop */}
-        <div className="hidden lg:block lg:w-[320px] flex-shrink-0">
-          <div className="lg:sticky lg:top-[140px] z-30 bg-transparent py-0">
+        <div className="hidden lg:block lg:w-[300px] xl:w-[320px] flex-shrink-0">
+          <div className="lg:sticky lg:top-[130px] z-30 bg-transparent py-0">
             <div className="flex flex-col gap-6">
               <div>
                 <p className="text-gold text-[10px] font-bold tracking-[0.25em] uppercase mb-2">{stickyLabel}</p>
-                <h2 className="display-heading text-[28px] md:text-[36px] text-white">{stickyHeading}</h2>
+                <h2 className="display-heading text-[28px] md:text-[34px] text-white">{stickyHeading}</h2>
               </div>
 
               <nav className="relative">
                 {/* Left subtle vertical track for desktop */}
                 <div className="absolute left-0 top-0 bottom-0 w-px bg-white/10" />
 
-                <ul className="flex flex-col gap-2">
+                <ul className="flex flex-col gap-1.5">
                   {items.map((service: any, idx: number) => {
                     const isActive = activeId === service.id;
                     const displayNum = service.number || (idx + 1).toString().padStart(2, '0');
@@ -100,20 +100,20 @@ export default function StickyServicesSection() {
                         )}
 
                         <a
-                          href={`#${service.id}`}
+                          href={`#card-${service.id}`}
                           onClick={(e) => handleNavClick(e, service.id)}
-                          className={`flex items-center justify-between text-[13px] md:text-[14px] px-6 py-3 rounded-r-lg transition-all duration-300 font-medium whitespace-nowrap
+                          className={`flex items-center justify-between text-[13px] px-5 py-2.5 rounded-r-lg transition-colors duration-200 font-medium whitespace-nowrap
                             ${isActive
                               ? 'text-gold bg-gold/5 font-semibold'
                               : 'text-white/50 hover:text-white hover:bg-white/5'}`}
                         >
-                          <span className="flex items-center gap-3">
-                            <span className="text-[10px] font-mono font-bold tracking-widest opacity-70">{displayNum}</span>
-                            {service.name}
+                          <span className="flex items-center gap-2.5 truncate">
+                            <span className="text-[10px] font-mono font-bold tracking-widest opacity-70 flex-shrink-0">{displayNum}</span>
+                            <span className="truncate">{service.name}</span>
                           </span>
                           <ArrowRight
-                            size={14}
-                            className={`transition-transform duration-300 ${isActive ? 'opacity-100 translate-x-0 text-gold' : 'opacity-0 -translate-x-2'}`}
+                            size={13}
+                            className={`transition-all duration-200 flex-shrink-0 ${isActive ? 'opacity-100 translate-x-0 text-gold' : 'opacity-0 -translate-x-1'}`}
                           />
                         </a>
                       </li>
@@ -125,102 +125,99 @@ export default function StickyServicesSection() {
           </div>
         </div>
 
-        {/* Right Stackable Sticky Cards Column */}
-        <div id="cards-container" className="w-full lg:flex-1 flex flex-col relative z-10">
+        {/* Right Service Cards Column */}
+        <div id="cards-container" className="w-full lg:flex-1 flex flex-col gap-8 sm:gap-10 relative z-10">
           {items.map((service: any, index: number) => (
-            <Fragment key={service.id}>
-              {/* Invisible sentinel for 100% accurate scroll sync */}
-              <div
-                data-service-id={service.id}
-                className="service-sentinel w-full h-px pointer-events-none opacity-0"
-              />
+            <div
+              key={service.id}
+              id={`card-${service.id}`}
+              className="service-card-item relative w-full bg-dark/95 border border-white/15 rounded-xl sm:rounded-2xl overflow-hidden shadow-2xl group hover:border-gold/30 transition-colors duration-300"
+            >
+              <div className="flex flex-col-reverse lg:flex-row min-h-[400px]">
 
-              {/* Service Card */}
-              <div
-                id={`card-${service.id}`}
-                className={`service-card-item relative lg:sticky lg:top-[130px] w-full bg-dark border border-white/15 rounded-xl sm:rounded-2xl overflow-hidden shadow-[0_20px_50px_rgba(0,0,0,0.95)] transition-all duration-300 group ${index === items.length - 1 ? 'mb-0' : 'mb-8 sm:mb-10 lg:mb-[60vh]'}`}
-                style={{
-                  zIndex: index + 1
-                }}
-              >
-                <div className="flex flex-col-reverse lg:flex-row lg:min-h-[440px]">
-
-                  {/* Content Area */}
-                  <div className="p-5 sm:p-7 md:p-8 lg:w-[58%] flex flex-col justify-between relative bg-gradient-to-br from-white/[0.04] to-transparent">
-                    <div>
-                      <div className="flex items-center justify-between mb-3.5">
-                        <span className="text-gold font-mono text-[10.5px] sm:text-[11px] font-bold tracking-[0.2em] uppercase px-3 py-1 bg-gold/10 rounded-full border border-gold/20">
-                          {servicePrefix} {service.number || (index + 1).toString().padStart(2, '0')}
-                        </span>
-                        <span className="text-white/40 text-[11px] font-mono tracking-widest uppercase">
-                          {index + 1} / {items.length}
-                        </span>
-                      </div>
-
-                      <h3 className="display-heading text-[22px] min-[400px]:text-[26px] md:text-[32px] text-white leading-tight mb-3 group-hover:text-gold transition-colors duration-300">
-                        <Link href={`/${service.slug || service.id}/`} className="text-white hover:text-gold transition-colors duration-300">
-                          {service.name}
-                        </Link>
-                      </h3>
-
-                      <div 
-                        className="text-white/70 text-[13px] sm:text-[14px] leading-relaxed font-light mb-4 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_span]:!text-white/70 [&_p]:!text-white/70"
-                        dangerouslySetInnerHTML={{ __html: service.description }}
-                      />
-
-                      {/* Key Benefits List */}
-                      {service.benefits && (
-                        <div className="flex flex-col gap-2 mb-5">
-                          {service.benefits.slice(0, 3).map((benefit: any, i: number) => {
-                            const benefitText = typeof benefit === 'string' ? benefit : (benefit.title || benefit.name || benefit.label || "");
-                            return (
-                              <div key={i} className="flex items-center gap-2.5">
-                                <CheckCircle2 size={14} className="text-gold flex-shrink-0" />
-                                <span className="text-[12px] sm:text-[13px] text-white/80 font-medium leading-snug">{benefitText}</span>
-                              </div>
-                            );
-                          })}
-                        </div>
-                      )}
+                {/* Content Area */}
+                <div className="p-6 sm:p-7 md:p-8 lg:w-[58%] flex flex-col justify-between relative bg-gradient-to-br from-white/[0.04] to-transparent">
+                  <div>
+                    <div className="flex items-center justify-between mb-3.5">
+                      <span className="text-gold font-mono text-[10.5px] font-bold tracking-[0.2em] uppercase px-3 py-1 bg-gold/10 rounded-full border border-gold/20">
+                        {servicePrefix} {service.number || (index + 1).toString().padStart(2, '0')}
+                      </span>
+                      <span className="text-white/40 text-[11px] font-mono tracking-widest uppercase">
+                        {index + 1} / {items.length}
+                      </span>
                     </div>
 
-                    {/* CTA Buttons */}
-                    <div className="pt-4 border-t border-white/10 flex flex-col sm:flex-row items-stretch sm:items-center gap-3 sm:gap-6">
-                      <Link
-                        href={(!service.heroCtaSecondaryUrl || service.heroCtaSecondaryUrl.startsWith('#')) ? `/${service.slug || service.id}/` : service.heroCtaSecondaryUrl}
-                        className="btn-gold justify-center text-center w-full sm:w-auto"
-                      >
-                        {service.heroCtaSecondary && !service.heroCtaSecondary.toLowerCase().includes('help') && !service.heroCtaSecondary.toLowerCase().includes('learn more')
-                          ? service.heroCtaSecondary
-                          : `Explore ${service.name || service.title || 'Therapy'}`} <ArrowRight size={14} className="ml-1" />
+                    <h3 className="display-heading text-[22px] min-[400px]:text-[25px] md:text-[28px] text-white leading-tight mb-3 group-hover:text-gold transition-colors duration-300">
+                      <Link href={`/${service.slug || service.id}/`} className="text-white hover:text-gold transition-colors duration-300">
+                        {service.name}
                       </Link>
+                    </h3>
 
-                      <a
-                        href={service.bookingCtaUrl || globalMetadata?.bookingUrl || "https://www.styleseat.com/m/v/410muscletherapy"}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="inline-flex items-center justify-center gap-2 text-white/70 hover:text-gold text-[11.5px] font-bold tracking-widest uppercase transition-colors py-2 text-center"
-                      >
-                        {service.bookingCta || `Book ${service.name || service.title || 'Session'}`} <ArrowRight size={13} />
-                      </a>
-                    </div>
+                    <div 
+                      className="text-white/70 text-[13px] sm:text-[13.5px] leading-relaxed font-light mb-4 [&_p]:mb-2 [&_p:last-child]:mb-0 [&_span]:!text-white/70 [&_p]:!text-white/70 line-clamp-3 sm:line-clamp-none"
+                      dangerouslySetInnerHTML={{ __html: service.description }}
+                    />
+
+                    {/* Key Benefits List */}
+                    {service.benefits && (
+                      <div className="flex flex-col gap-2 mb-5">
+                        {service.benefits.slice(0, 3).map((benefit: any, i: number) => {
+                          const benefitText = typeof benefit === 'string' ? benefit : (benefit.title || benefit.name || benefit.label || "");
+                          return (
+                            <div key={i} className="flex items-center gap-2.5">
+                              <CheckCircle2 size={14} className="text-gold flex-shrink-0" />
+                              <span className="text-[12px] sm:text-[13px] text-white/80 font-medium leading-snug">{benefitText}</span>
+                            </div>
+                          );
+                        })}
+                      </div>
+                    )}
                   </div>
 
-                  {/* Image Area (Clickable) */}
-                  <Link href={`/${service.slug || service.id}/`} className="relative h-[200px] sm:h-[240px] lg:h-auto lg:w-[42%] overflow-hidden bg-black/60 block group/img flex-shrink-0">
-                    <Image
-                      src={service.image || "/images/service-massage.webp"}
-                      alt={service.name}
-                      fill
-                      sizes="(max-width: 1024px) 100vw, 42vw"
-                      className="object-cover object-center group-hover/img:scale-105 transition-transform duration-700 opacity-90 group-hover/img:opacity-100"
-                    />
-                    <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/20 to-transparent lg:bg-gradient-to-r lg:from-dark/80 lg:to-transparent pointer-events-none" />
-                  </Link>
+                  {/* CTA Buttons - Zero text overlap / Clean wrapping */}
+                  <div className="pt-4 mt-auto border-t border-white/10 flex flex-wrap items-center gap-3 sm:gap-4">
+                    <Link
+                      href={(!service.heroCtaSecondaryUrl || service.heroCtaSecondaryUrl.startsWith('#')) ? `/${service.slug || service.id}/` : service.heroCtaSecondaryUrl}
+                      className="btn-gold inline-flex items-center justify-center py-2.5 px-4 sm:px-5 text-[11px] sm:text-[11.5px] font-bold uppercase tracking-wider rounded-lg shadow-md whitespace-nowrap flex-shrink-0"
+                    >
+                      <span>
+                        {(() => {
+                          if (service.heroCtaSecondary && !service.heroCtaSecondary.toLowerCase().includes('help') && !service.heroCtaSecondary.toLowerCase().includes('learn more')) {
+                            return service.heroCtaSecondary;
+                          }
+                          const rawName = (service.name || service.title || 'Service').replace(/\s*(maryland|baltimore|timonium|clinic)\s*/gi, '').trim();
+                          return `Explore ${rawName || 'Service'}`;
+                        })()}
+                      </span>
+                      <ArrowRight size={13} className="ml-1.5 flex-shrink-0" />
+                    </Link>
 
+                    <a
+                      href={service.bookingCtaUrl || globalMetadata?.bookingUrl || "https://www.styleseat.com/m/v/410muscletherapy"}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="btn-outline-white inline-flex items-center justify-center py-2.5 px-4 sm:px-5 text-[11px] sm:text-[11.5px] font-bold uppercase tracking-wider rounded-lg whitespace-nowrap flex-shrink-0 group/book hover:border-gold hover:text-gold transition-all duration-200"
+                    >
+                      <span>{service.bookingCta || "Book Appointment"}</span>
+                      <ArrowRight size={13} className="ml-1.5 flex-shrink-0 group-hover/book:translate-x-0.5 transition-transform" />
+                    </a>
+                  </div>
                 </div>
+
+                {/* Image Area (Clickable) */}
+                <Link href={`/${service.slug || service.id}/`} className="relative h-[220px] sm:h-[260px] lg:h-auto lg:w-[42%] overflow-hidden bg-black/60 block group/img flex-shrink-0">
+                  <Image
+                    src={service.image || "/images/service-massage.webp"}
+                    alt={service.name}
+                    fill
+                    sizes="(max-width: 1024px) 100vw, 42vw"
+                    className="object-cover object-center group-hover/img:scale-105 transition-transform duration-700 opacity-90 group-hover/img:opacity-100"
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/20 to-transparent lg:bg-gradient-to-r lg:from-dark/80 lg:to-transparent pointer-events-none" />
+                </Link>
+
               </div>
-            </Fragment>
+            </div>
           ))}
         </div>
 
