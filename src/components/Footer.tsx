@@ -158,11 +158,11 @@ export default function Footer() {
   } = footer || {};
 
   const brandDescriptionText: string = stripHtml(
-    companyInfo.description || (footer as any)?.brandDescription || "Elite performance recovery bodywork, mobility optimization, and injury prevention for athletes and active adults since 2020."
+    companyInfo.description || (footer as any)?.brandDescription || "Elite performance recovery bodywork, mobility optimization, and injury prevention for athletes and active adults in Maryland."
   );
 
   // Extract map iframe if present in the address field
-  const rawAddress = contactInfo.address || (footer as any)?.address || "125 Wellness Way, Suite 101\nLos Angeles, CA 90001";
+  const rawAddress = contactInfo.address || (footer as any)?.address || "1301 York Rd., 8th Floor, Ste 48\nTimonium, MD 21093";
   const iframeRegex = /<iframe[^>]*>[\s\S]*?<\/iframe>/i;
   const match = rawAddress.match(iframeRegex);
   const iframeHtml = match ? match[0] : null;
@@ -171,17 +171,18 @@ export default function Footer() {
   const addressCleanHtml = rawAddress.replace(iframeRegex, "").trim();
   const addressText = stripHtml(addressCleanHtml);
 
-  const phoneText: string = stripHtml(contactInfo.phone || (footer as any)?.phone || "(323) 456-7890");
-  const emailText: string = stripHtml(contactInfo.email || (footer as any)?.email || "info@muscletherapy.com");
+  const phoneText: string = stripHtml(contactInfo.phone || (footer as any)?.phone || "(410) 555-1234");
+  const emailText: string = stripHtml(contactInfo.email || (footer as any)?.email || "antoine.lyles@yahoo.com");
 
   // Construct business hours dynamically from general settings or fall back
   let hoursText = "";
   const rawHoursText = contactInfo.hours || (footer as any)?.hours || "";
   if (rawHoursText) {
     hoursText = stripHtml(rawHoursText);
-  } else if (hours && (hours.monday || hours.saturday || hours.sunday)) {
-    const parts = [];
-    if (hours.monday) parts.push(`Mon–Fri: ${hours.monday}`);
+  } else if (hours && (hours.monday || hours.weekdays)) {
+    const parts: string[] = [];
+    if (hours.weekdays) parts.push(`Mon–Fri: ${hours.weekdays}`);
+    else if (hours.monday) parts.push(`Mon–Fri: ${hours.monday}`);
     if (hours.saturday) parts.push(`Sat: ${hours.saturday}`);
     if (hours.sunday) parts.push(`Sun: ${hours.sunday}`);
     hoursText = parts.join('\n');
@@ -189,7 +190,7 @@ export default function Footer() {
     hoursText = "Mon–Sat: 8:00 AM – 7:00 PM";
   }
 
-  const copyrightText: string = stripHtml(bottomInfo.copyright || (footer as any)?.copyright || "© 2024 Muscle Therapy. All Rights Reserved.");
+  const copyrightText: string = stripHtml(bottomInfo.copyright || (footer as any)?.copyright || "© 2025 410 Muscle Therapy. All Rights Reserved.");
 
   const companyLinks = navbar?.companyLinks || navbar?.links || [];
   const quickLinksData = companyLinks.map((link: any) => {

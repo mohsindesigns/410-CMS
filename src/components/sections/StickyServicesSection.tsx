@@ -190,7 +190,9 @@ export default function StickyServicesSection() {
                         href={(!service.heroCtaSecondaryUrl || service.heroCtaSecondaryUrl.startsWith('#')) ? `/${service.slug || service.id}/` : service.heroCtaSecondaryUrl}
                         className="btn-gold justify-center text-center w-full sm:w-auto"
                       >
-                        {service.heroCtaSecondary && !service.heroCtaSecondary.toLowerCase().includes('help') ? service.heroCtaSecondary : ctaExplore} <ArrowRight size={14} className="ml-1" />
+                        {service.heroCtaSecondary && !service.heroCtaSecondary.toLowerCase().includes('help') && !service.heroCtaSecondary.toLowerCase().includes('learn more')
+                          ? service.heroCtaSecondary
+                          : `Explore ${service.name || service.title || 'Therapy'}`} <ArrowRight size={14} className="ml-1" />
                       </Link>
 
                       <a
@@ -199,7 +201,7 @@ export default function StickyServicesSection() {
                         rel="noopener noreferrer"
                         className="inline-flex items-center justify-center gap-2 text-white/70 hover:text-gold text-[11.5px] font-bold tracking-widest uppercase transition-colors py-2 text-center"
                       >
-                        {service.bookingCta || ctaBook} <ArrowRight size={13} />
+                        {service.bookingCta || `Book ${service.name || service.title || 'Session'}`} <ArrowRight size={13} />
                       </a>
                     </div>
                   </div>

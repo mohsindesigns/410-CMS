@@ -4,6 +4,7 @@ export const revalidate = 60; // Cache for 1 minute, updated via revalidatePath 
 
 import connectToDatabase from '@/lib/mongodb';
 import Page from '@/models/Page';
+import Post from '@/models/Post';
 import SiteContent from '@/models/Content';
 import { getTemplate } from '@/components/templates/TemplateRegistry';
 import ServiceDetailTemplate from '@/components/templates/ServiceDetailTemplate';
@@ -191,6 +192,16 @@ export default async function DynamicPage({ params }: PageProps) {
           <ServiceDetailTemplate pageData={service} params={Promise.resolve({ slug })} />
         </main>
       );
+    }
+
+    const lastSlug = slug.includes('/') ? slug.split('/').pop() : slug;
+    const postDoc = await Post.findOne({
+      $or: [{ slug: slug }, { slug: lastSlug }],
+      status: 'published'
+    }).lean();
+
+    if (postDoc) {
+      permanentRedirect(`/blog/${postDoc.slug}/`);
     }
 
     notFound();

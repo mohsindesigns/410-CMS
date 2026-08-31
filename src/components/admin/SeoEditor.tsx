@@ -59,15 +59,16 @@ export default function SeoEditor({ data, setData, pageSlug, pageTitle, pageCont
   useEffect(() => {
     // Auto-suggest canonical URL if missing
     if (!data.canonicalUrl && pageSlug) {
-      const slugPart = pageSlug === 'home' ? '' : pageSlug;
-      const defaultCanonical = `${BASE_URL}/${slugPart}`;
+      const slugPart = (pageSlug === 'home' || pageSlug === '/') ? '' : pageSlug.replace(/^\/+|\/+$/g, '');
+      const defaultCanonical = slugPart ? `${BASE_URL}/${slugPart}/` : `${BASE_URL}/`;
       setData({ ...data, canonicalUrl: defaultCanonical });
     }
   }, [pageSlug, data.canonicalUrl]);
 
   const suggestCanonical = () => {
-    const slug = pageSlug === 'home' ? '' : pageSlug;
-    updateField('canonicalUrl', `${BASE_URL}/${slug}`);
+    const slugPart = (pageSlug === 'home' || pageSlug === '/') ? '' : pageSlug.replace(/^\/+|\/+$/g, '');
+    const defaultCanonical = slugPart ? `${BASE_URL}/${slugPart}/` : `${BASE_URL}/`;
+    updateField('canonicalUrl', defaultCanonical);
   };
 
   useEffect(() => {

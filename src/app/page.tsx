@@ -230,12 +230,17 @@ export default async function Index() {
     settings?.siteDescription ||
     "Specialized performance recovery bodywork, mobility restoration, and injury prevention for athletes and active adults in Maryland.";
 
+  const servicesList = (content?.data?.services?.services || content?.data?.services?.items || []).map((s: any) => ({
+    name: s.title || s.name
+  }));
+
   const schema = generateSchema({
     title: metaTitle,
     description: metaDescription,
     slug: "/",
     type: "WebPage",
     faqs: faqs,
+    servicesList: servicesList,
     image: `${BASE_URL}/logo.png`
   });
 

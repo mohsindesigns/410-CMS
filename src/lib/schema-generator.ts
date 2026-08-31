@@ -10,14 +10,196 @@ interface SchemaOptions {
   breadcrumbTitle?: string;
   isService?: boolean;
   image?: string;
+  servicesList?: Array<{ name: string; description?: string }>;
+}
+
+export function getHomepageSchemas(servicesList?: Array<{ name: string }>) {
+  const defaultServices = [
+    { name: "Deep Tissue Massage" },
+    { name: "Sports Massage" },
+    { name: "Myofascial Release" },
+    { name: "Cupping Therapy" },
+    { name: "Stretch Therapy" },
+    { name: "Hot Stone Massage" }
+  ];
+
+  const serviceOffers = (servicesList && servicesList.length > 0 ? servicesList : defaultServices).map(s => ({
+    "@type": "Offer",
+    "itemOffered": {
+      "@type": "Service",
+      "name": s.name
+    }
+  }));
+
+  const graph = [
+    {
+      "@type": "WebPage",
+      "@id": `${BASE_URL}/`,
+      "url": `${BASE_URL}/`,
+      "name": "Massage Therapy in Timonium Maryland | 410 Muscle Therapy",
+      "isPartOf": {
+        "@id": `${BASE_URL}/#website`
+      },
+      "about": {
+        "@id": `${BASE_URL}/#organization`
+      },
+      "description": "Get real pain relief with massage therapy Timonium Maryland. 410 Muscle Therapy melts deep knots, eases stiffness and gets you moving. Book your session now.",
+      "breadcrumb": {
+        "@id": `${BASE_URL}/#breadcrumb`
+      },
+      "inLanguage": "en",
+      "potentialAction": [
+        {
+          "@type": "ReadAction",
+          "target": [
+            `${BASE_URL}/`
+          ]
+        }
+      ]
+    },
+    {
+      "@type": "BreadcrumbList",
+      "@id": `${BASE_URL}/#breadcrumb`,
+      "itemListElement": [
+        {
+          "@type": "ListItem",
+          "position": 1,
+          "name": "Home"
+        }
+      ]
+    },
+    {
+      "@type": "WebSite",
+      "@id": `${BASE_URL}/#website`,
+      "url": `${BASE_URL}/`,
+      "name": "410 Muscle Therapy",
+      "description": "Heal. Perform. Thrive. – Your Path to Pain-Free Living",
+      "publisher": {
+        "@id": `${BASE_URL}/#organization`
+      },
+      "potentialAction": [
+        {
+          "@type": "SearchAction",
+          "target": {
+            "@type": "EntryPoint",
+            "urlTemplate": `${BASE_URL}/?s={search_term_string}`
+          },
+          "query-input": {
+            "@type": "PropertyValueSpecification",
+            "valueRequired": true,
+            "valueName": "search_term_string"
+          }
+        }
+      ],
+      "inLanguage": "en"
+    },
+    {
+      "@type": "Organization",
+      "@id": `${BASE_URL}/#organization`,
+      "name": "410 Muscle Therapy",
+      "url": `${BASE_URL}/`,
+      "logo": {
+        "@type": "ImageObject",
+        "inLanguage": "en",
+        "@id": `${BASE_URL}/#/schema/logo/image/`,
+        "url": `${BASE_URL}/logo.png`,
+        "contentUrl": `${BASE_URL}/logo.png`,
+        "caption": "410 Muscle Therapy"
+      },
+      "image": {
+        "@id": `${BASE_URL}/#/schema/logo/image/`
+      },
+      "sameAs": [
+        "https://www.instagram.com/Twonlyles_muscletherapy/",
+        "https://www.youtube.com/@Twon410",
+        "https://www.facebook.com/410muscletherapy"
+      ]
+    },
+    {
+      "@type": "Service",
+      "serviceType": "Massage Therapy Services",
+      "provider": {
+        "@type": "LocalBusiness",
+        "name": "410 Muscle Therapy",
+        "image": `${BASE_URL}/logo.png`,
+        "url": `${BASE_URL}/`,
+        "telephone": "(410) 555-1234",
+        "address": {
+          "@type": "PostalAddress",
+          "streetAddress": "1301 York Rd., 8th Floor, Ste 48",
+          "addressLocality": "Timonium",
+          "addressRegion": "MD",
+          "postalCode": "21093",
+          "addressCountry": "US"
+        }
+      },
+      "areaServed": {
+        "@type": "Place",
+        "name": "Timonium, Maryland"
+      },
+      "description": "410 Muscle Therapy provides expert massage therapy services in Maryland, including Deep Tissue Massage, Sports Massage, Myofascial Release, and Cupping Therapy designed to relieve pain, enhance mobility, and restore body balance.",
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Massage Therapy Services",
+        "itemListElement": serviceOffers
+      }
+    },
+    {
+      "@type": "LocalBusiness",
+      "name": "410 Muscle Therapy",
+      "image": `${BASE_URL}/logo.png`,
+      "@id": `${BASE_URL}/`,
+      "url": `${BASE_URL}/`,
+      "telephone": "(410) 555-1234",
+      "priceRange": "$$",
+      "address": {
+        "@type": "PostalAddress",
+        "streetAddress": "1301 York Rd., 8th Floor, Ste 48",
+        "addressLocality": "Timonium",
+        "addressRegion": "MD",
+        "postalCode": "21093",
+        "addressCountry": "US"
+      },
+      "geo": {
+        "@type": "GeoCoordinates",
+        "latitude": 39.421,
+        "longitude": -76.615
+      },
+      "openingHoursSpecification": [
+        {
+          "@type": "OpeningHoursSpecification",
+          "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+          "opens": "09:00",
+          "closes": "19:00"
+        }
+      ],
+      "sameAs": [
+        "https://www.facebook.com/410muscletherapy",
+        "https://www.instagram.com/410muscletherapy",
+        "https://www.instagram.com/Twonlyles_muscletherapy/",
+        "https://www.youtube.com/@Twon410"
+      ],
+      "description": "410 Muscle Therapy in Timonium, Maryland specializes in professional massage therapy services including deep tissue massage, sports massage, myofascial release, cupping therapy, and stretch therapy to help relieve pain and improve mobility."
+    }
+  ];
+
+  return {
+    "@context": "https://schema.org",
+    "@graph": graph
+  };
 }
 
 export function generateSchema(options: SchemaOptions) {
-  const { title, description, slug = "", type = "WebPage", faqs, breadcrumbTitle, isService, image } = options;
+  const { title, description, slug = "", type = "WebPage", faqs, breadcrumbTitle, isService, image, servicesList } = options;
   const safeSlug = String(slug || "");
   const normalizedSlug = safeSlug.startsWith('/') ? safeSlug : `/${safeSlug}`;
-  const pageUrl = (normalizedSlug === '/' || normalizedSlug === '') ? `${BASE_URL}/` : `${BASE_URL}${normalizedSlug.endsWith('/') ? normalizedSlug : `${normalizedSlug}/`}`;
-  const isRoot = pageUrl === `${BASE_URL}/` || normalizedSlug === '/' || normalizedSlug === '';
+  const isRoot = normalizedSlug === '/' || normalizedSlug === '';
+
+  if (isRoot) {
+    return getHomepageSchemas(servicesList);
+  }
+
+  const pageUrl = `${BASE_URL}${normalizedSlug.endsWith('/') ? normalizedSlug : `${normalizedSlug}/`}`;
 
   // 1. Organization Schema
   const organizationSchema = {
@@ -32,9 +214,10 @@ export function generateSchema(options: SchemaOptions) {
       "height": 512
     },
     "sameAs": [
+      "https://www.instagram.com/Twonlyles_muscletherapy/",
+      "https://www.youtube.com/@Twon410",
       "https://www.facebook.com/410muscletherapy",
-      "https://www.instagram.com/410muscletherapy",
-      "https://www.linkedin.com/company/410muscletherapy"
+      "https://www.instagram.com/410muscletherapy"
     ]
   };
 
@@ -44,12 +227,12 @@ export function generateSchema(options: SchemaOptions) {
     "@id": `${BASE_URL}/#localbusiness`,
     "name": "410 Muscle Therapy",
     "image": `${BASE_URL}/logo.png`,
-    "telephone": "410-555-0199",
+    "telephone": "(410) 555-1234",
     "email": "antoine.lyles@yahoo.com",
     "url": `${BASE_URL}/`,
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "Heaver Plaza",
+      "streetAddress": "1301 York Rd., 8th Floor, Ste 48",
       "addressLocality": "Timonium",
       "addressRegion": "MD",
       "postalCode": "21093",
@@ -57,8 +240,8 @@ export function generateSchema(options: SchemaOptions) {
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 39.4357,
-      "longitude": -76.6264
+      "latitude": 39.421,
+      "longitude": -76.615
     },
     "areaServed": [
       { "@type": "AdministrativeArea", "name": "Maryland" },
@@ -80,7 +263,7 @@ export function generateSchema(options: SchemaOptions) {
     "publisher": { "@id": `${BASE_URL}/#organization` }
   };
 
-  // 4. BreadcrumbList Schema (Only for subpages, not root homepage)
+  // 4. BreadcrumbList Schema
   const pathSegments = safeSlug.split('/').filter(Boolean);
   const breadcrumbList = pathSegments.length > 0 ? {
     "@type": "BreadcrumbList",

@@ -52,7 +52,7 @@ export async function generateMetadata(): Promise<Metadata> {
     },
     description: settings.siteDescription,
     keywords: settings.siteKeywords || ["410 Muscle Therapy"],
-    authors: [{ name: "410 Muscle Therapy", url: BASE_URL }],
+    authors: [{ name: "410 Muscle Therapy", url: `${BASE_URL}/` }],
     creator: "410 Muscle Therapy",
     publisher: "410 Muscle Therapy",
 
