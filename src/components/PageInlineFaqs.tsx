@@ -561,8 +561,12 @@ export default function PageInlineFaqs({
   const [activeCategory, setActiveCategory] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
 
-  // Use passed faqs prop, do not fall back to global faq items if none provided
-  const items: any[] = faqs && faqs.length > 0 ? faqs : [];
+  // Normalize passed faqs prop to ensure question & answer are always present
+  const items: any[] = (faqs && faqs.length > 0 ? faqs : []).map((item: any) => ({
+    ...item,
+    question: item.question || item.q || "",
+    answer: item.answer || item.a || ""
+  }));
 
   // Extract unique categories from the items if they have category fields
   const rawCategories: any[] = (() => {
