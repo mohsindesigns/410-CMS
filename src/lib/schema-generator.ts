@@ -13,7 +13,7 @@ interface SchemaOptions {
   servicesList?: Array<{ name: string; description?: string }>;
 }
 
-export function getHomepageSchemas(servicesList?: Array<{ name: string }>) {
+export function getHomepageSchemas(servicesList?: Array<{ name: string }>, faqs?: Array<{ question?: string; answer?: string; q?: string; a?: string }>) {
   const defaultServices = [
     { name: "Deep Tissue Massage" },
     { name: "Sports Massage" },
@@ -189,10 +189,29 @@ export function getHomepageSchemas(servicesList?: Array<{ name: string }>) {
     "description": "410 Muscle Therapy in Timonium, Maryland specializes in professional massage therapy services including deep tissue massage, sports massage, myofascial release, cupping therapy, and stretch therapy to help relieve pain and improve mobility."
   };
 
+  let faqSchema: any = null;
+  const validFaqs = (faqs || []).filter(f => (f.question || (f as any).q) && (f.answer || (f as any).a));
+  if (validFaqs.length > 0) {
+    faqSchema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "@id": `${BASE_URL}/#faq`,
+      "mainEntity": validFaqs.map(f => ({
+        "@type": "Question",
+        "name": (f.question || (f as any).q || "").replace(/<[^>]*>/g, "").trim(),
+        "acceptedAnswer": {
+          "@type": "Answer",
+          "text": (f.answer || (f as any).a || "").replace(/<[^>]*>/g, "").trim()
+        }
+      }))
+    };
+  }
+
   return {
     yoastGraph,
     serviceSchema,
-    localBusinessSchema
+    localBusinessSchema,
+    faqSchema
   };
 }
 
@@ -203,7 +222,7 @@ export function generateSchema(options: SchemaOptions) {
   const isRoot = normalizedSlug === '/' || normalizedSlug === '';
 
   if (isRoot) {
-    return getHomepageSchemas(servicesList);
+    return getHomepageSchemas(servicesList, faqs);
   }
 
   const pageUrl = `${BASE_URL}${normalizedSlug.endsWith('/') ? normalizedSlug : `${normalizedSlug}/`}`;

@@ -167,7 +167,14 @@ export default async function HomePage() {
     name: s.title || s.name
   }));
 
-  const { yoastGraph, serviceSchema, localBusinessSchema } = getHomepageSchemas(servicesList);
+  const rawFaqs = content?.data?.faq?.items || [];
+  const faqs = rawFaqs.filter((item: any) => 
+    !item.visibility ||
+    item.visibility === 'global' || 
+    (item.visibility === 'specific' && item.targetPages?.includes('home'))
+  );
+
+  const { yoastGraph, serviceSchema, localBusinessSchema, faqSchema } = getHomepageSchemas(servicesList, faqs);
 
   const schemaScripts = (
     <>
@@ -187,6 +194,13 @@ export default async function HomePage() {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
       />
+      {faqSchema && (
+        <script
+          id="faq-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqSchema) }}
+        />
+      )}
     </>
   );
 
