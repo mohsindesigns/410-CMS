@@ -37,8 +37,8 @@ async function syncAdmin() {
       console.log('Admin role created');
     }
 
-    const envUser = process.env.ADMIN_USERNAME || 'eagleadmin';
-    const envPass = process.env.ADMIN_PASSWORD || 'Eagle@Revolution2025';
+    const envUser = process.env.ADMIN_USERNAME || 'admin';
+    const envPass = process.env.ADMIN_PASSWORD || 'Admin@410Muscle2026';
 
     const hashedPassword = await bcrypt.hash(envPass, 10);
     const defaultPassword = await bcrypt.hash('Password123!', 10);
@@ -49,7 +49,7 @@ async function syncAdmin() {
       {
         $set: {
           username: envUser,
-          email: `${envUser}@eaglerevolution.com`,
+          email: `${envUser}@410-muscletherapy.com`,
           password: hashedPassword,
           role: adminRole._id,
           status: 'active'
@@ -65,8 +65,8 @@ async function syncAdmin() {
       {
         $set: {
           username: 'admin',
-          email: 'admin@eaglerevolution.com',
-          password: hashedPassword, // Matches Eagle@Revolution2025
+          email: 'admin@410-muscletherapy.com',
+          password: hashedPassword, // Matches Admin@410Muscle2026
           role: adminRole._id,
           status: 'active'
         }

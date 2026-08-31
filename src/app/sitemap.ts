@@ -45,19 +45,19 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   // Static pages
   const staticRoutes: MetadataRoute.Sitemap = [
     {
-      url: BASE_URL,
+      url: `${BASE_URL}/`,
       lastModified: now,
       changeFrequency: 'weekly',
       priority: 1.0,
     },
     {
-      url: `${BASE_URL}/privacy`,
+      url: `${BASE_URL}/privacy/`,
       lastModified: now,
       changeFrequency: 'yearly',
       priority: 0.3,
     },
     {
-      url: `${BASE_URL}/terms`,
+      url: `${BASE_URL}/terms/`,
       lastModified: now,
       changeFrequency: 'yearly',
       priority: 0.3,
@@ -103,19 +103,23 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // Dynamic custom pages
   // Filter out slugs that are already in staticRoutes to avoid duplicates
-  const staticSlugs = staticRoutes.map(r => r.url.replace(BASE_URL, '').replace(/^\//, ''));
+  const staticSlugs = staticRoutes.map(r => r.url.replace(BASE_URL, '').replace(/^\//, '').replace(/\/$/, ''));
   const customPageRoutes: MetadataRoute.Sitemap = dynamicPages
     .filter((page: any) =>
       !staticSlugs.includes(page.slug) &&
       page.slug !== '' &&
-      page.slug !== 'home'
+      page.slug !== 'home' &&
+      page.slug !== '/'
     )
-    .map((page: any) => ({
-      url: `${BASE_URL}/${page.slug}`,
-      lastModified: page.updatedAt ? new Date(page.updatedAt).toISOString() : now,
-      changeFrequency: 'weekly' as const,
-      priority: 0.8,
-    }));
+    .map((page: any) => {
+      const cleanSlug = String(page.slug || '').replace(/^\/+/, '').replace(/\/+$/, '');
+      return {
+        url: `${BASE_URL}/${cleanSlug}/`,
+        lastModified: page.updatedAt ? new Date(page.updatedAt).toISOString() : now,
+        changeFrequency: 'weekly' as const,
+        priority: 0.8,
+      };
+    });
 
   return [...staticRoutes, ...serviceRoutes, ...blogRoutes, ...customPageRoutes];
 }

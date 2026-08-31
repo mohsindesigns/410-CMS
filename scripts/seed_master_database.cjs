@@ -12,7 +12,7 @@ const masterCompleteData = {
     siteTitle: "410 Muscle Therapy | Performance Recovery Specialist",
     siteTemplate: "%s | 410 Muscle Therapy",
     siteDescription: "Specialized performance bodywork, mobility restoration, and injury prevention designed for athletes and active adults in Maryland since 2020.",
-    favicon: "/eagle-logo.png"
+    favicon: "/logo.png"
   },
   company: {
     name: "410 Muscle Therapy",
@@ -306,7 +306,7 @@ async function seedMaster() {
       seo: {
         metaTitle: "410 Muscle Therapy | Performance Recovery Specialist",
         metaDescription: "Elite performance recovery bodywork, mobility restoration, and injury prevention for athletes & active adults in Maryland.",
-        canonicalUrl: "https://eaglerevolution.com/",
+        canonicalUrl: "https://410-muscletherapy.com/",
         metaRobotsIndex: "index",
         metaRobotsFollow: "follow",
         ogTitle: "410 Muscle Therapy | Performance Recovery Specialist",
@@ -345,7 +345,7 @@ async function seedMaster() {
           metaTitle: service.title,
           metaDescription: service.description,
           focusKeyword: service.title,
-          canonicalUrl: `https://eaglerevolution.com/${service.slug}/`,
+          canonicalUrl: `https://410-muscletherapy.com/${service.slug}/`,
           metaRobotsIndex: 'index',
           metaRobotsFollow: 'follow',
           ogTitle: service.title,

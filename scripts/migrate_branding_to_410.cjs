@@ -50,7 +50,7 @@ async function migrate() {
   }
 
   console.log('2. Cleaning users...');
-  await db.collection('users').deleteOne({ username: 'eagleadmin' });
+  await db.collection('users').deleteOne({ username: 'admin' });
 
   console.log('Done!');
   await mongoose.disconnect();
