@@ -111,17 +111,26 @@ export default async function BlogPostPage({ params }: Props) {
     ]
   };
 
-  // Automated Table of Contents Logic
+  // Automated Table of Contents Logic & FAQ stripping from HTML body
   let tableOfContents: { id: string; text: string; level: number }[] = [];
   let processedContent = post.content || "";
+
+  // Strip any legacy embedded FAQ sections from the body content
+  processedContent = processedContent.replace(/<h[1-6][^>]*>[^<]*(?:FAQ|Frequently Asked|Common Questions)[^<]*<\/h[1-6]>[\s\S]*?(?=<h[1-6]|$)/gi, '').trim();
 
   const headingRegex = /<(h[123])>(.*?)<\/h[123]>/gi;
   let match;
   const slugify = (text: string) => text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 
-  while ((match = headingRegex.exec(post.content || "")) !== null) {
+  while ((match = headingRegex.exec(processedContent)) !== null) {
     const tag = match[1].toLowerCase();
     const text = match[2].replace(/<[^>]*>/g, '');
+    
+    // Ignore any FAQ heading from table of contents
+    if (/FAQ|Frequently Asked|Common Questions/i.test(text)) {
+      continue;
+    }
+
     const id = slugify(text);
 
     // Demote H1 to H2 to ensure only one H1 on the page
@@ -150,11 +159,11 @@ export default async function BlogPostPage({ params }: Props) {
       <div className="absolute inset-0 opacity-[0.03] bg-radial-dots-gold pointer-events-none" />
 
       <div className="site-container relative z-10">
-        
+
         {/* Top Bar Navigation */}
         <div className="mb-10 lg:mb-16 text-left">
-          <Link 
-            href="/blogs/" 
+          <Link
+            href="/blogs/"
             className="inline-flex items-center gap-2 text-white/50 hover:text-gold text-[12px] font-bold tracking-widest uppercase transition-colors"
           >
             <ArrowLeft size={16} />
@@ -163,7 +172,7 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1fr] gap-12 lg:gap-20 items-start">
-          
+
           {/* Left Column: Image & Header (Sticky) */}
           <div className="lg:sticky lg:top-[115px] flex flex-col gap-6">
             <header className="flex flex-col items-start text-left">
@@ -229,9 +238,8 @@ export default async function BlogPostPage({ params }: Props) {
                     <a
                       key={item.id}
                       href={`#${item.id}`}
-                      className={`text-white/70 hover:text-gold text-[13px] leading-snug transition-colors ${
-                        item.level === 3 ? 'pl-4 text-white/50 text-[12px]' : ''
-                      }`}
+                      className={`text-white/70 hover:text-gold text-[13px] leading-snug transition-colors ${item.level === 3 ? 'pl-4 text-white/50 text-[12px]' : ''
+                        }`}
                     >
                       {item.text}
                     </a>
@@ -256,16 +264,17 @@ export default async function BlogPostPage({ params }: Props) {
               dangerouslySetInnerHTML={{ __html: processedContent }}
             />
 
-            {/* Bottom inline FAQs if available */}
-            {post.faq && Array.isArray(post.faq) && post.faq.length > 0 && (
-              <div className="mt-12 pt-8 border-t border-white/10">
-                <PageInlineFaqs faqs={post.faq} title="Frequently Asked Questions" />
-              </div>
-            )}
+
+
+
           </div>
-
         </div>
-
+        {/* Bottom inline FAQs if available */}
+        {post.faq && Array.isArray(post.faq) && post.faq.length > 0 && (
+          <div className="mt-12 pt-8 border-t border-white/10">
+            <PageInlineFaqs faqs={post.faq} title="Frequently Asked Questions" />
+          </div>
+        )}
       </div>
     </article>
   );
