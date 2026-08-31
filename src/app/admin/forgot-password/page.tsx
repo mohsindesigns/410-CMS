@@ -46,7 +46,7 @@ export default function ForgotPasswordPage() {
         {/* Logo Section */}
         <div className="flex flex-col items-center mb-8">
           <div className="w-20 h-20 bg-white rounded-2xl shadow-xl flex items-center justify-center mb-4 border border-slate-100 p-2">
-             <img src="/eagle-logo.png" alt="Logo" className="w-full h-full object-contain" />
+             <img src="/logo.png" alt="Logo" className="w-full h-full object-contain" />
           </div>
           <h1 className="text-2xl font-bold text-slate-900 tracking-tight">410 Muscle Therapy</h1>
           <p className="text-slate-500 text-sm mt-1">Admin Control Center</p>

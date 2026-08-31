@@ -80,9 +80,9 @@ const seoMap: Record<
         { "@type": "State", name: "Missouri" },
       ],
       description:
-        "Expert residential roof replacement, repair, and storm damage restoration in St. Louis, MO. Architectural asphalt shingles with 50-year manufacturer warranties. Free drone inspections and full insurance claim assistance.",
-      url: `${BASE_URL}/services/residential-roofing`,
-      image: `${BASE_URL}/eagle-logo.png`,
+        "Specialized performance bodywork, mobility restoration, and injury prevention in Maryland.",
+      url: `${BASE_URL}/services/residential-roofing/`,
+      image: `${BASE_URL}/logo.png`,
       offers: {
         "@type": "Offer",
         priceCurrency: "USD",
@@ -301,8 +301,8 @@ const seoMap: Record<
       ],
       description:
         "Custom outdoor living deck design and construction in St. Louis, MO. Premium composite and PVC decking with 50-year warranties. Free 3D CAD design, full permit handling, and built-in lighting available.",
-      url: `${BASE_URL}/services/custom-decks`,
-      image: `${BASE_URL}/eagle-logo.png`,
+      url: `${BASE_URL}/services/custom-decks/`,
+      image: `${BASE_URL}/logo.png`,
       offers: {
         "@type": "Offer",
         priceCurrency: "USD",
@@ -690,11 +690,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     openGraph: {
       title,
       description,
-      url: `${BASE_URL}/services/${slug}`,
+      url: `${BASE_URL}/services/${slug}/`,
       type: "website",
       images: [
         {
-          url: seo.featuredImage || seo.ogImage || `${BASE_URL}/eagle-logo.png`,
+          url: seo.featuredImage || seo.ogImage || `${BASE_URL}/logo.png`,
           width: 1200,
           height: 630,
           alt: service.title,
@@ -705,7 +705,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: "summary_large_image",
       title,
       description,
-      images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/eagle-logo.png`],
+      images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/logo.png`],
     },
   };
 }

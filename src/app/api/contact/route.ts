@@ -56,7 +56,7 @@ export async function POST(request: Request) {
         const resend = new Resend(resendKey);
 
         await resend.emails.send({
-          from: 'Contact Form <noreply@eaglerevolution.com>',
+          from: 'Contact Form <noreply@410-muscletherapy.com>',
           to: receiverEmail,
           subject: `New Contact Form Submission from ${name}`,
           html: `

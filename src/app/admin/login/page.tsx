@@ -21,7 +21,7 @@ function LoginForm() {
 
   useEffect(() => { 
     setMounted(true); 
-    document.title = "Login ‹ Eagle Dashboard Mohsin Design";
+    document.title = "Login ‹ 410 Dashboard Mohsin Design";
   }, []);
 
   const handleSubmit = async (e: React.FormEvent) => {

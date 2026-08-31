@@ -14,7 +14,7 @@ export default function BrandStore() {
     const y = useTransform(scrollYProgress, [0, 1], [100, -100]);
     const opacity = useTransform(scrollYProgress, [0, 0.3, 0.7, 1], [0, 1, 1, 0]);
 
-    const storeUrl = "https://gbrandusa.chipply.com/eaglerevolution/?action=viewall";
+    const storeUrl = "https://410-muscletherapy.com/";
 
     return (
         <section
@@ -72,7 +72,7 @@ export default function BrandStore() {
                     >
                         <span className="text-foreground">REP THE</span>
                         <br />
-                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70">REVOLUTION</span>
+                        <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/70">MOVEMENT</span>
                     </motion.h2>
                 </motion.div>
 

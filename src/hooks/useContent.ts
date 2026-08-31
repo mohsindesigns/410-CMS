@@ -520,14 +520,14 @@ export const useContent = () => {
             items: []
         }),
         serviceDetailPage: getSafe(completeData, 'serviceDetailPage'),
-        settings: completeData?.settings || { siteTitle: "410 Muscle Therapy", siteTemplate: "%s | 410 Muscle Therapy", favicon: "/eagle-logo.png" },
+        settings: completeData?.settings || { siteTitle: "410 Muscle Therapy", siteTemplate: "%s | 410 Muscle Therapy", favicon: "/logo.png" },
         globalSite: getSafe(completeData, 'globalSite', {}),
         globalMetadata: getSafe(completeData, 'globalMetadata', {}),
         faqPage: getSafe(completeData, 'faqPage'),
         blogSection: getSafe(completeData, 'blogSection', {
             title: "Latest from the Blog",
             subtitle: "Insights & News",
-            description: "Stay updated with the latest trends, tips, and news from the roofing and construction industry.",
+            description: "Stay updated with the latest insights, recovery techniques, and clinical bodywork tips for peak performance.",
             ctaAll: "View All Articles",
             ctaReadMore: "Read Article",
             selectedPosts: []

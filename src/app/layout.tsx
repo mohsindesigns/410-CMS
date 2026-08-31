@@ -40,8 +40,8 @@ export async function generateMetadata(): Promise<Metadata> {
   return {
     metadataBase: new URL(BASE_URL),
     icons: {
-      icon: settings.favicon || `${BASE_URL}/eagle-logo.png`,
-      apple: settings.favicon || `${BASE_URL}/eagle-logo.png`,
+      icon: settings.favicon || `${BASE_URL}/logo.png`,
+      apple: settings.favicon || `${BASE_URL}/logo.png`,
     },
     facebook: {
       appId: "410-Muscle-Therapy-61564977483096",
@@ -59,23 +59,23 @@ export async function generateMetadata(): Promise<Metadata> {
     // ── Robots & Canonical ──
     robots: getRobotsMetadata(settings),
     alternates: {
-      canonical: BASE_URL,
+      canonical: `${BASE_URL}/`,
     },
 
     // ── Open Graph (Facebook, LinkedIn) ──
     openGraph: {
       type: "website",
       locale: "en_US",
-      url: BASE_URL,
+      url: `${BASE_URL}/`,
       siteName: "410 Muscle Therapy",
       title: settings.siteTitle,
       description: settings.siteDescription,
       images: [
         {
-          url: settings.favicon || `${BASE_URL}/eagle-logo.png`,
+          url: settings.favicon || `${BASE_URL}/logo.png`,
           width: 1200,
           height: 630,
-          alt: "410 Muscle Therapy – Veteran Owned Roofing & Home Improvement",
+          alt: "410 Muscle Therapy – Performance Recovery & Clinical Bodywork Maryland",
           type: "image/png",
         },
       ],
@@ -86,7 +86,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: settings.siteTitle,
       description: settings.siteDescription,
-      images: [settings.favicon || `${BASE_URL}/eagle-logo.png`],
+      images: [settings.favicon || `${BASE_URL}/logo.png`],
       creator: "@410MuscleTherapy",
       site: "@410MuscleTherapy",
     },

@@ -1,54 +1,35 @@
-# Eagle Revolution
+# 410 Muscle Therapy
 
-> Veteran-owned exterior remodeling contractor based in O'Fallon, Missouri, specializing in roofing, siding, windows, doors, decks, gutters, and full home exterior improvements. Founded by Brandon Anderson, a U.S. Army veteran. 25+ years of combined experience, licensed, bonded, and insured, with a 50-year warranty.
+> Specialized performance recovery bodywork, mobility restoration, and injury prevention clinic based in Timonium, Maryland. Offering clinical orthopedic massage, fascial stretch therapy, myofascial release, cupping therapy, trigger point therapy, and customized athletic recovery protocols for athletes and active adults across Maryland since 2020.
 
-Eagle Revolution serves homeowners and commercial property owners across the greater St. Louis, Missouri metro area and the Metro East region of Illinois, including St. Louis, St. Charles, Jefferson, and Franklin Counties in Missouri, and St. Clair, Monroe, and Madison Counties in Illinois. The company positions itself around transparency, craftsmanship, and veteran-led discipline in an industry it says has drifted toward profits over people.
+410 Muscle Therapy helps athletes, fitness enthusiasts, and active adults recover faster, eliminate pain, and restore natural movement biomechanics. All sessions combine advanced orthopedic assessment, targeted manual muscle therapy, and tailored recovery techniques designed around individual mobility goals.
 
-## Company
+## Core Navigation & Pages
 
-- [About Us](https://eaglerevolution.com/about-us): Company background, mission, and veteran-owned story
-- [Our Team](https://eaglerevolution.com/about-us/our-team): Leadership and team profiles
-- [Career](https://eaglerevolution.com/about-us/career): Job openings and hiring
-- [Reviews](https://eaglerevolution.com/reviews): Customer testimonials and ratings
-- [FAQ](https://eaglerevolution.com/faq): Frequently asked questions
-- [Gallery](https://eaglerevolution.com/gallery): Completed project photos
-- [Contact Us](https://eaglerevolution.com/contact-us): Free estimate requests and contact information
+- [Home](https://410-muscletherapy.com/): Clinic overview, recovery approach, and primary services
+- [Services Index](https://410-muscletherapy.com/services/): Complete catalog of specialized bodywork and clinical muscle therapies
+- [Project & Case Gallery](https://410-muscletherapy.com/gallery/): Client recovery journeys, bodywork sessions, and mobility results
+- [Blog & Journal](https://410-muscletherapy.com/blog/): Recovery insights, sports massage science, and mobility guides
+- [Contact Us](https://410-muscletherapy.com/contact-us/): Appointment inquiries, session booking, and clinic location
 
-## Services
+## Specialized Clinical Services
 
-- [Services Overview](https://eaglerevolution.com/services): Full list of exterior remodeling services
-- [Custom Decks](https://eaglerevolution.com/services/custom-decks): Custom deck design and installation
-- [PVC Decking](https://eaglerevolution.com/services/pvc-decking): Waterproof, low-maintenance PVC decking
-- [Residential Roofing](https://eaglerevolution.com/services/residential-roofing): Residential roof installation and repair
-- [Commercial Roofing](https://eaglerevolution.com/services/commercial-roofing): Flat and commercial roofing systems
-- [Windows](https://eaglerevolution.com/services/windows): Energy-efficient window replacement
-- [Doors](https://eaglerevolution.com/services/doors): Entry and exterior door installation
-- [Gutters & Protection](https://eaglerevolution.com/services/gutters-protection): Seamless gutters and gutter guards
-- [Siding, Soffit & Fascia](https://eaglerevolution.com/services/siding-soffit-fascia): Siding and cladding installation
-- [Patio Cover](https://eaglerevolution.com/services/patio-cover): Custom patio covers
-- [Vinyl & Aluminum Fencing](https://eaglerevolution.com/services/vinyl-and-aluminum-fencing): Fencing installation
+- [Corrective Movement Therapy](https://410-muscletherapy.com/corrective-movement-therapy-maryland/): Functional movement restoration and neuromuscular re-education
+- [Sports Massage Therapy](https://410-muscletherapy.com/maryland-sports-massage-therapist/): Pre-event and post-event athletic bodywork
+- [Infrared Therapy](https://410-muscletherapy.com/infrared-therapy-maryland/): Cellular repair, deep heat circulation, and tissue relaxation
+- [Fascial Stretch Therapy](https://410-muscletherapy.com/maryland-fascial-stretch-therapy/): Table-based assisted stretching to decompress joints and lengthen fascia
+- [Hot Towel Massage](https://410-muscletherapy.com/hot-towel-massage-maryland/): Soothing thermal therapy to soften dense muscle tension
+- [Myofascial Release Therapy](https://410-muscletherapy.com/myofascial-release-therapy-maryland/): Sustained pressure to dissolve chronic fascial restrictions
+- [Acupressure Massage](https://410-muscletherapy.com/acupressure-massage-maryland/): Targeted trigger point stimulation for nervous system relief
+- [Cupping Therapy](https://410-muscletherapy.com/cupping-therapy-maryland/): Decompressive negative pressure to accelerate lymphatic drainage
+- [Hot Stone Massage](https://410-muscletherapy.com/hot-stone-massage-maryland/): Heated basalt stones for deep neuromuscular release
+- [Deep Tissue Massage](https://410-muscletherapy.com/deep-tissue-massage-maryland/): Focused structural pressure targeting chronic muscular pain
 
 ## Service Areas
 
-- [Missouri (statewide)](https://eaglerevolution.com/missouri)
-- [St. Louis County, MO](https://eaglerevolution.com/st-louis-county-mo)
-- [St. Louis City, MO](https://eaglerevolution.com/st-louis-city-mo)
-- [St. Charles County, MO](https://eaglerevolution.com/st-charles-county-mo)
-- [Jefferson County, MO](https://eaglerevolution.com/jefferson-county-mo)
-- [Franklin County, MO](https://eaglerevolution.com/franklin-county-mo)
-- [O'Fallon, MO](https://eaglerevolution.com/ofallon-mo)
-- [Chesterfield, MO](https://eaglerevolution.com/chesterfield-mo)
-- [St. Peters, MO](https://eaglerevolution.com/st-peters-mo)
-- [Union, MO](https://eaglerevolution.com/union-mo)
-- [Ballwin, MO](https://eaglerevolution.com/ballwin-mo)
-- [Wildwood, MO](https://eaglerevolution.com/wildwood-mo)
-- [Illinois (statewide)](https://eaglerevolution.com/illinois)
-- [St. Clair County, IL](https://eaglerevolution.com/st-clair-county-il)
-- [Monroe County, IL](https://eaglerevolution.com/monroe-county-il)
-- [Madison County, IL](https://eaglerevolution.com/madison-county-il)
-- [Edwardsville, IL](https://eaglerevolution.com/edwardsville-il)
-- [Belleville, IL](https://eaglerevolution.com/belleville-il)
-
-## Optional
-
-- [Financing](https://www.greensky.com/prequal/gs/prequalify-for-loan?merchant=81115616&channel=External-Button-Prequal): GreenSky financing prequalification
+- [Maryland (Statewide)](https://410-muscletherapy.com/services/)
+- [Baltimore County, MD](https://410-muscletherapy.com/services/)
+- [Timonium, MD](https://410-muscletherapy.com/services/)
+- [Towson, MD](https://410-muscletherapy.com/services/)
+- [Lutherville, MD](https://410-muscletherapy.com/services/)
+- [Cockeysville, MD](https://410-muscletherapy.com/services/)

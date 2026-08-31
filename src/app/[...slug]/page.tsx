@@ -64,7 +64,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         type: "website",
         images: [
           {
-            url: featuredImage || `${BASE_URL}/eagle-logo.png`,
+            url: featuredImage || `${BASE_URL}/logo.png`,
             width: 1200,
             height: 630,
             alt: title,
@@ -75,7 +75,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         card: "summary_large_image",
         title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || title,
         description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || description,
-        images: [featuredImage || `${BASE_URL}/eagle-logo.png`],
+        images: [featuredImage || `${BASE_URL}/logo.png`],
         site: "@410MuscleTherapy",
         creator: "@410MuscleTherapy",
       },
@@ -102,7 +102,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       type: "website",
       images: [
         {
-          url: getAbsoluteUrl(seo.featuredImage || seo.ogImage) || `${BASE_URL}/eagle-logo.png`,
+          url: getAbsoluteUrl(seo.featuredImage || seo.ogImage) || `${BASE_URL}/logo.png`,
           width: 1200,
           height: 630,
           alt: page.title,
@@ -113,7 +113,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: "summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || page.title,
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
-      images: [getAbsoluteUrl(seo.featuredImage || seo.twitterImage || seo.ogImage) || `${BASE_URL}/eagle-logo.png`],
+      images: [getAbsoluteUrl(seo.featuredImage || seo.twitterImage || seo.ogImage) || `${BASE_URL}/logo.png`],
       site: "@410MuscleTherapy",
       creator: "@410MuscleTherapy",
     },

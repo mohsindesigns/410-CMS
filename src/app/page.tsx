@@ -62,13 +62,13 @@ export async function generateMetadata(): Promise<Metadata> {
           ...metadata.openGraph,
           title: seo.ogTitle || seo.metaTitle || page.title,
           description: seo.ogDescription || seo.metaDescription || metaDescription,
-          images: seo.featuredImage ? [{ url: seo.featuredImage }] : [`${BASE_URL}/eagle-logo.png`],
+          images: seo.featuredImage ? [{ url: seo.featuredImage }] : [`${BASE_URL}/logo.png`],
         },
         twitter: {
           ...metadata.twitter,
           title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || page.title,
           description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || metaDescription,
-          images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/eagle-logo.png`].filter(Boolean) as string[],
+          images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/logo.png`].filter(Boolean) as string[],
         },
         robots: getRobotsMetadata(settings, seo)
       };
@@ -89,13 +89,13 @@ export async function generateMetadata(): Promise<Metadata> {
           ...metadata.openGraph,
           title: seo.ogTitle || seo.metaTitle || service.title,
           description: seo.ogDescription || seo.metaDescription || metaDescription,
-          images: seo.featuredImage ? [{ url: seo.featuredImage }] : [`${BASE_URL}/eagle-logo.png`],
+          images: seo.featuredImage ? [{ url: seo.featuredImage }] : [`${BASE_URL}/logo.png`],
         },
         twitter: {
           ...metadata.twitter,
           title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || service.title,
           description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || metaDescription,
-          images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/eagle-logo.png`].filter(Boolean) as string[],
+          images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/logo.png`].filter(Boolean) as string[],
         },
         robots: getRobotsMetadata(settings, seo)
       };
@@ -127,13 +127,13 @@ export async function generateMetadata(): Promise<Metadata> {
       ...metadata.openGraph,
       title: seo.ogTitle || seo.metaTitle || metaTitle,
       description: seo.ogDescription || seo.metaDescription || metaDescription,
-      images: [seo.featuredImage || `${BASE_URL}/eagle-logo.png`].filter(Boolean) as string[],
+      images: [seo.featuredImage || `${BASE_URL}/logo.png`].filter(Boolean) as string[],
     },
     twitter: {
       ...metadata.twitter,
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || metaTitle,
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || metaDescription,
-      images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/eagle-logo.png`].filter(Boolean) as string[],
+      images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/logo.png`].filter(Boolean) as string[],
     },
     robots: getRobotsMetadata(settings, seo)
   };
@@ -168,7 +168,7 @@ export default async function Index() {
         slug: "/",
         type: "WebPage",
         faqs: faqs,
-        image: `${BASE_URL}/eagle-logo.png`
+        image: `${BASE_URL}/logo.png`
       });
       return (
         <>
@@ -201,7 +201,7 @@ export default async function Index() {
         slug: "/",
         type: "Service",
         faqs: faqs,
-        image: `${BASE_URL}/eagle-logo.png`
+        image: `${BASE_URL}/logo.png`
       });
       return (
         <>
@@ -223,11 +223,11 @@ export default async function Index() {
 
   const schema = generateSchema({
     title: settings?.siteTitle || "410 Muscle Therapy",
-    description: homeData?.hero?.subheadline || "Veteran-owned roofing & home improvement in St. Louis, MO.",
+    description: homeData?.hero?.subheadline || "Specialized performance recovery bodywork, mobility restoration, and injury prevention for athletes and active adults in Maryland.",
     slug: "/",
     type: "WebPage",
     faqs: faqs,
-    image: `${BASE_URL}/eagle-logo.png`
+    image: `${BASE_URL}/logo.png`
   });
 
   return (

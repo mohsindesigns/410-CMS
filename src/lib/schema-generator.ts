@@ -26,14 +26,14 @@ export function generateSchema(options: SchemaOptions) {
     "url": BASE_URL,
     "logo": {
       "@type": "ImageObject",
-      "url": `${BASE_URL}/eagle-logo.png`,
+      "url": `${BASE_URL}/logo.png`,
       "width": 512,
       "height": 512
     },
     "sameAs": [
-      "https://www.facebook.com/eaglerevolution",
-      "https://www.instagram.com/eaglerevolution",
-      "https://www.linkedin.com/company/eaglerevolution"
+      "https://www.facebook.com/410muscletherapy",
+      "https://www.instagram.com/410muscletherapy",
+      "https://www.linkedin.com/company/410muscletherapy"
     ]
   };
 
@@ -42,32 +42,30 @@ export function generateSchema(options: SchemaOptions) {
     "@type": "LocalBusiness",
     "@id": `${BASE_URL}/#localbusiness`,
     "name": "410 Muscle Therapy",
-    "image": `${BASE_URL}/eagle-logo.png`,
-    "telePhone": "636-449-9714",
+    "image": `${BASE_URL}/logo.png`,
+    "telePhone": "410-555-0199",
     "email": "antoine.lyles@yahoo.com",
     "url": BASE_URL,
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "1077 E Terra Ln",
-      "addressLocality": "O'fallon",
-      "addressRegion": "MO",
-      "postalCode": "63366",
+      "streetAddress": "Heaver Plaza",
+      "addressLocality": "Timonium",
+      "addressRegion": "MD",
+      "postalCode": "21093",
       "addressCountry": "US"
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 38.8105,
-      "longitude": -90.6998
+      "latitude": 39.4357,
+      "longitude": -76.6264
     },
     "areaServed": [
-      { "@type": "AdministrativeArea", "name": "St. Louis County" },
-      { "@type": "AdministrativeArea", "name": "St. Louis City" },
-      { "@type": "AdministrativeArea", "name": "St. Charles County" },
-      { "@type": "AdministrativeArea", "name": "Jefferson County" },
-      { "@type": "AdministrativeArea", "name": "Franklin County" },
-      { "@type": "AdministrativeArea", "name": "Saint Clair County" },
-      { "@type": "AdministrativeArea", "name": "Monroe County" },
-      { "@type": "AdministrativeArea", "name": "Madison County" }
+      { "@type": "AdministrativeArea", "name": "Maryland" },
+      { "@type": "AdministrativeArea", "name": "Baltimore County" },
+      { "@type": "AdministrativeArea", "name": "Timonium" },
+      { "@type": "AdministrativeArea", "name": "Towson" },
+      { "@type": "AdministrativeArea", "name": "Lutherville" },
+      { "@type": "AdministrativeArea", "name": "Cockeysville" }
     ],
     "priceRange": "$$"
   };

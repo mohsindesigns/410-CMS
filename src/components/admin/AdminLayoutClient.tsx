@@ -48,7 +48,7 @@ export default function AdminLayoutClient({
     pathname?.startsWith("/admin/reset-password");
 
   useEffect(() => {
-    document.title = "Eagle Dashboard Mohsin Design";
+    document.title = "410 Dashboard Mohsin Design";
 
     if (!isPublicPath && !user) {
       // Background re-fetch if initialUser was not passed on client navigation
