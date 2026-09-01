@@ -103,19 +103,19 @@ ${message}
     <main className="bg-white min-h-screen font-body w-full overflow-hidden">
       <section className="relative py-16 md:py-32 overflow-hidden w-full">
         <div className="absolute inset-0 pointer-events-none">
-          <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: `linear-gradient(to right, #2563eb 1px, transparent 1px), linear-gradient(to bottom, #2563eb 1px, transparent 1px)`, backgroundSize: '80px 80px' }} />
+          <div className="absolute inset-0 opacity-[0.02]" style={{ backgroundImage: `linear-gradient(to right, #be9c25 1px, transparent 1px), linear-gradient(to bottom, #be9c25 1px, transparent 1px)`, backgroundSize: '80px 80px' }} />
         </div>
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-blue-50 to-transparent opacity-80 blur-[100px]" />
+        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-gradient-to-b from-gold/10 to-transparent opacity-80 blur-[100px]" />
         <div className="max-w-5xl mx-auto px-4 relative z-30">
           <div className="max-w-3xl mx-auto text-center mb-12 md:mb-24">
             <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} className="flex items-center justify-center gap-3 mb-6">
-              <div className="w-8 h-[2px] bg-gradient-to-r from-blue-300 to-blue-500" />
-              <span className="text-xs font-medium tracking-[0.2em] uppercase text-blue-600">{careersData?.section?.badge || "Join 410 Muscle Therapy"}</span>
-              <div className="w-8 h-[2px] bg-gradient-to-r from-blue-500 to-blue-300" />
+              <div className="w-8 h-[2px] bg-gradient-to-r from-gold/40 to-gold" />
+              <span className="text-xs font-medium tracking-[0.2em] uppercase text-gold-dark">{careersData?.section?.badge || "Join 410 Muscle Therapy"}</span>
+              <div className="w-8 h-[2px] bg-gradient-to-r from-gold to-gold/40" />
             </motion.div>
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-4xl md:text-7xl font-light text-slate-900 mb-6 leading-tight">
               {careersData?.section?.headline?.split('with')[0]} <br />
-              <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-blue-900">{careersData?.section?.headline?.split('with')[1]}</span>
+              <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-gold-dark to-slate-900">{careersData?.section?.headline?.split('with')[1]}</span>
             </motion.h1>
             <div className="text-slate-600 text-lg md:text-xl font-light max-w-2xl mx-auto px-4">
               <RichTextRenderer content={careersData?.section?.description} />
@@ -135,28 +135,28 @@ ${message}
                 <form onSubmit={handleSubmit} className="p-8 md:p-16 space-y-10">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-8 md:gap-10">
                     <div className="space-y-3">
-                      <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><User className="w-4 h-4 text-blue-500" />{careersData?.labels?.name}</label>
-                      <input type="text" name="name" required className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                      <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><User className="w-4 h-4 text-gold-dark" />{careersData?.labels?.name}</label>
+                      <input type="text" name="name" required className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-gold-dark outline-none transition-all" />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><Mail className="w-4 h-4 text-blue-500" />{careersData?.labels?.email}</label>
-                      <input type="email" name="email" required className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                      <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><Mail className="w-4 h-4 text-gold-dark" />{careersData?.labels?.email}</label>
+                      <input type="email" name="email" required className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-gold-dark outline-none transition-all" />
                     </div>
                     <div className="space-y-3">
-                      <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><Phone className="w-4 h-4 text-blue-500" />{careersData?.labels?.phone || "Phone Number"}</label>
-                      <input type="tel" name="phone" required className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all" />
+                      <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><Phone className="w-4 h-4 text-gold-dark" />{careersData?.labels?.phone || "Phone Number"}</label>
+                      <input type="tel" name="phone" required className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-gold-dark outline-none transition-all" />
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><Briefcase className="w-4 h-4 text-blue-500" />{careersData?.labels?.role}</label>
-                    <select name="role" required defaultValue="" className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all appearance-none">
+                    <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><Briefcase className="w-4 h-4 text-gold-dark" />{careersData?.labels?.role}</label>
+                    <select name="role" required defaultValue="" className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-gold-dark outline-none transition-all appearance-none">
                       <option value="" disabled>{careersData?.labels?.roleSelector || "Select a Position"}</option>
                       {careersData?.roles?.map((role: any, index: number) => <option key={index} value={role.value}>{role.label}</option>)}
                     </select>
                   </div>
                   <div className="space-y-3">
                     <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2">
-                      <FileText className="w-4 h-4 text-blue-500" />
+                      <FileText className="w-4 h-4 text-gold-dark" />
                       {careersData?.labels?.attachment || "CV / RESUME (PDF)"}
                     </label>
                     <div className="relative group">
@@ -167,17 +167,17 @@ ${message}
                         onChange={handleFileChange}
                         className="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10"
                       />
-                      <div className="w-full px-5 py-4 bg-slate-50/50 border border-dashed rounded-xl flex items-center justify-between group-hover:border-blue-400 transition-all">
+                      <div className="w-full px-5 py-4 bg-slate-50/50 border border-dashed rounded-xl flex items-center justify-between group-hover:border-gold-dark transition-all">
                         <span className="text-slate-500 font-medium">{fileName || careersData?.labels?.attachmentPlaceholder || "Upload your resume (PDF)..."}</span>
-                        <Upload className="w-5 h-5 text-slate-400 group-hover:text-blue-500" />
+                        <Upload className="w-5 h-5 text-slate-400 group-hover:text-gold-dark" />
                       </div>
                     </div>
                   </div>
                   <div className="space-y-3">
-                    <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><FileText className="w-4 h-4 text-blue-500" />{careersData?.labels?.summary}</label>
-                    <textarea name="message" required rows={4} className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-blue-500 outline-none transition-all"></textarea>
+                    <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><FileText className="w-4 h-4 text-gold-dark" />{careersData?.labels?.summary}</label>
+                    <textarea name="message" required rows={4} className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-gold-dark outline-none transition-all"></textarea>
                   </div>
-                  <button type="submit" disabled={isSubmitting} className="w-full py-5 bg-blue-600 hover:bg-blue-700 text-white rounded-xl font-bold transition-all disabled:opacity-70">
+                  <button type="submit" disabled={isSubmitting} className="w-full py-5 btn-gold font-bold uppercase tracking-widest text-xs rounded-xl transition-all disabled:opacity-70 shadow-lg cursor-pointer">
                     {isSubmitting ? 'SENDING...' : 'SUBMIT APPLICATION'}
                   </button>
                   {errorMsg && (

@@ -223,7 +223,7 @@ export default function Footer() {
             {/* Col 1 — Brand */}
             <div className="flex flex-col items-start text-left">
               <FooterLogo logoUrl={(navbar as any)?.logo} siteTitle={(navbar as any)?.siteTitle} logoText1={(navbar as any)?.logoText1} logoText2={(navbar as any)?.logoText2} />
-              <p className="text-white/55 text-[13.5px] leading-[1.8] mb-4 max-w-[280px]">
+              <p className="text-white/80 text-[13.5px] leading-[1.8] mb-4 max-w-[280px]">
                 {brandDescriptionText}
               </p>
               <SocialIcons socialItems={socialLinks} />
@@ -231,13 +231,13 @@ export default function Footer() {
 
             {/* Col 2 — Quick Links */}
             <div className="flex flex-col items-start text-left">
-              <h4 className="text-white font-bold text-[11.5px] tracking-[0.16em] uppercase mb-5">
+              <h4 className="text-white font-bold text-[12px] tracking-[0.18em] uppercase mb-5">
                 {quickLinksLabel}
               </h4>
               <ul className="flex flex-col gap-3">
                 {quickLinksData.map((link: any) => (
                   <li key={link.label}>
-                    <Link href={link.href} className="text-white/45 text-[13.5px] hover:text-gold transition-colors duration-200 flex items-center gap-2 group py-0.5">
+                    <Link href={link.href} className="text-white/75 text-[13.5px] hover:text-gold transition-colors duration-200 flex items-center gap-2 group py-0.5">
                       <span className="w-0 h-px bg-gold transition-all duration-200 group-hover:w-3" />
                       {link.label}
                     </Link>
@@ -248,13 +248,13 @@ export default function Footer() {
 
             {/* Col 3 — Services */}
             <div className="flex flex-col items-start text-left">
-              <h4 className="text-white font-bold text-[11.5px] tracking-[0.16em] uppercase mb-5">
+              <h4 className="text-white font-bold text-[12px] tracking-[0.18em] uppercase mb-5">
                 {servicesLabel}
               </h4>
               <ul className="flex flex-col gap-3">
                 {servicesDataList.map((svc: any) => (
                   <li key={svc.label}>
-                    <Link href={svc.href} className="text-white/45 text-[13.5px] hover:text-gold transition-colors duration-200 flex items-center gap-2 group py-0.5">
+                    <Link href={svc.href} className="text-white/75 text-[13.5px] hover:text-gold transition-colors duration-200 flex items-center gap-2 group py-0.5">
                       <span className="w-0 h-px bg-gold transition-all duration-200 group-hover:w-3" />
                       {svc.label}
                     </Link>
@@ -265,7 +265,7 @@ export default function Footer() {
 
             {/* Col 4 — Contact */}
             <div className="flex flex-col items-start text-left">
-              <h4 className="text-white font-bold text-[11.5px] tracking-[0.16em] uppercase mb-5">
+              <h4 className="text-white font-bold text-[12px] tracking-[0.18em] uppercase mb-5">
                 {contactLabel}
               </h4>
               <ul className="flex flex-col gap-3.5 w-full">
@@ -300,7 +300,7 @@ export default function Footer() {
                     >
                       {item.icon}
                     </svg>
-                    <span className="text-white/55 text-[13px] leading-snug whitespace-pre-line">
+                    <span className="text-white/80 text-[13px] leading-snug whitespace-pre-line">
                       {item.text}
                     </span>
                   </li>
@@ -315,25 +315,25 @@ export default function Footer() {
 
           {/* ── Bottom bar ───────────────────────────── */}
           <div className="flex flex-col sm:flex-row items-center justify-between py-6 gap-3 text-center sm:text-left">
-            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-white/40 text-[12px]">
-              <p>{copyrightText}</p>
-              <span className="hidden sm:inline text-white/20">•</span>
-              <p className="text-white/40">
+            <div className="flex flex-col sm:flex-row items-center gap-2 sm:gap-4 text-white/75 text-[13px]">
+              <p className="font-medium text-white/85">{copyrightText}</p>
+              <span className="hidden sm:inline text-white/30">•</span>
+              <p className="text-white/75">
                 Designed & Developed by{" "}
                 <a
                   href="https://410-cms.vercel.app/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-gold hover:text-white font-medium underline decoration-gold/40 hover:decoration-white transition-colors"
+                  className="text-gold hover:text-white font-semibold underline decoration-gold/60 hover:decoration-white transition-colors"
                 >
                   Mohsin Design
                 </a>
               </p>
             </div>
-            <div className="flex items-center gap-4 sm:gap-6">
-              <Link href="/privacy/" className="text-white/40 text-[12px] hover:text-white/70 transition-colors">{privacy}</Link>
-              <span className="text-white/15">{divider}</span>
-              <Link href="/terms/" className="text-white/40 text-[12px] hover:text-white/70 transition-colors">{terms}</Link>
+            <div className="flex items-center gap-4 sm:gap-6 text-[13px]">
+              <Link href="/privacy/" className="text-white/70 hover:text-white transition-colors">{privacy}</Link>
+              <span className="text-white/30">{divider}</span>
+              <Link href="/terms/" className="text-white/70 hover:text-white transition-colors">{terms}</Link>
             </div>
           </div>
 
