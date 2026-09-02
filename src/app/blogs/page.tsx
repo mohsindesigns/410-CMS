@@ -19,7 +19,7 @@ export async function generateMetadata(): Promise<Metadata> {
     SiteContent.findOne({ key: 'complete_data' }).lean() as any,
     Page.findOne({ $or: [{ slug: 'blogs' }, { slug: 'blog' }] }).lean() as any
   ]);
-  
+
   const settings = content?.data?.settings;
   const blogData = content?.data?.blogsPage || content?.data?.blogPage || {};
   const seo = {
@@ -66,7 +66,7 @@ import { generateSchema } from '@/lib/schema-generator';
 
 export default async function BlogsIndexPage() {
   await connectToDatabase();
-  
+
   const [allPosts, pageDoc, content] = await Promise.all([
     Post.find({ status: 'published', isTrashed: { $ne: true } })
       .populate('categories author')
@@ -128,7 +128,7 @@ export default async function BlogsIndexPage() {
             {titleLine1} <span className="text-gold italic font-light">{titleLine2}</span>
           </h1>
           {description && (
-            <div 
+            <div
               className="text-white/60 text-[14px] md:text-[15px] max-w-2xl mx-auto mt-6 leading-relaxed [&_p]:text-white/60 [&_p]:text-center [&_p]:text-[14px] [&_p]:md:text-[15px] [&_p]:leading-relaxed"
               dangerouslySetInnerHTML={{ __html: description }}
             />
@@ -173,9 +173,9 @@ export default async function BlogsIndexPage() {
                   )}
                 </div>
                 <div className="p-6 md:p-8 flex flex-col flex-grow text-left">
-                  <h3 className="text-white font-bold text-[18px] md:text-[20px] leading-snug mb-3 group-hover:text-gold transition-colors duration-200">
+                  <h2 className="text-white font-bold text-[18px] md:text-[20px] leading-snug mb-3 group-hover:text-gold transition-colors duration-200">
                     {post.title}
-                  </h3>
+                  </h2>
                   <p className="text-white/60 text-[13.5px] leading-relaxed mb-6 flex-grow">
                     {cleanExcerpt}
                   </p>
@@ -192,9 +192,9 @@ export default async function BlogsIndexPage() {
 
         {posts.length === 0 && (
           <div className="text-center py-20 bg-black/20 rounded-lg border border-border-dark/50">
-             <BookOpen className="w-12 h-12 text-slate-700 mx-auto mb-4" />
-             <h3 className="text-2xl font-bold text-white">No posts yet</h3>
-             <p className="text-white/40 mt-2">Check back later for new updates.</p>
+            <BookOpen className="w-12 h-12 text-slate-700 mx-auto mb-4" />
+            <h3 className="text-2xl font-bold text-white">No posts yet</h3>
+            <p className="text-white/40 mt-2">Check back later for new updates.</p>
           </div>
         )}
       </div>

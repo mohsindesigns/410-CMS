@@ -733,4 +733,23 @@
   .stepper-banner-cta {
     border: 1px solid rgba(243, 227, 140, 0.3) !important;
   }
+
+  /* ── Custom Scrollbar for Blog Navigation & TOC ── */
+  .custom-scrollbar {
+    scrollbar-width: thin;
+    scrollbar-color: rgba(243, 227, 140, 0.4) transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar {
+    width: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-track {
+    background: transparent;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb {
+    background: rgba(243, 227, 140, 0.3);
+    border-radius: 4px;
+  }
+  .custom-scrollbar::-webkit-scrollbar-thumb:hover {
+    background: rgba(243, 227, 140, 0.6);
+  }
 }
