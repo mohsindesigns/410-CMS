@@ -116,7 +116,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   if (!post) notFound();
 
-  // 2. Fetch Blog Page Settings for CMS-managed CTAs and Global Defaults
+  // 2. Fetch Blog Page Settings for CMS-managed Defaults
   const [blogPageDoc, contentDoc] = await Promise.all([
     Page.findOne({
       $or: [{ slug: { $in: ["blogs", "/blogs", "blog", "/blog"] } }, { template: { $in: ["blogs", "blog"] } }]
@@ -131,47 +131,6 @@ export default async function BlogPostPage({ params }: Props) {
     globalContent.blogsPage ||
     globalContent.blogPage ||
     {};
-  const globalCtaBanner = globalContent.ctaBanner || {};
-  const globalLeadership = globalContent.leadership || {};
-  const globalMetadata = globalContent.globalMetadata || {};
-  const defaultBookingUrl =
-    globalMetadata?.bookingUrl ||
-    globalCtaBanner?.buttonUrl ||
-    globalCtaBanner?.btnUrl ||
-    "https://www.styleseat.com/m/v/410muscletherapy";
-
-  // Resolve Sidebar Consultation CTA
-  const sidebarCta = {
-    badge: blogPageData.detailSidebarCta?.badge || "CLINICAL RECOVERY",
-    title: blogPageData.detailSidebarCta?.title || "Restore Mobility & Relieve Chronic Tension",
-    description:
-      blogPageData.detailSidebarCta?.description ||
-      "Experience personalized sports massage, targeted neuromuscular therapy, and clinical recovery protocols.",
-    buttonText: blogPageData.detailSidebarCta?.buttonText || "BOOK APPOINTMENT",
-    buttonHref: blogPageData.detailSidebarCta?.buttonHref || defaultBookingUrl
-  };
-
-  // Resolve Signature Detail CTA Banner (Syncs with CMS CTA Banner)
-  const ctaSource = blogPageData.ctaBanner || blogPageData.detailCtaBanner || globalCtaBanner || {};
-  const detailCtaBanner = {
-    eyebrow: ctaSource.eyebrow || ctaSource.tagline || "READY TO FEEL YOUR BEST?",
-    titleIntro: ctaSource.titleIntro || "Restore Your Peak",
-    titleHighlight: ctaSource.titleHighlight || "Performance",
-    titleLine2: ctaSource.titleLine2 || "Together.",
-    description:
-      ctaSource.description ||
-      "Schedule your clinical bodywork or performance recovery session today. We pinpoint muscular dysfunction and restore functional movement.",
-    ctaPrimary: {
-      label: ctaSource.ctaPrimary?.label || ctaSource.button || "Book Recovery Session",
-      href: ctaSource.ctaPrimary?.href || ctaSource.buttonUrl || defaultBookingUrl
-    },
-    ctaSecondary: {
-      label: ctaSource.ctaSecondary?.label || "Explore All Services",
-      href: ctaSource.ctaSecondary?.href || "/services/"
-    },
-    portraitSrc: ctaSource.portraitSrc || globalLeadership.image || "/images/theraphist.jpeg",
-    portraitAlt: ctaSource.portraitAlt || "Antoine Lyles - Performance Recovery Specialist"
-  };
 
   // Resolve Related Section Header
   const relatedSection = {
@@ -243,7 +202,7 @@ export default async function BlogPostPage({ params }: Props) {
     };
   });
 
-  // 4. Resolve Post Metadata & Author Information
+  // 4. Resolve Post Metadata & Author Information (retained for SEO JSON-LD)
   let categoryBadge = "Clinical Insight";
   if (Array.isArray(post.categories) && post.categories.length > 0) {
     categoryBadge = post.categories[0]?.name || "Clinical Insight";
@@ -448,18 +407,18 @@ export default async function BlogPostPage({ params }: Props) {
         </div>
 
         <div className="mx-auto max-w-6xl px-4 sm:px-6 relative z-10 w-full">
-          {/* Breadcrumb Row */}
-          <div className="flex flex-wrap items-center gap-2 text-xs font-mono font-bold uppercase tracking-wider text-white/50 mb-5">
-            <Link href="/" className="hover:text-gold transition-colors">
-              Home
+          {/* Breadcrumb Row - Bold & Highly Visible */}
+          <nav aria-label="Breadcrumb" className="flex flex-wrap items-center gap-2.5 text-xs sm:text-[13px] font-mono font-bold uppercase tracking-wider mb-6">
+            <Link href="/" className="text-white hover:text-gold transition-colors">
+              HOME
             </Link>
-            <span className="text-white/20">/</span>
-            <Link href="/blogs/" className="hover:text-gold transition-colors">
-              Blogs
+            <span className="text-gold font-bold">/</span>
+            <Link href="/blogs/" className="text-white hover:text-gold transition-colors">
+              BLOGS
             </Link>
-            <span className="text-white/20">/</span>
-            <span className="text-gold font-bold">{categoryBadge}</span>
-          </div>
+            <span className="text-gold font-bold">/</span>
+            <span className="text-gold font-black">{categoryBadge}</span>
+          </nav>
 
           {/* Title */}
           <h1 className="display-heading text-3xl sm:text-4xl lg:text-5xl font-bold text-white leading-[1.18] tracking-tight mb-6 max-w-4xl drop-shadow-sm">
@@ -473,7 +432,7 @@ export default async function BlogPostPage({ params }: Props) {
               {categoryBadge}
             </span>
 
-            <span className="inline-flex items-center gap-1.5 text-white/50 font-mono font-medium">
+            <span className="inline-flex items-center gap-1.5 text-white/70 font-mono font-medium">
               <Calendar className="w-3.5 h-3.5 text-gold" />
               {formattedDate}
             </span>
@@ -484,7 +443,7 @@ export default async function BlogPostPage({ params }: Props) {
             </span>
 
             {post.location && (
-              <span className="inline-flex items-center gap-1.5 text-white/50 font-mono font-medium">
+              <span className="inline-flex items-center gap-1.5 text-white/70 font-mono font-medium">
                 <MapPin className="w-3.5 h-3.5 text-gold" />
                 {post.location}
               </span>
@@ -511,33 +470,6 @@ export default async function BlogPostPage({ params }: Props) {
 
           {/* Left: Blog Content */}
           <div className="lg:w-[65%] min-w-0 w-full">
-
-            {/* Author Attribution Card */}
-            {authorInfo && (
-              <div className="flex flex-col min-[400px]:flex-row items-center gap-5 mb-12 p-6 min-[400px]:p-8 bg-dark-2 border border-white/10 rounded-2xl min-[400px]:rounded-3xl relative overflow-hidden group shadow-xl">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gold/5 blur-2xl rounded-full translate-x-1/2 -translate-y-1/2 pointer-events-none" />
-                <div className="relative shrink-0">
-                  <div className="w-16 h-16 rounded-2xl overflow-hidden shadow-xl border-2 border-gold/70">
-                    <img
-                      src={authorInfo.avatar}
-                      alt={authorInfo.name}
-                      className="w-full h-full object-cover object-top"
-                    />
-                  </div>
-                </div>
-                <div>
-                  <span className="text-[10px] font-mono font-bold uppercase tracking-[0.2em] text-gold mb-1 block">
-                    Clinical Recovery Specialist
-                  </span>
-                  <h4 className="text-xl font-bold text-white leading-tight font-display">
-                    {authorInfo.name}
-                  </h4>
-                  <p className="text-white/60 text-xs sm:text-sm mt-0.5 font-medium">
-                    {authorInfo.role}
-                  </p>
-                </div>
-              </div>
-            )}
 
             {/* Main Content Body */}
             <div
@@ -637,29 +569,6 @@ export default async function BlogPostPage({ params }: Props) {
                 </div>
               </div>
 
-              {/* Sidebar Clinic Consultation CTA Box */}
-              <div className="bg-gradient-to-br from-[#1c1a14] via-[#141414] to-[#0d0d0d] border border-gold/30 rounded-[2rem] p-7 text-white relative overflow-hidden group shadow-2xl space-y-4">
-                <div className="absolute top-0 right-0 w-32 h-32 bg-gold/15 blur-3xl rounded-full translate-x-1/2 -translate-y-1/2 group-hover:bg-gold/25 transition-colors duration-700 pointer-events-none" />
-                <span className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full text-[9.5px] font-mono font-bold uppercase bg-gold/10 text-gold border border-gold/30">
-                  <Star className="w-3 h-3 fill-current" /> {sidebarCta.badge}
-                </span>
-                <h4 className="display-heading text-2xl font-bold text-white leading-tight">
-                  {sidebarCta.title}
-                </h4>
-                <p className="text-white/80 text-xs leading-relaxed font-sans font-normal">
-                  {sidebarCta.description}
-                </p>
-                <a
-                  href={sidebarCta.buttonHref}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="btn-gold w-full justify-center text-xs py-3.5 mt-2 rounded-lg font-bold flex items-center gap-2 shadow-lg"
-                >
-                  <span>{sidebarCta.buttonText}</span>
-                  <ArrowRight className="w-3.5 h-3.5" />
-                </a>
-              </div>
-
             </div>
           </aside>
 
@@ -731,76 +640,6 @@ export default async function BlogPostPage({ params }: Props) {
           </div>
         </section>
       )}
-
-      {/* ── 5. SIGNATURE CLINIC CTA BANNER ─────────────────────────── */}
-      <section id="contact" className="container mx-auto px-4 my-10 relative overflow-hidden max-w-6xl">
-        <div className="bg-gradient-to-br from-[#181818] via-[#121212] to-[#0A0A0A] border border-gold/30 rounded-[32px] p-8 sm:p-12 lg:p-14 shadow-2xl relative overflow-hidden flex flex-col lg:flex-row items-center justify-between gap-8">
-          {/* Background ambient gold orb */}
-          <div className="absolute top-0 right-1/3 w-96 h-96 bg-gold/10 blur-[100px] rounded-full pointer-events-none" />
-
-          <div className="relative z-10 flex flex-col justify-center gap-6 lg:max-w-[62%] text-left">
-            {/* Eyebrow Pill */}
-            <div className="inline-flex items-center gap-2 rounded-full bg-gold/10 border border-gold/30 px-4 py-1.5 text-[10px] font-mono tracking-widest text-gold font-bold uppercase w-fit">
-              <span className="relative flex h-2 w-2">
-                <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-gold opacity-75" />
-                <span className="relative inline-flex rounded-full h-2 w-2 bg-gold" />
-              </span>
-              {detailCtaBanner.eyebrow}
-            </div>
-
-            {/* Headline */}
-            <h2 className="display-heading text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold leading-[1.18] tracking-tight text-white">
-              {detailCtaBanner.titleIntro} <br className="hidden sm:block" />
-              <span className="whitespace-nowrap inline-block">
-                {detailCtaBanner.titleLine2}{" "}
-                <span className="relative inline-block text-gold italic font-light pl-1">
-                  {detailCtaBanner.titleHighlight}
-                </span>
-              </span>
-            </h2>
-
-            {/* Description */}
-            <p className="text-sm sm:text-base font-sans text-white/80 font-normal leading-relaxed max-w-lg">
-              {detailCtaBanner.description}
-            </p>
-
-            {/* CTAs */}
-            <div className="flex items-center gap-4 flex-wrap pt-2">
-              <a
-                href={detailCtaBanner.ctaPrimary.href}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="btn-gold text-xs py-3.5 px-7 rounded-lg font-bold flex items-center gap-2 shadow-lg"
-              >
-                <span>{detailCtaBanner.ctaPrimary.label}</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </a>
-
-              <Link
-                href={detailCtaBanner.ctaSecondary.href}
-                className="btn-outline-white text-xs py-3.5 px-7 rounded-lg font-bold flex items-center gap-2"
-              >
-                <span>{detailCtaBanner.ctaSecondary.label}</span>
-                <ArrowRight className="h-3.5 w-3.5" />
-              </Link>
-            </div>
-          </div>
-
-          {/* Right Side Portrait & Arch Graphic */}
-          <div className="hidden lg:flex flex-1 items-end justify-center relative pr-4">
-            <div className="absolute bottom-0 w-[280px] h-[280px] bg-gradient-to-t from-gold/20 via-gold/10 to-transparent rounded-full opacity-70 blur-xl pointer-events-none" />
-            <div className="relative z-10 w-[270px] h-[350px] self-end drop-shadow-2xl overflow-hidden rounded-t-[32px] border-t border-l border-r border-gold/40 shadow-2xl">
-              <img
-                src={detailCtaBanner.portraitSrc}
-                alt={detailCtaBanner.portraitAlt}
-                className="w-full h-full object-cover object-top filter contrast-[1.05]"
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-dark/80 via-transparent to-transparent pointer-events-none" />
-            </div>
-            <div className="absolute top-12 right-16 h-3.5 w-3.5 rounded-full bg-gold shadow-[0_0_15px_#f3e38c] z-20" />
-          </div>
-        </div>
-      </section>
     </article>
   );
 }
