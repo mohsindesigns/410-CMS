@@ -74,6 +74,9 @@ export const useContent = () => {
                     if (link && (link.label === "Services" || link.href === "/services") && link.useMegaMenu === undefined) {
                         return { ...link, useMegaMenu: true };
                     }
+                    if (link && (link.href === "/blog" || link.href === "/blog/" || link.label === "Blogs" && (!link.href || link.href === "/blog" || link.href === "/blog/"))) {
+                        return { ...link, href: "/blogs/" };
+                    }
                     return link;
                 });
                 nav.companyLinks = linksList;

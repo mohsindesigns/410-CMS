@@ -57,7 +57,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     post.excerpt ||
     `${post.title} - Specialized recovery insights, deep tissue protocols, and clinical tips from 410 Muscle Therapy.`;
   const pageImage = post.seo?.ogImage || post.featuredImage || `${BASE_URL}/logo.png`;
-  const canonicalUrl = post.seo?.canonicalUrl || `${BASE_URL}/blogs/${post.slug}/`;
+  let canonicalUrl = post.seo?.canonicalUrl || `${BASE_URL}/blogs/${post.slug}/`;
+  if (canonicalUrl.includes('/blog/')) {
+    canonicalUrl = canonicalUrl.replace('/blog/', '/blogs/');
+  }
 
   return {
     title: {

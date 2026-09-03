@@ -31,6 +31,16 @@ const nextConfig: NextConfig = {
         destination: '/contact-us/',
         permanent: true,
       },
+      {
+        source: '/blog',
+        destination: '/blogs/',
+        statusCode: 301,
+      },
+      {
+        source: '/blog/:path*',
+        destination: '/blogs/:path*/',
+        statusCode: 301,
+      },
     ];
   },
   async rewrites() {

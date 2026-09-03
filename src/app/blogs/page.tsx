@@ -31,13 +31,18 @@ export async function generateMetadata(): Promise<Metadata> {
   const publishedTime = (pageDoc?.publishedAt || pageDoc?.createdAt ? new Date(pageDoc.publishedAt || pageDoc.createdAt) : new Date("2025-02-07T15:28:30Z")).toISOString();
   const modifiedTime = (pageDoc?.updatedAt || pageDoc?.publishedAt || pageDoc?.createdAt ? new Date(pageDoc.updatedAt || pageDoc.publishedAt || pageDoc.createdAt) : new Date("2026-07-24T16:08:21Z")).toISOString();
 
+  let canonicalUrl = seo.canonicalUrl || pageUrl;
+  if (canonicalUrl.endsWith('/blog/') || canonicalUrl.endsWith('/blog')) {
+    canonicalUrl = pageUrl;
+  }
+
   return {
     title: {
       absolute: seo.metaTitle || pageDoc?.title || "Our Blogs | 410 Muscle Therapy"
     },
     description: seo.metaDescription || blogData?.hero?.description || "Explore our latest articles, insights, and clinical recovery tips.",
     alternates: {
-      canonical: seo.canonicalUrl || pageUrl,
+      canonical: canonicalUrl,
     },
     openGraph: {
       title: seo.ogTitle || seo.metaTitle || pageDoc?.title || "Our Blogs | 410 Muscle Therapy",

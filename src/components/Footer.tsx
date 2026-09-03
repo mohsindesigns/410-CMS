@@ -212,6 +212,7 @@ export default function Footer() {
   const companyLinks = navbar?.companyLinks || navbar?.links || [];
   const quickLinksData = companyLinks.map((link: any) => {
     let href = link.href || "/";
+    if (href === "/blog" || href === "/blog/") href = "/blogs/";
     if (href.startsWith("/") && !href.endsWith("/") && !href.includes("#") && !href.includes("?")) {
       href = `${href}/`;
     }

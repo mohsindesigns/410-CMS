@@ -21,6 +21,14 @@ export async function middleware(req: NextRequest) {
 
   // 1. Check for global redirects (only for public HTML pages)
   if (!pathname.startsWith('/admin') && !isStaticAsset) {
+    // Immediate permanent 301 redirect from /blog and /blog/ to /blogs/
+    if (pathname === '/blog' || pathname === '/blog/') {
+      return NextResponse.redirect(new URL('/blogs/', req.url), 301);
+    }
+    if (pathname.startsWith('/blog/')) {
+      const subPath = pathname.slice('/blog/'.length).replace(/\/+$/, '');
+      return NextResponse.redirect(new URL(`/blogs/${subPath}/`, req.url), 301);
+    }
 
     try {
       // Use INTERNAL_API_URL to avoid external round-trip through Cloudflare in production.

@@ -64,6 +64,7 @@ const Navbar = () => {
 
   const normalizeNavHref = (href: string) => {
     if (!href) return "/";
+    if (href === "/blog" || href === "/blog/") return "/blogs/";
     if (href.startsWith("http") || href.startsWith("#") || href.includes("?") || href.endsWith("/")) return href;
     return `${href}/`;
   };
