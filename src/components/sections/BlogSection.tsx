@@ -5,6 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { ArrowRight, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
+import { normalizeBlogImage } from "@/lib/blogImage";
 
 interface BlogPost {
   _id: string;
@@ -149,7 +150,7 @@ export default function BlogSection({
                       <div className="img-blog relative h-[210px] w-full overflow-hidden bg-dark/10">
                         {post.featuredImage ? (
                           <Image
-                            src={post.featuredImage}
+                            src={normalizeBlogImage(post.featuredImage)}
                             alt={post.title}
                             fill
                             sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"

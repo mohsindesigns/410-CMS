@@ -28,6 +28,7 @@ import PageInlineFaqs from "@/components/PageInlineFaqs";
 import { BASE_URL } from "@/lib/constants";
 import { makeLinksDoFollow, cleanMojibake } from "@/lib/utils";
 import { getRobotsMetadata } from "@/lib/seo";
+import { normalizeBlogImage } from "@/lib/blogImage";
 
 export const revalidate = 60; // Cache for 1 minute, updated via revalidatePath in admin panel
 
@@ -56,7 +57,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     post.seo?.metaDescription ||
     post.excerpt ||
     `${post.title} - Specialized recovery insights, deep tissue protocols, and clinical tips from 410 Muscle Therapy.`;
-  const pageImage = post.seo?.ogImage || post.featuredImage || `${BASE_URL}/logo.png`;
+  const pageImage = normalizeBlogImage(post.seo?.ogImage || post.featuredImage) || `${BASE_URL}/logo.png`;
   let canonicalUrl = post.seo?.canonicalUrl || `${BASE_URL}/blogs/${post.slug}/`;
   if (canonicalUrl.includes('/blog/')) {
     canonicalUrl = canonicalUrl.replace('/blog/', '/blogs/');
@@ -199,7 +200,7 @@ export default async function BlogPostPage({ params }: Props) {
       slug: r.slug || String(r._id),
       title: r.title,
       badge: catBadge,
-      image: r.featuredImage || "/images/blog-3.webp",
+      image: normalizeBlogImage(r.featuredImage) || "/images/blog-3.webp",
       date: rDate,
       readTime: rReadTime
     };
@@ -208,7 +209,9 @@ export default async function BlogPostPage({ params }: Props) {
   // 4. Resolve Post Metadata & Author Information (retained for SEO JSON-LD)
   let categoryBadge = "Clinical Insight";
   if (Array.isArray(post.categories) && post.categories.length > 0) {
-    categoryBadge = post.categories[0]?.name || "Clinical Insight";
+    categoryBadge = post.categories[0].name || categoryBadge;
+  } else if (post.category) {
+    categoryBadge = post.category;
   }
 
   let formattedDate = "Recent";
@@ -224,15 +227,13 @@ export default async function BlogPostPage({ params }: Props) {
     }
   }
 
-  // Strip legacy embedded FAQ blocks from body HTML if present
-  let rawHtmlContent = post.content || `<p>${post.excerpt || post.title}</p>`;
-  rawHtmlContent = rawHtmlContent
+  const rawHtmlContent = (post.content || "")
     .replace(/<h[1-6][^>]*>[^<]*(?:FAQ|Frequently Asked|Common Questions)[^<]*<\/h[1-6]>[\s\S]*?(?=<h[1-6]|$)/gi, "")
     .trim();
 
   const wordCount = rawHtmlContent.replace(/<[^>]*>/g, "").split(/\s+/).filter(Boolean).length;
   const readTimeDisplay = `${Math.max(3, Math.ceil(wordCount / 200))} min read`;
-  const featuredImage = post.featuredImage || "/images/blog-3.webp";
+  const featuredImage = normalizeBlogImage(post.featuredImage) || "/images/blog-3.webp";
 
   const rawAuthor = post.author as any;
   let cleanName = "Antoine Lyles";

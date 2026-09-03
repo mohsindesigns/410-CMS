@@ -51,6 +51,11 @@ const nextConfig: NextConfig = {
         destination: 'https://res.cloudinary.com/dytytwyp6/image/upload/:path*',
       },
       {
+        // Route legacy WordPress uploads to uploads API / Cloudinary CDN
+        source: '/wp-content/uploads/:path*',
+        destination: '/api/uploads/blog/:path*',
+      },
+      {
         // Fallback proxy for /uploads/:path* to dynamic handler
         source: '/uploads/:path*',
         destination: '/api/uploads/:path*',

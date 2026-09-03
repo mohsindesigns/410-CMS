@@ -12,6 +12,7 @@ import SiteContent from '@/models/Content';
 import Page from '@/models/Page';
 import Image from 'next/image';
 import { getRobotsMetadata } from "@/lib/seo";
+import { normalizeBlogImage } from '@/lib/blogImage';
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
@@ -159,7 +160,7 @@ export default async function BlogsIndexPage() {
                 <div className="relative w-full h-[240px] overflow-hidden">
                   {post.featuredImage ? (
                     <Image
-                      src={post.featuredImage}
+                      src={normalizeBlogImage(post.featuredImage)}
                       alt={post.title}
                       fill
                       sizes="(max-width: 768px) 100vw, 33vw"

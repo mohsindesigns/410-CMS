@@ -33,7 +33,12 @@ export async function GET(req: NextRequest, { params }: { params: Promise<{ file
   const baseName = path.basename(filePathSegment, path.extname(filePathSegment)).replace(/[^a-zA-Z0-9_-]/g, '_');
   const cloudName = process.env.CLOUDINARY_CLOUD_NAME || 'dytytwyp6';
   
+  // Check if blog image
+  const isBlog = filePathSegment.startsWith('blog/') || filePathSegment.includes('/blog/');
+  const publicId = isBlog ? `blog_${baseName}` : baseName;
+
   // Attempt to fetch from Cloudinary
-  const cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/image/upload/${baseName}`;
+  const cloudinaryUrl = `https://res.cloudinary.com/${cloudName}/image/upload/${publicId}`;
   return NextResponse.redirect(cloudinaryUrl, { status: 307 });
 }
+
