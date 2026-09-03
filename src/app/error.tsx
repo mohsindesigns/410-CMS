@@ -3,6 +3,7 @@
 import { useEffect } from "react";
 import Link from "next/link";
 import { motion } from "framer-motion";
+import { AlertTriangle, Home, RefreshCw } from "lucide-react";
 
 export default function Error({
   error,
@@ -12,42 +13,46 @@ export default function Error({
   reset: () => void;
 }) {
   useEffect(() => {
-    // Log the error to an error reporting service
     console.error("Application error:", error);
   }, [error]);
 
   return (
-    <div className="min-h-screen flex items-center justify-center bg-background p-4">
-      <motion.div 
+    <div className="relative min-h-[85vh] flex items-center justify-center bg-[#0A0A0A] text-white p-4 pt-32 pb-20">
+      {/* Background Ambient Glow */}
+      <div className="absolute top-1/3 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[400px] h-[400px] bg-red-500/10 rounded-full blur-[120px] pointer-events-none -z-10" />
+
+      <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="max-w-md w-full text-center space-y-6"
+        className="max-w-md w-full text-center space-y-6 relative z-10"
       >
-        <div className="w-20 h-20 bg-red-100 rounded-full flex items-center justify-center mx-auto">
-          <svg className="w-10 h-10 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
-          </svg>
+        <div className="w-16 h-16 bg-red-500/15 border border-red-500/30 rounded-2xl flex items-center justify-center mx-auto text-red-400">
+          <AlertTriangle size={32} />
         </div>
-        
+
         <div className="space-y-2">
-          <h1 className="text-3xl font-bold tracking-tight">Something went wrong</h1>
-          <p className="text-muted-foreground">
-            We encountered an unexpected error while rendering this page.
+          <h1 className="text-3xl font-bold tracking-tight text-white font-heading">
+            Something went wrong
+          </h1>
+          <p className="text-white/60 text-sm leading-relaxed">
+            We encountered an unexpected error while rendering this page. Please try again or return to the homepage.
           </p>
         </div>
 
-        <div className="flex flex-col sm:flex-row gap-3 justify-center">
+        <div className="flex flex-col sm:flex-row gap-3 justify-center pt-2">
           <button
             onClick={() => reset()}
-            className="px-6 py-2 bg-primary text-white rounded-full font-medium hover:opacity-90 transition-opacity"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-gold hover:bg-gold-light text-dark font-bold text-xs uppercase tracking-wider rounded-xl transition-all shadow-[0_0_20px_rgba(200,150,12,0.3)]"
           >
-            Try again
+            <RefreshCw size={15} />
+            <span>Try again</span>
           </button>
           <Link
             href="/"
-            className="px-6 py-2 border border-border rounded-full font-medium hover:bg-muted transition-colors"
+            className="inline-flex items-center justify-center gap-2 px-6 py-3 bg-white/[0.05] hover:bg-white/[0.1] border border-white/15 text-white font-semibold text-xs uppercase tracking-wider rounded-xl transition-colors"
           >
-            Go to Homepage
+            <Home size={15} />
+            <span>Go to Homepage</span>
           </Link>
         </div>
       </motion.div>
