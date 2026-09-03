@@ -177,27 +177,34 @@ export default function Footer() {
   // Construct business hours dynamically from general settings or fall back
   let hoursText = "";
   const rawHoursText = contactInfo.hours || (footer as any)?.hours || "";
-  if (rawHoursText && rawHoursText !== "Mon–Sat: 8:00 AM – 7:00 PM") {
+  if (rawHoursText && rawHoursText !== "Mon–Sat: 8:00 AM – 7:00 PM" && rawHoursText !== "Sat–Sun: 8:00 AM – 7:00 PM") {
     hoursText = stripHtml(rawHoursText);
   } else if (hours && typeof hours === 'object' && Object.keys(hours).length > 0) {
     const parts: string[] = [];
-    if (hours.weekdays) parts.push(`Mon–Fri: ${hours.weekdays}`);
-    else if (hours.monday && hours.friday && hours.monday === hours.friday) parts.push(`Mon–Fri: ${hours.monday}`);
-    else if (hours.monday) parts.push(`Mon–Fri: ${hours.monday}`);
-
-    if (hours.saturday && hours.sunday && hours.saturday.trim().toLowerCase() === hours.sunday.trim().toLowerCase()) {
-      parts.push(`Sat–Sun: ${hours.saturday}`);
+    const h = hours as Record<string, string>;
+    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
+    const activeDays = days.filter(d => h[d]);
+    if (activeDays.length === 7 && days.every(d => h[d]?.trim() === h['sunday']?.trim())) {
+      parts.push(`Sun–Sat: ${h['sunday']}`);
     } else {
-      if (hours.saturday) parts.push(`Sat: ${hours.saturday}`);
-      if (hours.sunday) parts.push(`Sun: ${hours.sunday}`);
+      if (h.weekdays) parts.push(`Mon–Fri: ${h.weekdays}`);
+      else if (h.monday && h.friday && h.monday === h.friday) parts.push(`Mon–Fri: ${h.monday}`);
+      else if (h.monday) parts.push(`Mon–Fri: ${h.monday}`);
+
+      if (h.saturday && h.sunday && h.saturday.trim().toLowerCase() === h.sunday.trim().toLowerCase()) {
+        parts.push(`Sat–Sun: ${h.saturday}`);
+      } else {
+        if (h.saturday) parts.push(`Sat: ${h.saturday}`);
+        if (h.sunday) parts.push(`Sun: ${h.sunday}`);
+      }
     }
     hoursText = parts.join('\n');
   } else if (rawHoursText) {
     hoursText = stripHtml(rawHoursText);
   }
 
-  if (!hoursText || hoursText === "Mon–Sat: 8:00 AM – 7:00 PM") {
-    hoursText = "Sat–Sun: 8:00 AM – 7:00 PM";
+  if (!hoursText || hoursText === "Mon–Sat: 8:00 AM – 7:00 PM" || hoursText === "Sat–Sun: 8:00 AM – 7:00 PM") {
+    hoursText = "Sun–Sat: 8:00 AM – 7:00 PM";
   }
 
   const copyrightText: string = stripHtml(bottomInfo.copyright || (footer as any)?.copyright || "© 2026 410 Muscle Therapy. All Rights Reserved.");

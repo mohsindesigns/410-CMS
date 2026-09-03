@@ -151,7 +151,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
     bullet1Title: "Primary Coverage Area",
     bullet1Text: "Timonium, Baltimore County, Howard County & surrounding Maryland communities.",
     bullet2Title: "Clinic Hours",
-    bullet2Text: "Mon - Sat: 8:00 AM - 7:00 PM (By Appointment)",
+    bullet2Text: "Sun - Sat: 8:00 AM - 7:00 PM (By Appointment)",
     bullet3Title: "Direct Contact Hotline",
     bullet3Text: "(410) 555-0199"
   };

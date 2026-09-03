@@ -179,8 +179,8 @@ export function getHomepageSchemas(servicesList?: Array<{ name: string }>, faqs?
     "openingHoursSpecification": [
       {
         "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
-        "opens": "09:00",
+        "dayOfWeek": ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+        "opens": "08:00",
         "closes": "19:00"
       }
     ],
