@@ -106,9 +106,9 @@ export default function SettingsEditor() {
     sourceUrl: "",
     targetUrl: "",
     statusCode: 301,
-    queryParamMode: "exact",
-    ignoreCase: false,
-    ignoreSlash: false,
+    queryParamMode: "ignore",
+    ignoreCase: true,
+    ignoreSlash: true,
     isRegex: false,
     status: "active",
     notes: ""
@@ -161,9 +161,9 @@ export default function SettingsEditor() {
           sourceUrl: "",
           targetUrl: "",
           statusCode: 301,
-          queryParamMode: "exact",
-          ignoreCase: false,
-          ignoreSlash: false,
+          queryParamMode: "ignore",
+          ignoreCase: true,
+          ignoreSlash: true,
           isRegex: false,
           status: "active",
           notes: ""
@@ -878,9 +878,9 @@ export default function SettingsEditor() {
                           onChange={(e) => setRedirectForm({ ...redirectForm, queryParamMode: e.target.value })}
                           className="w-full border border-[#8c8f94] bg-white px-2 py-1.5 text-[13px] rounded-[3px] focus:border-[#2271b1] outline-none"
                         >
+                          <option value="ignore">Ignore all parameters (Recommended)</option>
+                          <option value="pass">Pass all parameters to target</option>
                           <option value="exact">Exact match in any order</option>
-                          <option value="ignore">Ignore all parameters</option>
-                          <option value="pass">Exact match only</option>
                         </select>
                      </div>
 
@@ -955,9 +955,9 @@ export default function SettingsEditor() {
                            sourceUrl: "",
                            targetUrl: "",
                            statusCode: 301,
-                           queryParamMode: "exact",
-                           ignoreCase: false,
-                           ignoreSlash: false,
+                           queryParamMode: "ignore",
+                           ignoreCase: true,
+                           ignoreSlash: true,
                            isRegex: false,
                            status: "active",
                            notes: ""

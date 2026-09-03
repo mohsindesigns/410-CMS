@@ -12,15 +12,30 @@ export async function GET(req: NextRequest) {
     await connectToDatabase();
     const redirects = await Redirect.find({ status: 'active' }).lean();
 
-    // Parse the requested URL (the path and search query to match)
-    let requestPath = '';
-    const questionMarkIndex = urlParam.indexOf('?');
-    if (questionMarkIndex !== -1) {
-      requestPath = urlParam.substring(0, questionMarkIndex);
-    } else {
-      requestPath = urlParam;
-    }
+    // Helper to extract clean path and search
+    const extractPathAndSearch = (inputUrl: string) => {
+      let path = '';
+      let search = '';
+      try {
+        const parsed = new URL(inputUrl, 'http://localhost');
+        path = parsed.pathname;
+        search = parsed.search;
+      } catch {
+        const qIndex = inputUrl.indexOf('?');
+        if (qIndex !== -1) {
+          path = inputUrl.substring(0, qIndex);
+          search = inputUrl.substring(qIndex);
+        } else {
+          path = inputUrl;
+        }
+      }
+      if (!path.startsWith('/')) path = '/' + path;
+      return { path, search };
+    };
 
+    const stripTrailingSlash = (p: string) => (p.length > 1 && p.endsWith('/') ? p.slice(0, -1) : p);
+
+    const { path: reqPath, search: reqSearch } = extractPathAndSearch(urlParam);
     const requestUrlObj = new URL(urlParam, 'http://localhost');
     const requestParams = requestUrlObj.searchParams;
 
@@ -29,15 +44,12 @@ export async function GET(req: NextRequest) {
       let matchedTargetUrl = redirect.targetUrl;
 
       if (redirect.isRegex) {
-        // Compile regex
-        const flags = redirect.ignoreCase ? 'i' : '';
+        const flags = redirect.ignoreCase !== false ? 'i' : '';
         try {
           const regex = new RegExp(redirect.sourceUrl, flags);
-          // Match against pathname (standard)
-          const pathMatch = requestPath.match(regex);
+          const pathMatch = reqPath.match(regex) || stripTrailingSlash(reqPath).match(regex);
           if (pathMatch) {
             isMatch = true;
-            // Replace captured groups ($1, $2, etc.) in targetUrl
             let replacedTarget = redirect.targetUrl;
             for (let i = 1; i < pathMatch.length; i++) {
               replacedTarget = replacedTarget.replace(new RegExp(`\\$${i}`, 'g'), pathMatch[i] || '');
@@ -48,48 +60,38 @@ export async function GET(req: NextRequest) {
           console.error(`Invalid regex in redirect ${redirect._id}:`, e);
         }
       } else {
-        // Simple string matching
-        let redirectPath = '';
-        let redirectQuery = '';
-        try {
-          const redirectUrlObj = new URL(redirect.sourceUrl, 'http://localhost');
-          redirectPath = redirectUrlObj.pathname;
-          redirectQuery = redirectUrlObj.search;
-        } catch {
-          const questionMarkIndexSrc = redirect.sourceUrl.indexOf('?');
-          if (questionMarkIndexSrc !== -1) {
-            redirectPath = redirect.sourceUrl.substring(0, questionMarkIndexSrc);
-            redirectQuery = redirect.sourceUrl.substring(questionMarkIndexSrc);
-          } else {
-            redirectPath = redirect.sourceUrl;
-          }
-        }
-
+        const { path: redPath, search: redSearch } = extractPathAndSearch(redirect.sourceUrl);
         const redirectUrlObj = new URL(redirect.sourceUrl, 'http://localhost');
         const redirectParams = redirectUrlObj.searchParams;
 
-        let normReqPath = requestPath;
-        let normRedPath = redirectPath;
+        let normReqPath = reqPath;
+        let normRedPath = redPath;
 
-        if (redirect.ignoreSlash) {
-          normReqPath = normReqPath === '/' ? normReqPath : normReqPath.replace(/\/$/, '');
-          normRedPath = normRedPath === '/' ? normRedPath : normRedPath.replace(/\/$/, '');
-        }
-
-        if (redirect.ignoreCase) {
+        if (redirect.ignoreCase !== false) {
           normReqPath = normReqPath.toLowerCase();
           normRedPath = normRedPath.toLowerCase();
         }
 
-        if (normReqPath === normRedPath) {
-          // Path matches. Now check query params.
-          if (redirect.queryParamMode === 'ignore') {
+        // Check exact match, stripped slash match, or case-insensitive stripped slash match
+        const pathMatch =
+          normReqPath === normRedPath ||
+          stripTrailingSlash(normReqPath) === stripTrailingSlash(normRedPath) ||
+          stripTrailingSlash(normReqPath).toLowerCase() === stripTrailingSlash(normRedPath).toLowerCase();
+
+        if (pathMatch) {
+          if (redirect.queryParamMode === 'ignore' || !redirect.queryParamMode) {
             isMatch = true;
+          } else if (redirect.queryParamMode === 'pass') {
+            isMatch = true;
+            // Forward/preserve incoming query params
+            if (reqSearch && reqSearch.length > 1) {
+              const hasQuery = matchedTargetUrl.includes('?');
+              const qs = reqSearch.startsWith('?') ? reqSearch.slice(1) : reqSearch;
+              matchedTargetUrl = `${matchedTargetUrl}${hasQuery ? '&' : '?'}${qs}`;
+            }
           } else if (redirect.queryParamMode === 'exact') {
-            // Check if request params match redirect params (any order, exact match of key-values)
             const reqKeys = Array.from(requestParams.keys()).sort();
             const redKeys = Array.from(redirectParams.keys()).sort();
-            
             if (reqKeys.length === redKeys.length) {
               let keysMatch = true;
               for (let i = 0; i < reqKeys.length; i++) {
@@ -98,8 +100,8 @@ export async function GET(req: NextRequest) {
                   keysMatch = false;
                   break;
                 }
-                const reqVal = redirect.ignoreCase ? requestParams.get(k)?.toLowerCase() : requestParams.get(k);
-                const redVal = redirect.ignoreCase ? redirectParams.get(k)?.toLowerCase() : redirectParams.get(k);
+                const reqVal = redirect.ignoreCase !== false ? requestParams.get(k)?.toLowerCase() : requestParams.get(k);
+                const redVal = redirect.ignoreCase !== false ? redirectParams.get(k)?.toLowerCase() : redirectParams.get(k);
                 if (reqVal !== redVal) {
                   keysMatch = false;
                   break;
@@ -109,23 +111,18 @@ export async function GET(req: NextRequest) {
                 isMatch = true;
               }
             }
-          } else if (redirect.queryParamMode === 'pass') {
-            // Exact match only (match query string exactly)
-            const reqSearch = redirect.ignoreCase ? requestUrlObj.search.toLowerCase() : requestUrlObj.search;
-            const redSearch = redirect.ignoreCase ? redirectUrlObj.search.toLowerCase() : redirectUrlObj.search;
-            if (reqSearch === redSearch) {
-              isMatch = true;
-            }
+          } else {
+            isMatch = true;
           }
         }
       }
 
       if (isMatch) {
-        // Increment hits and last accessed date
-        await Redirect.findByIdAndUpdate(redirect._id, {
+        // Increment hits and last accessed date asynchronously
+        Redirect.findByIdAndUpdate(redirect._id, {
           $inc: { hits: 1 },
           $set: { lastAccessed: new Date() }
-        });
+        }).catch(err => console.error('Error updating redirect hits:', err));
 
         return NextResponse.json({
           targetUrl: matchedTargetUrl,

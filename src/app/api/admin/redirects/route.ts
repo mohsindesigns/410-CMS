@@ -146,9 +146,9 @@ export async function POST(req: NextRequest) {
       sourceUrl,
       targetUrl,
       statusCode: statusCode ? parseInt(statusCode, 10) : 301,
-      queryParamMode: queryParamMode || 'exact',
-      ignoreCase: !!ignoreCase,
-      ignoreSlash: !!ignoreSlash,
+      queryParamMode: queryParamMode || 'ignore',
+      ignoreCase: ignoreCase !== undefined ? !!ignoreCase : true,
+      ignoreSlash: ignoreSlash !== undefined ? !!ignoreSlash : true,
       isRegex: !!isRegex,
       status: status || 'active',
       notes: notes || ''
@@ -206,7 +206,7 @@ export async function PUT(req: NextRequest) {
     existingRedirect.sourceUrl = sourceUrl;
     existingRedirect.targetUrl = targetUrl;
     existingRedirect.statusCode = statusCode ? parseInt(statusCode, 10) : 301;
-    existingRedirect.queryParamMode = queryParamMode || 'exact';
+    existingRedirect.queryParamMode = queryParamMode || 'ignore';
     existingRedirect.ignoreCase = !!ignoreCase;
     existingRedirect.ignoreSlash = !!ignoreSlash;
     existingRedirect.isRegex = !!isRegex;

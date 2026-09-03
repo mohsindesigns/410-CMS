@@ -1,10 +1,11 @@
-import { notFound, permanentRedirect } from 'next/navigation';
+import { notFound, permanentRedirect, redirect } from 'next/navigation';
 
 export const revalidate = 60; // Cache for 1 minute, updated via revalidatePath in admin panel
 
 import connectToDatabase from '@/lib/mongodb';
 import Page from '@/models/Page';
 import Post from '@/models/Post';
+import Redirect from '@/models/Redirect';
 import SiteContent from '@/models/Content';
 import { getTemplate } from '@/components/templates/TemplateRegistry';
 import ServiceDetailTemplate from '@/components/templates/ServiceDetailTemplate';
@@ -204,6 +205,39 @@ export default async function DynamicPage({ params }: PageProps) {
 
     if (postDoc) {
       permanentRedirect(`/blogs/${postDoc.slug}/`);
+    }
+
+    // Direct database fallback for configured custom redirects
+    const currentPath = `/${slug}`;
+    const activeRedirects = await Redirect.find({ status: 'active' }).lean();
+    for (const r of activeRedirects) {
+      let rPath = '';
+      try {
+        rPath = new URL(r.sourceUrl, 'http://localhost').pathname;
+      } catch {
+        rPath = r.sourceUrl;
+      }
+      if (!rPath.startsWith('/')) rPath = '/' + rPath;
+
+      const normR = rPath.length > 1 && rPath.endsWith('/') ? rPath.slice(0, -1) : rPath;
+      const normCur = currentPath.length > 1 && currentPath.endsWith('/') ? currentPath.slice(0, -1) : currentPath;
+
+      if (normR.toLowerCase() === normCur.toLowerCase()) {
+        Redirect.findByIdAndUpdate(r._id, {
+          $inc: { hits: 1 },
+          $set: { lastAccessed: new Date() }
+        }).catch(() => {});
+
+        let target = r.targetUrl;
+        if (target.startsWith('/')) {
+          target = `${BASE_URL}${target}`;
+        }
+        if (r.statusCode === 302 || r.statusCode === 307) {
+          redirect(target);
+        } else {
+          permanentRedirect(target);
+        }
+      }
     }
 
     notFound();

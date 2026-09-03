@@ -40,7 +40,8 @@ export async function middleware(req: NextRequest) {
       const res = await fetch(matchUrl.toString(), {
         headers: {
           'x-internal-request': 'true'
-        }
+        },
+        signal: AbortSignal.timeout(3000)
       });
       
       if (res.ok) {
