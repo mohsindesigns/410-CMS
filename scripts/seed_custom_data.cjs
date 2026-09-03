@@ -24,7 +24,7 @@ const data = {
       "address": "125 Wellness Way, Suite 101\nLos Angeles, CA 90001",
       "phone": "(323) 456-7890",
       "email": "info@muscletherapy.com",
-      "hours": "Mon–Sat: 8:00 AM – 7:00 PM"
+      "hours": "Sat–Sun: 8:00 AM – 7:00 PM"
     }
   },
   "globalMetadata": {
@@ -771,7 +771,7 @@ const data = {
     "address": "125 Wellness Way, Suite 101\nLos Angeles, CA 90001",
     "phone": "(323) 456-7890",
     "email": "info@muscletherapy.com",
-    "hours": "Mon–Sat: 8:00 AM – 7:00 PM"
+    "hours": "Sat–Sun: 8:00 AM – 7:00 PM"
   }
 };
 

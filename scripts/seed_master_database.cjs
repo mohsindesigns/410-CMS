@@ -20,7 +20,7 @@ const masterCompleteData = {
     email: "info@410muscletherapy.com",
     phone: "(410) 555-0199",
     address: "Maryland, USA",
-    hours: "Mon–Sat: 8:00 AM – 7:00 PM"
+    hours: "Sat–Sun: 8:00 AM – 7:00 PM"
   },
   navbar: {
     logoText1: "MUSCLE",
@@ -259,7 +259,7 @@ const masterCompleteData = {
       email: "info@410muscletherapy.com",
       phone: "(410) 555-0199",
       address: "Maryland, USA",
-      hours: "Mon–Sat: 8:00 AM – 7:00 PM"
+      hours: "Sat–Sun: 8:00 AM – 7:00 PM"
     },
     bottom: {
       copyright: "© 2026 410 Muscle Therapy",
