@@ -25,6 +25,99 @@ const LOCATION_LABELS: Record<string, { label: string; color: string; bg: string
 
 const EMPTY_FORM = { name: "", location: "head" as Script["location"], code: "", active: true };
 
+// ── Google Tag Manager Quick Setup Modal ─────────────────────────────
+function GTMSetupModal({
+  onSaveBoth,
+  onClose,
+  saving,
+}: {
+  onSaveBoth: (gtmId: string) => Promise<void>;
+  onClose: () => void;
+  saving: boolean;
+}) {
+  const [gtmId, setGtmId] = useState("GTM-MCJPHMKX");
+  const [error, setError] = useState("");
+
+  const handleSave = () => {
+    const cleanId = gtmId.trim().toUpperCase();
+    if (!cleanId.startsWith("GTM-") || cleanId.length < 7) {
+      setError("Please enter a valid GTM Container ID (e.g., GTM-MCJPHMKX)");
+      return;
+    }
+    setError("");
+    onSaveBoth(cleanId);
+  };
+
+  return (
+    <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
+      <motion.div
+        initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }}
+        onClick={onClose}
+        className="absolute inset-0 bg-[#00000066]"
+      />
+      <motion.div
+        initial={{ y: -10, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        exit={{ y: -10, opacity: 0 }}
+        className="relative w-full max-w-lg bg-white border border-[#c3c4c7] shadow-lg rounded-[3px] overflow-hidden flex flex-col"
+      >
+        <div className="flex items-center justify-between px-4 py-3 bg-[#f6f7f7] border-b border-[#c3c4c7]">
+          <h2 className="text-[#1d2327] text-lg font-normal font-serif">Quick Google Tag Manager Setup</h2>
+          <button onClick={onClose} className="text-[#787c82] hover:text-[#d63638]">
+            <X className="w-5 h-5" />
+          </button>
+        </div>
+
+        <div className="p-4 space-y-4 bg-white text-[13px] text-[#2c3338]">
+          <p className="text-[#50575e] leading-relaxed">
+            Google Tag Manager requires two scripts to function properly:
+            <br />
+            <strong>1. Head Script:</strong> Injected in <code className="bg-[#f0f0f1] px-1 py-0.5 rounded text-blue-700">&lt;head&gt;</code> to load GTM.
+            <br />
+            <strong>2. Noscript Fallback:</strong> Injected in <code className="bg-[#f0f0f1] px-1 py-0.5 rounded text-purple-700">&lt;body&gt; top</code> for noscript visitors.
+          </p>
+
+          <div>
+            <label className="block text-[#1d2327] text-sm font-semibold mb-1">
+              GTM Container ID
+            </label>
+            <input
+              type="text"
+              value={gtmId}
+              onChange={(e) => { setGtmId(e.target.value); setError(""); }}
+              placeholder="GTM-MCJPHMKX"
+              className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[14px] text-[#2c3338] rounded-[3px] font-mono shadow-[inset_0_1px_2px_rgba(0,0,0,0.07)] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none uppercase"
+            />
+            {error && <p className="text-red-600 text-xs mt-1">{error}</p>}
+          </div>
+
+          <div className="bg-blue-50 border border-blue-200 text-blue-900 p-3 rounded text-xs space-y-1">
+            <p className="font-semibold">✨ What this will do:</p>
+            <p>Automatically create and activate both GTM scripts in their exact required locations without any syntax errors or tag collisions.</p>
+          </div>
+        </div>
+
+        <div className="flex items-center justify-end gap-2 px-4 py-3 bg-[#f6f7f7] border-t border-[#c3c4c7]">
+          <button
+            onClick={onClose}
+            className="px-3 py-1.5 text-[#50575e] hover:text-[#1d2327] text-[13px]"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={handleSave}
+            disabled={saving || !gtmId.trim()}
+            className="bg-[#2271b1] text-white text-[13px] px-4 py-1.5 rounded-[3px] border border-[#2271b1] hover:bg-[#135e96] hover:border-[#135e96] transition-colors disabled:opacity-50 flex items-center gap-2"
+          >
+            {saving && <Loader2 className="w-3.5 h-3.5 animate-spin" />}
+            Install Both GTM Scripts
+          </button>
+        </div>
+      </motion.div>
+    </div>
+  );
+}
+
 // ── WordPress-Style Modal ────────────────────────────────────────────
 function ScriptModal({
   initial,
@@ -39,6 +132,29 @@ function ScriptModal({
 }) {
   const [form, setForm] = useState({ ...EMPTY_FORM, ...initial });
   const set = (k: string, v: any) => setForm((p) => ({ ...p, [k]: v }));
+
+  const handleCodeChange = (val: string) => {
+    set("code", val);
+    const trimmed = val.trim();
+
+    // Smart auto-detection for Title if empty
+    if (!form.name || form.name === EMPTY_FORM.name) {
+      if (trimmed.includes('<noscript') && !trimmed.includes('<script')) {
+        set("name", "Google Tag Manager (noscript)");
+      } else if (trimmed.includes('gtm.js?id=')) {
+        set("name", "Google Tag Manager (Head)");
+      } else if (trimmed.includes('gtag/js?id=')) {
+        set("name", "Google Analytics (GA4)");
+      }
+    }
+
+    // If user pastes pure noscript and location is head, auto-switch to body_start
+    if (trimmed.includes('<noscript') && !trimmed.includes('<script') && form.location === 'head') {
+      set("location", "body_start");
+    }
+  };
+
+  const hasNoscriptInHead = form.code.includes('<noscript') && !form.code.includes('<script') && form.location === 'head';
 
   return (
     <div className="fixed inset-0 z-[200] flex items-center justify-center p-4">
@@ -72,7 +188,7 @@ function ScriptModal({
               type="text"
               value={form.name}
               onChange={(e) => set("name", e.target.value)}
-              placeholder="Enter script title here"
+              placeholder="e.g. Google Tag Manager (Head) or Google Analytics"
               className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[14px] text-[#2c3338] rounded-[3px] shadow-[inset_0_1px_2px_rgba(0,0,0,0.07)] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
             />
           </div>
@@ -83,12 +199,25 @@ function ScriptModal({
             <select
               value={form.location}
               onChange={(e) => set("location", e.target.value)}
-              className="w-full max-w-xs border border-[#8c8f94] bg-white px-2 py-1.5 text-[14px] text-[#2c3338] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+              className="w-full border border-[#8c8f94] bg-white px-2 py-1.5 text-[14px] text-[#2c3338] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
             >
-              <option value="head">Header (&lt;head&gt;)</option>
-              <option value="body_start">Body Start (Top of &lt;body&gt;)</option>
-              <option value="body_end">Footer (End of &lt;body&gt;)</option>
+              <option value="head">Header (&lt;head&gt;) — For GTM Head, Google Analytics, Meta Pixel</option>
+              <option value="body_start">Body Start (Top of &lt;body&gt;) — For GTM (noscript)</option>
+              <option value="body_end">Footer (End of &lt;body&gt;) — For Chat widgets, custom body JS</option>
             </select>
+
+            {hasNoscriptInHead && (
+              <div className="mt-2 bg-amber-50 border border-amber-300 text-amber-900 text-xs px-3 py-2 rounded flex items-center justify-between">
+                <span>⚠️ This snippet contains a &lt;noscript&gt; tag. For Google Tag Manager, it should be placed in <strong>Body Start (Top of &lt;body&gt;)</strong>.</span>
+                <button
+                  type="button"
+                  onClick={() => set("location", "body_start")}
+                  className="bg-amber-600 text-white text-xs px-2 py-1 rounded font-medium hover:bg-amber-700 ml-2 whitespace-nowrap"
+                >
+                  Move to Body Start
+                </button>
+              </div>
+            )}
           </div>
 
           {/* Code */}
@@ -96,8 +225,8 @@ function ScriptModal({
             <label className="block text-[#1d2327] text-sm font-semibold mb-1">Code Snippet</label>
             <textarea
               value={form.code}
-              onChange={(e) => set("code", e.target.value)}
-              placeholder="<!-- Paste HTML/JS code here -->"
+              onChange={(e) => handleCodeChange(e.target.value)}
+              placeholder="<!-- Paste HTML / <script> / <noscript> code here -->"
               rows={8}
               className="w-full border border-[#8c8f94] bg-[#f0f0f1] font-mono px-3 py-2 text-[13px] text-[#2c3338] rounded-[3px] focus:bg-white focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
             />
@@ -121,7 +250,7 @@ function ScriptModal({
         {/* WP-Style Footer */}
         <div className="flex items-center justify-between px-4 py-3 bg-[#f6f7f7] border-t border-[#c3c4c7]">
           <button onClick={onClose} className="text-[#d63638] text-[13px] hover:underline px-2 py-1">
-            Move to Trash
+            Cancel
           </button>
           <button
             onClick={() => onSave(form)}
@@ -144,6 +273,7 @@ export default function AdminScriptsPage() {
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
   const [modal, setModal] = useState<{ open: boolean; data: Partial<Script> }>({ open: false, data: {} });
+  const [gtmModal, setGtmModal] = useState(false);
   
   // Bulk actions state
   const [selectedIds, setSelectedIds] = useState<Set<string>>(new Set());
@@ -170,6 +300,45 @@ export default function AdminScriptsPage() {
   const openAdd = () => setModal({ open: true, data: { ...EMPTY_FORM } });
   const openEdit = (s: Script) => setModal({ open: true, data: { ...s } });
   const closeModal = () => setModal({ open: false, data: {} });
+
+  const handleSaveGTM = async (gtmId: string) => {
+    setSaving(true);
+    try {
+      const headCode = `<!-- Google Tag Manager -->\n<script>(function(w,d,s,l,i){w[l]=w[l]||[];w[l].push({'gtm.start':\nnew Date().getTime(),event:'gtm.js'});var f=d.getElementsByTagName(s)[0],\nj=d.createElement(s),dl=l!='dataLayer'?'&l='+l:'';j.async=true;j.src=\n'https://www.googletagmanager.com/gtm.js?id='+i+dl;f.parentNode.insertBefore(j,f);\n})(window,document,'script','dataLayer','${gtmId}');</script>\n<!-- End Google Tag Manager -->`;
+
+      const bodyCode = `<!-- Google Tag Manager (noscript) -->\n<noscript><iframe src="https://www.googletagmanager.com/ns.html?id=${gtmId}"\nheight="0" width="0" style="display:none;visibility:hidden"></iframe></noscript>\n<!-- End Google Tag Manager (noscript) -->`;
+
+      await fetch("/api/admin/scripts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: `Google Tag Manager - Head (${gtmId})`,
+          location: "head",
+          code: headCode,
+          active: true,
+        }),
+      });
+
+      await fetch("/api/admin/scripts", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          name: `Google Tag Manager - Noscript (${gtmId})`,
+          location: "body_start",
+          code: bodyCode,
+          active: true,
+        }),
+      });
+
+      await load();
+      setGtmModal(false);
+      showToast("ok", `Google Tag Manager (${gtmId}) installed successfully!`);
+    } catch {
+      showToast("err", "Failed to save GTM scripts.");
+    } finally {
+      setSaving(false);
+    }
+  };
 
   const handleSave = async (form: Partial<Script>) => {
     setSaving(true);
@@ -283,13 +452,20 @@ export default function AdminScriptsPage() {
       </AnimatePresence>
 
       {/* WP-Style Header */}
-      <div className="flex items-center gap-4 mb-2">
+      <div className="flex items-center gap-3 mb-2 flex-wrap">
         <h1 className="text-[23px] font-normal text-[#1d2327] font-serif m-0">Scripts</h1>
         <button
           onClick={openAdd}
-          className="bg-white border border-[#2271b1] text-[#2271b1] hover:bg-[#f6f7f7] hover:text-[#135e96] hover:border-[#135e96] px-2 py-1 text-[13px] rounded-[3px] transition-colors"
+          className="bg-white border border-[#2271b1] text-[#2271b1] hover:bg-[#f6f7f7] hover:text-[#135e96] hover:border-[#135e96] px-2.5 py-1 text-[13px] rounded-[3px] transition-colors font-medium"
         >
           Add New Script
+        </button>
+        <button
+          onClick={() => setGtmModal(true)}
+          className="bg-[#2271b1] text-white hover:bg-[#135e96] px-3 py-1 text-[13px] rounded-[3px] transition-colors font-medium flex items-center gap-1.5 shadow-sm"
+        >
+          <Code2 className="w-3.5 h-3.5" />
+          Setup Google Tag Manager (GTM)
         </button>
       </div>
 
@@ -403,6 +579,13 @@ export default function AdminScriptsPage() {
             initial={modal.data}
             onSave={handleSave}
             onClose={closeModal}
+            saving={saving}
+          />
+        )}
+        {gtmModal && (
+          <GTMSetupModal
+            onSaveBoth={handleSaveGTM}
+            onClose={() => setGtmModal(false)}
             saving={saving}
           />
         )}

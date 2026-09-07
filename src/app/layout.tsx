@@ -6,6 +6,7 @@ import SiteLayout from "@/components/SiteLayout";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
 import { BASE_URL } from "@/lib/constants";
+import { SiteScriptsRenderer, SiteScript } from "@/lib/site-scripts";
 
 import { getRobotsMetadata } from "@/lib/seo";
 
@@ -105,7 +106,6 @@ export default async function RootLayout({
   children: React.ReactNode;
 }>) {
   // ── Fetch CMS-managed tracking scripts from MongoDB ──
-  interface SiteScript { id: string; name: string; location: string; code: string; active: boolean; }
   let siteScripts: SiteScript[] = [];
   try {
     await connectToDatabase();
@@ -115,9 +115,17 @@ export default async function RootLayout({
     // Non-fatal — site renders fine without CMS scripts
   }
   const activeScripts = siteScripts.filter((s) => s.active);
-  const headScripts = activeScripts.filter((s) => s.location === 'head');
+  const rawHeadScripts = activeScripts.filter((s) => s.location === 'head');
   const bodyStartScripts = activeScripts.filter((s) => s.location === 'body_start');
   const bodyEndScripts = activeScripts.filter((s) => s.location === 'body_end');
+
+  // If a user saved a noscript-only snippet (e.g. GTM noscript) under 'head', safely route it to body_start for valid HTML5 execution
+  const mislocatedNoscripts = rawHeadScripts.filter((s) => {
+    const trimmed = (s.code || '').trim();
+    return trimmed.includes('<noscript') && !trimmed.includes('<script');
+  });
+  const headScripts = rawHeadScripts.filter((s) => !mislocatedNoscripts.includes(s));
+  const effectiveBodyStartScripts = [...bodyStartScripts, ...mislocatedNoscripts];
 
   // ── Fetch Global Content & Blogs for the Provider ──
   let initialGlobalData = null;
@@ -143,19 +151,11 @@ export default async function RootLayout({
         <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
         <link rel="preconnect" href="https://images.unsplash.com" />
         {/* ── CMS-managed <head> scripts ── */}
-        {headScripts.map((s) => (
-          <script
-            key={s.id}
-            suppressHydrationWarning
-            dangerouslySetInnerHTML={{ __html: s.code.replace(/<script[^>]*>|<\/script>/gi, '').trim() }}
-          />
-        ))}
+        <SiteScriptsRenderer scripts={headScripts} location="head" />
       </head>
       <body className={`${spaceGrotesk.variable} ${dmSans.variable} antialiased`}>
         {/* ── CMS-managed body_start scripts ── */}
-        {bodyStartScripts.map((s) => (
-          <div key={s.id} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: s.code }} />
-        ))}
+        <SiteScriptsRenderer scripts={effectiveBodyStartScripts} location="body_start" />
         <ContentProvider initialData={initialGlobalData} initialBlogs={initialBlogs}>
           <Providers>
             <div className="relative min-h-screen flex flex-col">
@@ -179,9 +179,7 @@ export default async function RootLayout({
         </ContentProvider>
 
         {/* ── CMS-managed body_end scripts ── */}
-        {bodyEndScripts.map((s) => (
-          <div key={s.id} suppressHydrationWarning dangerouslySetInnerHTML={{ __html: s.code }} />
-        ))}
+        <SiteScriptsRenderer scripts={bodyEndScripts} location="body_end" />
       </body>
     </html>
   );
