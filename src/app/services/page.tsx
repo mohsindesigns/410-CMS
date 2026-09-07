@@ -42,13 +42,13 @@ export async function generateMetadata(): Promise<Metadata> {
       description: seo.ogDescription || seo.metaDescription || servicesData?.description,
       url: pageUrl,
       type: 'website',
-      images: seo.featuredImage ? [{ url: seo.featuredImage }] : [],
+      images: [seo.ogImage || seo.featuredImage].filter(Boolean) as string[],
     },
     twitter: {
       card: 'summary_large_image',
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle,
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
-      images: [seo.featuredImage || seo.twitterImage || seo.ogImage].filter(Boolean) as string[],
+      images: [seo.twitterImage || seo.ogImage || seo.featuredImage].filter(Boolean) as string[],
     },
     robots: getRobotsMetadata(settings, seo)
   };

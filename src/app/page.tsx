@@ -45,7 +45,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (homepageId) {
     // Check if it's a page
-    const page = await Page.findById(homepageId).lean() as any;
+    const page = await Page.findOne({ _id: homepageId, isTrashed: { $ne: true } }).lean() as any;
     if (page) {
       const seo = page.seo || {};
       const metaDescription = seo.metaDescription || page.content?.hero?.description || settings?.siteDescription || "";
@@ -60,13 +60,13 @@ export async function generateMetadata(): Promise<Metadata> {
           ...metadata.openGraph,
           title: seo.ogTitle || seo.metaTitle || page.title,
           description: seo.ogDescription || seo.metaDescription || metaDescription,
-          images: seo.featuredImage ? [{ url: seo.featuredImage }] : [`${BASE_URL}/logo.png`],
+          images: [{ url: seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png` }],
         },
         twitter: {
           ...metadata.twitter,
           title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || page.title,
           description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || metaDescription,
-          images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/logo.png`].filter(Boolean) as string[],
+          images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png`].filter(Boolean) as string[],
         },
         robots: getRobotsMetadata(settings, seo)
       };
@@ -88,13 +88,13 @@ export async function generateMetadata(): Promise<Metadata> {
           ...metadata.openGraph,
           title: seo.ogTitle || seo.metaTitle || service.title,
           description: seo.ogDescription || seo.metaDescription || metaDescription,
-          images: seo.featuredImage ? [{ url: seo.featuredImage }] : [`${BASE_URL}/logo.png`],
+          images: [{ url: seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png` }],
         },
         twitter: {
           ...metadata.twitter,
           title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || service.title,
           description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || metaDescription,
-          images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/logo.png`].filter(Boolean) as string[],
+          images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png`].filter(Boolean) as string[],
         },
         robots: getRobotsMetadata(settings, seo)
       };

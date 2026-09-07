@@ -31,7 +31,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   await connectToDatabase();
   const [page, content] = await Promise.all([
-    Page.findOne({ slug, status: 'published' }).lean(),
+    Page.findOne({ slug, status: 'published', isTrashed: { $ne: true } }).lean(),
     SiteContent.findOne({ key: 'complete_data' }).lean() as any
   ]);
 
@@ -48,7 +48,8 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const title = seo.metaTitle || service.title;
     const description = seo.metaDescription || service.description || "";
     const pageUrl = `${BASE_URL}/${slug}/`;
-    const featuredImage = getAbsoluteUrl(seo.featuredImage || seo.ogImage || seo.twitterImage || service.image || service.heroImage);
+    const ogImage = getAbsoluteUrl(seo.ogImage || seo.featuredImage || service.image || service.heroImage);
+    const twitterImage = getAbsoluteUrl(seo.twitterImage || seo.ogImage || seo.featuredImage || service.image || service.heroImage);
 
     return {
       title: { absolute: title },
@@ -65,7 +66,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         type: "website",
         images: [
           {
-            url: featuredImage || `${BASE_URL}/logo.png`,
+            url: ogImage || `${BASE_URL}/logo.png`,
             width: 1200,
             height: 630,
             alt: title,
@@ -76,7 +77,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         card: "summary_large_image",
         title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || title,
         description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || description,
-        images: [featuredImage || `${BASE_URL}/logo.png`],
+        images: [twitterImage || `${BASE_URL}/logo.png`],
         site: "@410MuscleTherapy",
         creator: "@410MuscleTherapy",
       },
@@ -103,7 +104,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       type: "website",
       images: [
         {
-          url: getAbsoluteUrl(seo.featuredImage || seo.ogImage) || `${BASE_URL}/logo.png`,
+          url: getAbsoluteUrl(seo.ogImage || seo.featuredImage) || `${BASE_URL}/logo.png`,
           width: 1200,
           height: 630,
           alt: page.title,
@@ -114,7 +115,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       card: "summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || page.title,
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
-      images: [getAbsoluteUrl(seo.featuredImage || seo.twitterImage || seo.ogImage) || `${BASE_URL}/logo.png`],
+      images: [getAbsoluteUrl(seo.twitterImage || seo.ogImage || seo.featuredImage) || `${BASE_URL}/logo.png`],
       site: "@410MuscleTherapy",
       creator: "@410MuscleTherapy",
     },
@@ -130,7 +131,8 @@ export default async function DynamicPage({ params }: PageProps) {
   // 1. Find page in MongoDB Page collection
   const pageDoc = await Page.findOne({
     slug: slug,
-    status: 'published'
+    status: 'published',
+    isTrashed: { $ne: true }
   }).lean();
 
   const globalContent = await SiteContent.findOne({ key: 'complete_data' }).lean() as any;

@@ -14,8 +14,8 @@ export function getRobotsMetadata(settings: any, pageSeo?: any): Metadata['robot
   }
 
   const seo = pageSeo || {};
-  const isIndex = seo.metaRobotsIndex !== 'no-index';
-  const isFollow = seo.metaRobotsFollow !== 'no-follow';
+  const isIndex = seo.metaRobotsIndex !== 'noindex';
+  const isFollow = seo.metaRobotsFollow !== 'nofollow';
 
   return {
     index: isIndex,
