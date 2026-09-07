@@ -81,6 +81,16 @@ export async function PUT(req: NextRequest) {
     revalidatePath('/blogs/[slug]', 'page');
     revalidatePath('/blog/[slug]', 'page');
 
+    // Services live at the root-level catch-all route (e.g. /deep-tissue-massage-maryland/),
+    // not under /services/[slug] (that's a legacy redirect stub) - revalidate each one directly
+    // so SEO/content edits show up immediately instead of waiting for the route's own ISR window.
+    const serviceSlugs: string[] = (sanitizedBody?.services?.services || [])
+      .map((s: any) => s?.slug)
+      .filter(Boolean);
+    for (const slug of serviceSlugs) {
+      revalidatePath(`/${slug}/`);
+    }
+
     return NextResponse.json({ success: true, result });
   } catch (error: any) {
     console.error('Content update error:', error);
