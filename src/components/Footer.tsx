@@ -339,7 +339,7 @@ export default function Footer() {
               <p className="text-white/75">
                 Designed & Developed by{" "}
                 <a
-                  href="https://410-cms.vercel.app/"
+                  href="https://mohsindesigns.com/"
                   target="_blank"
                   rel="noopener noreferrer"
                   className="text-gold hover:text-white font-semibold underline decoration-gold/60 hover:decoration-white transition-colors"
