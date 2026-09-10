@@ -391,7 +391,7 @@ export default async function BlogPostPage({ params }: Props) {
   }
 
   // Convert any markdown links [Text](url) to HTML anchors
-  processedContent = processedContent.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, label, url) => {
+  processedContent = processedContent.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match: string, label: string, url: string) => {
     const target = url.startsWith("http") ? ' target="_blank" rel="noopener noreferrer"' : "";
     return `<a href="${url}" class="text-gold font-semibold underline decoration-gold/50 hover:text-gold-light hover:decoration-gold transition-colors"${target}>${label}</a>`;
   });
