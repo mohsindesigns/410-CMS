@@ -50,7 +50,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: seo.ogDescription || seo.metaDescription || blogData?.hero?.description || "Explore our latest articles, insights, and clinical recovery tips.",
       url: pageUrl,
       type: 'website',
-      images: seo.featuredImage ? [{ url: seo.featuredImage }] : [`${BASE_URL}/logo.png`],
+      images: [{ url: seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png` }],
     },
     other: {
       'article:published_time': publishedTime,
@@ -60,7 +60,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: 'summary_large_image',
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || "Our Blogs | 410 Muscle Therapy",
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || "Explore our latest articles, insights, and clinical recovery tips.",
-      images: [seo.featuredImage || seo.twitterImage || seo.ogImage || `${BASE_URL}/logo.png`].filter(Boolean) as string[],
+      images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png`].filter(Boolean) as string[],
       site: "@410MuscleTherapy",
       creator: "@410MuscleTherapy",
     },

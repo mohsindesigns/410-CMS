@@ -53,13 +53,13 @@ export async function generateMetadata(): Promise<Metadata> {
       url: pageUrl,
       siteName: "410 Muscle Therapy",
       type: "website",
-      images: seo.featuredImage ? [{ url: seo.featuredImage }] : [],
+      images: [{ url: seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png` }],
     },
     twitter: {
       card: "summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || metaTitle,
       description: seo.twitterDescription || seo.ogDescription || metaDescription,
-      images: [seo.featuredImage || seo.twitterImage || seo.ogImage].filter(Boolean) as string[],
+      images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png`].filter(Boolean) as string[],
     },
     robots: getRobotsMetadata(settings, seo)
   };
