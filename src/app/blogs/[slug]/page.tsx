@@ -390,6 +390,12 @@ export default async function BlogPostPage({ params }: Props) {
     processedContent = processedContent.replace(originalTag, newTag);
   }
 
+  // Convert any markdown links [Text](url) to HTML anchors
+  processedContent = processedContent.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, label, url) => {
+    const target = url.startsWith("http") ? ' target="_blank" rel="noopener noreferrer"' : "";
+    return `<a href="${url}" class="text-gold font-semibold underline decoration-gold/50 hover:text-gold-light hover:decoration-gold transition-colors"${target}>${label}</a>`;
+  });
+
   processedContent = cleanMojibake(makeLinksDoFollow(processedContent));
 
   return (
@@ -480,7 +486,10 @@ export default async function BlogPostPage({ params }: Props) {
               className="prose prose-invert max-w-none 
               prose-headings:font-display prose-headings:font-bold prose-headings:text-white
               prose-p:text-white/75 prose-p:leading-relaxed prose-p:text-base sm:prose-p:text-lg prose-p:font-light
-              prose-a:text-gold prose-a:font-semibold prose-a:no-underline hover:prose-a:underline hover:prose-a:text-gold-light transition-colors
+              prose-a:text-gold prose-a:font-semibold prose-a:underline prose-a:decoration-gold/50 hover:prose-a:text-gold-light hover:prose-a:decoration-gold transition-colors
+              [&_a]:!text-gold [&_a]:underline [&_a]:decoration-gold/50 hover:[&_a]:!text-gold-light hover:[&_a]:decoration-gold
+              [&_a_*]:!text-inherit [&_a_b]:!text-inherit [&_a_strong]:!text-inherit [&_a_span]:!text-inherit
+              [&_b_a]:!text-gold [&_strong_a]:!text-gold
               prose-img:rounded-2xl md:prose-img:rounded-3xl prose-img:my-8 prose-img:shadow-2xl prose-img:border prose-img:border-white/10
               prose-blockquote:border-l-4 prose-blockquote:border-gold prose-blockquote:bg-white/[0.02] prose-blockquote:p-6 md:prose-blockquote:p-8 prose-blockquote:rounded-2xl prose-blockquote:text-white/85 prose-blockquote:italic
               prose-ul:text-white/75 prose-ul:my-4 prose-li:my-1.5 prose-li:text-[15px]
