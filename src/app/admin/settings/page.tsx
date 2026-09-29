@@ -741,6 +741,15 @@ export default function SettingsEditor() {
                     onChange={(v) => updateData("footer", "contact", { ...data.footer.contact, address: v })}
                   />
                </SettingsRow>
+               <SettingsRow label="Map Embed URL" description="Paste a Google Maps embed URL: Google Maps → Share → Embed a map → copy the src=&quot;...&quot; URL only (not the full iframe code).">
+                  <input
+                    type="text"
+                    value={data.footer?.contact?.mapEmbedUrl || ""}
+                    onChange={(e) => updateData("footer", "contact", { ...data.footer.contact, mapEmbedUrl: e.target.value })}
+                    placeholder="https://www.google.com/maps/embed?pb=..."
+                    className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]"
+                  />
+               </SettingsRow>
                <SettingsRow label="24/7 Emergency Text" description="Supports HTML.">
                   <RichTextEditor
                     content={data.footer?.contact?.emergency || ""}

@@ -174,25 +174,14 @@ export default async function HomePage() {
     (item.visibility === 'specific' && item.targetPages?.includes('home'))
   );
 
-  const { yoastGraph, serviceSchema, localBusinessSchema, faqSchema } = getHomepageSchemas(servicesList, faqs);
+  const { homepageSchema, faqSchema } = getHomepageSchemas(servicesList, faqs);
 
   const schemaScripts = (
     <>
       <script
-        id="yoast-schema-graph"
+        id="homepage-schema-graph"
         type="application/ld+json"
-        className="yoast-schema-graph"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(yoastGraph) }}
-      />
-      <script
-        id="service-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(serviceSchema) }}
-      />
-      <script
-        id="localbusiness-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(localBusinessSchema) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(homepageSchema) }}
       />
       {faqSchema && (
         <script

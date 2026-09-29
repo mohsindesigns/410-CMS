@@ -11,6 +11,19 @@ function stripHtml(html: string): string {
   return html.replace(/<[^>]*>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&nbsp;/g, " ").trim();
 }
 
+/** Keep safe inline formatting (links, bold, breaks) but drop scripts/handlers */
+function sanitizeInlineHtml(html: string): string {
+  if (!html) return "";
+  return html
+    .replace(/<(script|style)[\s\S]*?<\/\1>/gi, "")
+    .replace(/\son\w+\s*=\s*"[^"]*"/gi, "")
+    .replace(/\son\w+\s*=\s*'[^']*'/gi, "")
+    .replace(/(href|src)\s*=\s*(["'])\s*javascript:[^"']*\2/gi, '$1="#"')
+    .replace(/&amp;/g, "&")
+    .replace(/&nbsp;/g, " ")
+    .trim();
+}
+
 /* ── Logo ──────────────────────────────────────────────── */
 function FooterLogo({ logoUrl, siteTitle, logoText1, logoText2 }: { logoUrl?: string; siteTitle?: string; logoText1?: string; logoText2?: string }) {
   if (logoUrl && (logoUrl.startsWith('http') || logoUrl.startsWith('/uploads') || logoUrl.startsWith('/cdn-images'))) {
@@ -106,9 +119,24 @@ function SocialIcons({ socialItems }: { socialItems?: any[] }) {
 
 
 /* ── Map Placeholder ───────────────────────────────────── */
-function MapPlaceholder({ addressText, iframeHtml }: { addressText: string; iframeHtml?: string | null }) {
+function MapPlaceholder({ addressText, embedUrl, iframeHtml }: { addressText: string; embedUrl?: string | null; iframeHtml?: string | null }) {
+  if (embedUrl) {
+    return (
+      <div className="mt-5 h-[160px] w-full rounded-md overflow-hidden border border-white/10 relative">
+        <iframe
+          src={embedUrl}
+          width="100%"
+          height="100%"
+          style={{ border: 0 }}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          title="Map location"
+        />
+      </div>
+    );
+  }
   if (iframeHtml) {
-    // Ensure the map iframe fills the container perfectly and has rounded borders
+    // Legacy path: iframe was pasted directly into the address field
     const styledIframe = iframeHtml
       .replace(/width="[^"]*"/i, 'width="100%"')
       .replace(/height="[^"]*"/i, 'height="100%"');
@@ -170,9 +198,12 @@ export default function Footer() {
   // Clean address text by removing the iframe block
   const addressCleanHtml = rawAddress.replace(iframeRegex, "").trim();
   const addressText = stripHtml(addressCleanHtml);
+  const addressHtml: string = sanitizeInlineHtml(addressCleanHtml);
 
-  const phoneText: string = stripHtml(contactInfo.phone || (footer as any)?.phone || "(410) 555-1234");
-  const emailText: string = stripHtml(contactInfo.email || (footer as any)?.email || "antoine.lyles@yahoo.com");
+  const mapEmbedUrl: string | null = contactInfo.mapEmbedUrl || (footer as any)?.mapEmbedUrl || null;
+
+  const phoneHtml: string = sanitizeInlineHtml(contactInfo.phone || (footer as any)?.phone || "(410) 555-1234");
+  const emailHtml: string = sanitizeInlineHtml(contactInfo.email || (footer as any)?.email || "antoine.lyles@yahoo.com");
 
   // Construct business hours dynamically from general settings or fall back
   let hoursText = "";
@@ -290,18 +321,19 @@ export default function Footer() {
                 {[
                   {
                     icon: <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0118 0z" />,
-                    text: addressText,
+                    html: addressHtml,
                   },
                   {
                     icon: <path d="M22 16.92v3a2 2 0 01-2.18 2 19.79 19.79 0 01-8.63-3.07A19.5 19.5 0 013.07 9.81a19.79 19.79 0 01-3.07-8.68A2 2 0 012 1h3a2 2 0 012 1.72c.127.96.361 1.903.7 2.81a2 2 0 01-.45 2.11L6.91 8.92a16 16 0 006 6l1.27-1.27a2 2 0 012.11-.45c.907.339 1.85.573 2.81.7A2 2 0 0122 16.92z" />,
-                    text: phoneText,
+                    html: phoneHtml,
                   },
                   {
                     icon: <><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z" /><path d="M22 6l-10 7L2 6" /></>,
-                    text: emailText,
+                    html: emailHtml,
                   },
                   {
                     icon: <><circle cx="12" cy="12" r="10" /><path d="M12 6v6l4 2" /></>,
+                    html: null,
                     text: hoursText,
                   },
                 ].map((item, i) => (
@@ -318,14 +350,21 @@ export default function Footer() {
                     >
                       {item.icon}
                     </svg>
-                    <span className="text-white/80 text-[13px] leading-snug whitespace-pre-line">
-                      {item.text}
-                    </span>
+                    {item.html ? (
+                      <span
+                        className="prose-invert text-white/80 text-[13px] leading-snug whitespace-pre-line [&_a]:pointer-events-auto"
+                        dangerouslySetInnerHTML={{ __html: item.html }}
+                      />
+                    ) : (
+                      <span className="text-white/80 text-[13px] leading-snug whitespace-pre-line">
+                        {item.text}
+                      </span>
+                    )}
                   </li>
                 ))}
               </ul>
               <div className="w-full">
-                <MapPlaceholder addressText={addressText} iframeHtml={iframeHtml} />
+                <MapPlaceholder addressText={addressText} embedUrl={mapEmbedUrl} iframeHtml={iframeHtml} />
               </div>
             </div>
 
