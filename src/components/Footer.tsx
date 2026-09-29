@@ -230,10 +230,13 @@ export default function Footer() {
     return ""; // unknown URL format — fall back to address
   }
 
+  // Exact "Embed a map" URL for the business's actual Google Business Profile pin
+  // (410 Muscle Therapy), used whenever the admin hasn't set a custom map URl.
+  const DEFAULT_MAP_EMBED_URL =
+    "https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d3082.271334727853!2d-76.6170997242141!3d39.41798837161769!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x89c80fb6cfb2ae81%3A0xacd0a0f902d0b95e!2s410%20Muscle%20Therapy!5e0!3m2!1sen!2sus!4v1790709834464!5m2!1sen!2sus";
+
   const resolvedMapUrl = toEmbedUrl(rawMapEmbedUrl);
-  const mapEmbedUrl: string = resolvedMapUrl
-    ? resolvedMapUrl
-    : `https://www.google.com/maps?q=${encodeURIComponent(addressText || "1301 York Rd, Timonium, MD 21093")}&output=embed`;
+  const mapEmbedUrl: string = resolvedMapUrl || DEFAULT_MAP_EMBED_URL;
 
   // Phone/email links are always derived from the plain number/address text
   // rather than trusting an admin-typed <a href>, since a hand-typed href that's
