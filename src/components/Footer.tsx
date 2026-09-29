@@ -206,8 +206,33 @@ export default function Footer() {
   // when it's actually an embed URL; otherwise we build a reliable embed
   // ourselves from the business address, which always works without an API key.
   const rawMapEmbedUrl: string = contactInfo.mapEmbedUrl || (footer as any)?.mapEmbedUrl || "";
-  const mapEmbedUrl: string = rawMapEmbedUrl.includes("/maps/embed")
-    ? rawMapEmbedUrl
+
+  // Convert any Google Maps share/place URL into an embeddable URL.
+  // Accepted inputs from admin:
+  //   ✅ https://www.google.com/maps/embed?pb=...  (already embed)
+  //   ✅ https://maps.google.com/?q=...             (share link → convert)
+  //   ✅ https://www.google.com/maps/place/...      (place link → convert)
+  //   ✅ https://goo.gl/maps/...                    (short link — can't auto-convert, fall back)
+  function toEmbedUrl(raw: string): string {
+    if (!raw) return "";
+    if (raw.includes("/maps/embed")) return raw; // already embed
+    if (raw.includes("google.com/maps") || raw.includes("maps.google.com")) {
+      // Extract q= param if present
+      try {
+        const u = new URL(raw);
+        const q = u.searchParams.get("q") || u.pathname.replace("/maps/place/", "") || "";
+        if (q) return `https://www.google.com/maps?q=${encodeURIComponent(decodeURIComponent(q))}&output=embed`;
+      } catch {}
+      // Fallback: just append output=embed
+      const sep = raw.includes("?") ? "&" : "?";
+      return `${raw}${sep}output=embed`;
+    }
+    return ""; // unknown URL format — fall back to address
+  }
+
+  const resolvedMapUrl = toEmbedUrl(rawMapEmbedUrl);
+  const mapEmbedUrl: string = resolvedMapUrl
+    ? resolvedMapUrl
     : `https://www.google.com/maps?q=${encodeURIComponent(addressText || "1301 York Rd, Timonium, MD 21093")}&output=embed`;
 
   // Phone/email links are always derived from the plain number/address text
@@ -218,8 +243,22 @@ export default function Footer() {
   const phoneDigits = phoneRawText.replace(/[^\d+]/g, "");
   const phoneHtml: string = `<a href="tel:${phoneDigits}">${phoneRawText}</a>`;
 
-  const emailRawText = stripHtml(contactInfo.email || (footer as any)?.email || "info@410muscletherapy.com");
-  const emailHtml: string = `<a href="mailto:${emailRawText}">${emailRawText}</a>`;
+  // Email: display text comes from stripped HTML; the actual mailto target comes from
+  // the href the admin may have set inside the RichTextEditor link (e.g. they want
+  // to display info@... but route mail to a yahoo address).
+  const emailFieldHtml = contactInfo.email || (footer as any)?.email || "";
+  const emailDisplayText = stripHtml(emailFieldHtml) || "info@410muscletherapy.com";
+  const emailHrefMatch = emailFieldHtml.match(/href=["']([^"']+)["']/i);
+  let emailHref = emailHrefMatch ? emailHrefMatch[1] : "";
+  // Normalise the href: https://user@domain -> mailto:user@domain
+  if (emailHref && emailHref.startsWith("http") && emailHref.includes("@")) {
+    emailHref = `mailto:${emailHref.replace(/^https?:\/\//, "")}`;
+  } else if (emailHref && !emailHref.startsWith("mailto:") && emailHref.includes("@")) {
+    emailHref = `mailto:${emailHref}`;
+  } else if (!emailHref) {
+    emailHref = `mailto:${emailDisplayText}`;
+  }
+  const emailHtml: string = `<a href="${emailHref}">${emailDisplayText}</a>`;
 
   // Construct business hours dynamically from general settings or fall back
   let hoursText = "";
