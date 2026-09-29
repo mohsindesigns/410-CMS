@@ -741,7 +741,7 @@ export default function SettingsEditor() {
                     onChange={(v) => updateData("footer", "contact", { ...data.footer.contact, address: v })}
                   />
                </SettingsRow>
-               <SettingsRow label="Map Embed URL (optional)" description="The map already works automatically using the Office Address above — leave this blank. Only fill it in if you want a custom pin: go to Google Maps → Share → Embed a map → Copy HTML, then paste just the src=&quot;...&quot; URL from inside that code here (it must contain /maps/embed). A regular Google Maps link, g.page link, or share link will NOT work here and will be ignored.">
+               <SettingsRow label="Map Embed URL (optional)" description="The map already has a working default pin — leave this blank unless you want to change it. Go to Google Maps → Share → Embed a map → Copy HTML, then paste it here. You can paste either the full code it gives you or just the src=&quot;...&quot; URL from inside it — both work. A regular Google Maps link, g.page link, or share link will NOT work here and will be ignored.">
                   <input
                     type="text"
                     value={data.footer?.contact?.mapEmbedUrl || ""}
