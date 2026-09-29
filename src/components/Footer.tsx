@@ -200,10 +200,26 @@ export default function Footer() {
   const addressText = stripHtml(addressCleanHtml);
   const addressHtml: string = sanitizeInlineHtml(addressCleanHtml);
 
-  const mapEmbedUrl: string | null = contactInfo.mapEmbedUrl || (footer as any)?.mapEmbedUrl || null;
+  // Only a real "Embed a map" pb= URL survives inside an <iframe> — anything else
+  // (a share link, a g.page link, a plain maps.google.com URL) gets blocked by
+  // Google with "refused to connect". So a raw admin-pasted URL is only trusted
+  // when it's actually an embed URL; otherwise we build a reliable embed
+  // ourselves from the business address, which always works without an API key.
+  const rawMapEmbedUrl: string = contactInfo.mapEmbedUrl || (footer as any)?.mapEmbedUrl || "";
+  const mapEmbedUrl: string = rawMapEmbedUrl.includes("/maps/embed")
+    ? rawMapEmbedUrl
+    : `https://www.google.com/maps?q=${encodeURIComponent(addressText || "1301 York Rd, Timonium, MD 21093")}&output=embed`;
 
-  const phoneHtml: string = sanitizeInlineHtml(contactInfo.phone || (footer as any)?.phone || "(410) 555-1234");
-  const emailHtml: string = sanitizeInlineHtml(contactInfo.email || (footer as any)?.email || "antoine.lyles@yahoo.com");
+  // Phone/email links are always derived from the plain number/address text
+  // rather than trusting an admin-typed <a href>, since a hand-typed href that's
+  // missing the tel:/mailto: scheme (e.g. just "+1 443 473 2322") silently turns
+  // into a broken relative link instead of a working link.
+  const phoneRawText = stripHtml(contactInfo.phone || (footer as any)?.phone || "(410) 555-1234");
+  const phoneDigits = phoneRawText.replace(/[^\d+]/g, "");
+  const phoneHtml: string = `<a href="tel:${phoneDigits}">${phoneRawText}</a>`;
+
+  const emailRawText = stripHtml(contactInfo.email || (footer as any)?.email || "antoine.lyles@yahoo.com");
+  const emailHtml: string = `<a href="mailto:${emailRawText}">${emailRawText}</a>`;
 
   // Construct business hours dynamically from general settings or fall back
   let hoursText = "";
