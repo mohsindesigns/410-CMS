@@ -110,11 +110,25 @@ export default function DynamicPageEditor({ params }: { params: Promise<{ id: st
         }),
       });
       if (res.ok) {
+        const saved = await res.json();
+        setPage(saved);
+        setSeo(saved.seo || {});
         setMessage("Page updated.");
         setTimeout(() => setMessage(""), 3000);
+      } else {
+        let errorText = `Save failed (${res.status}).`;
+        try {
+          const errBody = await res.json();
+          if (errBody?.error) errorText = `Save failed: ${errBody.error}`;
+        } catch {
+          // response wasn't JSON; keep the generic status-based message
+        }
+        console.error("Page save failed:", res.status, errorText);
+        setMessage(errorText);
       }
     } catch (err) {
-      setMessage("Error saving changes.");
+      console.error("Page save threw:", err);
+      setMessage("Error saving changes. Check your connection and try again.");
     } finally {
       setSaving(false);
     }

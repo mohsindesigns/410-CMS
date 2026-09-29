@@ -18,14 +18,32 @@ interface SchemaOptions {
 export function getHomepageSchemas(servicesList?: Array<{ name: string }>, faqs?: Array<{ question?: string; answer?: string; q?: string; a?: string }>) {
   void servicesList; // kept for call-site compatibility; homepage graph below matches the fixed reference schema exactly
 
+  const HOMEPAGE_SERVICES: Array<{ name: string; slug: string }> = [
+    { name: "Deep Tissue Massage", slug: "deep-tissue-massage-maryland" },
+    { name: "Sports Massage", slug: "maryland-sports-massage-therapist" },
+    { name: "Infrared Therapy", slug: "infrared-therapy-in-maryland" },
+    { name: "Cupping Therapy", slug: "cupping-therapy-maryland" },
+    { name: "Myofascial Release Therapy", slug: "myofascial-release-maryland" },
+    { name: "Acupressure", slug: "acupressure-maryland" },
+    { name: "Hot Towel Massage", slug: "hot-towel-massage-maryland" },
+    { name: "Hot Stone Massage", slug: "hot-stone-massage-maryland" },
+    { name: "Stretch Therapy", slug: "maryland-stretch-therapy" },
+    { name: "Corrective Movement Therapy", slug: "corrective-movement-maryland" }
+  ];
+
   const businessSchema = {
-    "@type": ["LocalBusiness", "HealthAndBeautyBusiness"],
+    "@type": ["LocalBusiness", "MassageTherapist"],
     "@id": `${BASE_URL}/#business`,
     "name": "410 Muscle Therapy",
     "url": `${BASE_URL}/`,
     "telephone": "+1-443-473-2322",
     "email": "antoine.lyles@yahoo.com",
-    "description": "410 Muscle Therapy in Timonium, Maryland provides specialized massage therapy services including deep tissue massage, sports massage, cupping therapy, myofascial release, stretch therapy, and corrective movement therapy to improve mobility and support recovery.",
+    "sameAs": [
+      "https://www.instagram.com/410muscletherapy/",
+      "https://www.tiktok.com/@410muscletherapy",
+      "https://www.youtube.com/@Twon410"
+    ],
+    "description": "410 Muscle Therapy provides personalized massage therapy, sports massage, performance recovery, mobility restoration, and specialized muscle therapy services in Timonium, Maryland.",
     "address": {
       "@type": "PostalAddress",
       "streetAddress": "1301 York Rd, 8th Floor, Suite 48",
@@ -34,51 +52,38 @@ export function getHomepageSchemas(servicesList?: Array<{ name: string }>, faqs?
       "postalCode": "21093",
       "addressCountry": "US"
     },
-    "geo": {
-      "@type": "GeoCoordinates",
-      "latitude": "39.4376",
-      "longitude": "-76.6197"
-    },
-    "openingHoursSpecification": [
-      {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-        "opens": "07:00",
-        "closes": "21:00"
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": "Sunday",
-        "opens": "09:00",
-        "closes": "21:00"
-      }
+    "areaServed": [
+      { "@type": "City", "name": "Timonium" },
+      { "@type": "City", "name": "Lutherville" },
+      { "@type": "City", "name": "Cockeysville" },
+      { "@type": "City", "name": "Towson" },
+      { "@type": "City", "name": "Hunt Valley" },
+      { "@type": "AdministrativeArea", "name": "Baltimore County" }
     ],
-    "priceRange": "$$",
-    "image": "https://410-muscletherapy.com/wp-content/uploads/2024/10/410-muscle-therapy-logo.png",
-    "sameAs": [
-      "https://www.instagram.com/410muscletherapy/",
-      "https://www.tiktok.com/@410muscletherapy",
-      "https://www.youtube.com/@Twon410"
+    "knowsAbout": [
+      "Deep Tissue Massage",
+      "Sports Massage",
+      "Infrared Therapy",
+      "Cupping Therapy",
+      "Myofascial Release Therapy",
+      "Acupressure",
+      "Hot Towel Massage",
+      "Hot Stone Massage",
+      "Stretch Therapy",
+      "Corrective Movement Therapy",
+      "Performance Recovery Specialist"
     ],
-    "areaServed": {
-      "@type": "Place",
-      "name": "Timonium, Maryland"
-    },
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "5",
-      "reviewCount": "28"
-    }
-  };
-
-  const organizationSchema = {
-    "@type": "Organization",
-    "@id": `${BASE_URL}/#organization`,
-    "name": "410 Muscle Therapy",
-    "url": `${BASE_URL}/`,
-    "logo": {
-      "@type": "ImageObject",
-      "url": "https://410-muscletherapy.com/wp-content/uploads/2024/10/410-muscle-therapy-logo.png"
+    "hasOfferCatalog": {
+      "@type": "OfferCatalog",
+      "name": "Massage Therapy and Performance Recovery Services",
+      "itemListElement": HOMEPAGE_SERVICES.map(s => ({
+        "@type": "Offer",
+        "itemOffered": {
+          "@type": "Service",
+          "name": s.name,
+          "url": `${BASE_URL}/${s.slug}/`
+        }
+      }))
     }
   };
 
@@ -88,7 +93,7 @@ export function getHomepageSchemas(servicesList?: Array<{ name: string }>, faqs?
     "url": `${BASE_URL}/`,
     "name": "410 Muscle Therapy",
     "publisher": {
-      "@id": `${BASE_URL}/#organization`
+      "@id": `${BASE_URL}/#business`
     }
   };
 
@@ -96,36 +101,24 @@ export function getHomepageSchemas(servicesList?: Array<{ name: string }>, faqs?
     "@type": "WebPage",
     "@id": `${BASE_URL}/#webpage`,
     "url": `${BASE_URL}/`,
-    "name": "410 Muscle Therapy | Performance Recovery Specialist Timonium",
+    "name": "Performance Recovery Specialist Timonium | 410 Muscle Therapy",
     "isPartOf": {
       "@id": `${BASE_URL}/#website`
     },
     "about": {
       "@id": `${BASE_URL}/#business`
+    },
+    "mainEntity": {
+      "@id": `${BASE_URL}/#business`
     }
-  };
-
-  const breadcrumbSchema = {
-    "@type": "BreadcrumbList",
-    "@id": `${BASE_URL}/#breadcrumb`,
-    "itemListElement": [
-      {
-        "@type": "ListItem",
-        "position": 1,
-        "name": "Home",
-        "item": `${BASE_URL}/`
-      }
-    ]
   };
 
   const homepageSchema = {
     "@context": "https://schema.org",
     "@graph": [
       businessSchema,
-      organizationSchema,
       websiteSchema,
-      webpageSchema,
-      breadcrumbSchema
+      webpageSchema
     ]
   };
 

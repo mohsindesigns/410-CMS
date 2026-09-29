@@ -54,12 +54,18 @@ export const useContent = () => {
 
     const footer = getSafe(completeData, 'footer');
     const footerServices = getSafe(footer, 'services', { title: "Our Services", materials: { title: "Premium Materials", items: [] } });
-    const footerContact = getSafe(footer, 'contact', { title: "Contact Us", email: "", phone: "", address: "", emergency: "", areas: "" });
-    
-    footerContact.email = footerContact.email || info.email || footer?.email || "";
-    footerContact.phone = footerContact.phone || info.phone || footer?.phone || "";
-    footerContact.address = footerContact.address || info.address || footer?.address || "";
-    footerContact.hours = footerContact.hours || info.hours || footer?.hours || "";
+    const footerContact = getSafe(footer, 'contact', { title: "Contact Us", email: "", phone: "", address: "", emergency: "", areas: "", mapEmbedUrl: "" });
+
+    // Strip HTML before truthiness check — the RichTextEditor saves HTML like <p>text</p>,
+    // so a field containing only tags (e.g. <p></p>) would be truthy but visually empty.
+    const stripTagsForCheck = (v: string) => (v || "").replace(/<[^>]*>/g, "").trim();
+
+    footerContact.email = stripTagsForCheck(footerContact.email) ? footerContact.email : (info.email || footer?.email || "");
+    footerContact.phone = stripTagsForCheck(footerContact.phone) ? footerContact.phone : (info.phone || footer?.phone || "");
+    footerContact.address = stripTagsForCheck(footerContact.address) ? footerContact.address : (info.address || footer?.address || "");
+    footerContact.hours = stripTagsForCheck(footerContact.hours) ? footerContact.hours : (info.hours || footer?.hours || "");
+    // Pass mapEmbedUrl through so Footer.tsx can read contactInfo.mapEmbedUrl correctly
+    footerContact.mapEmbedUrl = footerContact.mapEmbedUrl || footer?.mapEmbedUrl || "";
 
     const footerCompany = getSafe(footer, 'company', { name: "410 Muscle Therapy", tagline: "Performance Recovery & Clinical Bodywork", description: "", logo: "" });
     const footerBottom = getSafe(footer, 'bottom', { copyright: "© 2026 410 Muscle Therapy", rights: "All Rights Reserved", tagline: "", links: [] });

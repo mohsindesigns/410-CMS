@@ -218,7 +218,7 @@ export default function Footer() {
   const phoneDigits = phoneRawText.replace(/[^\d+]/g, "");
   const phoneHtml: string = `<a href="tel:${phoneDigits}">${phoneRawText}</a>`;
 
-  const emailRawText = stripHtml(contactInfo.email || (footer as any)?.email || "antoine.lyles@yahoo.com");
+  const emailRawText = stripHtml(contactInfo.email || (footer as any)?.email || "info@410muscletherapy.com");
   const emailHtml: string = `<a href="mailto:${emailRawText}">${emailRawText}</a>`;
 
   // Construct business hours dynamically from general settings or fall back
