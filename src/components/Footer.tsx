@@ -207,27 +207,38 @@ export default function Footer() {
   // ourselves from the business address, which always works without an API key.
   const rawMapEmbedUrl: string = contactInfo.mapEmbedUrl || (footer as any)?.mapEmbedUrl || "";
 
-  // Convert any Google Maps share/place URL into an embeddable URL.
-  // Accepted inputs from admin:
+  // Convert any Google Maps share/place URL (or a full pasted <iframe> tag) into
+  // a bare embeddable URL. Accepted inputs from admin:
+  //   ✅ <iframe src="https://www.google.com/maps/embed?pb=...">...</iframe>  (full "Copy HTML" block — src extracted)
   //   ✅ https://www.google.com/maps/embed?pb=...  (already embed)
   //   ✅ https://maps.google.com/?q=...             (share link → convert)
   //   ✅ https://www.google.com/maps/place/...      (place link → convert)
   //   ✅ https://goo.gl/maps/...                    (short link — can't auto-convert, fall back)
   function toEmbedUrl(raw: string): string {
     if (!raw) return "";
-    if (raw.includes("/maps/embed")) return raw; // already embed
-    if (raw.includes("google.com/maps") || raw.includes("maps.google.com")) {
+    let candidate = raw.trim();
+
+    // Admin pasted the whole <iframe ...>...</iframe> block from Google's "Copy HTML"
+    // button instead of just the URL — pull the src="" attribute out of it.
+    const iframeSrcMatch = candidate.match(/<iframe[^>]*\ssrc=["']([^"']+)["']/i);
+    if (iframeSrcMatch) candidate = iframeSrcMatch[1];
+
+    // Guard against any other stray HTML/garbage that isn't a real URL.
+    if (!/^https?:\/\//i.test(candidate)) return "";
+
+    if (candidate.includes("/maps/embed")) return candidate; // already embed
+    if (candidate.includes("google.com/maps") || candidate.includes("maps.google.com")) {
       // Extract q= param if present
       try {
-        const u = new URL(raw);
+        const u = new URL(candidate);
         const q = u.searchParams.get("q") || u.pathname.replace("/maps/place/", "") || "";
         if (q) return `https://www.google.com/maps?q=${encodeURIComponent(decodeURIComponent(q))}&output=embed`;
       } catch {}
       // Fallback: just append output=embed
-      const sep = raw.includes("?") ? "&" : "?";
-      return `${raw}${sep}output=embed`;
+      const sep = candidate.includes("?") ? "&" : "?";
+      return `${candidate}${sep}output=embed`;
     }
-    return ""; // unknown URL format — fall back to address
+    return ""; // unknown URL format — fall back to default
   }
 
   // Exact "Embed a map" URL for the business's actual Google Business Profile pin
