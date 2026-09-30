@@ -546,15 +546,17 @@ const FounderStory = ({ content: passedContent }: { content?: any }) => {
                 >
                   <Icon name="Linkedin" className="w-4 h-4 sm:w-5 sm:h-5" />
                 </motion.a>
-                <motion.a
-                  href={`mailto:${story.founder?.email}`}
-                  whileHover={{ scale: 1.1 }}
-                  whileTap={{ scale: 0.95 }}
-                  className="p-2 sm:p-3 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-colors"
-                  aria-label="Email"
-                >
-                  <Icon name="Mail" className="w-4 h-4 sm:w-5 sm:h-5" />
-                </motion.a>
+                {story.founder?.email && (
+                  <motion.a
+                    href={`mailto:${story.founder.email}`}
+                    whileHover={{ scale: 1.1 }}
+                    whileTap={{ scale: 0.95 }}
+                    className="p-2 sm:p-3 rounded-full bg-primary/5 text-primary hover:bg-primary/10 transition-colors"
+                    aria-label="Email"
+                  >
+                    <Icon name="Mail" className="w-4 h-4 sm:w-5 sm:h-5" />
+                  </motion.a>
+                )}
                 <span className="text-[10px] sm:text-xs md:text-sm text-muted-foreground break-all">
                   {story.founder?.email}
                 </span>
@@ -701,11 +703,11 @@ const ServiceCard = ({ service, index }: { service: any; index: number }) => {
 
   return (
     <motion.div initial={{ opacity: 0, y: 30 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true, margin: "-50px" }} transition={{ duration: 0.6, delay: index * 0.1, ease: [0.16, 1, 0.3, 1] }} className="group" onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
-      <Link href={`/${service.slug}/`} className="block h-full">
+      <Link href={service.slug ? `/${service.slug}/` : "/services/"} className="block h-full">
         <div className="flex flex-col h-full">
           <div className="relative aspect-[4/5] rounded-[2.5rem] overflow-hidden bg-gradient-to-br from-slate-100 to-slate-200 shadow-lg transition-all duration-700 group-hover:shadow-2xl">
             <img
-              src={service.overviewImage}
+              src={serviceImage}
               alt={service.title}
               className="w-full h-full object-cover transition-transform duration-1000 group-hover:scale-105"
             />

@@ -4,6 +4,7 @@ import { useState } from "react";
 import { Send, ArrowRight, ShieldCheck, Clock, Plus, Minus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useContent } from "../hooks/useContent";
+import RichTextRenderer from "./ui/RichTextRenderer";
 
 interface QAFormProps {
   pageData?: any;
@@ -352,8 +353,9 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
                       <h3
                         className={`text-[15.5px] md:text-[16.5px] font-semibold flex-1 transition-all duration-300
                           ${isOpen ? "text-dark font-medium translate-x-1" : "text-dark/70 group-hover:text-dark group-hover:translate-x-1"}`}
-                        dangerouslySetInnerHTML={{ __html: faq.q }}
-                      />
+                      >
+                        {faq.q}
+                      </h3>
                       
                       {/* Icon */}
                       <span className={`text-gold-dark mt-1.5 transition-transform duration-300 ${isOpen ? "rotate-180 text-dark" : "group-hover:scale-110"}`}>
@@ -372,9 +374,9 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
                         >
                           <div className="pl-12 md:pl-14 pr-4 pt-3 pb-2">
                             <div className="border-l-2 border-gold-dark/45 pl-4 py-0.5">
-                              <div
+                              <RichTextRenderer
+                                content={faq.a}
                                 className="text-dark/55 text-[13.5px] leading-relaxed font-light prose prose-sm max-w-none"
-                                dangerouslySetInnerHTML={{ __html: faq.a }}
                               />
                             </div>
                           </div>

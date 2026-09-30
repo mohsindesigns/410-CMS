@@ -17,13 +17,7 @@ interface PageProps {
   params: Promise<{ slug: string[] }>;
 }
 
-function getAbsoluteUrl(path: string | undefined) {
-  if (!path) return undefined;
-  if (path.startsWith('http')) return path;
-  return `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
-}
-
-import { getRobotsMetadata, buildPageTitle } from "@/lib/seo";
+import { getRobotsMetadata, buildPageTitle, getAbsoluteUrl } from "@/lib/seo";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;

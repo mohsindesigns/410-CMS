@@ -3,6 +3,7 @@
 import Image from 'next/image';
 import Link from 'next/link';
 import { useContent } from "../../hooks/useContent";
+import RichTextRenderer from "../ui/RichTextRenderer";
 
 /** Strip HTML tags and return plain text */
 function stripHtml(html: string): string {
@@ -33,16 +34,27 @@ export default function GalleryTemplate({ pageData }: { pageData?: any }) {
 
   const pageContent = pageData?.content || {};
   const galleryPage = pageContent.galleryPage || globalGalleryPage || {};
-  const portfolio = pageContent.portfolio || globalPortfolio || {};
-  
+
+  // pageContent.portfolio is the raw (unprocessed) global data — it's truthy
+  // even when its `projects` array is empty, so it would otherwise always win
+  // over globalPortfolio (which the useContent() hook has already resolved
+  // with a fallback to galleryPage.projects). Only prefer it when it actually
+  // has real projects to show.
+  const rawPagePortfolio = pageContent.portfolio;
+  const portfolio = (rawPagePortfolio && Array.isArray(rawPagePortfolio.projects) && rawPagePortfolio.projects.length > 0)
+    ? rawPagePortfolio
+    : (globalPortfolio || {});
+
   // Selected projects from admin dashboard
   const selectedProjects = portfolio.projects || [];
   const assetMap = images?.portfolio || {};
 
   const label = stripHtml(galleryPage.header?.badge || galleryPage.label || "OUR PORTFOLIO");
-  const titleLine1 = stripHtml(galleryPage.header?.titlePrefix || galleryPage.titleLine1 || "Real Results,");
-  const titleLine2 = stripHtml(galleryPage.header?.titleHighlight || galleryPage.titleLine2 || "Real Stories");
-  const description = stripHtml(galleryPage.header?.description || galleryPage.description || "Browse our recovery gallery and see how targeted muscle therapy helps active adults and athletes perform better and live pain-free.");
+  // The admin editor (Admin > Pages > Gallery) only writes header.title (a single
+  // field, not a prefix/highlight split) — use it as the full heading when set.
+  const titleLine1 = stripHtml(galleryPage.header?.titlePrefix || galleryPage.header?.title || galleryPage.titleLine1 || "Real Results,");
+  const titleLine2 = stripHtml(galleryPage.header?.titleHighlight || galleryPage.titleLine2 || (galleryPage.header?.title ? "" : "Real Stories"));
+  const description = galleryPage.header?.description || galleryPage.description || "Browse our recovery gallery and see how targeted muscle therapy helps active adults and athletes perform better and live pain-free.";
   const ctaBook = galleryPage.header?.ctaBook || galleryPage.ctaBook || "BOOK RECOVERY SESSION";
   const bookingUrl = globalMetadata?.bookingUrl || "https://www.styleseat.com/m/v/410muscletherapy";
 
@@ -67,9 +79,9 @@ export default function GalleryTemplate({ pageData }: { pageData?: any }) {
             <h1 className="display-heading text-[32px] min-[400px]:text-[44px] md:text-[64px] text-white leading-tight">
               {titleLine1} <span className="text-gold italic font-light">{titleLine2}</span>
             </h1>
-            <p className="text-white/60 text-[14px] md:text-[15px] max-w-2xl mx-auto mt-6 leading-relaxed">
-              {description}
-            </p>
+            <div className="text-white/60 text-[14px] md:text-[15px] max-w-2xl mx-auto mt-6 leading-relaxed">
+              <RichTextRenderer content={description} stripParagraphs={true} />
+            </div>
           </div>
 
           <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 md:gap-6">

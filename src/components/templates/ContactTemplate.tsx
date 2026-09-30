@@ -8,6 +8,11 @@ import { Icon } from "../../config/icons";
 import RichTextRenderer from "../ui/RichTextRenderer";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 
+function stripHtml(html: string): string {
+    if (!html) return "";
+    return String(html).replace(/<[^>]*>/g, "").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&nbsp;/g, " ").trim();
+}
+
 const HolographicInput = ({ icon: IconName, label, type = "text", ...props }: any) => {
     const [isFocused, setIsFocused] = useState(false);
     const [hasValue, setHasValue] = useState(false);
@@ -49,24 +54,41 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
     const badge = header.badge || "Contact Us";
     const headline = header.headline || "Get In Touch";
     const description = header.description || "We'd love to hear from you. Fill out the form and we'll get back to you shortly.";
-    const formFields = contactData?.formFields || [
+    const formFields = (contactData?.formFields && contactData.formFields.length > 0) ? contactData.formFields : [
         { name: "name", label: "Full Name", type: "text", required: true, icon: "User" },
         { name: "email", label: "Email Address", type: "email", required: true, icon: "Mail" },
         { name: "phone", label: "Phone Number", type: "tel", required: false, icon: "Phone" },
         { name: "message", label: "Your Message", type: "textarea", required: true, icon: "MessageSquare" },
     ];
 
+    // Resolve values by field role (icon/type/label) rather than a hardcoded
+    // "name"/"email" key, since the Form Architect editor lets admins rename
+    // any field's data key — a hardcoded key would silently lose the value.
+    const nameField = formFields.find((f: any) => f.icon === "User" || /name/i.test(f.label || ""));
+    const emailField = formFields.find((f: any) => f.type === "email");
+    const phoneField = formFields.find((f: any) => f.type === "tel");
+    const messageField = formFields.find((f: any) => f.type === "textarea");
+
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
         try {
+            const resolvedName = (nameField && formData[nameField.name]) || formData.name || "";
+            const resolvedEmail = (emailField && formData[emailField.name]) || formData.email || "";
+            const resolvedPhone = (phoneField && formData[phoneField.name]) || formData.phone || "";
+            const resolvedMessage = (messageField && formData[messageField.name]) || formData.message || "";
+
             const response = await fetch('/api/send', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
                 body: JSON.stringify({
                     ...formData,
+                    name: resolvedName,
+                    email: resolvedEmail,
+                    phone: resolvedPhone,
+                    message: resolvedMessage,
                     type: 'Contact Form',
-                    subject: `New Contact Form Submission - ${formData.name || 'Unknown'}`,
+                    subject: `New Contact Form Submission - ${resolvedName || 'Unknown'}`,
                 })
             });
 
@@ -90,13 +112,12 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
     const textareaFields = formFields.filter((f: any) => f.type === "textarea");
 
     const info = contactData?.info || {};
-    const infoCards = contactData?.infoCards || [];
 
-    // Map infoCards to the info structure if info is empty — also fall back to footer contact
+    // Fall back to footer contact info when this page's own fields are empty
     const finalInfo = {
-        phone: info.phone || infoCards.find((c: any) => c.type === 'phone')?.value || footerContact.phone || "",
-        email: info.email || infoCards.find((c: any) => c.type === 'email')?.value || footerContact.email || "",
-        address: info.address || infoCards.find((c: any) => c.type === 'location')?.value || footerContact.address || "",
+        phone: info.phone || footerContact.phone || "",
+        email: info.email || footerContact.email || "",
+        address: info.address || footerContact.address || "",
         hours: info.hours || footerContact.hours || ""
     };
 
@@ -207,7 +228,9 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
                                     <Icon name="Phone" className="w-5 h-5" />
                                 </div>
                                 <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Phone</h3>
-                                <p className="text-foreground font-medium">{finalInfo.phone}</p>
+                                <a href={`tel:${stripHtml(finalInfo.phone).replace(/[^\d+]/g, "")}`} className="text-foreground font-medium hover:text-primary transition-colors">
+                                    {stripHtml(finalInfo.phone)}
+                                </a>
                             </div>
                         )}
                         {finalInfo.email && (
@@ -216,7 +239,9 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
                                     <Icon name="Mail" className="w-5 h-5" />
                                 </div>
                                 <h3 className="text-xs font-bold uppercase tracking-widest text-muted-foreground mb-1">Email</h3>
-                                <p className="text-foreground font-medium break-all">{finalInfo.email}</p>
+                                <a href={`mailto:${stripHtml(finalInfo.email)}`} className="text-foreground font-medium break-all hover:text-primary transition-colors">
+                                    {stripHtml(finalInfo.email)}
+                                </a>
                             </div>
                         )}
                         {finalInfo.address && (

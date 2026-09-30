@@ -1,6 +1,5 @@
 export const revalidate = 60; // Cache for 1 minute, updated via revalidatePath in admin panel
 
-import HomeTemplate from "@/components/templates/HomeTemplate";
 import { Metadata } from "next";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
@@ -241,7 +240,17 @@ export default async function HomePage() {
   return (
     <>
       {schemaScripts}
-      <HomeTemplate pageData={{ ...(homePage || {}), content: { ...(content?.data || {}), ...(homePage?.content || {}) } }} />
+      <TemplateWrapper
+        templateName="home"
+        pageData={{
+          ...(homePage || {}),
+          content: {
+            ...(content?.data || {}),
+            ...(homePage?.content || {})
+          }
+        }}
+        params={Promise.resolve({ slug: ['/'] })}
+      />
     </>
   );
 }

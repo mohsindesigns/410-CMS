@@ -12,7 +12,8 @@ import CtaBanner from '@/components/sections/CtaBanner';
 
 export const revalidate = 60; // Cache for 1 minute
 
-import { getRobotsMetadata, buildPageTitle } from "@/lib/seo";
+import { getRobotsMetadata, buildPageTitle, getAbsoluteUrl } from "@/lib/seo";
+import { generateSchema } from '@/lib/schema-generator';
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
@@ -20,7 +21,7 @@ export async function generateMetadata(): Promise<Metadata> {
     SiteContent.findOne({ key: 'complete_data' }).lean() as any,
     Page.findOne({ slug: 'services' }).lean() as any
   ]);
-  
+
   const settings = content?.data?.settings;
   const servicesData = content?.data?.services || {};
   const seo = {
@@ -28,9 +29,12 @@ export async function generateMetadata(): Promise<Metadata> {
     ...(pageDoc?.seo || {})
   };
   const pageUrl = `${BASE_URL}/services/`;
+  const title = seo.metaTitle || pageDoc?.title || "Our Services";
+  const ogImage = getAbsoluteUrl(seo.ogImage || seo.featuredImage) || `${BASE_URL}/logo.png`;
+  const twitterImage = getAbsoluteUrl(seo.twitterImage || seo.ogImage || seo.featuredImage) || `${BASE_URL}/logo.png`;
 
   return {
-    title: buildPageTitle(seo.metaTitle || pageDoc?.title || "Our Services"),
+    title: buildPageTitle(title),
     description: seo.metaDescription || servicesData?.description || "Discover our range of premium recovery and performance muscle therapies.",
     alternates: {
       canonical: seo.canonicalUrl || pageUrl,
@@ -39,14 +43,17 @@ export async function generateMetadata(): Promise<Metadata> {
       title: seo.ogTitle || seo.metaTitle || pageDoc?.title || "Our Services",
       description: seo.ogDescription || seo.metaDescription || servicesData?.description,
       url: pageUrl,
+      siteName: "410 Muscle Therapy",
       type: 'website',
-      images: [seo.ogImage || seo.featuredImage].filter(Boolean) as string[],
+      images: [{ url: ogImage, width: 1200, height: 630, alt: title }],
     },
     twitter: {
       card: 'summary_large_image',
-      title: seo.twitterTitle || seo.ogTitle || seo.metaTitle,
-      description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
-      images: [seo.twitterImage || seo.ogImage || seo.featuredImage].filter(Boolean) as string[],
+      title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || title,
+      description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || servicesData?.description,
+      images: [twitterImage],
+      site: "@410MuscleTherapy",
+      creator: "@410MuscleTherapy",
     },
     robots: getRobotsMetadata(settings, seo)
   };
@@ -72,8 +79,21 @@ export default async function ServicesPage() {
     }
   };
 
+  const seo = { ...(globalData?.services?.seo || {}), ...(pageDoc?.seo || {}) };
+  const schema = generateSchema({
+    title: seo.metaTitle || pageDoc?.title || "Our Services",
+    description: seo.metaDescription || globalData?.services?.description || "Discover our range of premium recovery and performance muscle therapies.",
+    slug: "/services",
+    type: "CollectionPage"
+  });
+
   return (
     <ContentProvider initialData={mergedData}>
+      <script
+        id="json-ld-schema"
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+      />
       <main>
         <ServicesHeroSection />
         <WhyChooseUsSection />

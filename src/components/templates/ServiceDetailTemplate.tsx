@@ -13,11 +13,17 @@ import {
 } from 'lucide-react';
 import { useContent } from "../../hooks/useContent";
 import ContactFaqSection from '../QAForm';
+import DOMPurify from 'dompurify';
 
 /** Convert markdown links [Label](url) and HTML links to styled clickable anchors */
 function formatRichText(content: string | undefined | null, isDark: boolean = false): string {
   if (!content) return "";
   let text = String(content);
+
+  // Decide BEFORE we inject our own <a> tags below, otherwise a plain-text
+  // field that merely contains one markdown link gets misdetected as
+  // "already HTML" and silently loses all its newline-based paragraph breaks.
+  const alreadyHasHtml = /<[a-z][\s\S]*>/i.test(text);
 
   // If content has markdown links [Text](url)
   text = text.replace(/\[([^\]]+)\]\(([^)]+)\)/g, (_match, label, url) => {
@@ -37,12 +43,24 @@ function formatRichText(content: string | undefined | null, isDark: boolean = fa
     .replace(/&#39;/g, "'")
     .replace(/&quot;/g, '"');
 
-  // If text doesn't contain HTML tags, preserve newlines as line breaks
-  if (!/<[a-z][\s\S]*>/i.test(text)) {
+  // If the original text didn't contain HTML tags, preserve newlines as line breaks
+  if (!alreadyHasHtml) {
     text = text.replace(/\n\n/g, '<br/><br/>').replace(/\n/g, '<br/>');
   }
 
-  return text.trim();
+  text = text.trim();
+
+  // Sanitize before this gets injected via dangerouslySetInnerHTML — several
+  // of these CMS fields are plain <textarea> inputs, not a locked-down rich
+  // editor, so raw HTML/script content must not pass through unescaped.
+  if (typeof window !== "undefined") {
+    const purify = (DOMPurify as any).default || DOMPurify;
+    if (purify && typeof purify.sanitize === "function") {
+      text = purify.sanitize(text);
+    }
+  }
+
+  return text;
 }
 
 /** Plain text helper for headings/badges */

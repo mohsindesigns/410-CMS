@@ -28,8 +28,15 @@ const ParallaxLayer = ({ children, speed = 0.1, className = "", sectionRef }: an
 
 export default function CareersTemplate({ pageData, params }: { pageData?: any, params?: any }) {
   const { careers: globalCareersData } = useContent();
-  // Prefer page-specific content (saved in editor) over global fallback
-  const careersData = pageData?.content?.careers || globalCareersData;
+  // Prefer page-specific content only when it's actually meaningfully filled
+  // in (has roles or a headline) — otherwise an empty/near-empty page-level
+  // object would silently override a fully-configured global careers config.
+  const pageCareersData = pageData?.content?.careers;
+  const hasPageCareersContent = !!(
+    pageCareersData &&
+    ((Array.isArray(pageCareersData.roles) && pageCareersData.roles.length > 0) || pageCareersData.section?.headline)
+  );
+  const careersData = hasPageCareersContent ? pageCareersData : globalCareersData;
   const [fileName, setFileName] = useState<string | null>(null);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSuccess, setIsSuccess] = useState(false);
@@ -114,8 +121,14 @@ ${message}
               <div className="w-8 h-[2px] bg-gradient-to-r from-gold to-gold/40" />
             </motion.div>
             <motion.h1 initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ delay: 0.1 }} className="text-4xl md:text-7xl font-light text-slate-900 mb-6 leading-tight">
-              {careersData?.section?.headline?.split('with')[0]} <br />
-              <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-gold-dark to-slate-900">{careersData?.section?.headline?.split('with')[1]}</span>
+              {careersData?.section?.headline?.includes('with') ? (
+                <>
+                  {careersData.section.headline.split('with')[0]} <br />
+                  <span className="font-semibold text-transparent bg-clip-text bg-gradient-to-r from-gold-dark to-slate-900">{careersData.section.headline.split('with').slice(1).join('with')}</span>
+                </>
+              ) : (
+                careersData?.section?.headline || "Join Our Team"
+              )}
             </motion.h1>
             <div className="text-slate-600 text-lg md:text-xl font-light max-w-2xl mx-auto px-4">
               <RichTextRenderer content={careersData?.section?.description} />
@@ -149,8 +162,12 @@ ${message}
                   </div>
                   <div className="space-y-3">
                     <label className="text-xs font-bold tracking-widest uppercase text-slate-500 flex items-center gap-2"><Briefcase className="w-4 h-4 text-gold-dark" />{careersData?.labels?.role}</label>
-                    <select name="role" required defaultValue="" className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-gold-dark outline-none transition-all appearance-none">
-                      <option value="" disabled>{careersData?.labels?.roleSelector || "Select a Position"}</option>
+                    <select name="role" required={(careersData?.roles?.length || 0) > 0} defaultValue="" className="w-full px-5 py-4 bg-slate-50/50 border rounded-xl focus:ring-2 focus:ring-gold-dark outline-none transition-all appearance-none">
+                      <option value="">
+                        {(careersData?.roles?.length || 0) > 0
+                          ? (careersData?.labels?.roleSelector || "Select a Position")
+                          : "General Application"}
+                      </option>
                       {careersData?.roles?.map((role: any, index: number) => <option key={index} value={role.value}>{role.label}</option>)}
                     </select>
                   </div>

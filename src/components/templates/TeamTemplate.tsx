@@ -80,13 +80,15 @@ const ParallaxLayer = ({ children, speed = 0.1, className = "", sectionRef }: an
   );
 };
 
+const TEAM_FALLBACK_IMAGE = "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
+
 const TeamPortrait = ({ image, title, badge1, badge2, alignRight = false }: any) => {
   const [isHovered, setIsHovered] = useState(false);
   const [imageError, setImageError] = useState(false);
   const ref = useRef<any>(null);
   const inView = useInView(ref, { once: true, margin: "-50px" });
 
-  const fallbackImage = "https://images.unsplash.com/photo-1560250097-0b93528c311a?ixlib=rb-4.0.3&auto=format&fit=crop&w=800&q=80";
+  const fallbackImage = TEAM_FALLBACK_IMAGE;
 
   return (
     <motion.div ref={ref} initial={{ opacity: 0, y: 40 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }} className={`relative group w-full ${alignRight ? 'lg:ml-auto' : ''}`} onMouseEnter={() => setIsHovered(true)} onMouseLeave={() => setIsHovered(false)}>
@@ -135,8 +137,6 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
     return () => ctx.revert();
   }, [isClient]);
 
-  if (!isClient) return null;
-
   return (
     <main className="bg-white">
       <section ref={sectionRef} className="relative py-14 md:py-18 lg:py-20 overflow-hidden">
@@ -162,13 +162,15 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
                   )}
                   {teamData.section.headlineSuffix ? ` ${teamData.section.headlineSuffix}` : ""}
                 </>
-              ) : (
+              ) : teamData?.section?.headline?.includes('with') ? (
                 <>
-                  {teamData?.section?.headline?.split('with')[0]} <br />
+                  {teamData.section.headline.split('with')[0]} <br />
                   <span className="font-bold text-transparent bg-clip-text bg-gradient-to-r from-gold-dark to-slate-900">
-                    {teamData?.section?.headline?.split('with')[1]}
+                    {teamData.section.headline.split('with').slice(1).join('with')}
                   </span>
                 </>
+              ) : (
+                teamData?.section?.headline || "Meet Our Team"
               )}
             </h1>
             <div className="text-slate-500 text-[13px] min-[350px]:text-sm sm:text-lg font-light max-w-2xl mx-auto px-4 leading-relaxed">
@@ -188,7 +190,7 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
                       </h3>
                       <div className="flex items-center gap-3">
                         {member.linkedin && (
-                          <a href={member.linkedin} target="_blank" rel="noopener noreferrer" className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-gold-dark hover:border-gold/30 transition-all">
+                          <a href={/^https?:\/\//i.test(member.linkedin) ? member.linkedin : `https://${member.linkedin}`} target="_blank" rel="noopener noreferrer" className="w-9 h-9 sm:w-11 sm:h-11 rounded-full bg-slate-50 border border-slate-100 flex items-center justify-center text-slate-400 hover:text-gold-dark hover:border-gold/30 transition-all">
                             <Icons.Linkedin />
                           </a>
                         )}
@@ -213,8 +215,8 @@ export default function TeamTemplate({ pageData, params }: { pageData?: any, par
                       member.image ? (
                         (member.image.startsWith('/') || member.image.startsWith('http'))
                           ? member.image
-                          : (Images[member.image as keyof typeof Images] || Images.BrandonAnderson)
-                      ) : Images.BrandonAnderson
+                          : (Images[member.image as keyof typeof Images] || TEAM_FALLBACK_IMAGE)
+                      ) : TEAM_FALLBACK_IMAGE
                     }
                     title={`${member.name} - ${member.role}`}
                     badge1={member.badge1}

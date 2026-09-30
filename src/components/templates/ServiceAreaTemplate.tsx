@@ -143,7 +143,11 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
     title: "Our 4-Step Clinical Recovery Process"
   };
 
-  const mapData = content.map || {
+  // Merge (not replace-if-absent) with defaults: a saved content.map/materials
+  // object that's missing an individual field (e.g. bullet3Text, or items) must
+  // not leave that field undefined — several renders below call .replace()/.map()
+  // on these fields with no null guard.
+  const mapData = {
     headline: "Our Coverage Area",
     title: "Serving Greater Maryland",
     description: "Centrally located in Timonium, Maryland, providing elite sports recovery, fascial stretch therapy, and clinical bodywork across Baltimore and surrounding counties.",
@@ -153,18 +157,21 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
     bullet2Title: "Clinic Hours",
     bullet2Text: "Sun - Sat: 8:00 AM - 7:00 PM (By Appointment)",
     bullet3Title: "Direct Contact Hotline",
-    bullet3Text: "(410) 555-0199"
+    bullet3Text: "(410) 555-0199",
+    ...(content.map || {})
   };
 
-  const materialsData = content.materials || {
+  const DEFAULT_MATERIALS_ITEMS = [
+    { title: "Sports Massage", description: "Pre-event and post-event athletic bodywork targeting high-demand muscle groups." },
+    { title: "Fascial Stretch Therapy", description: "Table-based assisted stretching to decompress joints and lengthen fascial nets." },
+    { title: "Cupping Therapy", description: "Decompressive negative pressure to stimulate blood flow and lymphatic drainage." },
+    { title: "Corrective Movement", description: "Functional neuromuscular training to eliminate compensatory movement patterns." }
+  ];
+  const materialsData = {
     headline: "Clinical Modalities",
     title: "Advanced Therapies We Provide",
-    items: [
-      { title: "Sports Massage", description: "Pre-event and post-event athletic bodywork targeting high-demand muscle groups." },
-      { title: "Fascial Stretch Therapy", description: "Table-based assisted stretching to decompress joints and lengthen fascial nets." },
-      { title: "Cupping Therapy", description: "Decompressive negative pressure to stimulate blood flow and lymphatic drainage." },
-      { title: "Corrective Movement", description: "Functional neuromuscular training to eliminate compensatory movement patterns." }
-    ]
+    ...(content.materials || {}),
+    items: content.materials?.items?.length ? content.materials.items : DEFAULT_MATERIALS_ITEMS
   };
 
   const servicesSection = content.servicesSection || {
@@ -177,14 +184,16 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
     ]
   };
 
-  const whyChooseData = content.whyChoose || {
+  const DEFAULT_WHY_CHOOSE_ITEMS = [
+    { title: "Licensed & Certified Specialists", description: "Advanced certifications in orthopedic massage, neuromuscular therapy, and assisted stretching." },
+    { title: "Individualized Protocols", description: "Every session is strictly customized to your specific biomechanics, sport, and recovery goals." },
+    { title: "Proven Track Record", description: "Trusted by collegiate athletes, fitness competitors, and active adults across Maryland." }
+  ];
+  const whyChooseData = {
     headline: "Why Choose Us",
     title: "Elite Clinical Performance Standards",
-    items: [
-      { title: "Licensed & Certified Specialists", description: "Advanced certifications in orthopedic massage, neuromuscular therapy, and assisted stretching." },
-      { title: "Individualized Protocols", description: "Every session is strictly customized to your specific biomechanics, sport, and recovery goals." },
-      { title: "Proven Track Record", description: "Trusted by collegiate athletes, fitness competitors, and active adults across Maryland." }
-    ]
+    ...(content.whyChoose || {}),
+    items: content.whyChoose?.items?.length ? content.whyChoose.items : DEFAULT_WHY_CHOOSE_ITEMS
   };
 
   const overviewData = content.overview || {
@@ -518,12 +527,30 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
       className="group"
     >
       <div className="relative overflow-hidden rounded-2xl border border-slate-200 bg-white px-5 py-4 text-center transition-all duration-300 hover:-translate-y-1 hover:border-primary/30 hover:shadow-lg">
-        
+
         <div className="absolute inset-x-0 top-0 h-1 bg-gradient-to-r from-primary/80 to-primary opacity-0 transition-opacity duration-300 group-hover:opacity-100" />
-        
+
         <h3 className="font-heading font-bold text-slate-900 text-base tracking-tight">
           {region.name}
         </h3>
+
+        {Array.isArray(region.cities) && region.cities.length > 0 && (
+          <p className="mt-2 text-[11px] leading-snug text-slate-500 line-clamp-2">
+            {region.cities.join(', ')}
+          </p>
+        )}
+
+        {region.description && (
+          <p className="mt-1.5 text-[11px] leading-snug text-slate-400 line-clamp-2">
+            {region.description}
+          </p>
+        )}
+
+        {Array.isArray(region.zipcodes) && region.zipcodes.length > 0 && (
+          <p className="mt-1.5 text-[10px] font-mono text-slate-400">
+            {region.zipcodes.join(' · ')}
+          </p>
+        )}
 
       </div>
     </motion.div>

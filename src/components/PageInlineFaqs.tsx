@@ -661,6 +661,14 @@ export default function PageInlineFaqs({
 
   const validFaqs = items.filter((item: any) => item && item.question && item.answer);
 
+  // When real FAQ items exist, src/app/[...slug]/page.tsx already auto-generates a
+  // matching FAQPage JSON-LD block from those same items via schema-generator.ts.
+  // Emitting the admin's separately-pasted bulk schema on top of that risks two
+  // FAQPage scripts drifting out of sync (e.g. after items are edited but the
+  // pasted markup isn't). Only use the pasted schema when there are no real items
+  // to auto-generate from — i.e. it's the sole source of truth for that page.
+  const shouldEmitBulkSchema = bulkSchemaObj && validFaqs.length === 0;
+
   if (validFaqs.length === 0 && !bulkSchemaObj) return null;
 
   // Collect valid custom schema markups from each FAQ item (legacy fallback)
@@ -677,7 +685,7 @@ export default function PageInlineFaqs({
 
   return (
     <>
-      {bulkSchemaObj && (
+      {shouldEmitBulkSchema && (
         <Script
           id="bulk-faq-schema"
           type="application/ld+json"

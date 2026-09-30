@@ -1,4 +1,16 @@
 import type { Metadata } from 'next';
+import { BASE_URL } from './constants';
+
+/**
+ * Converts a possibly-relative CMS image/URL path into an absolute URL, so
+ * social-preview crawlers (which can't resolve relative paths) always get a
+ * working image.
+ */
+export function getAbsoluteUrl(path: string | undefined): string | undefined {
+  if (!path) return undefined;
+  if (path.startsWith('http')) return path;
+  return `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
+}
 
 /**
  * Returns a page's title exactly as given, with no brand name appended.
