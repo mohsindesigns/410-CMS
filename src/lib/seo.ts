@@ -3,19 +3,24 @@ import type { Metadata } from 'next';
 const BRAND_NAME = "410 Muscle Therapy";
 
 /**
- * Builds a Metadata `title` value that lets the root layout's title template
- * ("%s | 410 Muscle Therapy") append the brand name automatically. If the
- * given title already contains the brand name (admin typed it manually, or
- * it's a hardcoded fallback that already has it), it's returned as
- * `{ absolute: ... }` instead so the template doesn't double it up.
+ * Builds a Metadata `title` value with the brand name appended, unless it's
+ * already present (admin typed it manually, or a hardcoded fallback already
+ * has it) — in which case it's left as-is to avoid a duplicate.
+ *
+ * NOTE: this builds the final string directly instead of relying on Next.js's
+ * `title.template` (root layout `title: { template: "%s | ..." }`). Verified
+ * by build-time debug logging that the template value and page title were
+ * both correct going into Next's metadata resolution, but the template still
+ * wasn't applied to the rendered `<title>` in production builds (Next.js
+ * 16.2.1 with Turbopack) — so it can't be trusted here.
  */
 export function buildPageTitle(rawTitle: string | undefined | null): Metadata['title'] {
   const title = (rawTitle || "").trim();
-  if (!title) return undefined;
+  if (!title) return { absolute: BRAND_NAME };
   if (title.toLowerCase().includes(BRAND_NAME.toLowerCase())) {
     return { absolute: title };
   }
-  return title;
+  return { absolute: `${title} | ${BRAND_NAME}` };
 }
 
 /**
