@@ -14,8 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const pageUrl = `${BASE_URL}/terms`;
 
   return {
-    title: seo.metaTitle || "Terms and Conditions",
-    description: seo.metaDescription,
+    title: seo.metaTitle || "Terms & Conditions | 410 Muscle Therapy",
+    description: seo.metaDescription || "Read the Terms & Conditions for 410 Muscle Therapy, including therapy appointments, payments, cancellations, merchandise, shipping SMS terms and legal policies.",
     alternates: {
       canonical: seo.canonicalUrl || pageUrl,
     },

@@ -14,8 +14,8 @@ export async function generateMetadata(): Promise<Metadata> {
   const pageUrl = `${BASE_URL}/privacy`;
 
   return {
-    title: seo.metaTitle || "Privacy Policy",
-    description: seo.metaDescription,
+    title: seo.metaTitle || "Privacy Policy | 410 Muscle Therapy",
+    description: seo.metaDescription || "Learn how 410 Muscle Therapy collects, uses, stores, and protects your personal information, including cookies, orders, email communications, and SMS privacy.",
     alternates: {
       canonical: seo.canonicalUrl || pageUrl,
     },
