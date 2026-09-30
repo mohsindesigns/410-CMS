@@ -27,7 +27,7 @@ import ShareButton from "@/components/blog/ShareButton";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import { BASE_URL } from "@/lib/constants";
 import { makeLinksDoFollow, cleanMojibake } from "@/lib/utils";
-import { getRobotsMetadata } from "@/lib/seo";
+import { getRobotsMetadata, buildPageTitle } from "@/lib/seo";
 import { normalizeBlogImage } from "@/lib/blogImage";
 
 export const revalidate = 60; // Cache for 1 minute, updated via revalidatePath in admin panel
@@ -49,10 +49,10 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     SiteContent.findOne({ key: "complete_data" }).lean() as any
   ]);
 
-  if (!post) return { title: "Article Not Found | 410 Muscle Therapy" };
+  if (!post) return { title: buildPageTitle("Article Not Found") };
 
   const settings = contentDoc?.data?.settings;
-  const pageTitle = post.seo?.metaTitle || `${post.title} | 410 Muscle Therapy`;
+  const pageTitle = post.seo?.metaTitle || post.title;
   const pageDesc =
     post.seo?.metaDescription ||
     post.excerpt ||
@@ -64,9 +64,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   }
 
   return {
-    title: {
-      absolute: pageTitle
-    },
+    title: buildPageTitle(pageTitle),
     description: pageDesc,
     alternates: {
       canonical: canonicalUrl

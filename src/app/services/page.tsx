@@ -12,7 +12,7 @@ import CtaBanner from '@/components/sections/CtaBanner';
 
 export const revalidate = 60; // Cache for 1 minute
 
-import { getRobotsMetadata } from "@/lib/seo";
+import { getRobotsMetadata, buildPageTitle } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
@@ -30,9 +30,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const pageUrl = `${BASE_URL}/services/`;
 
   return {
-    title: {
-      absolute: seo.metaTitle || pageDoc?.title || "Our Services"
-    },
+    title: buildPageTitle(seo.metaTitle || pageDoc?.title || "Our Services"),
     description: seo.metaDescription || servicesData?.description || "Discover our range of premium recovery and performance muscle therapies.",
     alternates: {
       canonical: seo.canonicalUrl || pageUrl,

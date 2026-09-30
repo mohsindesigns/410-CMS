@@ -11,7 +11,7 @@ export const revalidate = 60; // Cache for 1 minute
 import SiteContent from '@/models/Content';
 import Page from '@/models/Page';
 import Image from 'next/image';
-import { getRobotsMetadata } from "@/lib/seo";
+import { getRobotsMetadata, buildPageTitle } from "@/lib/seo";
 import { normalizeBlogImage } from '@/lib/blogImage';
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -38,9 +38,7 @@ export async function generateMetadata(): Promise<Metadata> {
   }
 
   return {
-    title: {
-      absolute: seo.metaTitle || pageDoc?.title || "Our Blogs | 410 Muscle Therapy"
-    },
+    title: buildPageTitle(seo.metaTitle || pageDoc?.title || "Our Blogs"),
     description: seo.metaDescription || blogData?.hero?.description || "Explore our latest articles, insights, and clinical recovery tips.",
     alternates: {
       canonical: canonicalUrl,

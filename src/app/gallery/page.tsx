@@ -7,7 +7,7 @@ import { generateSchema } from "@/lib/schema-generator";
 import { BASE_URL } from "@/lib/constants";
 
 
-import { getRobotsMetadata } from "@/lib/seo";
+import { getRobotsMetadata, buildPageTitle } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
@@ -40,9 +40,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase: new URL(BASE_URL),
-    title: {
-      absolute: metaTitle
-    },
+    title: buildPageTitle(metaTitle),
     description: metaDescription,
     alternates: {
       canonical: seo.canonicalUrl || pageUrl,

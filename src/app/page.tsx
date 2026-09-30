@@ -9,7 +9,7 @@ import { getHomepageSchemas } from "@/lib/schema-generator";
 import { TemplateWrapper } from "@/components/templates/TemplateRegistry";
 import ServiceDetailTemplate from "@/components/templates/ServiceDetailTemplate";
 import { BASE_URL } from "@/lib/constants";
-import { getRobotsMetadata } from "@/lib/seo";
+import { getRobotsMetadata, buildPageTitle } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
@@ -51,7 +51,7 @@ export async function generateMetadata(): Promise<Metadata> {
       const metaDescription = seo.metaDescription || page.content?.hero?.description || settings?.siteDescription || "";
       return {
         ...metadata,
-        title: { absolute: seo.metaTitle || page.title },
+        title: buildPageTitle(seo.metaTitle || page.title),
         description: metaDescription,
         alternates: {
           canonical: seo.canonicalUrl || pageUrl,
@@ -79,7 +79,7 @@ export async function generateMetadata(): Promise<Metadata> {
       const metaDescription = seo.metaDescription || service.description || "";
       return {
         ...metadata,
-        title: { absolute: seo.metaTitle || service.title },
+        title: buildPageTitle(seo.metaTitle || service.title),
         description: metaDescription,
         alternates: {
           canonical: seo.canonicalUrl || pageUrl,
@@ -122,9 +122,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     ...metadata,
-    title: {
-      absolute: metaTitle,
-    },
+    title: buildPageTitle(metaTitle),
     description: metaDescription,
     robots: getRobotsMetadata(settings, seo),
     alternates: {

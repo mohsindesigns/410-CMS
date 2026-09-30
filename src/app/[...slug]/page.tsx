@@ -23,7 +23,7 @@ function getAbsoluteUrl(path: string | undefined) {
   return `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 }
 
-import { getRobotsMetadata } from "@/lib/seo";
+import { getRobotsMetadata, buildPageTitle } from "@/lib/seo";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
     const twitterImage = getAbsoluteUrl(seo.twitterImage || seo.ogImage || seo.featuredImage || service.image || service.heroImage);
 
     return {
-      title: { absolute: title },
+      title: buildPageTitle(title),
       description,
       alternates: {
         canonical: seo.canonicalUrl || pageUrl,
@@ -88,9 +88,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   const pageUrl = `${BASE_URL}/${slug}/`;
 
   return {
-    title: {
-      absolute: seo.metaTitle || page.title
-    },
+    title: buildPageTitle(seo.metaTitle || page.title),
     description: seo.metaDescription,
     alternates: {
       canonical: seo.canonicalUrl || pageUrl,
