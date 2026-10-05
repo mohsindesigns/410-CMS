@@ -261,7 +261,7 @@ export default async function BlogPostPage({ params }: Props) {
     }
   }
 
-  let cleanAvatar = cleanName === "Antoine Lyles" ? "/images/theraphist.jpeg" : "";
+  let cleanAvatar = "";
   if (rawAuthor) {
     const candidate = rawAuthor.image || rawAuthor.avatar;
     if (candidate && typeof candidate === "string" && (candidate.startsWith("http") || candidate.startsWith("/"))) {
@@ -512,12 +512,8 @@ export default async function BlogPostPage({ params }: Props) {
 
             {/* Author Byline / Bio Box */}
             <div className="mt-12 p-6 sm:p-7 rounded-2xl bg-dark-2/90 border border-white/10 flex items-center gap-4 sm:gap-5 shadow-xl">
-              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-gold/60 shrink-0 bg-gold/10 flex items-center justify-center">
-                {authorInfo.avatar ? (
-                  <img src={authorInfo.avatar} alt={authorInfo.name} className="w-full h-full object-cover" />
-                ) : (
-                  <User className="w-7 h-7 text-gold" />
-                )}
+              <div className="w-12 h-12 rounded-full border border-gold/30 shrink-0 bg-gold/10 flex items-center justify-center">
+                <User className="w-6 h-6 text-gold" />
               </div>
               <div className="min-w-0">
                 <span className="text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-widest text-gold block mb-0.5">Written By</span>
