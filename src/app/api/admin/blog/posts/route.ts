@@ -1,4 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { revalidatePath } from 'next/cache';
+import mongoose from 'mongoose';
 import connectToDatabase from '@/lib/mongodb';
 import Post from '@/models/Post';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
@@ -37,6 +39,7 @@ export async function GET(req: NextRequest) {
     const posts = await Post.find(query)
       .populate('categories', 'name')
       .populate('tags', 'name')
+      .populate('author', 'username email name')
       .sort({ createdAt: -1 });
 
     return NextResponse.json(posts);
@@ -55,9 +58,15 @@ export async function POST(req: NextRequest) {
     const body = await req.json();
     await connectToDatabase();
 
+    let authorId = (session as any).userId;
+    if (body.author && mongoose.Types.ObjectId.isValid(body.author)) {
+      authorId = body.author;
+    }
+
     const post = await Post.create({
       ...body,
-      author: (session as any).userId
+      author: authorId,
+      authorName: typeof body.authorName === 'string' ? body.authorName.trim() : ''
     });
 
     await recordActivity({
@@ -69,6 +78,15 @@ export async function POST(req: NextRequest) {
       details: { title: post.title },
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
     });
+
+    try {
+      revalidatePath('/blogs');
+      revalidatePath('/blog');
+      if (post.slug) {
+        revalidatePath(`/blogs/${post.slug}`);
+        revalidatePath(`/blog/${post.slug}`);
+      }
+    } catch {}
 
     return NextResponse.json(post);
   } catch (error: any) {

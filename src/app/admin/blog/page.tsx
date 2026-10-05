@@ -163,7 +163,9 @@ export default function BlogPosts() {
         body: JSON.stringify({
           title: editingPost.title,
           slug: editingPost.slug,
-          status: editingPost.status
+          status: editingPost.status,
+          authorName: editingPost.authorName || "",
+          author: typeof editingPost.author === 'object' ? editingPost.author?._id : editingPost.author
         })
       });
       if (res.ok) {
@@ -305,7 +307,7 @@ export default function BlogPosts() {
                     </div>
                   </div>
                 </td>
-                <td className="px-3 py-4 text-[#2271b1]">{post.author?.username || 'admin'}</td>
+                <td className="px-3 py-4 text-[#2271b1]">{post.authorName || post.author?.name || post.author?.username || 'admin'}</td>
                 <td className="px-3 py-4 text-[#2271b1]">
                   {post.categories?.map((c: any) => c.name).join(', ') || '—'}
                 </td>
@@ -353,8 +355,18 @@ export default function BlogPosts() {
                   />
                 </div>
               </div>
-              <div className="flex items-center gap-4">
-                <div className="space-y-1 w-48">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div className="space-y-1">
+                  <label className="block text-[12px] font-semibold text-[#1d2327]">Author Display Name</label>
+                  <input 
+                    type="text" 
+                    placeholder="e.g. Antoine Lyles"
+                    value={editingPost.authorName || ""}
+                    onChange={(e) => setEditingPost({ ...editingPost, authorName: e.target.value })}
+                    className="w-full border border-[#8c8f94] px-3 py-1.5 text-[13px] outline-none focus:border-[#2271b1]"
+                  />
+                </div>
+                <div className="space-y-1">
                   <label className="block text-[12px] font-semibold text-[#1d2327]">Status</label>
                   <select 
                     value={editingPost.status}

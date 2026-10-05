@@ -183,10 +183,16 @@ export default async function BlogsIndexPage() {
                   <p className="text-white/60 text-[13.5px] leading-relaxed mb-6 flex-grow">
                     {cleanExcerpt}
                   </p>
-                  <div
-                    className="flex items-center gap-2 text-gold text-[12px] font-bold tracking-wide uppercase group-hover:gap-3 transition-all duration-200 mt-auto"
-                  >
-                    {ctaReadMore} <ArrowRight size={14} />
+                  <div className="flex items-center justify-between text-xs border-t border-white/5 pt-4 mt-auto">
+                    <span className="flex items-center gap-1.5 font-mono text-[11px] text-white/60">
+                      <User size={12} className="text-gold" />
+                      {post.authorName || post.author?.name || post.author?.username || "Antoine Lyles"}
+                    </span>
+                    <div
+                      className="flex items-center gap-1.5 text-gold text-[12px] font-bold tracking-wide uppercase group-hover:gap-2.5 transition-all duration-200"
+                    >
+                      {ctaReadMore} <ArrowRight size={13} />
+                    </div>
                   </div>
                 </div>
               </Link>

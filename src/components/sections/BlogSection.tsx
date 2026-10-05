@@ -15,6 +15,7 @@ interface BlogPost {
   excerpt?: string;
   publishedAt?: string;
   author?: string | { name: string };
+  authorName?: string;
   categories?: string[];
   tags?: string[];
   category?: string;

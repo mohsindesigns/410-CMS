@@ -7,7 +7,7 @@ import {
   Image as ImageIcon, Tag, Folder,
   ChevronRight, ArrowLeft, ExternalLink, Globe,
   CheckCircle2, AlertCircle, BarChart3, Search,
-  Plus, Trash2, CircleHelp
+  Plus, Trash2, CircleHelp, User
 } from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
@@ -36,6 +36,8 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
     excerpt: "",
     featuredImage: "",
     location: "",
+    author: "",
+    authorName: "",
     status: "draft",
     categories: [],
     tags: [],
@@ -56,6 +58,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
 
   const [categories, setCategories] = useState<any[]>([]);
   const [tags, setTags] = useState<any[]>([]);
+  const [authors, setAuthors] = useState<any[]>([]);
   const [activeTab, setActiveTab] = useState<'content' | 'seo' | 'faq'>('content');
   const [showMediaSelector, setShowMediaSelector] = useState(false);
 
@@ -65,13 +68,32 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
     }
     fetchCategories();
     fetchTags();
+    fetchAuthors();
   }, [id]);
+
+  const fetchAuthors = async () => {
+    try {
+      const res = await fetch('/api/admin/blog/authors');
+      const data = await res.json();
+      if (res.ok && Array.isArray(data)) {
+        setAuthors(data);
+      }
+    } catch (err) {
+      console.error("Failed to fetch authors:", err);
+    }
+  };
 
   const fetchPost = async () => {
     try {
       const res = await fetch(`/api/admin/blog/posts/${id}`);
       const data = await res.json();
-      if (res.ok) setPost(data);
+      if (res.ok) {
+        setPost({
+          ...data,
+          author: typeof data.author === 'object' ? (data.author?._id || "") : (data.author || ""),
+          authorName: data.authorName || (typeof data.author === 'object' ? (data.author?.name || data.author?.username || "") : "")
+        });
+      }
     } catch (err) {
       console.error("Failed to fetch post:", err);
     } finally {
@@ -410,6 +432,58 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
               >
                 {saving ? "..." : id ? "Update" : "Publish"}
               </button>
+            </div>
+          </div>
+
+          {/* Author Box */}
+          <div className="bg-white border border-[#c3c4c7] shadow-sm rounded-sm">
+            <div className="px-3 py-2 border-b border-[#c3c4c7] bg-[#f6f7f7]">
+              <h2 className="text-[13px] font-semibold text-[#1d2327] flex items-center gap-1.5">
+                <User className="w-3.5 h-3.5 text-[#82878c]" /> Author
+              </h2>
+            </div>
+            <div className="p-3 space-y-3">
+              <div className="space-y-1">
+                <label className="text-[11px] font-bold text-[#646970] uppercase tracking-wider block">
+                  Author Name
+                </label>
+                <input
+                  type="text"
+                  value={post.authorName || ""}
+                  onChange={(e) => setPost({ ...post, authorName: e.target.value })}
+                  placeholder="e.g. Antoine Lyles"
+                  className="w-full border border-[#c3c4c7] px-3 py-2 text-[13px] rounded-[3px] outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] bg-white transition-all"
+                />
+                <p className="text-[10px] text-[#646970] leading-tight">Shown as author on the published post.</p>
+              </div>
+
+              {authors.length > 0 && (
+                <div className="space-y-1 pt-2 border-t border-[#f0f0f1]">
+                  <label className="text-[11px] font-bold text-[#646970] uppercase tracking-wider block">
+                    User Account (Optional)
+                  </label>
+                  <select
+                    value={typeof post.author === 'object' ? (post.author?._id || "") : (post.author || "")}
+                    onChange={(e) => {
+                      const selectedId = e.target.value;
+                      const selectedUser = authors.find(u => u._id === selectedId);
+                      setPost({
+                        ...post,
+                        author: selectedId,
+                        authorName: post.authorName ? post.authorName : (selectedUser?.username || "")
+                      });
+                    }}
+                    className="w-full bg-white border border-[#8c8f94] px-2 py-1.5 text-[12px] rounded-[3px] outline-none focus:border-[#2271b1]"
+                  >
+                    <option value="">None / Custom Author</option>
+                    {authors.map((u) => (
+                      <option key={u._id} value={u._id}>
+                        {u.username} {u.role?.name ? `(${u.role.name})` : ''}
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
             </div>
           </div>
 

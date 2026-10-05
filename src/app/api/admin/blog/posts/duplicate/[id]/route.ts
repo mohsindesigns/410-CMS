@@ -29,7 +29,8 @@ export async function POST(
     postObj.title = `${postObj.title} (Copy)`;
     postObj.slug = `${postObj.slug}-copy-${Date.now()}`;
     postObj.status = 'draft';
-    postObj.author = (session as any).userId;
+    postObj.author = sourcePost.author || (session as any).userId;
+    postObj.authorName = sourcePost.authorName || '';
 
     const duplicatedPost = await Post.create(postObj);
 

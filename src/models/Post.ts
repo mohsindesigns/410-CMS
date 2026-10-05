@@ -10,6 +10,7 @@ const PostSchema = new Schema({
   excerpt: { type: String },
   featuredImage: { type: String },
   author: { type: Schema.Types.ObjectId, ref: 'User' },
+  authorName: { type: String, default: '' },
   categories: [{ type: Schema.Types.ObjectId, ref: 'Category' }],
   tags: [{ type: Schema.Types.ObjectId, ref: 'Tag' }],
   location: { type: String, default: '' },

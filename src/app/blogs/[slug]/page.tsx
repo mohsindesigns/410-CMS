@@ -234,18 +234,25 @@ export default async function BlogPostPage({ params }: Props) {
   const featuredImage = normalizeBlogImage(post.featuredImage) || "/images/blog-3.webp";
 
   const rawAuthor = post.author as any;
-  let cleanName = "Antoine Lyles";
-  if (rawAuthor) {
-    if (typeof rawAuthor === "string" && rawAuthor.trim()) {
+  let cleanName = (post.authorName && typeof post.authorName === "string" && post.authorName.trim())
+    ? post.authorName.trim()
+    : "";
+
+  if (!cleanName && rawAuthor) {
+    if (typeof rawAuthor === "string" && rawAuthor.trim() && !rawAuthor.match(/^[0-9a-fA-F]{24}$/)) {
       cleanName = rawAuthor.trim();
     } else if (rawAuthor.name && typeof rawAuthor.name === "string" && rawAuthor.name.trim()) {
       cleanName = rawAuthor.name.trim();
-    } else if (rawAuthor.username && typeof rawAuthor.username === "string" && rawAuthor.username.toLowerCase() !== "admin") {
-      cleanName = rawAuthor.username;
+    } else if (rawAuthor.username && typeof rawAuthor.username === "string" && rawAuthor.username.trim() && rawAuthor.username.toLowerCase() !== "admin") {
+      cleanName = rawAuthor.username.trim();
     }
   }
 
-  let cleanRole = "Founder & Licensed Massage Therapist";
+  if (!cleanName) {
+    cleanName = "Antoine Lyles";
+  }
+
+  let cleanRole = cleanName === "Antoine Lyles" ? "Founder & Licensed Massage Therapist" : "Clinical Contributor";
   if (rawAuthor?.role) {
     if (typeof rawAuthor.role === "object" && rawAuthor.role?.name) {
       cleanRole = String(rawAuthor.role.name);
@@ -254,7 +261,7 @@ export default async function BlogPostPage({ params }: Props) {
     }
   }
 
-  let cleanAvatar = "/images/theraphist.jpeg";
+  let cleanAvatar = cleanName === "Antoine Lyles" ? "/images/theraphist.jpeg" : "";
   if (rawAuthor) {
     const candidate = rawAuthor.image || rawAuthor.avatar;
     if (candidate && typeof candidate === "string" && (candidate.startsWith("http") || candidate.startsWith("/"))) {
@@ -441,6 +448,11 @@ export default async function BlogPostPage({ params }: Props) {
             </span>
 
             <span className="inline-flex items-center gap-1.5 text-white/70 font-mono font-medium">
+              <User className="w-3.5 h-3.5 text-gold" />
+              {authorInfo.name}
+            </span>
+
+            <span className="inline-flex items-center gap-1.5 text-white/70 font-mono font-medium">
               <Calendar className="w-3.5 h-3.5 text-gold" />
               {formattedDate}
             </span>
@@ -497,6 +509,22 @@ export default async function BlogPostPage({ params }: Props) {
               prose-strong:text-white prose-strong:font-bold"
               dangerouslySetInnerHTML={{ __html: processedContent }}
             />
+
+            {/* Author Byline / Bio Box */}
+            <div className="mt-12 p-6 sm:p-7 rounded-2xl bg-dark-2/90 border border-white/10 flex items-center gap-4 sm:gap-5 shadow-xl">
+              <div className="w-14 h-14 sm:w-16 sm:h-16 rounded-full overflow-hidden border-2 border-gold/60 shrink-0 bg-gold/10 flex items-center justify-center">
+                {authorInfo.avatar ? (
+                  <img src={authorInfo.avatar} alt={authorInfo.name} className="w-full h-full object-cover" />
+                ) : (
+                  <User className="w-7 h-7 text-gold" />
+                )}
+              </div>
+              <div className="min-w-0">
+                <span className="text-[10px] sm:text-[11px] font-mono font-bold uppercase tracking-widest text-gold block mb-0.5">Written By</span>
+                <h4 className="text-base sm:text-lg font-bold text-white truncate">{authorInfo.name}</h4>
+                <p className="text-xs text-white/60 mt-0.5">{authorInfo.role}</p>
+              </div>
+            </div>
           </div>
 
           {/* Right: Sticky Table of Contents (Sidebar) */}
