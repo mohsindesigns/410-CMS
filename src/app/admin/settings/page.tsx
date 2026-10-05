@@ -21,6 +21,47 @@ const COMMON_ICONS = [
   "ArrowRight", "ChevronRight", "Search", "Map", "Truck", "HardHat", "Ruler", "Paintbrush"
 ];
 
+const OFFICE_HOURS_DAYS = [
+  { key: "monday", label: "Monday" },
+  { key: "tuesday", label: "Tuesday" },
+  { key: "wednesday", label: "Wednesday" },
+  { key: "thursday", label: "Thursday" },
+  { key: "friday", label: "Friday" },
+  { key: "saturday", label: "Saturday" },
+  { key: "sunday", label: "Sunday" },
+];
+
+const HOURS_RANGE_RE = /^(\d{2}):(\d{2})-(\d{2}):(\d{2})$/;
+
+function OfficeHoursDayRow({ label, value, onChange }: { label: string; value?: string; onChange: (v: string) => void }) {
+  const raw = (value || "").trim();
+  const isClosed = raw.toLowerCase() === "closed";
+  const m = raw.match(HOURS_RANGE_RE);
+  const openTime = m ? `${m[1]}:${m[2]}` : "09:00";
+  const closeTime = m ? `${m[3]}:${m[4]}` : "17:00";
+  const isLegacy = !!raw && !isClosed && !m;
+
+  return (
+    <div className="flex flex-wrap items-center gap-3">
+       <span className="w-24 text-[13px] text-[#1d2327]">{label}</span>
+       <label className="flex items-center gap-1.5 text-[12px] text-[#646970]">
+          <input type="checkbox" checked={isClosed} onChange={(e) => onChange(e.target.checked ? "closed" : `${openTime}-${closeTime}`)} />
+          Closed
+       </label>
+       {!isClosed && (
+          <>
+             <input type="time" value={openTime} onChange={(e) => onChange(`${e.target.value}-${closeTime}`)} className="border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
+             <span className="text-[12px] text-[#646970]">to</span>
+             <input type="time" value={closeTime} onChange={(e) => onChange(`${openTime}-${e.target.value}`)} className="border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
+          </>
+       )}
+       {isLegacy && (
+          <span className="text-[11px] text-[#d63638]">Current value "{raw}" isn't a time range — set times above to replace it.</span>
+       )}
+    </div>
+  );
+}
+
 function IconPicker({ value, onChange }: { value: string, onChange: (val: string) => void }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -762,20 +803,16 @@ export default function SettingsEditor() {
                     onChange={(v) => updateData("footer", "contact", { ...data.footer.contact, areas: v })}
                   />
                </SettingsRow>
-               <SettingsRow label="Office Hours">
-                  <div className="grid grid-cols-3 gap-2">
-                     <div className="space-y-1">
-                        <label className="text-[11px] text-[#646970]">Mon-Fri</label>
-                        <input type="text" value={data.hours?.monday} onChange={(e) => updateData("hours", "monday", e.target.value)} className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
-                     </div>
-                     <div className="space-y-1">
-                        <label className="text-[11px] text-[#646970]">Saturday</label>
-                        <input type="text" value={data.hours?.saturday} onChange={(e) => updateData("hours", "saturday", e.target.value)} className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
-                     </div>
-                     <div className="space-y-1">
-                        <label className="text-[11px] text-[#646970]">Sunday</label>
-                        <input type="text" value={data.hours?.sunday} onChange={(e) => updateData("hours", "sunday", e.target.value)} className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
-                     </div>
+               <SettingsRow label="Office Hours" description="Set open and close time for each day, or mark it closed. Days with identical hours are merged automatically in the footer.">
+                  <div className="space-y-2">
+                     {OFFICE_HOURS_DAYS.map(({ key, label }) => (
+                        <OfficeHoursDayRow
+                           key={key}
+                           label={label}
+                           value={data.hours?.[key]}
+                           onChange={(v) => updateData("hours", key, v)}
+                        />
+                     ))}
                   </div>
                </SettingsRow>
             </motion.div>

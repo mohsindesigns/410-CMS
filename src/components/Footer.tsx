@@ -4,6 +4,7 @@ import { useContent } from "../hooks/useContent";
 import { useContentContext } from "../context/ContentContext";
 import Link from "next/link";
 import * as LucideIcons from "lucide-react";
+import { buildHoursLines } from "../lib/hours";
 
 /** Strip HTML tags and return plain text */
 function stripHtml(html: string): string {
@@ -274,38 +275,15 @@ export default function Footer() {
   }
   const emailHtml: string = `<a href="${emailHref}">${emailDisplayText}</a>`;
 
-  // Construct business hours dynamically from general settings or fall back
-  let hoursText = "";
-  const rawHoursText = contactInfo.hours || (footer as any)?.hours || "";
-  if (rawHoursText && rawHoursText !== "Mon–Sat: 8:00 AM – 7:00 PM" && rawHoursText !== "Sat–Sun: 8:00 AM – 7:00 PM") {
-    hoursText = stripHtml(rawHoursText);
-  } else if (hours && typeof hours === 'object' && Object.keys(hours).length > 0) {
-    const parts: string[] = [];
-    const h = hours as Record<string, string>;
-    const days = ['sunday', 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday'];
-    const activeDays = days.filter(d => h[d]);
-    if (activeDays.length === 7 && days.every(d => h[d]?.trim() === h['sunday']?.trim())) {
-      parts.push(`Sun–Sat: ${h['sunday']}`);
-    } else {
-      if (h.weekdays) parts.push(`Mon–Fri: ${h.weekdays}`);
-      else if (h.monday && h.friday && h.monday === h.friday) parts.push(`Mon–Fri: ${h.monday}`);
-      else if (h.monday) parts.push(`Mon–Fri: ${h.monday}`);
-
-      if (h.saturday && h.sunday && h.saturday.trim().toLowerCase() === h.sunday.trim().toLowerCase()) {
-        parts.push(`Sat–Sun: ${h.saturday}`);
-      } else {
-        if (h.saturday) parts.push(`Sat: ${h.saturday}`);
-        if (h.sunday) parts.push(`Sun: ${h.sunday}`);
-      }
-    }
-    hoursText = parts.join('\n');
-  } else if (rawHoursText) {
-    hoursText = stripHtml(rawHoursText);
-  }
-
-  if (!hoursText || hoursText === "Mon–Sat: 8:00 AM – 7:00 PM" || hoursText === "Sat–Sun: 8:00 AM – 7:00 PM") {
-    hoursText = "Sun–Sat: 8:00 AM – 7:00 PM";
-  }
+  // Structured per-day hours from the dashboard take priority; freeform text is a legacy fallback.
+  const structuredHoursLines = buildHoursLines((hours && typeof hours === 'object' ? hours : {}) as Record<string, string>);
+  const freeformHours = stripHtml(contactInfo.hours || (footer as any)?.hours || "");
+  const hoursLines: string[] = structuredHoursLines.length > 0
+    ? structuredHoursLines
+    : freeformHours
+      ? [freeformHours]
+      : ["Sun–Sat: 8:00 AM – 7:00 PM"];
+  const hoursText = hoursLines.join('\n');
 
   const copyrightText: string = stripHtml(bottomInfo.copyright || (footer as any)?.copyright || "© 2026 410 Muscle Therapy. All Rights Reserved.");
 
