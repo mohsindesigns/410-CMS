@@ -35,10 +35,6 @@ function FooterLogo({ logoUrl, siteTitle, logoText1, logoText2 }: { logoUrl?: st
           <img
             src={logoUrl}
             alt={siteTitle || "410 Muscle Therapy Logo"}
-            width="150"
-            height="29"
-            loading="lazy"
-            decoding="async"
             className="object-contain w-full h-full"
           />
         </div>
@@ -158,7 +154,7 @@ function MapPlaceholder({ addressText, embedUrl, iframeHtml }: { addressText: st
             title="Map location"
           />
         ) : (
-          <div aria-hidden="true" className="w-full h-full flex items-center justify-center text-white/80 text-xs font-mono">
+          <div className="w-full h-full flex items-center justify-center text-white/30 text-xs font-mono">
             Loading map...
           </div>
         )}
@@ -178,7 +174,7 @@ function MapPlaceholder({ addressText, embedUrl, iframeHtml }: { addressText: st
         {isVisible ? (
           <div className="w-full h-full" dangerouslySetInnerHTML={{ __html: styledIframe }} />
         ) : (
-          <div aria-hidden="true" className="w-full h-full flex items-center justify-center text-white/80 text-xs font-mono">
+          <div className="w-full h-full flex items-center justify-center text-white/30 text-xs font-mono">
             Loading map...
           </div>
         )}

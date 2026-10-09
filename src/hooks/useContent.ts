@@ -22,12 +22,8 @@ function sanitizeEncoding(obj: any): any {
 function proxyAllUrls(obj: any): any {
   if (!obj) return obj;
   if (typeof obj === 'string') {
-    if (obj.includes("res.cloudinary.com/dytytwyp6/image/upload/")) {
-      const clean = obj.replace(/https:\/\/res\.cloudinary\.com\/dytytwyp6\/image\/upload\//g, "/cdn-images/");
-      return clean.replace(/\.(jpg|jpeg|png)($|\?)/i, '.webp$2');
-    }
-    if (obj.startsWith("/cdn-images/")) {
-      return obj.replace(/\.(jpg|jpeg|png)($|\?)/i, '.webp$2');
+    if (obj.includes("https://res.cloudinary.com/dytytwyp6/image/upload/")) {
+      return obj.replace(/https:\/\/res\.cloudinary\.com\/dytytwyp6\/image\/upload\//g, "/cdn-images/");
     }
     return obj;
   }
