@@ -10,6 +10,7 @@ export async function GET() {
     
     // Fetch only published posts
     const posts = await Post.find({ status: 'published' })
+      .select('-content')
       .populate('categories', 'name')
       .populate('author', 'username name email')
       .sort({ publishedAt: -1 })

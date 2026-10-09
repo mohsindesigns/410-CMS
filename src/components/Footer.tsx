@@ -3,7 +3,7 @@
 import { useContent } from "../hooks/useContent";
 import { useContentContext } from "../context/ContentContext";
 import Link from "next/link";
-import * as LucideIcons from "lucide-react";
+import { Linkedin, Facebook, Instagram, Twitter, Youtube, Share2 } from "lucide-react";
 import { buildHoursLines } from "../lib/hours";
 
 /** Strip HTML tags and return plain text */
@@ -75,30 +75,13 @@ function SocialIcons({ socialItems }: { socialItems?: any[] }) {
   return (
     <div className="flex gap-2.5 mt-4 justify-start">
       {activeSocials.map((s: any, i: number) => {
-        // Look up iconName from s.icon or s.platform
-        const iconName = s.icon || s.platform || '';
-        // Format to PascalCase to match Lucide icon export names
-        const formattedIconName = iconName.charAt(0).toUpperCase() + iconName.slice(1);
-
-        let IconComponent = (LucideIcons as any)[formattedIconName];
-
-        // Specific fallbacks for common lowercase names if not direct match
-        if (!IconComponent) {
-          const lower = formattedIconName.toLowerCase();
-          if (lower === 'linkedin') {
-            IconComponent = LucideIcons.Linkedin;
-          } else if (lower === 'facebook') {
-            IconComponent = LucideIcons.Facebook;
-          } else if (lower === 'instagram') {
-            IconComponent = LucideIcons.Instagram;
-          } else if (lower === 'twitter') {
-            IconComponent = LucideIcons.Twitter;
-          } else if (lower === 'youtube') {
-            IconComponent = LucideIcons.Youtube;
-          } else {
-            IconComponent = LucideIcons.Share2;
-          }
-        }
+        const platform = (s.icon || s.platform || '').toLowerCase();
+        let IconComponent = Share2;
+        if (platform.includes('linkedin')) IconComponent = Linkedin;
+        else if (platform.includes('facebook')) IconComponent = Facebook;
+        else if (platform.includes('instagram')) IconComponent = Instagram;
+        else if (platform.includes('twitter') || platform.includes('x')) IconComponent = Twitter;
+        else if (platform.includes('youtube')) IconComponent = Youtube;
 
         const href = s.href && s.href.trim() !== '' ? s.href : '#';
         return (
@@ -138,9 +121,12 @@ function MapPlaceholder({ addressText, embedUrl, iframeHtml }: { addressText: st
   }
   if (iframeHtml) {
     // Legacy path: iframe was pasted directly into the address field
-    const styledIframe = iframeHtml
+    let styledIframe = iframeHtml
       .replace(/width="[^"]*"/i, 'width="100%"')
       .replace(/height="[^"]*"/i, 'height="100%"');
+    if (!styledIframe.includes('loading=')) {
+      styledIframe = styledIframe.replace('<iframe', '<iframe loading="lazy"');
+    }
     return (
       <div
         className="mt-5 h-[160px] w-full rounded-md overflow-hidden border border-white/10 relative"
