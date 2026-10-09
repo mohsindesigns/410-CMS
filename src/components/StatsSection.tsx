@@ -38,8 +38,6 @@ export default function StatsSection() {
               <img
                 src={image}
                 alt={imageAlt}
-                loading="lazy"
-                decoding="async"
                 className="object-cover w-full h-full"
               />
             ) : (

@@ -52,9 +52,9 @@ const nextConfig: NextConfig = {
   async rewrites() {
     return [
       {
-        // Proxy /cdn-images/:path* → Cloudinary with modern format & quality compression
+        // Proxy /cdn-images/:path* → Cloudinary
         source: '/cdn-images/:path*',
-        destination: 'https://res.cloudinary.com/dytytwyp6/image/upload/f_auto,q_auto/:path*',
+        destination: 'https://res.cloudinary.com/dytytwyp6/image/upload/:path*',
       },
       {
         // Route legacy WordPress uploads to uploads API / Cloudinary CDN

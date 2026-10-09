@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect, useRef } from "react";
 import { useContent } from "../hooks/useContent";
 import { useContentContext } from "../context/ContentContext";
 import Link from "next/link";
@@ -105,63 +104,36 @@ function SocialIcons({ socialItems }: { socialItems?: any[] }) {
 
 /* ── Map Placeholder ───────────────────────────────────── */
 function MapPlaceholder({ addressText, embedUrl, iframeHtml }: { addressText: string; embedUrl?: string | null; iframeHtml?: string | null }) {
-  const [shouldLoad, setShouldLoad] = useState(false);
-  const containerRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    if (!containerRef.current) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0]?.isIntersecting) {
-          setShouldLoad(true);
-          observer.disconnect();
-        }
-      },
-      { rootMargin: "200px" }
-    );
-    observer.observe(containerRef.current);
-    return () => observer.disconnect();
-  }, []);
-
-  if (embedUrl || iframeHtml) {
-    let styledIframe = iframeHtml
-      ? iframeHtml.replace(/width="[^"]*"/i, 'width="100%"').replace(/height="[^"]*"/i, 'height="100%"')
-      : null;
-    if (styledIframe && !styledIframe.includes('loading=')) {
-      styledIframe = styledIframe.replace('<iframe', '<iframe loading="lazy"');
-    }
-
+  if (embedUrl) {
     return (
-      <div ref={containerRef} className="mt-5 h-[160px] w-full rounded-md overflow-hidden border border-white/10 relative bg-white/[0.02]">
-        {shouldLoad ? (
-          embedUrl ? (
-            <iframe
-              src={embedUrl}
-              width="100%"
-              height="100%"
-              style={{ border: 0 }}
-              loading="lazy"
-              referrerPolicy="no-referrer-when-downgrade"
-              title="Map location"
-            />
-          ) : styledIframe ? (
-            <div
-              className="w-full h-full"
-              dangerouslySetInnerHTML={{ __html: styledIframe }}
-            />
-          ) : null
-        ) : (
-          <div className="w-full h-full flex flex-col items-center justify-center gap-1.5 px-3">
-            <svg width="22" height="22" viewBox="0 0 24 24" fill="#C8960C">
-              <path d="M12 2C8.13 2 5 5.13 5 9c0 5.25 7 13 7 13s7-7.75 7-13c0-3.87-3.13-7-7-7zm0 9.5c-1.38 0-2.5-1.12-2.5-2.5s1.12-2.5 2.5-2.5 2.5 1.12 2.5 2.5-1.12 2.5-2.5 2.5z" />
-            </svg>
-            <p className="text-white/55 text-[10.5px] font-medium text-center whitespace-pre-line leading-tight">{addressText}</p>
-          </div>
-        )}
+      <div className="mt-5 h-[160px] w-full rounded-md overflow-hidden border border-white/10 relative">
+        <iframe
+          src={embedUrl}
+          width="100%"
+          height="100%"
+          style={{ border: 0 }}
+          loading="lazy"
+          referrerPolicy="no-referrer-when-downgrade"
+          title="Map location"
+        />
       </div>
     );
   }
-
+  if (iframeHtml) {
+    // Legacy path: iframe was pasted directly into the address field
+    let styledIframe = iframeHtml
+      .replace(/width="[^"]*"/i, 'width="100%"')
+      .replace(/height="[^"]*"/i, 'height="100%"');
+    if (!styledIframe.includes('loading=')) {
+      styledIframe = styledIframe.replace('<iframe', '<iframe loading="lazy"');
+    }
+    return (
+      <div
+        className="mt-5 h-[160px] w-full rounded-md overflow-hidden border border-white/10 relative"
+        dangerouslySetInnerHTML={{ __html: styledIframe }}
+      />
+    );
+  }
   return (
     <div className="mt-5 h-24 sm:h-28 bg-white/[0.03] rounded-md overflow-hidden relative flex items-center justify-center border border-white/10">
       <div className="relative flex flex-col items-center gap-1.5 px-3">
