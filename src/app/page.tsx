@@ -157,7 +157,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   await connectToDatabase();
-  const content = await SiteContent.findOne({ key: 'complete_data' });
+  const content = await SiteContent.findOne({ key: 'complete_data' }).lean() as any;
   const settings = content?.data?.settings || {};
   const homepageId = settings.homepageId;
 

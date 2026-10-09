@@ -4,7 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { usePathname } from "next/navigation";
 import { motion, AnimatePresence } from "framer-motion";
 import { ChevronDown, ArrowRight, Menu, X } from "lucide-react";
-import { Icon } from "../config/icons";
+import { Icon } from "@/config/icons";
 import { useContent } from "../hooks/useContent";
 import logo from "../assets/logo.png";
 import Image from "next/image";
@@ -34,7 +34,7 @@ const Navbar = () => {
 
   useEffect(() => {
     const handleScroll = () => setScrolled(window.scrollY > 30);
-    window.addEventListener("scroll", handleScroll);
+    window.addEventListener("scroll", handleScroll, { passive: true });
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 

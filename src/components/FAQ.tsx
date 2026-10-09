@@ -10,7 +10,7 @@ import {
 } from "framer-motion";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
-import { Icon } from "../config/icons";
+import { Icon } from "@/config/icons";
 import { useContent } from "../hooks/useContent";
 import Link from "next/link";
 import Script from "next/script";

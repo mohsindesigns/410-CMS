@@ -30,19 +30,18 @@ export default function HeroSection() {
   const bookingUrl = globalMetadata?.bookingUrl || "https://www.styleseat.com/m/v/410muscletherapy";
 
   const containerVariants = {
-    hidden: { opacity: 0 },
+    hidden: { opacity: 1 },
     visible: {
       opacity: 1,
       transition: {
-        staggerChildren: 0.12,
-        delayChildren: 0.2,
+        staggerChildren: 0.08,
       },
     },
   } as const;
 
   const itemVariants = {
-    hidden: { y: 25, opacity: 0 },
-    visible: { y: 0, opacity: 1, transition: { duration: 0.6, ease: "easeOut" } },
+    hidden: { opacity: 1 },
+    visible: { opacity: 1 },
   } as const;
 
   return (
@@ -52,17 +51,15 @@ export default function HeroSection() {
       <div className="absolute top-1/2 left-1/4 -translate-y-1/2 w-[400px] h-[400px] bg-gold/[0.05] rounded-full blur-[120px] pointer-events-none z-0" />
 
       {/* ── Blended Hero Image Background (More Visible Photo) ── */}
-      <motion.div
-        initial={{ opacity: 0, scale: 1.05 }}
-        animate={{ opacity: 0.8, scale: 1 }}
-        transition={{ duration: 1.5, ease: "easeOut" }}
-        className="absolute inset-0 z-0 pointer-events-none"
-      >
+      <div className="absolute inset-0 z-0 pointer-events-none opacity-85">
         {image.startsWith('http') || image.startsWith('/uploads') || image.startsWith('/cdn-images') ? (
           <img
             src={image}
             alt={imageAlt}
-            className="w-full h-full object-cover object-right lg:object-center opacity-85 filter contrast-105"
+            loading="eager"
+            fetchPriority="high"
+            decoding="async"
+            className="w-full h-full object-cover object-right lg:object-center filter contrast-105"
           />
         ) : (
           <Image
@@ -70,8 +67,9 @@ export default function HeroSection() {
             alt={imageAlt}
             fill
             sizes="100vw"
-            className="object-cover object-right lg:object-center opacity-85 filter contrast-105"
+            className="object-cover object-right lg:object-center filter contrast-105"
             priority
+            fetchPriority="high"
           />
         )}
 
@@ -79,7 +77,7 @@ export default function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-r from-dark via-dark/70 to-transparent" />
         <div className="absolute inset-0 bg-gradient-to-b from-dark/50 via-transparent to-dark/80" />
         <div className="absolute inset-0 bg-gradient-to-l from-dark/40 via-transparent to-transparent" />
-      </motion.div>
+      </div>
 
       {/* ── Main Content ───────────────────────────────── */}
       <div className="relative site-container pt-32 pb-16 md:pt-40 md:pb-24 w-full z-10">

@@ -128,11 +128,15 @@ export function SiteScriptsRenderer({
           const elementKey = `${script.id}-${index}`;
 
           if (el.tag === 'script') {
+            const scriptAttrs = { ...el.attrs };
+            if (scriptAttrs.src && scriptAttrs.async === undefined && scriptAttrs.defer === undefined) {
+              scriptAttrs.defer = true;
+            }
             return (
               <script
                 key={elementKey}
                 suppressHydrationWarning
-                {...el.attrs}
+                {...scriptAttrs}
                 {...(el.content ? { dangerouslySetInnerHTML: { __html: el.content } } : {})}
               />
             );

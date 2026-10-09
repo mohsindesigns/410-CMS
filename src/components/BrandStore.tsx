@@ -1,7 +1,7 @@
 // BrandStore.tsx - Fixed with proper contrast
 import { motion, useScroll, useTransform } from "framer-motion";
 import { useState, useEffect, useRef } from "react";
-import { Icon } from "../config/icons";
+import { ArrowRight } from "lucide-react";
 
 export default function BrandStore() {
     const containerRef = useRef(null);
@@ -113,7 +113,7 @@ export default function BrandStore() {
                         className="group relative inline-flex items-center gap-3 px-10 py-4 bg-primary text-white hover:text-white font-bold rounded-full  transition-all duration-300 text-base"
                     >
                         <span>Shop Official Gear</span>
-                        <Icon name="ArrowRight" className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
+                        <ArrowRight className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
                     </motion.a>
                 </motion.div>
 

@@ -19,8 +19,8 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/images') ||
     /\.(png|jpg|jpeg|gif|svg|ico|webp|js|css|map|json|woff|woff2|ttf|eot|txt|xml)$/i.test(pathname);
 
-  // 1. Check for global redirects (only for public HTML pages)
-  if (!pathname.startsWith('/admin') && !isStaticAsset) {
+  // 1. Check for global redirects (only for public HTML pages, skipping root homepage)
+  if (!pathname.startsWith('/admin') && !isStaticAsset && pathname !== '/') {
     // Immediate permanent 301 redirect from /blog and /blog/ to /blogs/
     if (pathname === '/blog' || pathname === '/blog/') {
       return NextResponse.redirect(new URL('/blogs/', req.url), 301);

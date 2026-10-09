@@ -13,11 +13,13 @@ import { getRobotsMetadata } from "@/lib/seo";
 const spaceGrotesk = Space_Grotesk({
   subsets: ["latin"],
   variable: "--font-heading",
+  display: "swap",
 });
 
 const dmSans = DM_Sans({
   subsets: ["latin"],
   variable: "--font-body",
+  display: "swap",
 });
 
 
@@ -32,7 +34,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   try {
     await connectToDatabase();
-    const content = await SiteContent.findOne({ key: 'complete_data' });
+    const content = await SiteContent.findOne({ key: 'complete_data' }).lean() as any;
     if (content?.data?.settings) settings = content.data.settings;
   } catch (e) {
     console.error("Failed to fetch settings for metadata", e);
@@ -132,8 +134,14 @@ export default async function RootLayout({
   let initialBlogs = [];
   try {
     const [globalContent, blogPosts] = await Promise.all([
-      SiteContent.findOne({ key: 'complete_data' }),
-      import('@/models/Post').then(m => m.default.find({ status: 'published', isTrashed: { $ne: true } }).sort({ date: -1 }).limit(10).populate('categories', 'name').populate('author', 'name').lean())
+      SiteContent.findOne({ key: 'complete_data' }).lean() as any,
+      import('@/models/Post').then(m => m.default.find({ status: 'published', isTrashed: { $ne: true } })
+        .select('title slug featuredImage excerpt date publishedAt author authorName categories')
+        .sort({ date: -1 })
+        .limit(6)
+        .populate('categories', 'name')
+        .populate('author', 'name')
+        .lean())
     ]);
 
     if (globalContent?.data) initialGlobalData = globalContent.data;

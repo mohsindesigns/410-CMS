@@ -100,7 +100,6 @@ export default function HowItWorksSection() {
                     fill
                     sizes="45vw"
                     className="object-cover"
-                    priority
                   />
                   <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/20 to-transparent" />
                 </motion.div>
