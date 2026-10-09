@@ -91,6 +91,8 @@ const Navbar = () => {
                 <img
                   src={navbar.logo}
                   alt={navbar.siteTitle || "410 Muscle Therapy Logo"}
+                  width="193"
+                  height="37"
                   className="object-contain w-full h-full"
                 />
               </div>

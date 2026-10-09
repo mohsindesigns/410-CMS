@@ -52,6 +52,7 @@ export default function HeroSection() {
 
       {/* ── Blended Hero Image Background (More Visible Photo) ── */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-85">
+        <link rel="preload" as="image" href={image} fetchPriority="high" />
         {image.startsWith('http') || image.startsWith('/uploads') || image.startsWith('/cdn-images') ? (
           <img
             src={image}
