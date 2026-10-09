@@ -1,5 +1,6 @@
 "use client";
 
+import { useState, useEffect, useRef } from "react";
 import { useContent } from "../hooks/useContent";
 import { useContentContext } from "../context/ContentContext";
 import Link from "next/link";
@@ -121,18 +122,42 @@ function SocialIcons({ socialItems }: { socialItems?: any[] }) {
 
 /* ── Map Placeholder ───────────────────────────────────── */
 function MapPlaceholder({ addressText, embedUrl, iframeHtml }: { addressText: string; embedUrl?: string | null; iframeHtml?: string | null }) {
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [isVisible, setIsVisible] = useState(false);
+
+  useEffect(() => {
+    if (!containerRef.current) return;
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0]?.isIntersecting) {
+          setIsVisible(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "300px" }
+    );
+    observer.observe(containerRef.current);
+    return () => observer.disconnect();
+  }, []);
+
   if (embedUrl) {
     return (
-      <div className="mt-5 h-[160px] w-full rounded-md overflow-hidden border border-white/10 relative">
-        <iframe
-          src={embedUrl}
-          width="100%"
-          height="100%"
-          style={{ border: 0 }}
-          loading="lazy"
-          referrerPolicy="no-referrer-when-downgrade"
-          title="Map location"
-        />
+      <div ref={containerRef} className="mt-5 h-[160px] w-full rounded-md overflow-hidden border border-white/10 relative bg-dark-3">
+        {isVisible ? (
+          <iframe
+            src={embedUrl}
+            width="100%"
+            height="100%"
+            style={{ border: 0 }}
+            loading="lazy"
+            referrerPolicy="no-referrer-when-downgrade"
+            title="Map location"
+          />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-white/30 text-xs font-mono">
+            Loading map...
+          </div>
+        )}
       </div>
     );
   }
@@ -143,9 +168,17 @@ function MapPlaceholder({ addressText, embedUrl, iframeHtml }: { addressText: st
       .replace(/height="[^"]*"/i, 'height="100%"');
     return (
       <div
-        className="mt-5 h-[160px] w-full rounded-md overflow-hidden border border-white/10 relative"
-        dangerouslySetInnerHTML={{ __html: styledIframe }}
-      />
+        ref={containerRef}
+        className="mt-5 h-[160px] w-full rounded-md overflow-hidden border border-white/10 relative bg-dark-3"
+      >
+        {isVisible ? (
+          <div className="w-full h-full" dangerouslySetInnerHTML={{ __html: styledIframe }} />
+        ) : (
+          <div className="w-full h-full flex items-center justify-center text-white/30 text-xs font-mono">
+            Loading map...
+          </div>
+        )}
+      </div>
     );
   }
   return (

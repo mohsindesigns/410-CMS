@@ -36,7 +36,7 @@ export const ContentProvider = ({ children, initialData, initialBlogs }: { child
   useEffect(() => {
     // Only fetch if initialData is missing (fallback)
     // In production, RootLayout should always provide initialData
-    if (initialData && initialBlogs && initialBlogs.length > 0) {
+    if (initialData && initialBlogs !== undefined) {
       setIsLoading(false);
       return;
     }

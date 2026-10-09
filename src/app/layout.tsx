@@ -154,10 +154,6 @@ export default async function RootLayout({
     <html lang="en" suppressHydrationWarning>
       <head>
         {/* Site-wide schemas removed - handled dynamically by pages/services */}
-        {/* Preconnect to external origins for performance */}
-        <link rel="preconnect" href="https://fonts.googleapis.com" />
-        <link rel="preconnect" href="https://fonts.gstatic.com" crossOrigin="anonymous" />
-        <link rel="preconnect" href="https://images.unsplash.com" />
         {/* ── CMS-managed <head> scripts ── */}
         <SiteScriptsRenderer scripts={headScripts} location="head" />
       </head>

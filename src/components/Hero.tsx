@@ -81,33 +81,28 @@ export default function HeroSection() {
 
       {/* ── Main Content ───────────────────────────────── */}
       <div className="relative site-container pt-32 pb-16 md:pt-40 md:pb-24 w-full z-10">
-        <motion.div
-          variants={containerVariants}
-          initial="hidden"
-          animate="visible"
-          className="max-w-[620px] text-center md:text-left mx-auto md:mx-0 flex flex-col items-center md:items-start md:border-l md:border-white/10 md:pl-8"
-        >
+        <div className="max-w-[620px] text-center md:text-left mx-auto md:mx-0 flex flex-col items-center md:items-start md:border-l md:border-white/10 md:pl-8">
           {/* Label with delicate line accent */}
-          <motion.div variants={itemVariants} className="flex items-center gap-3 mb-4 md:mb-5">
+          <div className="flex items-center gap-3 mb-4 md:mb-5">
             <span className="w-6 h-[1px] bg-gold flex-shrink-0 hidden md:block" />
             <p className="section-label">
               {cleanLabel}
             </p>
-          </motion.div>
+          </div>
 
           {/* Headline */}
-          <motion.h1 variants={itemVariants} className="display-heading text-[33px] min-[400px]:text-[41px] md:text-[60px] leading-[1.1] mb-6 md:mb-8 tracking-tight">
+          <h1 className="display-heading text-[33px] min-[400px]:text-[41px] md:text-[60px] leading-[1.1] mb-6 md:mb-8 tracking-tight">
             <span className="block text-white mb-0">{cleanTitle1}</span>
             <span className="block text-gold italic">{cleanTitle2}</span>
-          </motion.h1>
+          </h1>
 
           {/* Description */}
-          <motion.p variants={itemVariants} className="text-white/70 md:text-white/55 text-[14px] md:text-[15px] leading-[1.7] md:leading-[1.8] max-w-[460px] mb-8 md:mb-10">
+          <p className="text-white/80 md:text-white/75 text-[14px] md:text-[15px] leading-[1.7] md:leading-[1.8] max-w-[460px] mb-8 md:mb-10">
             {cleanDescription}
-          </motion.p>
+          </p>
 
           {/* CTA Buttons */}
-          <motion.div variants={itemVariants} className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-10 md:mb-12">
+          <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto mb-10 md:mb-12">
             <a
               href={bookingUrl}
               target="_blank"
@@ -119,9 +114,9 @@ export default function HeroSection() {
             <Link href="/#services" className="btn-outline-white w-full sm:w-auto justify-center text-center px-8">
               {ctaServices} <ArrowRight size={14} className="ml-1" />
             </Link>
-          </motion.div>
+          </div>
 
-        </motion.div>
+        </div>
       </div>
 
     </section>
