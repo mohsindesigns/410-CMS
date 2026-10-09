@@ -40,16 +40,28 @@ export default function HeroSection() {
       {/* ── Blended Hero Image Background (More Visible Photo) ── */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-85">
         {image.startsWith('http') || image.startsWith('/uploads') || isCdnImage ? (
-          <img
-            src={isCdnImage ? `/cdn-images/w_1200,f_auto,q_auto/${cdnSubpath}` : image}
-            srcSet={isCdnImage ? `/cdn-images/w_640,f_auto,q_auto/${cdnSubpath} 640w, /cdn-images/w_1024,f_auto,q_auto/${cdnSubpath} 1024w, /cdn-images/w_1600,f_auto,q_auto/${cdnSubpath} 1600w` : undefined}
-            sizes="100vw"
-            alt={imageAlt}
-            loading="eager"
-            fetchPriority="high"
-            decoding="async"
-            className="w-full h-full object-cover object-right lg:object-center filter contrast-105"
-          />
+          <picture className="w-full h-full block">
+            {isCdnImage && (
+              <>
+                <source
+                  media="(max-width: 767px)"
+                  srcSet={`/cdn-images/w_640,f_auto,q_75/${cdnSubpath}`}
+                />
+                <source
+                  media="(min-width: 768px)"
+                  srcSet={`/cdn-images/w_1280,f_auto,q_75/${cdnSubpath}`}
+                />
+              </>
+            )}
+            <img
+              src={isCdnImage ? `/cdn-images/w_1280,f_auto,q_75/${cdnSubpath}` : image}
+              alt={imageAlt}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              className="w-full h-full object-cover object-right lg:object-center filter contrast-105"
+            />
+          </picture>
         ) : (
           <Image
             src={image}

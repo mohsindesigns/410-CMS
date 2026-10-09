@@ -241,21 +241,34 @@ export default async function HomePage() {
   const rawHeroImg = (homePage?.content?.hero?.image || content?.data?.hero?.image || "/images/hero-bg.webp");
   const isCdn = typeof rawHeroImg === 'string' && rawHeroImg.startsWith('/cdn-images/');
   const cdnSub = isCdn ? rawHeroImg.replace('/cdn-images/', '') : '';
-  const heroPreloadSrc = isCdn ? `/cdn-images/w_1200,f_auto,q_auto/${cdnSub}` : rawHeroImg;
-  const heroPreloadSrcSet = isCdn
-    ? `/cdn-images/w_640,f_auto,q_auto/${cdnSub} 640w, /cdn-images/w_1024,f_auto,q_auto/${cdnSub} 1024w, /cdn-images/w_1600,f_auto,q_auto/${cdnSub} 1600w`
-    : undefined;
 
   return (
     <>
-      <link
-        rel="preload"
-        as="image"
-        href={heroPreloadSrc}
-        imageSrcSet={heroPreloadSrcSet}
-        imageSizes="100vw"
-        fetchPriority="high"
-      />
+      {isCdn ? (
+        <>
+          <link
+            rel="preload"
+            as="image"
+            href={`/cdn-images/w_640,f_auto,q_75/${cdnSub}`}
+            media="(max-width: 767px)"
+            fetchPriority="high"
+          />
+          <link
+            rel="preload"
+            as="image"
+            href={`/cdn-images/w_1280,f_auto,q_75/${cdnSub}`}
+            media="(min-width: 768px)"
+            fetchPriority="high"
+          />
+        </>
+      ) : (
+        <link
+          rel="preload"
+          as="image"
+          href={rawHeroImg}
+          fetchPriority="high"
+        />
+      )}
       {schemaScripts}
       <HomeTemplate pageData={{ ...(homePage || {}), content: { ...(content?.data || {}), ...(homePage?.content || {}) } }} />
     </>

@@ -36,7 +36,7 @@ export default function StatsSection() {
           <div className="relative h-[300px] sm:h-[400px] md:h-[480px] w-full rounded-sm overflow-hidden shadow-xl border border-border-light">
             {image.startsWith('http') || image.startsWith('/uploads') || image.startsWith('/cdn-images') ? (
               <img
-                src={image}
+                src={image.startsWith('/cdn-images/') ? `/cdn-images/w_600,f_auto,q_75/${image.replace('/cdn-images/', '')}` : image}
                 alt={imageAlt}
                 loading="lazy"
                 decoding="async"

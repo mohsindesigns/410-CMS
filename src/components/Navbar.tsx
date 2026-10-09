@@ -89,8 +89,10 @@ const Navbar = () => {
             {navbar.logo && (navbar.logo.startsWith('http') || navbar.logo.startsWith('/uploads') || navbar.logo.startsWith('/cdn-images')) ? (
               <div className="relative h-[85px] w-[85px] min-[400px]:w-[110px] min-[400px]:h-[110px] sm:w-[150px] sm:h-[150px] flex items-center justify-center overflow-hidden">
                 <img
-                  src={navbar.logo}
+                  src={navbar.logo.startsWith('/cdn-images/') ? `/cdn-images/w_300,f_auto,q_80/${navbar.logo.replace('/cdn-images/', '')}` : navbar.logo}
                   alt={navbar.siteTitle || "410 Muscle Therapy Logo"}
+                  width={150}
+                  height={37}
                   className="object-contain w-full h-full"
                 />
               </div>
