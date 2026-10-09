@@ -84,14 +84,12 @@ export default function TestimonialsSection() {
             <div className="flex items-center gap-3">
               <button
                 onClick={prev}
-                aria-label="Previous testimonial"
                 className="w-10 h-10 md:w-12 md:h-12 border border-border-dark text-white/50 flex items-center justify-center rounded-md hover:border-gold hover:text-gold transition-colors duration-200"
               >
                 <ChevronLeft size={18} className="md:w-5 md:h-5" />
               </button>
               <button
                 onClick={next}
-                aria-label="Next testimonial"
                 className="w-10 h-10 md:w-12 md:h-12 border border-border-dark text-white/50 flex items-center justify-center rounded-md hover:border-gold hover:text-gold transition-colors duration-200"
               >
                 <ChevronRight size={18} className="md:w-5 md:h-5" />
@@ -102,7 +100,6 @@ export default function TestimonialsSection() {
                   <button
                     key={i}
                     onClick={() => setActiveIdx(i)}
-                    aria-label={`Go to testimonial slide ${i + 1}`}
                     className={`h-2 rounded-full transition-all duration-200
                       ${i === activeIdx ? "bg-gold w-5" : "bg-white/20 w-2 hover:bg-gold/50"}`}
                   />
