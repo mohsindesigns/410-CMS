@@ -33,10 +33,8 @@ function FooterLogo({ logoUrl, siteTitle, logoText1, logoText2 }: { logoUrl?: st
       <Link href="/" className="inline-flex items-center gap-3 mb-4">
         <div className="relative w-[110px] h-[110px] sm:w-[130px] sm:h-[130px] flex items-center justify-center overflow-hidden">
           <img
-            src={logoUrl.startsWith('/cdn-images/') ? `/cdn-images/w_300,f_auto,q_80/${logoUrl.replace('/cdn-images/', '')}` : logoUrl}
+            src={logoUrl}
             alt={siteTitle || "410 Muscle Therapy Logo"}
-            width={130}
-            height={32}
             className="object-contain w-full h-full"
           />
         </div>
