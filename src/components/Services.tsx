@@ -38,7 +38,7 @@ export default function ServicesSection() {
                 {stripHtml(titleLine1)}<br className="hidden lg:block" /> {stripHtml(titleLine2)}<br className="hidden lg:block" /> {stripHtml(titleLine3)}{' '}
                 <em className="text-gold not-italic italic">{stripHtml(titleItalicWord)}</em>
               </h2>
-              <p className="text-white/45 text-[13.5px] leading-[1.8] font-light">
+              <p className="text-white/70 text-[13.5px] leading-[1.8] font-light">
                 {stripHtml(description)}
               </p>
             </div>
@@ -67,7 +67,7 @@ export default function ServicesSection() {
                       transition={{ type: 'spring', stiffness: 350, damping: 30 }}
                     />
                   )}
-                  <span className={`text-[10px] font-bold tracking-widest w-6 flex-shrink-0 transition-colors ${i === activeIdx ? 'text-gold' : 'text-white/20 group-hover:text-white/40'}`}>
+                  <span className={`text-[10px] font-bold tracking-widest w-6 flex-shrink-0 transition-colors ${i === activeIdx ? 'text-gold' : 'text-white/60 group-hover:text-white/80'}`}>
                     {String(i + 1).padStart(2, '0')}
                   </span>
                   <span className={`text-[13.5px] font-medium transition-colors truncate ${i === activeIdx ? 'text-white font-semibold' : 'text-white/50 group-hover:text-white/80'}`}>
