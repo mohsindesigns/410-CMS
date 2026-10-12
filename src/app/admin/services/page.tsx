@@ -266,7 +266,7 @@ export default function ServicesAdminPage() {
   });
 
   useEffect(() => {
-    fetch("/api/content").then(res => res.json()).then(json => {
+    fetch("/api/content", { cache: "no-store" }).then(res => res.json()).then(json => {
       setData(json);
       setServices(json.services?.services || []);
     });
@@ -281,8 +281,17 @@ export default function ServicesAdminPage() {
 
   const saveToDb = async (newServices: any[], keepEditingIdx?: number, updatedForm?: any) => {
     setSaving(true);
-    const updatedData = { ...data, services: { ...data.services, services: newServices } };
     try {
+      // Re-read the live blob right before writing. The PUT replaces the whole document, so
+      // merging onto whatever this tab loaded minutes ago would silently revert edits made
+      // elsewhere (another admin page / another tab) in the meantime.
+      let base = data;
+      try {
+        const freshRes = await fetch("/api/content", { cache: "no-store" });
+        if (freshRes.ok) base = await freshRes.json();
+      } catch { /* fall back to in-memory copy */ }
+
+      const updatedData = { ...base, services: { ...(base?.services || {}), services: newServices } };
       const res = await fetch("/api/content", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updatedData) });
       if (res.ok) {
         setData(updatedData);
@@ -297,6 +306,9 @@ export default function ServicesAdminPage() {
         } else {
           setIsEditing(null);
         }
+      } else {
+        const err = await res.json().catch(() => ({}));
+        setToast({ type: "err", msg: `Failed to save (${res.status}): ${err?.error || "server error"}` });
       }
     } catch {
       setToast({ type: "err", msg: "Failed to save." });
