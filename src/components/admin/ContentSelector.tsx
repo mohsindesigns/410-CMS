@@ -15,9 +15,17 @@ interface ContentSelectorProps {
   valueMode?: "items" | "ids";
 }
 
-// Stable key for a review (reviews carry no id). Keep in sync with reviewKey() in useContent.ts.
-export const getReviewKey = (item: any) =>
+// Legacy composite key (used before reviews had ids). Keep in sync with useContent.ts.
+const legacyReviewKey = (item: any) =>
   item ? `${item.name || ''}::${(item.text || item.quote || '').slice(0, 30)}` : '';
+
+// Stable key for a review: its id when it has one (assigned by /admin/reviews), else the legacy key.
+export const getReviewKey = (item: any) => (item?.id ? String(item.id) : legacyReviewKey(item));
+
+// A saved key matches a review by id, by the legacy key frozen at the time the id was assigned,
+// or by the current legacy key (so selections saved before ids existed keep resolving).
+const reviewMatchesKey = (item: any, key: any) =>
+  !!item && (String(item.id || '') === String(key) || item.legacyKey === key || legacyReviewKey(item) === key);
 
 export default function ContentSelector({ type, selectedItems = [], onSelect, label, valueMode = "items" }: ContentSelectorProps) {
   const rawSelected = Array.isArray(selectedItems) ? selectedItems : [];
@@ -67,7 +75,9 @@ export default function ContentSelector({ type, selectedItems = [], onSelect, la
 
   // In ids mode, resolve the saved keys against the master list (unresolvable/stale keys are dropped).
   const safeSelectedItems: any[] = idMode
-    ? rawSelected.map((id) => items.find((it) => getItemKey(it) === id)).filter(Boolean)
+    ? rawSelected
+        .map((id) => items.find((it) => (type === 'reviews' ? reviewMatchesKey(it, id) : getItemKey(it) === id)))
+        .filter(Boolean)
     : rawSelected;
 
   const emit = (list: any[]) => onSelect(idMode ? list.map(getItemKey) : list);

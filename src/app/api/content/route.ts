@@ -77,11 +77,24 @@ export async function PUT(req: NextRequest) {
       if (base?.data) {
         finalData = { ...liveData };
         const keys = new Set<string>([...Object.keys(clientData), ...Object.keys(base.data)]);
+        const isObj = (v: any) => v && typeof v === 'object' && !Array.isArray(v);
+        const differs = (a: any, b: any) => JSON.stringify(a) !== JSON.stringify(b);
         keys.forEach((k) => {
-          const changedByClient = JSON.stringify(clientData[k]) !== JSON.stringify(base.data[k]);
-          if (!changedByClient) return; // untouched by this editor -> keep the live value
-          if (k in clientData) finalData[k] = clientData[k];
-          else delete finalData[k];
+          if (!differs(clientData[k], base.data[k])) return; // untouched by this editor -> keep live value
+          if (!(k in clientData)) { delete finalData[k]; return; }
+          // Sections shared by several editors (services, testimonials, faq...) hold independent
+          // sub-keys, so merge those one level deeper instead of replacing the whole section.
+          if (isObj(clientData[k]) && isObj(base.data[k]) && isObj(liveData[k])) {
+            const merged: any = { ...liveData[k] };
+            new Set([...Object.keys(clientData[k]), ...Object.keys(base.data[k])]).forEach((sk) => {
+              if (!differs(clientData[k][sk], base.data[k][sk])) return;
+              if (sk in clientData[k]) merged[sk] = clientData[k][sk];
+              else delete merged[sk];
+            });
+            finalData[k] = merged;
+          } else {
+            finalData[k] = clientData[k];
+          }
         });
       }
     }

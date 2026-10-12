@@ -329,12 +329,14 @@ export const useContent = () => {
             // t.testimonials is the MASTER review list (owned by /admin/reviews, rendered in full by ReviewsTemplate).
             // t.featured (array of review keys, written by the Home editor) selects which of them the home section shows.
             // Key format must stay in sync with getReviewKey() in components/admin/ContentSelector.tsx.
-            const reviewKey = (r: any) => `${r?.name || ''}::${(r?.text || r?.quote || '').slice(0, 30)}`;
+            const legacyReviewKey = (r: any) => `${r?.name || ''}::${(r?.text || r?.quote || '').slice(0, 30)}`;
+            const reviewMatches = (r: any, key: any) =>
+                !!r && (String(r.id || '') === String(key) || r.legacyKey === key || legacyReviewKey(r) === key);
             const masterReviews: any[] = Array.isArray(t.testimonials) ? t.testimonials : [];
             const featuredIds: any[] | null = Array.isArray(t.featured) ? t.featured : null;
             const selectedReviews = featuredIds
                 ? featuredIds
-                    .map((id: any) => masterReviews.find((r: any) => reviewKey(r) === id))
+                    .map((id: any) => masterReviews.find((r: any) => reviewMatches(r, id)))
                     .filter(Boolean)
                 : masterReviews; // legacy behaviour until the Home editor is saved with a featured selection
             const mappedReviews = selectedReviews.map((r: any) => ({

@@ -637,7 +637,12 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                     pg.protocolBannerTitle
                   ) : (
                     <>
-                      {pg.protocolBannerTitlePrefix}  {pg.protocolBannerTitleSuffix}
+                      {/* The untouched defaults ("Ready to experience" + "?") only read correctly with the
+                          service name between them; customised prefix/suffix are shown exactly as written. */}
+                      {pg.protocolBannerTitlePrefix}{' '}
+                      {pg.protocolBannerTitlePrefix === "Ready to experience" && pg.protocolBannerTitleSuffix === "?"
+                        ? `${serviceName}?`
+                        : pg.protocolBannerTitleSuffix}
                     </>
                   )}
                 </h3>

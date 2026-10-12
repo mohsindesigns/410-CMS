@@ -11,6 +11,15 @@ const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor")
   loading: () => <div className="h-64 bg-[#f6f7f7] animate-pulse border border-[#c3c4c7] rounded-sm flex items-center justify-center text-[#8c8f94] text-xs">Loading Rich Text Editor...</div>
 });
 
+// Reviews had no id, so the home page picked them by "name + first 30 chars" - editing either
+// silently un-featured the review. Give each a permanent id (and freeze its old key as fallback).
+const newReviewId = () => `rv_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
+const withStableIds = (list: any[]) => list.map((r: any) => ({
+  ...r,
+  id: r.id || newReviewId(),
+  legacyKey: r.legacyKey || `${r.name || ''}::${(r.text || r.quote || '').slice(0, 30)}`,
+}));
+
 export default function ReviewsAdminPage() {
   const [data, setData] = useState<any>(null);
   const [testimonials, setTestimonials] = useState<any[]>([]);
@@ -32,7 +41,7 @@ export default function ReviewsAdminPage() {
   useEffect(() => {
     fetch("/api/content").then(res => res.json()).then(json => {
         setData(json);
-        setTestimonials(json.testimonials?.testimonials || []);
+        setTestimonials(withStableIds(json.testimonials?.testimonials || []));
       });
   }, []);
 
@@ -60,7 +69,7 @@ export default function ReviewsAdminPage() {
     if (!form.name || !form.text) return alert("Name and review text are required!");
     const newTestimonials = [...testimonials];
     if (isEditing !== null && isEditing < testimonials.length) newTestimonials[isEditing] = { ...form };
-    else newTestimonials.push({ ...form });
+    else newTestimonials.push({ ...form, id: newReviewId() });
     saveToDb(newTestimonials);
   };
 
