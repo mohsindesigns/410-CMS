@@ -8,7 +8,7 @@ import {
   List, Mail, BookOpen, ChevronRight, Check
 } from "lucide-react";
 import dynamic from "next/dynamic";
-import ContentSelector from "@/components/admin/ContentSelector";
+import ContentSelector, { getReviewKey } from "@/components/admin/ContentSelector";
 import ImageField from "@/components/admin/ImageField";
 import BlogSelector from "@/components/admin/BlogSelector";
 
@@ -934,10 +934,22 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                 <ContentSelector
                   type="reviews"
                   label="Select Customer Reviews to Display"
-                  selectedItems={data.testimonials?.testimonials || data.testimonials?.items || []}
-                  onSelect={(items) => {
-                    updateSection("testimonials", "testimonials", items);
-                    updateSection("testimonials", "items", items);
+                  valueMode="ids"
+                  // Selection is stored ONLY in testimonials.featured (array of review keys).
+                  // testimonials.testimonials is the master list owned by /admin/reviews and is never written here.
+                  // Until featured has been saved once, mirror what the live home page currently shows
+                  // (master list if non-empty, else legacy items) - same fallback as useContent.
+                  selectedItems={
+                    Array.isArray(data.testimonials?.featured)
+                      ? data.testimonials.featured
+                      : (
+                          (Array.isArray(data.testimonials?.testimonials) && data.testimonials.testimonials.length > 0)
+                            ? data.testimonials.testimonials
+                            : (Array.isArray(data.testimonials?.items) ? data.testimonials.items : [])
+                        ).map(getReviewKey)
+                  }
+                  onSelect={(ids) => {
+                    updateSection("testimonials", "featured", ids);
                   }}
                 />
               </div>
@@ -1234,19 +1246,16 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                 </div>
 
                 <div className="space-y-3">
+                  {/* The homepage FAQ shows the site-wide FAQ list (shared with the FAQ page). Deleting is only
+                      available in /admin/faq so removing a question here can't silently wipe it everywhere. */}
+                  <p className="text-[12px] text-[#646970]">
+                    These questions are the site-wide FAQ list shared with the FAQ page. Edits here apply everywhere; to delete or categorize a question, use{" "}
+                    <a href="/admin/faq" className="text-[#2271b1] underline">FAQs</a>.
+                  </p>
                   {(data.faq?.items || []).map((faq: any, i: number) => (
                     <div key={i} className={UI.card + " space-y-3 relative"}>
                       <div className="flex justify-between items-center pb-2 border-b border-[#f0f0f1]">
                         <span className="text-[10px] font-bold text-[#646970] uppercase">Question #{i + 1}</span>
-                        <button
-                          onClick={() => {
-                            const newFaqs = data.faq.items.filter((_: any, idx: number) => idx !== i);
-                            updateSection("faq", "items", newFaqs);
-                          }}
-                          className="text-[#d63638] hover:bg-red-50 p-1.5 rounded"
-                        >
-                          <Trash2 className="w-4 h-4" />
-                        </button>
                       </div>
                       <div className="space-y-1.5">
                         <label className={UI.label}>Question</label>

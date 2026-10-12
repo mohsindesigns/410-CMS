@@ -296,6 +296,9 @@ export default function SettingsEditor() {
       if (res.ok) {
         setToast({ type: "ok", msg: "Settings saved." });
         setTimeout(() => setToast(null), 3000);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        setToast({ type: "err", msg: `Failed to save settings (${res.status}): ${err?.error || "server error"}` });
       }
     } catch {
       setToast({ type: "err", msg: "Error saving settings." });

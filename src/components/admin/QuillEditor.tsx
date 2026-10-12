@@ -31,11 +31,11 @@ export default function QuillEditor({ content, onChange, label, placeholder }: Q
       if (quillRef.current) {
         isUpdating.current = true;
         const normalized = normalizeContent(content);
-        const editorEl = editorRef.current?.querySelector(".ql-editor");
-        if (editorEl) {
-          editorEl.innerHTML = normalized;
+        try {
+          quillRef.current.setContents(quillRef.current.clipboard.convert(normalized), "silent");
+        } finally {
+          isUpdating.current = false;
         }
-        isUpdating.current = false;
       }
     }
     setIsHtmlMode(!isHtmlMode);

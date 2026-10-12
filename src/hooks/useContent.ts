@@ -326,14 +326,25 @@ export const useContent = () => {
             const quoteIcon = t.quoteIcon || "\"";
             const dash = t.dash || "—";
             
-            // Map selected reviews to items
-            const selectedReviews = t.testimonials || [];
+            // t.testimonials is the MASTER review list (owned by /admin/reviews, rendered in full by ReviewsTemplate).
+            // t.featured (array of review keys, written by the Home editor) selects which of them the home section shows.
+            // Key format must stay in sync with getReviewKey() in components/admin/ContentSelector.tsx.
+            const reviewKey = (r: any) => `${r?.name || ''}::${(r?.text || r?.quote || '').slice(0, 30)}`;
+            const masterReviews: any[] = Array.isArray(t.testimonials) ? t.testimonials : [];
+            const featuredIds: any[] | null = Array.isArray(t.featured) ? t.featured : null;
+            const selectedReviews = featuredIds
+                ? featuredIds
+                    .map((id: any) => masterReviews.find((r: any) => reviewKey(r) === id))
+                    .filter(Boolean)
+                : masterReviews; // legacy behaviour until the Home editor is saved with a featured selection
             const mappedReviews = selectedReviews.map((r: any) => ({
                 quote: r.text || r.quote || "",
                 name: r.name || "",
                 stars: r.rating || r.stars || 5
             }));
-            const items = mappedReviews.length > 0 ? mappedReviews : (t.items || []);
+            const items = featuredIds
+                ? mappedReviews
+                : (mappedReviews.length > 0 ? mappedReviews : (t.items || []));
             const results = t.results || [];
 
             return {

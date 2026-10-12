@@ -206,10 +206,11 @@ export default async function HomePage() {
             templateName={page.template} 
             pageData={{
               ...page,
-              content: {
-                ...(content?.data || {}),
-                ...(page.content || {})
-              }
+              // A 'home'-template Page doc holds a MIRROR of the global blob; if it is stale the
+              // live global content must win. Other templates keep page-specific overrides on top.
+              content: page.template === 'home'
+                ? { ...(page.content || {}), ...(content?.data || {}) }
+                : { ...(content?.data || {}), ...(page.content || {}) }
             }} 
             params={Promise.resolve({ slug: ['/'] })} 
           />
@@ -241,7 +242,7 @@ export default async function HomePage() {
   return (
     <>
       {schemaScripts}
-      <HomeTemplate pageData={{ ...(homePage || {}), content: { ...(content?.data || {}), ...(homePage?.content || {}) } }} />
+      <HomeTemplate pageData={{ ...(homePage || {}), content: { ...(homePage?.content || {}), ...(content?.data || {}) } }} />
     </>
   );
 }

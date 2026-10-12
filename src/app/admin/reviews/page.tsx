@@ -47,6 +47,9 @@ export default function ReviewsAdminPage() {
         setToast({ type: "ok", msg: "Reviews updated." });
         setTimeout(() => setToast(null), 3000);
         setIsEditing(null);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        setToast({ type: "err", msg: `Failed to save (${res.status}): ${err?.error || "server error"}` });
       }
     } catch {
       setToast({ type: "err", msg: "Error saving." });

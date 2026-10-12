@@ -13,6 +13,13 @@ export const revalidate = 0;
 
 const NO_STORE = { 'Cache-Control': 'no-store, no-cache, max-age=0, must-revalidate' };
 
+// Every admin editor loads this blob, edits a slice and PUTs the WHOLE blob back. To stop a stale
+// editor (another tab / page left open) from reverting edits made elsewhere, GET stamps the blob
+// with the revision it was read at (`__rev`) and keeps a snapshot of each revision, so PUT can
+// 3-way merge: only top-level sections the editor actually CHANGED overwrite the live data.
+const REV_KEY = (rev: number | string) => `complete_data_rev_${rev}`;
+const REV_KEEP = 25;
+
 export async function GET() {
   try {
     await connectToDatabase();
@@ -25,7 +32,21 @@ export async function GET() {
       return NextResponse.json({ error: 'Content not found' }, { status: 404, headers: NO_STORE });
     }
 
-    return NextResponse.json(content.data, { headers: NO_STORE });
+    const rev = content.lastUpdated ? new Date(content.lastUpdated).getTime() : 0;
+    if (rev) {
+      try {
+        // Ensure the revision this client is about to edit from can be used as a merge base later.
+        await SiteContent.updateOne(
+          { key: REV_KEY(rev) },
+          { $setOnInsert: { data: content.data, lastUpdated: new Date(rev) } },
+          { upsert: true }
+        );
+      } catch (e) {
+        console.error('Failed to snapshot content revision:', e);
+      }
+    }
+
+    return NextResponse.json({ ...content.data, __rev: rev }, { headers: NO_STORE });
   } catch (error: any) {
     console.error('Content fetch error:', error);
     return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });
@@ -44,25 +65,54 @@ export async function PUT(req: NextRequest) {
     const sanitizedBody = sanitizeEncoding(body);
 
     const oldContent = await SiteContent.findOne({ key: 'complete_data' });
+    const liveData: any = oldContent?.data || {};
+    const liveRev = oldContent?.lastUpdated ? new Date(oldContent.lastUpdated).getTime() : 0;
 
-    // The services list is owned by /admin/services only (it sends X-Content-Scope: services).
-    // Every other editor PUTs a whole-blob snapshot it loaded earlier; if we accepted its copy of
-    // `services.services` it would silently revert service edits made since. Keep the live list.
-    const liveServices = oldContent?.data?.services?.services;
-    if (req.headers.get('x-content-scope') !== 'services' && Array.isArray(liveServices)) {
-      sanitizedBody.services = { ...(sanitizedBody.services || {}), services: liveServices };
+    const { __rev: clientRev, ...clientData } = sanitizedBody || {};
+    let finalData: any = clientData;
+
+    // Stale client (it loaded revision N but the live doc has moved on): merge instead of clobber.
+    if (clientRev && liveRev && Number(clientRev) !== liveRev) {
+      const base: any = await SiteContent.findOne({ key: REV_KEY(clientRev) }).lean();
+      if (base?.data) {
+        finalData = { ...liveData };
+        const keys = new Set<string>([...Object.keys(clientData), ...Object.keys(base.data)]);
+        keys.forEach((k) => {
+          const changedByClient = JSON.stringify(clientData[k]) !== JSON.stringify(base.data[k]);
+          if (!changedByClient) return; // untouched by this editor -> keep the live value
+          if (k in clientData) finalData[k] = clientData[k];
+          else delete finalData[k];
+        });
+      }
     }
 
+    // The services list is owned by /admin/services only (it sends X-Content-Scope: services).
+    // Never let another editor's copy of `services.services` replace the live list.
+    const liveServices = liveData?.services?.services;
+    if (req.headers.get('x-content-scope') !== 'services' && Array.isArray(liveServices)) {
+      finalData.services = { ...(finalData.services || {}), services: liveServices };
+    }
+
+    const now = new Date();
     const result = await SiteContent.updateOne(
       { key: 'complete_data' },
-      { 
-        $set: { 
-          data: sanitizedBody,
-          lastUpdated: new Date()
-        } 
-      },
+      { $set: { data: finalData, lastUpdated: now } },
       { upsert: true }
     );
+
+    // Keep a snapshot of the new revision (merge base for the next stale writer) and prune old ones.
+    try {
+      await SiteContent.updateOne(
+        { key: REV_KEY(now.getTime()) },
+        { $set: { data: finalData, lastUpdated: now } },
+        { upsert: true }
+      );
+      const stale = await SiteContent.find({ key: /^complete_data_rev_/ })
+        .sort({ lastUpdated: -1 }).skip(REV_KEEP).select('_id').lean();
+      if (stale.length) await SiteContent.deleteMany({ _id: { $in: stale.map((d: any) => d._id) } });
+    } catch (e) {
+      console.error('Failed to store content revision snapshot:', e);
+    }
 
     await recordActivity({
       user: (session as any).userId,
@@ -71,7 +121,7 @@ export async function PUT(req: NextRequest) {
       entity: 'Settings',
       details: {
         before: { siteTitle: oldContent?.data?.settings?.siteTitle },
-        after: { siteTitle: body?.settings?.siteTitle },
+        after: { siteTitle: finalData?.settings?.siteTitle },
         message: 'Updated site settings and global content'
       },
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
@@ -79,9 +129,10 @@ export async function PUT(req: NextRequest) {
 
     try {
       const Page = (await import('@/models/Page')).default;
-      await Page.updateOne(
+      // updateMany: duplicated / alternate home docs must not keep a frozen snapshot of the blob.
+      await Page.updateMany(
         { $or: [{ slug: 'home' }, { slug: '/' }, { template: 'home' }] },
-        { $set: { content: sanitizedBody, updatedAt: new Date() } }
+        { $set: { content: finalData, updatedAt: new Date() } }
       );
     } catch (pageErr) {
       console.error('Failed to sync content to home Page doc:', pageErr);
@@ -95,7 +146,7 @@ export async function PUT(req: NextRequest) {
 
     // Belt and braces for the catch-all service URLs (/deep-tissue-massage-maryland/) —
     // revalidate each explicitly, with and without the trailing slash.
-    const serviceSlugs: string[] = (sanitizedBody?.services?.services || [])
+    const serviceSlugs: string[] = (finalData?.services?.services || [])
       .map((s: any) => s?.slug)
       .filter(Boolean);
     for (const slug of serviceSlugs) {
@@ -103,7 +154,7 @@ export async function PUT(req: NextRequest) {
       revalidatePath(`/${slug}/`);
     }
 
-    return NextResponse.json({ success: true, result }, { headers: NO_STORE });
+    return NextResponse.json({ success: true, result, rev: now.getTime() }, { headers: NO_STORE });
   } catch (error: any) {
     console.error('Content update error:', error);
     return NextResponse.json({ error: 'Internal Server Error', details: error.message }, { status: 500 });

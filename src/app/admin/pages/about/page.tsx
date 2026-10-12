@@ -50,7 +50,8 @@ export default function AboutEditor() {
         setMessage("About page content saved successfully!");
         setTimeout(() => setMessage(""), 3000);
       } else {
-        setMessage("Failed to save content.");
+        const err = await res.json().catch(() => ({}));
+        setMessage(`Failed to save content (${res.status}): ${err?.error || "server error"}`);
       }
     } catch (err) {
       setMessage("Error saving content.");

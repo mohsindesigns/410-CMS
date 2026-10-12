@@ -96,7 +96,13 @@ export default function RichTextEditor({
       Underline,
       Link.configure({
         openOnClick: false,
+        // target/rel must be explicitly nulled: tiptap's defaults (target="_blank",
+        // rel="noopener noreferrer nofollow") are deep-merged in and also used as the parse
+        // default for any <a> lacking those attributes, which would inject nofollow/_blank
+        // into every re-saved link (including internal ones). null => attribute omitted.
         HTMLAttributes: {
+          target: null,
+          rel: null,
           class: "text-primary no-underline hover:opacity-80 transition-opacity",
         },
       }),

@@ -38,6 +38,9 @@ export default function CareersPageEditor() {
       if (res.ok) {
         setMessage("Changes saved successfully!");
         setTimeout(() => setMessage(""), 3000);
+      } else {
+        const err = await res.json().catch(() => ({}));
+        setMessage(`Failed to save changes (${res.status}): ${err?.error || "server error"}`);
       }
     } catch (err) {
       console.error("Save failed:", err);

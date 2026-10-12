@@ -6,13 +6,22 @@ import { motion } from "framer-motion";
 
 interface ContentSelectorProps {
   type: "services" | "projects" | "reviews" | "faq";
+  // valueMode "items" (default): selectedItems / onSelect carry full item objects.
+  // valueMode "ids": selectedItems is an array of item keys and onSelect receives an array of
+  // item keys, so the master list is only ever READ here, never copied into the selection.
   selectedItems: any[];
   onSelect: (items: any[]) => void;
   label: string;
+  valueMode?: "items" | "ids";
 }
 
-export default function ContentSelector({ type, selectedItems = [], onSelect, label }: ContentSelectorProps) {
-  const safeSelectedItems = Array.isArray(selectedItems) ? selectedItems : [];
+// Stable key for a review (reviews carry no id). Keep in sync with reviewKey() in useContent.ts.
+export const getReviewKey = (item: any) =>
+  item ? `${item.name || ''}::${(item.text || item.quote || '').slice(0, 30)}` : '';
+
+export default function ContentSelector({ type, selectedItems = [], onSelect, label, valueMode = "items" }: ContentSelectorProps) {
+  const rawSelected = Array.isArray(selectedItems) ? selectedItems : [];
+  const idMode = valueMode === "ids";
   const [items, setItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
@@ -48,13 +57,20 @@ export default function ContentSelector({ type, selectedItems = [], onSelect, la
     if (!item) return '';
     // For reviews/testimonials, build a composite key since they lack stable IDs
     if (type === 'reviews') {
-      return `${item.name || ''}::${(item.text || item.quote || '').slice(0, 30)}`;
+      return getReviewKey(item);
     }
     if (type === 'services') {
       return item.slug || item.id || item.title || item.name || '';
     }
     return item._id || item.id || item.slug || item.title || item.name || item.question || '';
   };
+
+  // In ids mode, resolve the saved keys against the master list (unresolvable/stale keys are dropped).
+  const safeSelectedItems: any[] = idMode
+    ? rawSelected.map((id) => items.find((it) => getItemKey(it) === id)).filter(Boolean)
+    : rawSelected;
+
+  const emit = (list: any[]) => onSelect(idMode ? list.map(getItemKey) : list);
 
   const isSelected = (item: any) => {
     const itemKey = getItemKey(item);
@@ -65,9 +81,9 @@ export default function ContentSelector({ type, selectedItems = [], onSelect, la
   const toggleSelection = (item: any) => {
     if (isSelected(item)) {
       const itemKey = getItemKey(item);
-      onSelect(safeSelectedItems.filter((s) => getItemKey(s) !== itemKey));
+      emit(safeSelectedItems.filter((s) => getItemKey(s) !== itemKey));
     } else {
-      onSelect([...safeSelectedItems, item]);
+      emit([...safeSelectedItems, item]);
     }
   };
 
@@ -78,12 +94,12 @@ export default function ContentSelector({ type, selectedItems = [], onSelect, la
 
     const [moved] = newItems.splice(index, 1);
     newItems.splice(newIndex, 0, moved);
-    onSelect(newItems);
+    emit(newItems);
   };
 
   const removeItem = (index: number) => {
     const newItems = safeSelectedItems.filter((_, i) => i !== index);
-    onSelect(newItems);
+    emit(newItems);
   };
 
   const filteredItems = items.filter(item => {

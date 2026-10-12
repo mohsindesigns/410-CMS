@@ -32,7 +32,11 @@ export default function ContactEditor() {
                 body: JSON.stringify(data),
             });
 
-            if (!res.ok) throw new Error("Failed to save");
+            if (!res.ok) {
+                const err = await res.json().catch(() => ({}));
+                setMessage(`Error saving changes (${res.status}): ${err?.error || "server error"}`);
+                return;
+            }
             setMessage("Saved successfully!");
             setTimeout(() => setMessage(""), 3000);
         } catch (err) {

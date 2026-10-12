@@ -172,12 +172,30 @@ export default async function DynamicPage({ params }: PageProps) {
 
       const featuredImage = getAbsoluteUrl(service?.seo?.featuredImage || service?.seo?.ogImage || service?.seo?.twitterImage || service?.image);
 
+      // Custom bulk FAQ JSON-LD saved in the services editor ("FAQ Schema Markup"). Previously saved
+      // but never rendered. When valid it replaces the auto-generated FAQPage to avoid duplicates.
+      let customFaqSchema: string | null = null;
+      const rawFaqMarkup = typeof service.faqSchemaMarkup === 'string' ? service.faqSchemaMarkup.trim() : '';
+      if (rawFaqMarkup) {
+        let cleaned = rawFaqMarkup;
+        if (cleaned.startsWith('<script')) {
+          const close = cleaned.indexOf('>');
+          if (close !== -1) cleaned = cleaned.substring(close + 1);
+        }
+        if (cleaned.endsWith('</script>')) cleaned = cleaned.substring(0, cleaned.length - 9);
+        try {
+          customFaqSchema = JSON.stringify(JSON.parse(cleaned.trim())).replace(/</g, '\\u003c');
+        } catch {
+          customFaqSchema = null;
+        }
+      }
+
       const schema = generateSchema({
         title: service?.seo?.metaTitle || service?.title || "",
         description: service?.seo?.metaDescription || service?.description || "",
         slug: slug,
         type: "Service",
-        faqs: serviceFaqItems,
+        faqs: customFaqSchema ? undefined : serviceFaqItems,
         breadcrumbTitle: service?.seo?.breadcrumbTitle,
         isService: true,
         image: featuredImage,
@@ -192,6 +210,13 @@ export default async function DynamicPage({ params }: PageProps) {
             type="application/ld+json"
             dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
           />
+          {customFaqSchema && (
+            <script
+              id="json-ld-faq-schema"
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: customFaqSchema }}
+            />
+          )}
           <ServiceDetailTemplate pageData={service} params={Promise.resolve({ slug })} />
         </main>
       );
