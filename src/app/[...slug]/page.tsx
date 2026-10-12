@@ -142,8 +142,8 @@ export default async function DynamicPage({ params }: PageProps) {
     const services = globalData.services?.services || [];
     const serviceItems = globalData.services?.items || [];
     const serviceDoc =
-      services.find((s: any) => s.slug === slug && s.status !== 'draft') ||
-      serviceItems.find((s: any) => s.slug === slug);
+      services.find((s: any) => s.slug === slug && s.status !== 'draft' && !s.isTrashed) ||
+      serviceItems.find((s: any) => s.slug === slug && s.status !== 'draft' && !s.isTrashed);
 
     if (serviceDoc) {
       if (settings.homepageId && (String(serviceDoc._id) === String(settings.homepageId) || serviceDoc.slug === settings.homepageId)) {

@@ -80,6 +80,7 @@ export async function POST(req: NextRequest) {
     });
 
     try {
+      revalidatePath('/', 'layout'); // home blog section + layout-level post list
       revalidatePath('/blogs');
       revalidatePath('/blog');
       if (post.slug) {

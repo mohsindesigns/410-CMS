@@ -3,6 +3,7 @@ import connectToDatabase from '@/lib/mongodb';
 import Post from '@/models/Post';
 import { getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
+import { revalidatePath } from 'next/cache';
 
 export async function POST(req: NextRequest) {
   try {
@@ -66,6 +67,9 @@ export async function POST(req: NextRequest) {
         ip: req.headers.get('x-forwarded-for') || 'unknown'
       });
     }
+
+    revalidatePath('/', 'layout');
+
 
     return NextResponse.json({ success: true });
   } catch (err: any) {

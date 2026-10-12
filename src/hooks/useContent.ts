@@ -160,9 +160,14 @@ export const useContent = () => {
         })(),
         services: (() => {
             const s = getSafe(completeData, 'services', { services: [] });
-            const allServices = Array.isArray(s.services) && s.services.length > 0 
-                ? s.services 
+            const rawAllServices = Array.isArray(s.services) && s.services.length > 0
+                ? s.services
                 : (Array.isArray(s.items) ? s.items : []);
+            // Trashed / draft services must not show anywhere on the public site.
+            const isHidden = (svc: any) => !!svc && (svc.isTrashed === true || svc.status === 'draft');
+            const allServices = rawAllServices.filter((svc: any) => !isHidden(svc));
+            const findLive = (item: any) => rawAllServices.find((svc: any) =>
+                (item?.slug && svc?.slug === item.slug) || (item?.id && svc?.id === item.id));
 
             const formatService = (item: any, i: number) => {
                 const title = item.title || item.name || `Service ${i + 1}`;
@@ -193,7 +198,17 @@ export const useContent = () => {
             };
 
             const formattedServices = allServices.map((svc: any, i: number) => formatService(svc, i)).sort(sortAscending);
-            const rawItems = Array.isArray(s.items) && s.items.length > 0 ? s.items : formattedServices.slice(0, 6);
+            // `items` is a frozen copy saved by the home editor's "featured services" picker. Resolve each
+            // entry against the live service so edits made in /admin/services show up on the home page
+            // instead of the stale snapshot, and drop entries that were trashed / drafted since.
+            const rawItems = Array.isArray(s.items) && s.items.length > 0
+                ? s.items
+                    .map((it: any) => {
+                        const live = findLive(it);
+                        return live ? { ...it, ...live } : it;
+                    })
+                    .filter((it: any) => !isHidden(it))
+                : formattedServices.slice(0, 6);
             const formattedItems = rawItems.map((svc: any, i: number) => formatService(svc, i)).sort(sortAscending);
 
             const label = s.label || s.badge || "Our Services";

@@ -73,7 +73,13 @@ export async function PATCH(
       try {
         const SiteContent = (await import('@/models/Content')).default;
         const currentSiteDoc = await SiteContent.findOne({ key: 'complete_data' });
-        const mergedData = { ...(currentSiteDoc?.data || {}), ...content };
+        const liveData = currentSiteDoc?.data || {};
+        const mergedData: any = { ...liveData, ...content };
+        // The services list is owned by /admin/services. The home editor holds a snapshot loaded
+        // earlier, so writing its copy back would silently revert every service edit made since.
+        if (Array.isArray(liveData?.services?.services)) {
+          mergedData.services = { ...(content?.services || {}), services: liveData.services.services };
+        }
         await SiteContent.updateOne(
           { key: 'complete_data' },
           { $set: { data: mergedData, lastUpdated: new Date() } },
@@ -87,9 +93,15 @@ export async function PATCH(
     if (updatedPage && updatedPage.slug) {
       try {
         const { revalidatePath } = await import('next/cache');
-        const pagePath = updatedPage.slug.startsWith('/') ? updatedPage.slug : `/${updatedPage.slug}`;
-        revalidatePath(pagePath);
-        revalidatePath('/');
+        // Whole tree: navbar/footer/layout data are baked into every cached route, and
+        // trailingSlash is on, so also hit the explicit URLs (new and previous slug).
+        revalidatePath('/', 'layout');
+        for (const s of [updatedPage.slug, oldPage.slug]) {
+          if (!s) continue;
+          const p = s.startsWith('/') ? s : `/${s}`;
+          revalidatePath(p);
+          revalidatePath(p.endsWith('/') ? p : `${p}/`);
+        }
       } catch (err) {
         console.error('Failed to revalidate path:', err);
       }
@@ -116,6 +128,13 @@ export async function DELETE(
     await connectToDatabase();
     const deletedPage = await Page.findByIdAndDelete(id);
     if (!deletedPage) return NextResponse.json({ error: 'Page not found' }, { status: 404 });
+
+    try {
+      const { revalidatePath } = await import('next/cache');
+      revalidatePath('/', 'layout');
+    } catch (err) {
+      console.error('Failed to revalidate after delete:', err);
+    }
 
     await recordActivity({
       user: (session as any).userId,

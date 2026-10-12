@@ -133,19 +133,47 @@ export default async function RootLayout({
   let initialGlobalData = null;
   let initialBlogs = [];
   try {
-    const [globalContent, blogPosts] = await Promise.all([
-      SiteContent.findOne({ key: 'complete_data' }).lean() as any,
-      import('@/models/Post').then(m => m.default.find({ status: 'published', isTrashed: { $ne: true } })
-        .select('title slug featuredImage excerpt date publishedAt author authorName categories')
-        .sort({ date: -1 })
+    const globalContent = await SiteContent.findOne({ key: 'complete_data' }).lean() as any;
+    const mongoose = (await import('mongoose')).default;
+    const Post = (await import('@/models/Post')).default;
+
+    // Home/About "selected posts" resolve by _id against this list, and nested providers no
+    // longer refetch /api/blog - so besides the 6 newest posts, always include the hand-picked ones.
+    const selectedIds: string[] = (globalContent?.data?.blogSection?.selectedPosts || [])
+      .map(String)
+      .filter((id: string) => mongoose.isValidObjectId(id));
+    const baseFilter = { status: 'published', isTrashed: { $ne: true } };
+    const fields = 'title slug featuredImage excerpt date publishedAt author authorName categories';
+
+    const [latest, picked] = await Promise.all([
+      Post.find(baseFilter)
+        .select(fields)
+        // Post has no `date` field (only publishedAt/createdAt) - the old `date: -1` sort was a
+        // no-op, so this returned the 6 OLDEST posts in insertion order.
+        .sort({ publishedAt: -1, createdAt: -1 })
         .limit(6)
         .populate('categories', 'name')
         .populate('author', 'name')
-        .lean())
+        .lean(),
+      selectedIds.length
+        ? Post.find({ ...baseFilter, _id: { $in: selectedIds } })
+            .select(fields)
+            .populate('categories', 'name')
+            .populate('author', 'name')
+            .lean()
+        : Promise.resolve([] as any[]),
     ]);
 
+    const seen = new Set<string>();
+    const blogPosts = [...latest, ...picked].filter((p: any) => {
+      const id = String(p._id);
+      if (seen.has(id)) return false;
+      seen.add(id);
+      return true;
+    });
+
     if (globalContent?.data) initialGlobalData = globalContent.data;
-    if (blogPosts) initialBlogs = JSON.parse(JSON.stringify(blogPosts));
+    initialBlogs = JSON.parse(JSON.stringify(blogPosts));
   } catch (e) {
     console.error("Failed to fetch initial data for provider", e);
   }

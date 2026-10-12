@@ -292,7 +292,7 @@ export default function ServicesAdminPage() {
       } catch { /* fall back to in-memory copy */ }
 
       const updatedData = { ...base, services: { ...(base?.services || {}), services: newServices } };
-      const res = await fetch("/api/content", { method: "PUT", headers: { "Content-Type": "application/json" }, body: JSON.stringify(updatedData) });
+      const res = await fetch("/api/content", { method: "PUT", headers: { "Content-Type": "application/json", "X-Content-Scope": "services" }, body: JSON.stringify(updatedData) });
       if (res.ok) {
         setData(updatedData);
         setServices(newServices);
@@ -301,7 +301,9 @@ export default function ServicesAdminPage() {
         if (keepEditingIdx !== undefined) {
           setIsEditing(keepEditingIdx);
           if (updatedForm) {
-            setForm(updatedForm);
+            // Only adopt server-assigned identity. Replacing the whole form with the pre-save
+            // snapshot would wipe anything typed while the save was in flight.
+            setForm((prev: any) => ({ ...prev, id: updatedForm.id, number: updatedForm.number }));
           }
         } else {
           setIsEditing(null);

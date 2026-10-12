@@ -45,6 +45,14 @@ export async function PUT(req: NextRequest) {
 
     const oldContent = await SiteContent.findOne({ key: 'complete_data' });
 
+    // The services list is owned by /admin/services only (it sends X-Content-Scope: services).
+    // Every other editor PUTs a whole-blob snapshot it loaded earlier; if we accepted its copy of
+    // `services.services` it would silently revert service edits made since. Keep the live list.
+    const liveServices = oldContent?.data?.services?.services;
+    if (req.headers.get('x-content-scope') !== 'services' && Array.isArray(liveServices)) {
+      sanitizedBody.services = { ...(sanitizedBody.services || {}), services: liveServices };
+    }
+
     const result = await SiteContent.updateOne(
       { key: 'complete_data' },
       { 

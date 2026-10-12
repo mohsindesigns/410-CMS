@@ -2,7 +2,8 @@ import { NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Post from '@/models/Post';
 
-export const revalidate = 60; // Cache for 1 minute, updated via revalidatePath in admin panel
+// Never cached: admin pickers (BlogSelector) read this and must see new/renamed/trashed posts immediately.
+export const dynamic = 'force-dynamic';
 
 export async function GET() {
   try {

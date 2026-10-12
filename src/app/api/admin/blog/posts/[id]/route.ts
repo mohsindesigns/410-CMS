@@ -75,6 +75,7 @@ export async function PATCH(
     });
 
     try {
+      revalidatePath('/', 'layout'); // home blog section + layout-level post list
       revalidatePath('/blogs');
       revalidatePath('/blog');
       if (post?.slug) {
@@ -118,6 +119,7 @@ export async function DELETE(
     });
 
     try {
+      revalidatePath('/', 'layout'); // home blog section + layout-level post list
       revalidatePath('/blogs');
       revalidatePath('/blog');
       if (post?.slug) {

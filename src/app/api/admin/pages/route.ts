@@ -3,6 +3,10 @@ import connectToDatabase from '@/lib/mongodb';
 import Page from '@/models/Page';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
+import { revalidatePath } from 'next/cache';
+
+// Pages feed every cached public route (nav, catch-all slugs) - purge the whole tree on any write.
+const purgeSite = () => { try { revalidatePath('/', 'layout'); } catch (e) { console.error('revalidate failed', e); } };
 
 export async function GET(req: NextRequest) {
   if (!(await hasPermission(req, 'pages', 'read'))) {
@@ -45,6 +49,7 @@ export async function POST(req: NextRequest) {
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
     });
 
+    purgeSite();
     return NextResponse.json(newPage);
   } catch (error: any) {
     console.error('Page create error:', error);
@@ -88,6 +93,7 @@ export async function PATCH(req: NextRequest) {
           ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
         });
       }
+      purgeSite();
       return NextResponse.json(newPages);
     }
 
@@ -106,6 +112,9 @@ export async function PATCH(req: NextRequest) {
         ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
       });
 
+      purgeSite();
+
+
       return NextResponse.json({ success: true });
     } else if (action === 'trash' && ids && Array.isArray(ids)) {
       await Page.updateMany(
@@ -122,6 +131,9 @@ export async function PATCH(req: NextRequest) {
         ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
       });
 
+      purgeSite();
+
+
       return NextResponse.json({ success: true });
     } else if (action === 'restore' && ids && Array.isArray(ids)) {
       await Page.updateMany(
@@ -137,6 +149,9 @@ export async function PATCH(req: NextRequest) {
         details: { message: `Bulk restored ${ids.length} pages from trash` },
         ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
       });
+
+      purgeSite();
+
 
       return NextResponse.json({ success: true });
     }
@@ -170,6 +185,9 @@ export async function DELETE(req: NextRequest) {
       details: { ids, message: `Bulk deleted ${ids.length} pages` },
       ip: req.headers.get('x-forwarded-for') || (req as any).ip || 'unknown'
     });
+
+    purgeSite();
+
 
     return NextResponse.json({ success: true });
   } catch (error: any) {
