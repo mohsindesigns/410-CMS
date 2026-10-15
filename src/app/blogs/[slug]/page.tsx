@@ -474,13 +474,13 @@ export default async function BlogPostPage({ params }: Props) {
 
       {/* ── 2. FEATURED COVER IMAGE CONTAINER ────────────────────────── */}
       <div className="mx-auto max-w-6xl px-4 sm:px-6 mt-8 sm:mt-10 relative z-20">
-        <div className="bg-dark-2 rounded-[24px] sm:rounded-[28px] overflow-hidden shadow-2xl border border-white/10 aspect-[16/9] sm:aspect-[21/9] relative group">
+        <div className="bg-dark-2 rounded-[24px] sm:rounded-[28px] overflow-hidden shadow-2xl border border-white/10 relative">
+          {/* Natural height (no fixed aspect box / cropping) so the whole image is visible */}
           <img
             src={featuredImage}
             alt={post.title}
-            className="w-full h-full object-cover object-center transition-transform duration-700 group-hover:scale-105"
+            className="block w-full h-auto"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-transparent to-transparent pointer-events-none" />
         </div>
       </div>
 
