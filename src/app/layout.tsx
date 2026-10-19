@@ -42,9 +42,18 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     metadataBase: new URL(BASE_URL),
+    // Google needs a SQUARE icon (multiple of 48px) on a crawlable URL. settings.favicon is the wide
+    // 384x74 "410 | MUSCLE THERAPY" wordmark, which shrinks to an unreadable "410" in search results,
+    // so the icon links point at square emblem files in /public/icons instead.
     icons: {
-      icon: settings.favicon || `${BASE_URL}/logo.png`,
-      apple: settings.favicon || `${BASE_URL}/logo.png`,
+      icon: [
+        { url: `${BASE_URL}/favicon.ico`, sizes: "48x48" },
+        { url: `${BASE_URL}/icons/icon-48.png`, sizes: "48x48", type: "image/png" },
+        { url: `${BASE_URL}/icons/icon-96.png`, sizes: "96x96", type: "image/png" },
+        { url: `${BASE_URL}/icons/icon-192.png`, sizes: "192x192", type: "image/png" },
+      ],
+      shortcut: `${BASE_URL}/favicon.ico`,
+      apple: [{ url: `${BASE_URL}/icons/apple-touch-icon.png`, sizes: "180x180", type: "image/png" }],
     },
     facebook: {
       appId: "410-Muscle-Therapy-61564977483096",
