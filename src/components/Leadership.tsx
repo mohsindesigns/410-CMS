@@ -15,6 +15,7 @@ export default function Leadership() {
     tagline,
     desc1 = "",
     desc2 = "",
+    desc3 = "",
     photoBadge,
     ctaMore,
     ctaLink = "",
@@ -23,6 +24,10 @@ export default function Leadership() {
     image = "/images/theraphist.jpeg",
     imageAlt = "Antoine Lyles"
   } = leadership || {};
+
+  // Up to three paragraphs; empty ones are skipped. The first reads as the lead paragraph and the
+  // last gets the gold accent rule, so the layout stays balanced with one, two or three.
+  const paragraphs: string[] = [desc1, desc2, desc3].filter((p) => typeof p === "string" && p.replace(/<[^>]*>/g, "").trim());
 
   const bookingUrl = ctaLink || globalMetadata?.bookingUrl || "https://www.styleseat.com/m/v/410muscletherapy";
 
@@ -45,7 +50,7 @@ export default function Leadership() {
       <div className="absolute inset-0 opacity-[0.015] bg-grid-pattern-black pointer-events-none" />
 
       <div className="site-container relative">
-        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1.3fr] gap-16 lg:gap-24 items-center">
+        <div className="grid grid-cols-1 lg:grid-cols-[1.1fr_1.3fr] gap-16 lg:gap-24 items-stretch">
 
           {/* ── Left Column: Premium Framed Image ───────── */}
           <motion.div
@@ -53,13 +58,13 @@ export default function Leadership() {
             whileInView={{ opacity: 1, x: 0 }}
             viewport={{ once: true, margin: "-60px" }}
             transition={{ duration: 0.8, ease: "easeOut" }}
-            className="relative"
+            className="relative min-h-[420px] md:min-h-[600px]"
           >
             {/* Gold backdrop accent square */}
             <div className="absolute -bottom-4 -right-4 w-full h-full border border-gold-dark/40 rounded-sm pointer-events-none z-0" />
 
             {/* Main photo container */}
-            <div className="img-therapist h-[400px] md:h-[600px] rounded-sm overflow-hidden shadow-2xl relative z-10 border border-border-light group">
+            <div className="img-therapist h-[420px] md:h-[600px] lg:h-full lg:min-h-[600px] rounded-sm overflow-hidden shadow-2xl relative z-10 border border-border-light group">
               <Image
                 src={image}
                 alt={imageAlt}
@@ -97,13 +102,23 @@ export default function Leadership() {
               {tagline}
             </motion.p>
 
-            {desc1 && (
-              <motion.div variants={itemVariants} className="text-dark/60 text-[14.5px] md:text-[15px] leading-relaxed mb-5 font-light [&>p]:mb-0" dangerouslySetInnerHTML={{ __html: desc1 }} />
-            )}
-
-            {desc2 && (
-              <motion.div variants={itemVariants} className="text-dark/65 text-[14.5px] md:text-[15px] leading-relaxed mb-8 border-l-2 border-gold-dark/30 pl-4 py-1 font-light [&>p]:mb-0" dangerouslySetInnerHTML={{ __html: desc2 }} />
-            )}
+            {paragraphs.map((html, i) => {
+              const isLast = i === paragraphs.length - 1;
+              const isLead = i === 0 && paragraphs.length > 1;
+              const style = isLast && paragraphs.length > 1
+                ? "text-[rgba(10,10,10,0.72)] text-[14.5px] md:text-[15px] border-l-2 border-[rgba(135,100,4,0.45)] pl-4 py-1 mb-8"
+                : isLead
+                  ? "text-[rgba(10,10,10,0.82)] text-[16px] md:text-[17px] mb-5"
+                  : "text-[rgba(10,10,10,0.68)] text-[14.5px] md:text-[15px] mb-5";
+              return (
+                <motion.div
+                  key={i}
+                  variants={itemVariants}
+                  className={`leading-relaxed font-light [&>p]:mb-0 [&>p+p]:mt-3 ${style}`}
+                  dangerouslySetInnerHTML={{ __html: html }}
+                />
+              );
+            })}
 
             {/* Signature + CTA Row */}
             {/* CTA Action Row */}

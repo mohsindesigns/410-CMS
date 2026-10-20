@@ -153,6 +153,7 @@ export const useContent = () => {
                 titleLine2: s.titleLine2 || "Professional",
                 titleItalicWord: s.titleItalicWord || "Standards.",
                 description: s.description || "At 410 Muscle Therapy, we believe that true recovery is built on specialized bodywork and precision movement science.",
+                description2: s.description2 || "",
                 image: s.image || "/images/blog-3.webp",
                 imageAlt: s.imageAlt || "Clinical sports massage session",
                 items
@@ -253,6 +254,8 @@ export const useContent = () => {
             const desc1 = l.desc1 || (ceo.description ? ceo.description.split("</p>")[0] + "</p>" : "<p>Antoine Lyles is a certified massage therapist specializing in clinical sports massage, myofascial release, and neuromuscular therapy.</p>");
             const desc2 = l.desc2 || (ceo.description && ceo.description.includes("</p>") ? ceo.description.split("</p>").slice(1).join("</p>") : "<p>With years of experience working with competitive athletes and active individuals, he delivers targeted protocols designed to restore functional movement.</p>");
 
+            const desc3 = l.desc3 || "";
+
             const photoBadge = l.photoBadge || ceo.badges?.top || "PERFORMANCE RECOVERY SPECIALIST";
             const signatureName = l.signatureName || ceo.name || "Antoine Lyles";
             const signatureTitle = l.signatureTitle || ceo.title || "Performance Recovery Specialist";
@@ -266,6 +269,7 @@ export const useContent = () => {
                 tagline,
                 desc1,
                 desc2,
+                desc3,
                 photoBadge,
                 signatureName,
                 signatureTitle,
@@ -278,14 +282,14 @@ export const useContent = () => {
                 section: {
                     badge: label,
                     headline: title,
-                    description: `${desc1}${desc2}`
+                    description: `${desc1}${desc2}${desc3}`
                 },
                 ceo: {
                     ...ceo,
                     name: signatureName,
                     title: signatureTitle,
                     quotes: [tagline],
-                    description: `${desc1}${desc2}`,
+                    description: `${desc1}${desc2}${desc3}`,
                     badges: {
                         top: photoBadge,
                         bottom: ceo.badges?.bottom || ""
@@ -563,6 +567,8 @@ export const useContent = () => {
             items: []
         }),
         serviceDetailPage: getSafe(completeData, 'serviceDetailPage'),
+        // Home "Feature Cards" section (null until first saved in the dashboard -> component uses starter content)
+        featureCards: completeData?.featureCards && typeof completeData.featureCards === 'object' ? completeData.featureCards : null,
         settings: completeData?.settings || { siteTitle: "410 Muscle Therapy", siteTemplate: "%s | 410 Muscle Therapy", favicon: "/logo.png" },
         globalSite: getSafe(completeData, 'globalSite', {}),
         globalMetadata: getSafe(completeData, 'globalMetadata', {}),

@@ -5,6 +5,7 @@ import Hero from "@/components/Hero";
 
 const StatsSection = dynamic(() => import("@/components/StatsSection"));
 const Services = dynamic(() => import("@/components/Services"));
+const FeatureCards = dynamic(() => import("@/components/FeatureCards"));
 
 
 const Portfolio = dynamic(() => import("@/components/Portfolio"));
@@ -34,6 +35,7 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
       <section id="services">
         <Services />
       </section>
+      <FeatureCards />
       <section id="leadership">
         <Leadership />
       </section>

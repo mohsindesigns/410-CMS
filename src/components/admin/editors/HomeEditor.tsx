@@ -5,12 +5,13 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, Trash2, Loader2, Image as ImageIcon,
   LayoutTemplate, Type, Star, Briefcase, Users,
-  List, Mail, BookOpen, ChevronRight, Check
+  List, Mail, BookOpen, ChevronRight, Check, LayoutGrid
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import ContentSelector, { getReviewKey } from "@/components/admin/ContentSelector";
 import ImageField from "@/components/admin/ImageField";
 import BlogSelector from "@/components/admin/BlogSelector";
+import FeatureCardsPanel from "@/components/admin/editors/FeatureCardsPanel";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
@@ -166,12 +167,13 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
     { id: "hero", label: "1. Hero Banner", icon: LayoutTemplate },
     { id: "stats", label: "2. Stats & Achievements", icon: Star },
     { id: "services", label: "3. Services Showcase", icon: Briefcase },
-    { id: "leadership", label: "4. Specialist Profile", icon: Users },
-    { id: "process", label: "5. Clinical Process", icon: List },
-    { id: "testimonials", label: "6. Reviews & Results", icon: Star },
-    { id: "ctaBanner", label: "7. CTA Banner", icon: LayoutTemplate },
-    { id: "contact", label: "8. Contact & FAQs", icon: Mail },
-    { id: "blog", label: "9. Blog Insights", icon: BookOpen },
+    { id: "featureCards", label: "4. Feature Cards", icon: LayoutGrid },
+    { id: "leadership", label: "5. Specialist Profile", icon: Users },
+    { id: "process", label: "6. Clinical Process", icon: List },
+    { id: "testimonials", label: "7. Reviews & Results", icon: Star },
+    { id: "ctaBanner", label: "8. CTA Banner", icon: LayoutTemplate },
+    { id: "contact", label: "9. Contact & FAQs", icon: Mail },
+    { id: "blog", label: "10. Blog Insights", icon: BookOpen },
   ];
 
   return (
@@ -434,12 +436,21 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                       </div>
                     </div>
                     <div className="space-y-1.5">
-                      <label className={UI.label}>Narrative Paragraph</label>
+                      <label className={UI.label}>Paragraph 1 (Lead)</label>
                       <textarea
                         value={data.stats?.description || ""}
                         onChange={(e) => updateSection("stats", "description", e.target.value)}
                         className={UI.input + " h-24"}
                         placeholder="At 410 Muscle Therapy, we believe that true recovery is built on..."
+                      />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Paragraph 2 (Optional)</label>
+                      <textarea
+                        value={data.stats?.description2 || ""}
+                        onChange={(e) => updateSection("stats", "description2", e.target.value)}
+                        className={UI.input + " h-24"}
+                        placeholder="Add a second paragraph here. Leave empty to show only one."
                       />
                     </div>
                   </div>
@@ -574,6 +585,10 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
           {/* ═══════════════════════════════════════════════════════════════
               4. SPECIALIST PROFILE SECTION (Antoine Lyles)
           ═══════════════════════════════════════════════════════════════ */}
+          {activeTab === "featureCards" && (
+            <FeatureCardsPanel data={data} updateSection={updateSection} />
+          )}
+
           {activeTab === "leadership" && (
             <div className="space-y-8">
               <div className="space-y-4">
@@ -626,6 +641,11 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                     label="Second Paragraph Narrative"
                     content={data.leadership?.desc2 || ""}
                     onChange={(html) => updateSection("leadership", "desc2", html)}
+                  />
+                  <RichTextEditor
+                    label="Third Paragraph Narrative (Optional)"
+                    content={data.leadership?.desc3 || ""}
+                    onChange={(html) => updateSection("leadership", "desc3", html)}
                   />
                 </div>
               </div>
