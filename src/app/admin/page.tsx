@@ -120,7 +120,7 @@ export default function AdminDashboard() {
             <h2 className="text-[14px] font-semibold text-[#1d2327] flex items-center gap-2">
               <Activity className="w-4 h-4 text-[#82878c]" /> Recent Activity
             </h2>
-            <Link href="/admin/logs" className="text-[12px] text-[#2271b1] hover:underline flex items-center gap-1">
+            <Link href="/admin/activity-logs/" className="text-[12px] text-[#2271b1] hover:underline flex items-center gap-1">
               View all <ArrowRight className="w-3 h-3" />
             </Link>
           </div>

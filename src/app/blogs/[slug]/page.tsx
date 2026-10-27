@@ -361,6 +361,7 @@ export default async function BlogPostPage({ params }: Props) {
         "wordCount": wordCount,
         "publisher": {
           "@type": "Organization",
+          "@id": `${BASE_URL}/#business`,
           "name": "410 Muscle Therapy",
           "url": BASE_URL,
           "logo": {

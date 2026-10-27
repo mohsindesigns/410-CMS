@@ -137,8 +137,9 @@ export function cleanContentLinks(html: string): string {
     let url: URL;
     try { url = new URL(href, 'https://410-muscletherapy.com'); } catch { return match; }
     const internal = !absolute || SITE_HOST.test(url.hostname);
-    const hadTracking = TRACKING_PARAMS.some((k) => url.searchParams.has(k));
-    TRACKING_PARAMS.forEach((k) => url.searchParams.delete(k));
+    const trackingKeys = Array.from(url.searchParams.keys()).filter((k) => /^(amp;)?utm_/i.test(k) || TRACKING_PARAMS.includes(k));
+    const hadTracking = trackingKeys.length > 0;
+    trackingKeys.forEach((k) => url.searchParams.delete(k));
     if (!internal) return hadTracking ? `href=${quote}${url.toString()}${quote}` : match;
 
     let path = url.pathname.replace(/\/+$/, '') || '/';
