@@ -1,81 +1,174 @@
 "use client";
 
-import { useRef, useState, useEffect } from "react";
-import { motion, useInView, AnimatePresence } from "framer-motion";
-import { Icon } from "../../config/icons";
+import { motion, useReducedMotion } from "framer-motion";
+import { ArrowRight, Star } from "lucide-react";
 import { useContent } from "../../hooks/useContent";
-import Image from "next/image";
-import RichTextRenderer from "../ui/RichTextRenderer";
-import PageInlineFaqs from "@/components/PageInlineFaqs";
+import { stripHtml } from "../../lib/utils";
+import CtaBanner from "@/components/CtaBanner";
 
-const FALLBACK_IMAGE = "https://images.unsplash.com/photo-1579546929518-9e396f3cc809?w=800&h=450&fit=crop&q=80";
 const GOOGLE_MAPS_REVIEW_URL = "https://maps.app.goo.gl/PbvRBs4tJsDAJVMy6";
+const DEFAULT_BOOKING_URL = "https://www.styleseat.com/m/v/410muscletherapy";
 
-const getVideoThumbnail = (videoId: string) => `https://img.youtube.com/vi/${videoId}/maxresdefault.jpg`;
-
-const Counter = ({ value, suffix = "", start = false, isDecimal = false }: any) => {
-    const [count, setCount] = useState(0);
-    useEffect(() => {
-        if (!start) return;
-        let startTime = 0;
-        const duration = 1500;
-        const animate = (timestamp: number) => {
-            if (!startTime) startTime = timestamp;
-            const progress = Math.min((timestamp - startTime) / duration, 1);
-            const easedProgress = 1 - Math.pow(1 - progress, 4);
-            if (isDecimal) { setCount(Number((easedProgress * value).toFixed(1))); }
-            else { setCount(Math.floor(easedProgress * value)); }
-            if (progress < 1) { requestAnimationFrame(animate); }
-        };
-        requestAnimationFrame(animate);
-    }, [start, value, isDecimal]);
-    return <span>{isDecimal ? count.toFixed(1) : count}{suffix}</span>;
+/** "Oct 2026" - UTC so the server and the browser always print the same month. */
+const formatMonth = (value?: string) => {
+    if (!value) return "";
+    const d = new Date(value);
+    if (isNaN(d.getTime())) return "";
+    return d.toLocaleDateString("en-US", { month: "short", year: "numeric", timeZone: "UTC" });
 };
 
-const TestimonialCard = ({ testimonial, index, onPlay }: any) => {
-    const ref = useRef(null);
-    const inView = useInView(ref, { once: true, margin: "-50px" });
+const Stars = ({ count = 5, size = 14 }: { count?: number; size?: number }) => (
+    <div className="flex gap-0.5 text-gold" aria-label={`${count} out of 5 stars`} role="img">
+        {Array.from({ length: Math.max(0, Math.min(5, count)) }).map((_, i) => (
+            <Star key={i} size={size} fill="currentColor" stroke="none" />
+        ))}
+    </div>
+);
+
+const ReviewCard = ({ review, index }: { review: any; index: number }) => {
+    const reduceMotion = useReducedMotion();
+    const text = stripHtml(review.text || review.quote);
+    const name = stripHtml(review.name);
+    const rating = Number(review.rating || review.stars || 5);
+    const month = formatMonth(review.date);
+    const byline = [stripHtml(review.position || review.role), stripHtml(review.company)].filter(Boolean).join(" · ");
+
     return (
-        <motion.div ref={ref} initial={{ opacity: 0, y: 30 }} animate={inView ? { opacity: 1, y: 0 } : {}} transition={{ duration: 0.5, delay: index * 0.1 }} className="group relative bg-white dark:bg-card rounded-2xl p-6 sm:p-8 shadow-lg border border-gray-100 dark:border-white/5 transition-all duration-300">
-            <div className="absolute top-6 right-6 text-5xl text-primary/10 font-serif">"</div>
-            <div className="flex gap-1 mb-5">
-                {[...Array(5)].map((_, i) => (
-                    <svg key={i} className="w-4 h-4 text-yellow-500 fill-yellow-500" viewBox="0 0 24 24"><path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2z" /></svg>
-                ))}
+        <motion.article
+            initial={{ opacity: 0, y: reduceMotion ? 0 : 28 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, margin: "-40px" }}
+            transition={{ duration: 0.6, ease: [0.22, 1, 0.36, 1], delay: Math.min(index % 3, 2) * 0.08 }}
+            className="group relative mb-5 break-inside-avoid overflow-hidden rounded-xl border border-border-dark bg-[rgba(26,26,26,0.75)] p-6 sm:p-8 transition-[border-color,transform,box-shadow] duration-500 hover:-translate-y-1 hover:border-[rgba(243,227,140,0.45)] hover:shadow-[0_24px_50px_-28px_rgba(243,227,140,0.35)]"
+        >
+            {/* gold rule draws in on hover */}
+            <span aria-hidden className="absolute left-0 top-0 h-[2px] w-full origin-left scale-x-0 bg-gradient-to-r from-gold via-gold-dark to-transparent transition-transform duration-700 ease-out group-hover:scale-x-100" />
+            <span aria-hidden className="pointer-events-none absolute right-5 top-1 select-none font-serif text-[84px] leading-none text-[rgba(243,227,140,0.12)] transition-colors duration-500 group-hover:text-[rgba(243,227,140,0.22)]">
+                &ldquo;
+            </span>
+
+            <div className="relative flex items-center justify-between gap-3 mb-5">
+                <Stars count={rating} />
+                {month && <span className="font-mono text-[10px] font-bold uppercase tracking-[0.18em] text-white/40">{month}</span>}
             </div>
-            <div className="text-gray-700 dark:text-foreground/80 text-sm sm:text-base leading-relaxed mb-6 line-clamp-5 italic">
-                <RichTextRenderer content={testimonial.text} stripParagraphs={true} />
-            </div>
-            <div className="flex items-center justify-between pt-5 border-t border-gray-100">
-                <div>
-                    <h4 className="font-semibold text-gray-900 dark:text-foreground text-sm">{testimonial.name}</h4>
-                    <p className="text-xs text-gray-500">{testimonial.position}, {testimonial.company}</p>
+
+            <p className="relative font-display text-[15px] md:text-[16px] italic leading-[1.8] text-white/80">
+                {text}
+            </p>
+
+            <div className="relative mt-6 flex items-center gap-3 border-t border-border-dark pt-5">
+                <span aria-hidden className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-full border border-[rgba(243,227,140,0.35)] bg-[rgba(243,227,140,0.08)] font-display text-[15px] font-bold text-gold">
+                    {name.charAt(0).toUpperCase()}
+                </span>
+                <div className="min-w-0">
+                    <h3 className="truncate text-[13.5px] font-semibold tracking-wide text-gold">{name}</h3>
+                    {byline && <p className="truncate text-[11px] uppercase tracking-[0.14em] text-white/45">{byline}</p>}
                 </div>
             </div>
-        </motion.div>
+        </motion.article>
     );
 };
 
 export default function ReviewsTemplate({ pageData, params }: { pageData?: any, params?: any }) {
-    const { testimonials: data } = useContent();
-    const { section, testimonials = [], videos = [], stats = {} as any } = data || {};
-    const [selectedVideo, setSelectedVideo] = useState<{ id: string; title: string } | null>(null);
+    const { testimonials: data, globalMetadata } = useContent();
+    const { section, testimonials = [], googleRating, googleReviewCount } = (data || {}) as any;
+    const reduceMotion = useReducedMotion();
+
+    const reviews: any[] = Array.isArray(testimonials) ? testimonials.filter((r: any) => r && (r.text || r.quote)) : [];
+    const bookingUrl = globalMetadata?.bookingUrl || DEFAULT_BOOKING_URL;
+
+    // Summary numbers: the figures saved with the Google import, otherwise computed from the list.
+    const computedAvg = reviews.length
+        ? reviews.reduce((sum, r) => sum + Number(r.rating || r.stars || 5), 0) / reviews.length
+        : 5;
+    const rating = Number(googleRating) > 0 ? Number(googleRating) : computedAvg;
+    const total = Number(googleReviewCount) > 0 ? Number(googleReviewCount) : reviews.length;
+
+    const label = (stripHtml(section?.badge) || "").toUpperCase() === "REVIEWS" || !section?.badge ? "CLIENT REVIEWS" : stripHtml(section?.badge);
+    const headline = stripHtml(section?.headline) || "What Our Clients Say";
+    const words = headline.split(" ");
+    const lead = words.length > 1 ? words.slice(0, -1).join(" ") : "";
+    const accent = words.length > 1 ? words[words.length - 1] : headline;
+    const description = stripHtml(section?.description);
+
+    const rise = (delay = 0) => ({
+        initial: { opacity: 0, y: reduceMotion ? 0 : 24 },
+        animate: { opacity: 1, y: 0 },
+        transition: { duration: 0.7, ease: [0.22, 1, 0.36, 1] as const, delay },
+    });
 
     return (
-        <main className="relative min-h-screen bg-gray-50 dark:bg-background pt-24 pb-16">
-            <div className="max-w-6xl mx-auto px-4 text-center">
-                <h1 className="text-4xl sm:text-7xl font-bold tracking-tight mb-4" dangerouslySetInnerHTML={{ __html: section?.headline || 'Customer Stories' }} />
-                <div className="text-lg text-gray-600 max-w-xl mx-auto mb-12">
-                    <RichTextRenderer content={section?.description} stripParagraphs={true} />
-                </div>
-                
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-left">
-                    {testimonials.map((item: any, i: number) => (
-                        <TestimonialCard key={i} testimonial={item} index={i} />
-                    ))}
-                </div>
-            </div>
+        <main className="relative bg-dark">
+            {/* ═════════ HERO ═════════ */}
+            <section className="relative overflow-hidden border-b border-border-dark pt-[140px] pb-16 md:pb-20">
+                <div aria-hidden className="pointer-events-none absolute inset-0 bg-radial-dots-gold opacity-[0.04]" />
+                <div aria-hidden className="pointer-events-none absolute -top-40 left-1/4 h-[460px] w-[460px] rounded-full bg-[rgba(243,227,140,0.10)] blur-[150px]" />
+                <div aria-hidden className="pointer-events-none absolute -bottom-40 right-0 h-[380px] w-[380px] rounded-full bg-[rgba(135,100,4,0.18)] blur-[150px]" />
 
+                <div className="site-container relative">
+                    <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-[1.55fr_1fr] lg:gap-14">
+                        <div>
+                            <motion.div {...rise(0)} className="mb-5 flex items-center gap-3">
+                                <span className="h-px w-10 bg-gold" />
+                                <p className="section-label">{label}</p>
+                            </motion.div>
+
+                            <motion.h1 {...rise(0.08)} className="display-heading text-[38px] min-[400px]:text-[46px] md:text-[54px] lg:text-[58px] leading-[1.05] tracking-tight text-white">
+                                {lead} <span className="italic font-light text-gold">{accent}</span>
+                            </motion.h1>
+
+                            {description && (
+                                <motion.p {...rise(0.16)} className="mt-6 max-w-[560px] border-l-2 border-[rgba(243,227,140,0.4)] pl-5 text-[15px] md:text-[17px] font-light leading-[1.85] text-white/70">
+                                    {description}
+                                </motion.p>
+                            )}
+
+                            <motion.div {...rise(0.24)} className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
+                                <a href={GOOGLE_MAPS_REVIEW_URL} target="_blank" rel="noopener noreferrer" className="btn-gold w-full justify-center text-center sm:w-auto">
+                                    Leave a Google Review <ArrowRight size={14} className="ml-1" />
+                                </a>
+                                <a href={bookingUrl} target="_blank" rel="noopener noreferrer" className="btn-outline-white w-full justify-center text-center sm:w-auto">
+                                    Book Appointment <ArrowRight size={14} className="ml-1" />
+                                </a>
+                            </motion.div>
+                        </div>
+
+                        {/* Rating summary */}
+                        <motion.div {...rise(0.2)} className="rounded-xl border border-border-dark bg-[rgba(26,26,26,0.75)] p-7 sm:p-9 backdrop-blur-sm">
+                            <div className="flex items-end gap-4">
+                                <span className="font-display text-[72px] md:text-[88px] font-bold leading-[0.9] text-gold">{rating.toFixed(1)}</span>
+                                <div className="pb-2">
+                                    <Stars count={Math.round(rating)} size={18} />
+                                    <p className="mt-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-white/60">Google rating</p>
+                                </div>
+                            </div>
+                            <div className="my-6 h-px w-full bg-border-dark" />
+                            <p className="text-[14px] font-light leading-relaxed text-white/70">
+                                Based on <strong className="font-semibold text-white">{total}</strong> verified Google reviews from clients across Timonium, Towson, Lutherville and Cockeysville.
+                            </p>
+                        </motion.div>
+                    </div>
+                </div>
+            </section>
+
+            {/* ═════════ REVIEWS ═════════ */}
+            <section className="relative py-16 md:py-24">
+                <div aria-hidden className="pointer-events-none absolute inset-0 bg-radial-dots-gold opacity-[0.03]" />
+                <div className="site-container relative">
+                    {reviews.length > 0 ? (
+                        <div className="columns-1 gap-5 md:columns-2 lg:columns-3">
+                            {reviews.map((review, i) => (
+                                <ReviewCard key={review.id || `${review.name}-${i}`} review={review} index={i} />
+                            ))}
+                        </div>
+                    ) : (
+                        <p className="py-20 text-center text-white/60">Reviews are coming soon.</p>
+                    )}
+                </div>
+            </section>
+
+            {/* ═════════ CTA ═════════ */}
+            <CtaBanner />
         </main>
     );
 }

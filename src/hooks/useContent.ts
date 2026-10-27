@@ -365,6 +365,8 @@ export const useContent = () => {
                 results,
                 // Back-compat for editor
                 section: {
+                    // keep what the page saved (headline / description used by the Reviews page), then add the home-section fields
+                    ...(t.section || {}),
                     badge: label,
                     headlinePrefix: title1,
                     headlineHighlight: title2,
