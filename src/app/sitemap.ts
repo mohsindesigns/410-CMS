@@ -4,124 +4,100 @@ import SiteContent from '@/models/Content';
 import Page from '@/models/Page';
 import Post from '@/models/Post';
 import { BASE_URL } from '@/lib/constants';
+import { resolvePostCanonical } from '@/lib/seo';
 export const revalidate = 0;
 
-export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
-  const now = new Date().toISOString();
+type Entry = MetadataRoute.Sitemap[number];
 
-  // Fetch dynamic content from DB
-  let dynamicServices: any[] = [];
-  let dynamicPages: any[] = [];
-  let dynamicBlogPosts: any[] = [];
+/** ISO date string, or undefined when the date is missing/invalid (so lastmod is omitted instead of faked). */
+const iso = (v: any): string | undefined => {
+  if (!v) return undefined;
+  const d = new Date(v);
+  return isNaN(d.getTime()) ? undefined : d.toISOString();
+};
+const newest = (...dates: Array<string | undefined>) => dates.filter(Boolean).sort().pop();
+const isNoindex = (seo: any) => seo?.metaRobotsIndex === 'noindex';
+
+export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
+  let settings: any = {};
+  let contentUpdated: string | undefined;
+  let services: any[] = [];
+  let pages: any[] = [];
+  let posts: any[] = [];
+
   try {
     await connectToDatabase();
 
-    // Fetch Services
-    const content = await SiteContent.findOne({ key: 'complete_data' });
-    if (content?.data?.services) {
-      const sData = content.data.services;
-      dynamicServices = Array.isArray(sData) ? sData : (sData.services || []);
-    }
+    const content = await SiteContent.findOne({ key: 'complete_data' }).lean() as any;
+    settings = content?.data?.settings || {};
+    contentUpdated = iso(content?.lastUpdated);
+    const sData = content?.data?.services;
+    services = Array.isArray(sData) ? sData : (sData?.services || []);
 
-    // Fetch dynamic Pages
-    const pages = await Page.find({
-      status: 'published',
-      isTrashed: { $ne: true }
-    }).lean();
-
-    dynamicPages = pages;
-
-    // Fetch published blog posts
-    const posts = await Post.find({
-      status: 'published',
-      isTrashed: { $ne: true }
-    }).lean();
-
-    dynamicBlogPosts = posts;
+    pages = await Page.find({ status: 'published', isTrashed: { $ne: true } }).lean();
+    posts = await Post.find({ status: 'published', isTrashed: { $ne: true } }).lean();
   } catch (e) {
     console.error("Sitemap: Failed to fetch dynamic data", e);
   }
 
-  // Static pages
-  const staticRoutes: MetadataRoute.Sitemap = [
-    {
-      url: `${BASE_URL}/`,
-      lastModified: now,
+  const homepageId = String(settings?.homepageId || '');
+
+  // Site-wide noindex (robots.txt already disallows everything): nothing should be listed.
+  if (settings?.noIndexNoFollow || settings?.globalNoIndex) return [];
+
+  // One entry per URL; the first one wins (static > services > blog > custom pages).
+  const entries = new Map<string, Entry>();
+  const add = (path: string, entry: Omit<Entry, 'url'>) => {
+    const url = `${BASE_URL}${path}`;
+    if (!entries.has(url)) entries.set(url, { url, ...entry });
+  };
+  const clean = (slug: any) => String(slug || '').replace(/^\/+/, '').replace(/\/+$/, '').replace(/^services\//, '');
+
+  // Blog posts that are listed: published, indexable, and whose canonical is the post itself
+  // (a post canonicalised to another post must not be submitted - the sitemap would contradict the tag).
+  const listedPosts = posts.filter((p: any) => p.slug && !isNoindex(p.seo) && resolvePostCanonical(p).isSelf);
+  const newestPost = newest(...posts.map((p: any) => newest(iso(p.updatedAt), iso(p.publishedAt))));
+
+  // ── Static pages. lastmod only where it is actually known; never "now". ──
+  add('/', { lastModified: contentUpdated, changeFrequency: 'weekly', priority: 1.0 });
+  add('/services/', { lastModified: contentUpdated, changeFrequency: 'weekly', priority: 0.8 });
+  add('/blogs/', { lastModified: newestPost, changeFrequency: 'daily', priority: 0.7 });
+  add('/privacy/', { changeFrequency: 'yearly', priority: 0.3 });
+  add('/terms/', { changeFrequency: 'yearly', priority: 0.3 });
+
+  // ── Services: only live ones (a draft / trashed service answers 404, so it must not be listed). ──
+  for (const s of services) {
+    const slug = clean(s?.slug);
+    if (!slug || s.status === 'draft' || s.isTrashed === true || isNoindex(s.seo)) continue;
+    if (homepageId && (String(s._id) === homepageId || s.slug === homepageId)) continue; // served at "/"
+    add(`/${slug}/`, {
+      lastModified: newest(iso(s.updatedAt), iso(s.publishedAt), iso(s.createdAt)),
       changeFrequency: 'weekly',
-      priority: 1.0,
-    },
-    {
-      url: `${BASE_URL}/privacy/`,
-      lastModified: now,
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
-    {
-      url: `${BASE_URL}/terms/`,
-      lastModified: now,
-      changeFrequency: 'yearly',
-      priority: 0.3,
-    },
-    {
-      url: `${BASE_URL}/services/`,
-      lastModified: now,
+      priority: 0.85,
+    });
+  }
+
+  // ── Blog posts ──
+  for (const p of listedPosts) {
+    const slug = clean(p.slug);
+    add(`/blogs/${slug}/`, {
+      lastModified: newest(iso(p.updatedAt), iso(p.publishedAt), iso(p.createdAt)),
+      changeFrequency: 'weekly',
+      priority: 0.75,
+    });
+  }
+
+  // ── Custom CMS pages ──
+  for (const pg of pages) {
+    const slug = clean(pg.slug);
+    if (!slug || slug === 'home' || pg.template === 'home' || isNoindex(pg.seo)) continue;
+    if (homepageId && String(pg._id) === homepageId) continue; // served at "/"
+    add(`/${slug}/`, {
+      lastModified: newest(iso(pg.updatedAt), iso(pg.createdAt)),
       changeFrequency: 'weekly',
       priority: 0.8,
-    },
-    {
-      url: `${BASE_URL}/blogs/`,
-      lastModified: now,
-      changeFrequency: 'daily',
-      priority: 0.7,
-    },
-  ];
-
-  // Dynamic service detail pages
-  const serviceRoutes: MetadataRoute.Sitemap = dynamicServices.map((service: any) => {
-    const slug = String(service.slug || '')
-      .replace(/^\/+/, '')
-      .replace(/\/+$|^services\//, '');
-
-    const serviceModified = service.updatedAt ? new Date(service.updatedAt).toISOString() : (service.publishedAt ? new Date(service.publishedAt).toISOString() : now);
-
-    return {
-      url: `${BASE_URL}/${slug}/`,
-      lastModified: serviceModified,
-      changeFrequency: 'weekly' as const,
-      priority: 0.85,
-    };
-  });
-
-  const blogRoutes: MetadataRoute.Sitemap = dynamicBlogPosts.map((post: any) => {
-    const slug = String(post.slug || '').replace(/^\/+/, '').replace(/\/+$/, '');
-
-    return {
-      url: `${BASE_URL}/blogs/${slug}/`,
-      lastModified: post.updatedAt ? new Date(post.updatedAt).toISOString() : now,
-      changeFrequency: 'weekly' as const,
-      priority: 0.75,
-    };
-  });
-
-  // Dynamic custom pages
-  // Filter out slugs that are already in staticRoutes to avoid duplicates
-  const staticSlugs = staticRoutes.map(r => r.url.replace(BASE_URL, '').replace(/^\//, '').replace(/\/$/, ''));
-  const customPageRoutes: MetadataRoute.Sitemap = dynamicPages
-    .filter((page: any) =>
-      !staticSlugs.includes(page.slug) &&
-      page.slug !== '' &&
-      page.slug !== 'home' &&
-      page.slug !== '/'
-    )
-    .map((page: any) => {
-      const cleanSlug = String(page.slug || '').replace(/^\/+/, '').replace(/\/+$/, '');
-      return {
-        url: `${BASE_URL}/${cleanSlug}/`,
-        lastModified: page.updatedAt ? new Date(page.updatedAt).toISOString() : now,
-        changeFrequency: 'weekly' as const,
-        priority: 0.8,
-      };
     });
+  }
 
-  return [...staticRoutes, ...serviceRoutes, ...blogRoutes, ...customPageRoutes];
+  return Array.from(entries.values());
 }

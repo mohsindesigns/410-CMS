@@ -69,9 +69,9 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
     // Author Archives (low value)
     '/author/',
 
-    // Technical / Internal Next.js & API
+    // Internal API only. /_next/ must NOT be blocked: it serves the CSS, JS and optimised images Googlebot
+    // needs to render pages (blocking it breaks rendering, mobile-friendliness and image indexing).
     '/api/',
-    '/_next/',
   ];
 
   // Specific AI bots, modern crawlers, and international search engines

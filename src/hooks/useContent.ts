@@ -74,7 +74,7 @@ export const useContent = () => {
 
     return {
         navbar: (() => {
-            const nav = getSafe(completeData, 'navbar', { menu: [], logo: "", cta: { text: "Get Quote", href: "/contact-us" } });
+            const nav = getSafe(completeData, 'navbar', { menu: [], logo: "", cta: { text: "Get Quote", href: "/#contact" } });
             if (nav) {
                 const linksList = (nav.companyLinks || nav.links || nav.menu || []).map((link: any) => {
                     if (link && (link.label === "Services" || link.href === "/services") && link.useMegaMenu === undefined) {

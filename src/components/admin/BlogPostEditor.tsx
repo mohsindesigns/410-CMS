@@ -258,7 +258,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
                 <SeoEditor
                   data={post.seo}
                   setData={(seo) => setPost({ ...post, seo })}
-                  pageSlug={post.slug}
+                  pageSlug={post.slug} urlPrefix="blogs/"
                   pageTitle={post.title}
                   pageContent={post.content}
                 />
@@ -623,8 +623,7 @@ export default function BlogPostEditor({ id, initialData }: BlogPostEditorProps)
               seo: {
                 ...post.seo,
                 featuredImage: post.seo.featuredImage || item.url,
-                featuredImageAlt: post.seo.featuredImageAlt || item.alt || "",
-                ogImage: post.seo.ogImage || item.url
+                featuredImageAlt: post.seo.featuredImageAlt || item.alt || ""
               }
             });
             setShowMediaSelector(false);

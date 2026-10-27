@@ -37,58 +37,83 @@ interface SeoEditorProps {
   pageSlug: string;
   pageTitle: string;
   pageContent?: any;
+  /** Public URL prefix for this content type, e.g. "blogs/" for blog posts (default: none, URL is /<slug>/). */
+  urlPrefix?: string;
 }
 
-export default function SeoEditor({ data, setData, pageSlug, pageTitle, pageContent }: SeoEditorProps) {
+export default function SeoEditor({ data, setData, pageSlug, pageTitle, pageContent, urlPrefix = "" }: SeoEditorProps) {
   const [activeTab, setActiveTab] = useState<'general' | 'social' | 'schema' | 'analysis'>('general');
   const [analysis, setAnalysis] = useState<any[]>([]);
   const [score, setScore] = useState(0);
 
   const updateField = (field: keyof SeoData, value: string) => {
-    const newData = { ...data, [field]: value };
-
-    // Sync logic: If featuredImage is updated and ogImage is empty, sync them
-    if (field === 'featuredImage' && !data.ogImage) {
-      newData.ogImage = value;
-    }
-
-    setData(newData);
+    // Values are stored exactly as typed. Fallbacks (e.g. featured image -> OG image) are applied when the page is
+    // rendered, so changing the featured image later keeps working.
+    setData({ ...data, [field]: value });
   };
 
+  // The URL this page is served at - and the canonical used when the field is left empty (recommended).
+  const slugPart = (pageSlug === 'home' || pageSlug === '/') ? '' : String(pageSlug || '').replace(/^\/+|\/+$/g, '');
+  const automaticCanonical = slugPart ? `${BASE_URL}/${urlPrefix}${slugPart}/` : `${BASE_URL}/`;
 
-  useEffect(() => {
-    // Auto-suggest canonical URL if missing
-    if (!data.canonicalUrl && pageSlug) {
-      const slugPart = (pageSlug === 'home' || pageSlug === '/') ? '' : pageSlug.replace(/^\/+|\/+$/g, '');
-      const defaultCanonical = slugPart ? `${BASE_URL}/${slugPart}/` : `${BASE_URL}/`;
-      setData({ ...data, canonicalUrl: defaultCanonical });
-    }
-  }, [pageSlug, data.canonicalUrl]);
-
-  const suggestCanonical = () => {
-    const slugPart = (pageSlug === 'home' || pageSlug === '/') ? '' : pageSlug.replace(/^\/+|\/+$/g, '');
-    const defaultCanonical = slugPart ? `${BASE_URL}/${slugPart}/` : `${BASE_URL}/`;
-    updateField('canonicalUrl', defaultCanonical);
-  };
 
   useEffect(() => {
     runAnalysis();
   }, [data, pageSlug, pageTitle, pageContent]);
 
   const runAnalysis = () => {
-    const issues = [];
-    const keyword = data.focusKeyword?.toLowerCase() || "";
-    const title = data.metaTitle || pageTitle || "";
-    const description = data.metaDescription || "";
-    const slug = pageSlug || "";
+    const issues: Array<{ type: 'success' | 'warning' | 'error'; text: string }> = [];
+    const ok = (text: string) => issues.push({ type: 'success', text });
+    const warn = (text: string) => issues.push({ type: 'warning', text });
+    const bad = (text: string) => issues.push({ type: 'error', text });
 
-    if (!data.metaTitle) issues.push({ type: 'warning', text: "Meta title is missing." });
-    if (!description) issues.push({ type: 'error', text: "Meta description missing." });
+    const keyword = (data.focusKeyword || "").trim().toLowerCase();
+    const title = (data.metaTitle || pageTitle || "").trim();
+    const description = (data.metaDescription || "").trim();
+    const slug = String(pageSlug || "").toLowerCase();
+
+    // Title
+    if (!data.metaTitle) warn("No SEO title set - the page title is used instead. Write a dedicated SEO title (30-60 characters).");
+    else if (title.length < 30) warn(`SEO title is short (${title.length} characters). Aim for 30-60.`);
+    else if (title.length > 65) bad(`SEO title is ${title.length} characters - Google will cut it off or rewrite it. Keep it under 60.`);
+    else if (title.length > 60) warn(`SEO title is ${title.length} characters - slightly long. Aim for 60 or fewer.`);
+    else ok(`SEO title length is good (${title.length} characters).`);
+
+    // Description
+    if (!description) bad("No meta description. Google will invent a snippet from the page text.");
+    else {
+      if (/<[a-z][\s\S]*>/i.test(description)) bad("The meta description contains HTML tags. Use plain text only.");
+      if (/\s{2,}/.test(description)) warn("The meta description contains double spaces.");
+      if (description.length < 70) warn(`Meta description is short (${description.length} characters). Aim for 120-160.`);
+      else if (description.length > 160) warn(`Meta description is ${description.length} characters - it will be cut off. Keep it under 160.`);
+      else ok(`Meta description length is good (${description.length} characters).`);
+    }
+
+    // Focus keyword
+    if (!keyword) warn("No focus keyword set. Add the main phrase this page should rank for.");
+    else {
+      title.toLowerCase().includes(keyword) ? ok("Focus keyword appears in the SEO title.") : warn("Focus keyword is not in the SEO title.");
+      description.toLowerCase().includes(keyword) ? ok("Focus keyword appears in the meta description.") : warn("Focus keyword is not in the meta description.");
+      slug.includes(keyword.replace(/\s+/g, '-')) ? ok("Focus keyword appears in the URL.") : warn("Focus keyword is not in the URL (fine for existing pages - changing a URL needs a redirect).");
+    }
+
+    // Canonical
+    const canon = (data.canonicalUrl || "").trim();
+    if (!canon) ok("Canonical URL is automatic (recommended).");
+    else if (canon !== automaticCanonical) {
+      if (!/^https?:\/\//i.test(canon)) bad("Custom canonical must be a full URL starting with https://");
+      else if (!canon.endsWith('/') && !canon.includes('?')) bad("Custom canonical has no trailing slash - this site always redirects to the slash version, so Google may ignore it.");
+      else warn(`Custom canonical points to a different URL (${canon}). This tells Google another page is the main version of this one. Clear the field unless that is intentional.`);
+    } else ok("Canonical URL matches this page.");
+
+    // Social + indexing
+    (data.ogImage || data.featuredImage) ? ok("A social/preview image is set.") : warn("No OG image or featured image - shares will use the default site image.");
+    if (data.metaRobotsIndex === 'noindex') warn("This page is set to NoIndex - it is hidden from Google.");
+    if (data.metaRobotsFollow === 'nofollow') warn("This page is set to NoFollow - Google will not follow its links.");
 
     setAnalysis(issues);
-    const successCount = issues.filter(i => i.type === 'success').length;
-    const totalCount = issues.filter(i => i.type !== 'info').length;
-    setScore(totalCount > 0 ? Math.round((successCount / totalCount) * 100) : 0);
+    const good = issues.filter(i => i.type === 'success').length;
+    setScore(issues.length ? Math.round((good / issues.length) * 100) : 0);
   };
 
   return (
@@ -151,16 +176,21 @@ export default function SeoEditor({ data, setData, pageSlug, pageTitle, pageCont
                   <div className="space-y-1.5">
                     <div className="flex justify-between items-center">
                       <label className="text-[12px] font-bold text-[#1d2327] uppercase tracking-wide">Canonical URL</label>
-                      {!data.canonicalUrl && (
+                      {!!data.canonicalUrl && (
                         <button
-                          onClick={() => updateField('canonicalUrl', `${BASE_URL}/${pageSlug === 'home' ? '' : pageSlug}`)}
+                          type="button"
+                          onClick={() => updateField('canonicalUrl', '')}
                           className="text-[11px] text-[#2271b1] hover:underline"
                         >
-                          Suggest Default
+                          Use automatic
                         </button>
                       )}
                     </div>
-                    <input type="text" value={data.canonicalUrl || ""} onChange={(e) => updateField('canonicalUrl', e.target.value)} className="w-full border border-[#c3c4c7] px-3 py-2 text-[14px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none" placeholder="https://..." />
+                    <input type="text" value={data.canonicalUrl || ""} onChange={(e) => updateField('canonicalUrl', e.target.value)} className="w-full border border-[#c3c4c7] px-3 py-2 text-[14px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none" placeholder={automaticCanonical} />
+                    <p className="text-[11px] text-[#646970]">Leave empty (recommended): the page uses its own URL, <span className="font-mono">{automaticCanonical}</span>, and it follows automatically if you change the slug.</p>
+                    {!!data.canonicalUrl && data.canonicalUrl.trim() !== automaticCanonical && (
+                      <p className="text-[11px] text-[#b32d2e]">This page tells Google that a different URL is the main version. Clear the field unless that is intentional.</p>
+                    )}
                   </div>
                   <div className="space-y-1.5">
                     <label className="text-[12px] font-bold text-[#1d2327] uppercase tracking-wide">Breadcrumb Title</label>
@@ -235,17 +265,16 @@ export default function SeoEditor({ data, setData, pageSlug, pageTitle, pageCont
 
             {activeTab === 'analysis' && (
               <motion.div key="analysis" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">
-                {analysis.length === 0 ? (
-                  <p className="text-[13px] text-[#00a32a]">All good! No major issues found.</p>
-                ) : (
-                  analysis.map((issue, idx) => (
-                    <div key={idx} className={`flex items-center gap-3 p-3 text-[12px] rounded-[3px] border-l-4 ${issue.type === 'error' ? "bg-red-50 border-red-500 text-red-700" : "bg-amber-50 border-amber-500 text-amber-700"
-                      }`}>
-                      <AlertCircle className="w-4 h-4" />
-                      {issue.text}
-                    </div>
-                  ))
-                )}
+                <div className="flex items-center justify-between rounded-[3px] border border-[#c3c4c7] bg-[#f6f7f7] px-4 py-3">
+                  <span className="text-[12px] font-bold uppercase tracking-wide text-[#1d2327]">SEO checks passed</span>
+                  <span className={`text-[20px] font-bold ${score >= 80 ? "text-[#00a32a]" : score >= 50 ? "text-[#dba617]" : "text-[#d63638]"}`}>{score}%</span>
+                </div>
+                {[...analysis].sort((a, b) => ({ error: 0, warning: 1, success: 2 } as any)[a.type] - ({ error: 0, warning: 1, success: 2 } as any)[b.type]).map((issue, idx) => (
+                  <div key={idx} className={`flex items-start gap-3 p-3 text-[12px] rounded-[3px] border-l-4 ${issue.type === 'error' ? "bg-red-50 border-red-500 text-red-700" : issue.type === 'warning' ? "bg-amber-50 border-amber-500 text-amber-700" : "bg-green-50 border-green-500 text-green-700"}`}>
+                    {issue.type === 'success' ? <CheckCircle className="w-4 h-4 mt-px flex-shrink-0" /> : <AlertCircle className="w-4 h-4 mt-px flex-shrink-0" />}
+                    <span>{issue.text}</span>
+                  </div>
+                ))}
               </motion.div>
             )}
           </AnimatePresence>
@@ -256,7 +285,7 @@ export default function SeoEditor({ data, setData, pageSlug, pageTitle, pageCont
           <div className="space-y-4">
             <h3 className="text-[10px] font-bold text-[#646970] uppercase tracking-wider">Search Preview</h3>
             <div className="bg-white border border-[#c3c4c7] p-4 rounded-[3px] shadow-sm space-y-1">
-              <div className="text-[11px] text-[#4d5156] line-clamp-1">410-muscletherapy.com › {pageSlug}</div>
+              <div className="text-[11px] text-[#4d5156] line-clamp-1">{automaticCanonical.replace(/^https?:\/\//, '').replace(/\/$/, '').split('/').join(' › ')}</div>
               <h4 className="text-[15px] text-[#1a0dab] hover:underline cursor-pointer font-normal line-clamp-1">
                 {data.metaTitle || pageTitle}
               </h4>
@@ -269,7 +298,7 @@ export default function SeoEditor({ data, setData, pageSlug, pageTitle, pageCont
             <h3 className="text-[10px] font-bold text-[#646970] uppercase tracking-wider">Social Preview</h3>
             <div className="bg-white border border-[#c3c4c7] rounded-[3px] shadow-sm overflow-hidden">
               <div className="aspect-[1.91/1] bg-[#f0f0f1] flex items-center justify-center overflow-hidden">
-                {data.ogImage ? <img src={data.ogImage} className="w-full h-full object-cover" /> : <ImageIcon className="w-6 h-6 text-[#c3c4c7]" />}
+                {(data.ogImage || data.featuredImage) ? <img src={data.ogImage || data.featuredImage} className="w-full h-full object-cover" /> : <ImageIcon className="w-6 h-6 text-[#c3c4c7]" />}
               </div>
               <div className="p-3 border-t border-[#f0f0f1]">
                 <div className="text-[9px] text-[#646970] uppercase font-bold">410-muscletherapy.com</div>

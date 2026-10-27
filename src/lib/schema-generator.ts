@@ -2,7 +2,10 @@
 import { BASE_URL } from "./constants";
 
 interface SchemaOptions {
+  /** Clean entity name (e.g. the service name) - used for the Service name/serviceType and the breadcrumb. */
   title: string;
+  /** Title of the page itself (the SEO title). Defaults to `title`. */
+  pageTitle?: string;
   description: string;
   slug: string;
   type?: "WebPage" | "AboutPage" | "ContactPage" | "CollectionPage" | "Service" | "Article" | "BlogPosting";
@@ -11,33 +14,47 @@ interface SchemaOptions {
   isService?: boolean;
   image?: string;
   servicesList?: Array<{ name: string; description?: string }>;
+  /** Only emitted when real dates are known - nothing is fabricated. */
   datePublished?: string;
   dateModified?: string;
   /** Rating shown in search results; managed in Admin > Reviews. Omitted entirely when not provided. */
-  aggregateRating?: { ratingValue: number; reviewCount: number } | null;
+  aggregateRating?: AggregateRatingInput;
 }
 
-export function getHomepageSchemas(servicesList?: Array<{ name: string }>, faqs?: Array<{ question?: string; answer?: string; q?: string; a?: string }>) {
-  void servicesList; // kept for call-site compatibility; homepage graph below matches the fixed reference schema exactly
+export type AggregateRatingInput = { ratingValue: number; reviewCount: number } | null | undefined;
 
-  const HOMEPAGE_SERVICES: Array<{ name: string; slug: string }> = [
-    { name: "Deep Tissue Massage", slug: "deep-tissue-massage-maryland" },
-    { name: "Sports Massage", slug: "maryland-sports-massage-therapist" },
-    { name: "Infrared Therapy", slug: "infrared-therapy-in-maryland" },
-    { name: "Cupping Therapy", slug: "cupping-therapy-maryland" },
-    { name: "Myofascial Release Therapy", slug: "myofascial-release-maryland" },
-    { name: "Acupressure", slug: "acupressure-maryland" },
-    { name: "Hot Towel Massage", slug: "hot-towel-massage-maryland" },
-    { name: "Hot Stone Massage", slug: "hot-stone-massage-maryland" },
-    { name: "Stretch Therapy", slug: "maryland-stretch-therapy" },
-    { name: "Corrective Movement Therapy", slug: "corrective-movement-maryland" }
-  ];
+const BUSINESS_ID = `${BASE_URL}/#business`;
 
-  const businessSchema = {
+const HOMEPAGE_SERVICES: Array<{ name: string; slug: string }> = [
+  { name: "Deep Tissue Massage", slug: "deep-tissue-massage-maryland" },
+  { name: "Sports Massage", slug: "maryland-sports-massage-therapist" },
+  { name: "Infrared Therapy", slug: "infrared-therapy-in-maryland" },
+  { name: "Cupping Therapy", slug: "cupping-therapy-maryland" },
+  { name: "Myofascial Release Therapy", slug: "myofascial-release-maryland" },
+  { name: "Acupressure", slug: "acupressure-maryland" },
+  { name: "Hot Towel Massage", slug: "hot-towel-massage-maryland" },
+  { name: "Hot Stone Massage", slug: "hot-stone-massage-maryland" },
+  { name: "Stretch Therapy", slug: "maryland-stretch-therapy" },
+  { name: "Corrective Movement Therapy", slug: "corrective-movement-maryland" }
+];
+
+/**
+ * ONE business entity used on every page (same @id, same name/address/phone/hours everywhere), so search engines
+ * see a single consistent business instead of an Organization + LocalBusiness on inner pages and a different
+ * LocalBusiness on the homepage. Values per the confirmed business details.
+ */
+function buildBusinessEntity(opts: { aggregateRating?: AggregateRatingInput; withOfferCatalog?: boolean } = {}) {
+  const { aggregateRating, withOfferCatalog } = opts;
+  return {
     "@type": ["LocalBusiness", "MassageTherapist"],
-    "@id": `${BASE_URL}/#business`,
+    "@id": BUSINESS_ID,
     "name": "410 Muscle Therapy",
     "url": `${BASE_URL}/`,
+    "logo": {
+      "@type": "ImageObject",
+      "url": `${BASE_URL}/logo.png`
+    },
+    "image": `${BASE_URL}/logo.png`,
     "telephone": "+1-443-473-2322",
     "email": "antoine.lyles@yahoo.com",
     "sameAs": [
@@ -54,161 +71,6 @@ export function getHomepageSchemas(servicesList?: Array<{ name: string }>, faqs?
       "postalCode": "21093",
       "addressCountry": "US"
     },
-    "areaServed": [
-      { "@type": "City", "name": "Timonium" },
-      { "@type": "City", "name": "Lutherville" },
-      { "@type": "City", "name": "Cockeysville" },
-      { "@type": "City", "name": "Towson" },
-      { "@type": "City", "name": "Hunt Valley" },
-      { "@type": "AdministrativeArea", "name": "Baltimore County" }
-    ],
-    "knowsAbout": [
-      "Deep Tissue Massage",
-      "Sports Massage",
-      "Infrared Therapy",
-      "Cupping Therapy",
-      "Myofascial Release Therapy",
-      "Acupressure",
-      "Hot Towel Massage",
-      "Hot Stone Massage",
-      "Stretch Therapy",
-      "Corrective Movement Therapy",
-      "Performance Recovery Specialist"
-    ],
-    "hasOfferCatalog": {
-      "@type": "OfferCatalog",
-      "name": "Massage Therapy and Performance Recovery Services",
-      "itemListElement": HOMEPAGE_SERVICES.map(s => ({
-        "@type": "Offer",
-        "itemOffered": {
-          "@type": "Service",
-          "name": s.name,
-          "url": `${BASE_URL}/${s.slug}/`
-        }
-      }))
-    }
-  };
-
-  const websiteSchema = {
-    "@type": "WebSite",
-    "@id": `${BASE_URL}/#website`,
-    "url": `${BASE_URL}/`,
-    "name": "410 Muscle Therapy",
-    "publisher": {
-      "@id": `${BASE_URL}/#business`
-    }
-  };
-
-  const webpageSchema = {
-    "@type": "WebPage",
-    "@id": `${BASE_URL}/#webpage`,
-    "url": `${BASE_URL}/`,
-    "name": "Performance Recovery Specialist Timonium | 410 Muscle Therapy",
-    "isPartOf": {
-      "@id": `${BASE_URL}/#website`
-    },
-    "about": {
-      "@id": `${BASE_URL}/#business`
-    },
-    "mainEntity": {
-      "@id": `${BASE_URL}/#business`
-    }
-  };
-
-  const homepageSchema = {
-    "@context": "https://schema.org",
-    "@graph": [
-      businessSchema,
-      websiteSchema,
-      webpageSchema
-    ]
-  };
-
-  let faqSchema: any = null;
-  const validFaqs = (faqs || []).filter(f => (f.question || (f as any).q) && (f.answer || (f as any).a));
-  if (validFaqs.length > 0) {
-    faqSchema = {
-      "@context": "https://schema.org",
-      "@type": "FAQPage",
-      "@id": `${BASE_URL}/#faq`,
-      "mainEntity": validFaqs.map(f => ({
-        "@type": "Question",
-        "name": (f.question || (f as any).q || "").replace(/<[^>]*>/g, "").trim(),
-        "acceptedAnswer": {
-          "@type": "Answer",
-          "text": (f.answer || (f as any).a || "").replace(/<[^>]*>/g, "").trim()
-        }
-      }))
-    };
-  }
-
-  return {
-    homepageSchema,
-    faqSchema
-  };
-}
-
-export function generateSchema(options: SchemaOptions) {
-  const {
-    title,
-    description,
-    slug = "",
-    type = "WebPage",
-    faqs,
-    breadcrumbTitle,
-    isService,
-    image,
-    servicesList,
-    datePublished = "2025-02-07T15:28:30+00:00",
-    dateModified = "2026-07-24T16:08:21+00:00",
-    aggregateRating
-  } = options;
-  const safeSlug = String(slug || "");
-  const normalizedSlug = safeSlug.startsWith('/') ? safeSlug : `/${safeSlug}`;
-  const isRoot = normalizedSlug === '/' || normalizedSlug === '';
-
-  if (isRoot) {
-    return getHomepageSchemas(servicesList, faqs);
-  }
-
-  const pageUrl = `${BASE_URL}${normalizedSlug.endsWith('/') ? normalizedSlug : `${normalizedSlug}/`}`;
-
-  // 1. Organization Schema
-  const organizationSchema = {
-    "@type": "Organization",
-    "@id": `${BASE_URL}/#organization`,
-    "name": "410 Muscle Therapy",
-    "url": `${BASE_URL}/`,
-    "logo": {
-      "@type": "ImageObject",
-      "url": `${BASE_URL}/logo.png`,
-      "width": 512,
-      "height": 512
-    },
-    "sameAs": [
-      "https://www.instagram.com/410muscletherapy/",
-      "https://www.tiktok.com/@410muscletherapy",
-      "https://www.youtube.com/@Twon410"
-    ]
-  };
-
-  // 2. LocalBusiness Schema
-  const localBusinessSchema = {
-    "@type": ["LocalBusiness", "HealthAndBeautyBusiness"],
-    "@id": `${BASE_URL}/#localbusiness`,
-    "name": "410 Muscle Therapy",
-    "image": `${BASE_URL}/logo.png`,
-    "telephone": "+1-443-473-2322",
-    "email": "antoine.lyles@yahoo.com",
-    "url": `${BASE_URL}/`,
-    "address": {
-      "@type": "PostalAddress",
-      "streetAddress": "1301 York Rd., 8th Floor, Ste 48",
-      "addressLocality": "Timonium",
-      "addressRegion": "MD",
-      "postalCode": "21093",
-      "addressCountry": "US"
-    },
     "geo": {
       "@type": "GeoCoordinates",
       "latitude": 39.4376,
@@ -217,7 +79,7 @@ export function generateSchema(options: SchemaOptions) {
     "openingHoursSpecification": [
       {
         "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"],
+        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
         "opens": "07:00",
         "closes": "21:00"
       },
@@ -236,26 +98,155 @@ export function generateSchema(options: SchemaOptions) {
       }
     } : {}),
     "areaServed": [
-      { "@type": "AdministrativeArea", "name": "Maryland" },
-      { "@type": "AdministrativeArea", "name": "Baltimore County" },
-      { "@type": "AdministrativeArea", "name": "Timonium" },
-      { "@type": "AdministrativeArea", "name": "Towson" },
-      { "@type": "AdministrativeArea", "name": "Lutherville" },
-      { "@type": "AdministrativeArea", "name": "Cockeysville" }
+      { "@type": "City", "name": "Timonium" },
+      { "@type": "City", "name": "Lutherville" },
+      { "@type": "City", "name": "Cockeysville" },
+      { "@type": "City", "name": "Towson" },
+      { "@type": "City", "name": "Hunt Valley" },
+      { "@type": "AdministrativeArea", "name": "Baltimore County" }
     ],
-    "priceRange": "$$"
+    "priceRange": "$$",
+    "knowsAbout": [
+      "Deep Tissue Massage",
+      "Sports Massage",
+      "Infrared Therapy",
+      "Cupping Therapy",
+      "Myofascial Release Therapy",
+      "Acupressure",
+      "Hot Towel Massage",
+      "Hot Stone Massage",
+      "Stretch Therapy",
+      "Corrective Movement Therapy",
+      "Performance Recovery Specialist"
+    ],
+    ...(withOfferCatalog ? {
+      "hasOfferCatalog": {
+        "@type": "OfferCatalog",
+        "name": "Massage Therapy and Performance Recovery Services",
+        "itemListElement": HOMEPAGE_SERVICES.map(s => ({
+          "@type": "Offer",
+          "itemOffered": {
+            "@type": "Service",
+            "name": s.name,
+            "url": `${BASE_URL}/${s.slug}/`
+          }
+        }))
+      }
+    } : {})
   };
+}
 
-  // 3. WebSite Schema
+const cleanText = (v: any) => String(v || "").replace(/<[^>]*>/g, "").trim();
+
+function buildFaqEntities(faqs: Array<{ question?: string; answer?: string; q?: string; a?: string }> | undefined) {
+  return (faqs || [])
+    .filter(f => (f.question || (f as any).q) && (f.answer || (f as any).a))
+    .map(f => ({
+      "@type": "Question",
+      "name": cleanText(f.question || (f as any).q),
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": cleanText(f.answer || (f as any).a)
+      }
+    }));
+}
+
+export function getHomepageSchemas(
+  servicesList?: Array<{ name: string }>,
+  faqs?: Array<{ question?: string; answer?: string; q?: string; a?: string }>,
+  aggregateRating?: AggregateRatingInput
+) {
+  void servicesList; // kept for call-site compatibility; the homepage offer catalog is fixed
+
   const websiteSchema = {
     "@type": "WebSite",
     "@id": `${BASE_URL}/#website`,
     "url": `${BASE_URL}/`,
     "name": "410 Muscle Therapy",
-    "publisher": { "@id": `${BASE_URL}/#organization` }
+    "publisher": {
+      "@id": BUSINESS_ID
+    }
   };
 
-  // 4. BreadcrumbList Schema
+  const webpageSchema = {
+    "@type": "WebPage",
+    "@id": `${BASE_URL}/#webpage`,
+    "url": `${BASE_URL}/`,
+    "name": "Performance Recovery Specialist Timonium | 410 Muscle Therapy",
+    "isPartOf": {
+      "@id": `${BASE_URL}/#website`
+    },
+    "about": {
+      "@id": BUSINESS_ID
+    },
+    "mainEntity": {
+      "@id": BUSINESS_ID
+    }
+  };
+
+  const homepageSchema = {
+    "@context": "https://schema.org",
+    "@graph": [
+      buildBusinessEntity({ aggregateRating, withOfferCatalog: true }),
+      websiteSchema,
+      webpageSchema
+    ]
+  };
+
+  let faqSchema: any = null;
+  const entities = buildFaqEntities(faqs);
+  if (entities.length > 0) {
+    faqSchema = {
+      "@context": "https://schema.org",
+      "@type": "FAQPage",
+      "@id": `${BASE_URL}/#faq`,
+      "mainEntity": entities
+    };
+  }
+
+  return {
+    homepageSchema,
+    faqSchema
+  };
+}
+
+export function generateSchema(options: SchemaOptions) {
+  const {
+    title,
+    pageTitle,
+    description,
+    slug = "",
+    type = "WebPage",
+    faqs,
+    breadcrumbTitle,
+    isService,
+    image,
+    servicesList,
+    datePublished,
+    dateModified,
+    aggregateRating
+  } = options;
+  const safeSlug = String(slug || "");
+  const normalizedSlug = safeSlug.startsWith('/') ? safeSlug : `/${safeSlug}`;
+  const isRoot = normalizedSlug === '/' || normalizedSlug === '';
+
+  if (isRoot) {
+    return getHomepageSchemas(servicesList, faqs, aggregateRating);
+  }
+
+  const pageUrl = `${BASE_URL}${normalizedSlug.endsWith('/') ? normalizedSlug : `${normalizedSlug}/`}`;
+  const webPageName = pageTitle || title;
+
+  // 1. WebSite Schema
+  const websiteSchema = {
+    "@type": "WebSite",
+    "@id": `${BASE_URL}/#website`,
+    "url": `${BASE_URL}/`,
+    "name": "410 Muscle Therapy",
+    "publisher": { "@id": BUSINESS_ID }
+  };
+
+  // 2. BreadcrumbList Schema
   const pathSegments = (isService ? [safeSlug.replace(/^services\//, '').replace(/^\/+|\/+$/g, '')] : safeSlug.split('/')).filter(Boolean);
   const breadcrumbList = pathSegments.length > 0 ? {
     "@type": "BreadcrumbList",
@@ -279,52 +270,64 @@ export function generateSchema(options: SchemaOptions) {
     ]
   } : null;
 
-  // 5. WebPage / Service Schema
-  const mainEntitySchema: any = {
-    "@type": isService ? "Service" : type,
-    "@id": `${pageUrl}#${(isService ? "service" : type).toLowerCase()}`,
-    "url": pageUrl,
-    "name": title,
-    "description": description,
-    "datePublished": datePublished,
-    "dateModified": dateModified,
-    "inLanguage": "en",
-    "isPartOf": { "@id": `${BASE_URL}/#website` },
-    ...(breadcrumbList ? { "breadcrumb": { "@id": `${pageUrl}#breadcrumb` } } : {}),
-    ...(image ? {
-      "image": {
-        "@type": "ImageObject",
-        "url": image
-      },
-      "primaryImageOfPage": {
-        "@id": `${pageUrl}#primaryimage`
-      }
-    } : {})
+  const dates = {
+    ...(datePublished ? { "datePublished": datePublished } : {}),
+    ...(dateModified ? { "dateModified": dateModified } : {}),
   };
 
-  if (isService) {
-    mainEntitySchema["provider"] = { "@id": `${BASE_URL}/#organization` };
-    mainEntitySchema["serviceType"] = title;
-  }
+  // 3. Page entity. For service pages the page itself is a WebPage about the Service (below).
+  const mainEntitySchema: any = isService
+    ? {
+        "@type": "Service",
+        "@id": `${pageUrl}#service`,
+        "url": pageUrl,
+        "name": title,
+        "serviceType": title,
+        "description": description,
+        "provider": { "@id": BUSINESS_ID },
+        "areaServed": { "@type": "AdministrativeArea", "name": "Baltimore County, Maryland" },
+        ...(image ? { "image": image } : {}),
+      }
+    : {
+        "@type": type,
+        "@id": `${pageUrl}#${type.toLowerCase()}`,
+        "url": pageUrl,
+        "name": webPageName,
+        "description": description,
+        ...dates,
+        "inLanguage": "en",
+        "isPartOf": { "@id": `${BASE_URL}/#website` },
+        "about": { "@id": BUSINESS_ID },
+        ...(breadcrumbList ? { "breadcrumb": { "@id": `${pageUrl}#breadcrumb` } } : {}),
+        ...(image ? {
+          "image": {
+            "@type": "ImageObject",
+            "url": image
+          },
+          "primaryImageOfPage": {
+            "@id": `${pageUrl}#primaryimage`
+          }
+        } : {})
+      };
 
-  // Companion WebPage schema for Service pages so both Service & WebPage have dates & relations
-  const companionWebPageSchema: any = isService ? {
+  // Service pages: a WebPage (named after the page's SEO title, nothing appended) that is about the Service.
+  const servicePageSchema: any = isService ? {
     "@type": "WebPage",
     "@id": `${pageUrl}`,
     "url": pageUrl,
-    "name": `${title} in Timonium Maryland | 410 Muscle Therapy`,
+    "name": webPageName,
     "description": description,
-    "datePublished": datePublished,
-    "dateModified": dateModified,
+    ...dates,
     "inLanguage": "en",
     "isPartOf": { "@id": `${BASE_URL}/#website` },
     "about": { "@id": `${pageUrl}#service` },
-    ...(breadcrumbList ? { "breadcrumb": { "@id": `${pageUrl}#breadcrumb` } } : {})
+    "mainEntity": { "@id": `${pageUrl}#service` },
+    ...(breadcrumbList ? { "breadcrumb": { "@id": `${pageUrl}#breadcrumb` } } : {}),
+    ...(image ? { "primaryImageOfPage": { "@id": `${pageUrl}#primaryimage` } } : {})
   } : null;
 
   const graph: any[] = [
-    organizationSchema,
-    localBusinessSchema,
+    buildBusinessEntity({ aggregateRating }),
     websiteSchema
   ];
 
@@ -332,8 +335,8 @@ export function generateSchema(options: SchemaOptions) {
     graph.push(breadcrumbList);
   }
 
-  if (companionWebPageSchema) {
-    graph.push(companionWebPageSchema);
+  if (servicePageSchema) {
+    graph.push(servicePageSchema);
   }
 
   graph.push(mainEntitySchema);
@@ -347,22 +350,13 @@ export function generateSchema(options: SchemaOptions) {
     });
   }
 
-  if (faqs && Array.isArray(faqs) && faqs.length > 0) {
-    const validFaqs = faqs.filter(f => (f.question || (f as any).q) && (f.answer || (f as any).a));
-    if (validFaqs.length > 0) {
-      graph.push({
-        "@type": "FAQPage",
-        "@id": `${pageUrl}#faq`,
-        "mainEntity": validFaqs.map(f => ({
-          "@type": "Question",
-          "name": (f.question || (f as any).q || "").replace(/<[^>]*>/g, "").trim(),
-          "acceptedAnswer": {
-            "@type": "Answer",
-            "text": (f.answer || (f as any).a || "").replace(/<[^>]*>/g, "").trim()
-          }
-        }))
-      });
-    }
+  const faqEntities = buildFaqEntities(faqs);
+  if (faqEntities.length > 0) {
+    graph.push({
+      "@type": "FAQPage",
+      "@id": `${pageUrl}#faq`,
+      "mainEntity": faqEntities
+    });
   }
 
   return {

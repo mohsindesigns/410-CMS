@@ -33,8 +33,14 @@ const nextConfig: NextConfig = {
   async redirects() {
     return [
       {
+        // There is no standalone contact page - the contact form is a section of the home page.
         source: '/contact',
-        destination: '/contact-us/',
+        destination: '/#contact',
+        permanent: true,
+      },
+      {
+        source: '/contact-us',
+        destination: '/#contact',
         permanent: true,
       },
       {

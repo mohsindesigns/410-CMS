@@ -322,7 +322,7 @@ export default function ServicesAdminPage() {
     const newServices = [...services];
     const idx = services.findIndex(s => s.id === quickEditing.id);
     if (idx !== -1) {
-      newServices[idx] = { ...newServices[idx], ...quickEditing };
+      newServices[idx] = { ...newServices[idx], ...quickEditing, updatedAt: new Date().toISOString() };
       saveToDb(newServices);
       setQuickEditing(null);
     }
@@ -354,6 +354,8 @@ export default function ServicesAdminPage() {
       ...form,
       seo: seo,
       id: form.id || Date.now().toString(),
+      createdAt: form.createdAt || new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       number: form.number || (services.length + 1).toString().padStart(2, '0')
     };
     
@@ -389,7 +391,7 @@ export default function ServicesAdminPage() {
     const originalIdx = services.findIndex(orig => orig.id === service.id);
     if (originalIdx === -1) return;
     const s = newServices[originalIdx];
-    newServices[originalIdx] = { ...s, status: s.status === 'published' ? 'draft' : 'published' };
+    newServices[originalIdx] = { ...s, status: s.status === 'published' ? 'draft' : 'published', updatedAt: new Date().toISOString() };
     saveToDb(newServices);
   };
 
@@ -400,6 +402,9 @@ export default function ServicesAdminPage() {
       id: Date.now().toString(),
       title: `${s.title} (Copy)`,
       slug: `${s.slug}-copy`,
+      seo: { ...(s.seo || {}), canonicalUrl: '' },
+      createdAt: new Date().toISOString(),
+      updatedAt: new Date().toISOString(),
       status: 'draft'
     };
     const newServices = [...services, newService];

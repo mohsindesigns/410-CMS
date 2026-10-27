@@ -28,6 +28,20 @@ export function resolveReviewSelection(master: any[], selected: any): any[] {
     .filter(Boolean);
 }
 
+/**
+ * Rating used in search-result markup + the home/reviews pages. One source of truth:
+ * Admin > Reviews > Summary (stats), else the Google-import figures, else computed from the list.
+ * Returns null when there are no reviews at all, so no rating markup is emitted.
+ */
+export function computeAggregateRating(testimonials: any): { ratingValue: number; reviewCount: number } | null {
+  const t = testimonials || {};
+  const list: any[] = Array.isArray(t.testimonials) ? t.testimonials : [];
+  const rating = toPositiveNumber(t.stats?.rating) ?? toPositiveNumber(t.googleRating)
+    ?? (list.length ? list.reduce((a: number, r: any) => a + Number(r.rating || 5), 0) / list.length : null);
+  const count = toPositiveNumber(t.stats?.count) ?? toPositiveNumber(t.googleReviewCount) ?? (list.length || null);
+  return rating && count ? { ratingValue: Math.round(rating * 10) / 10, reviewCount: Math.round(count) } : null;
+}
+
 /** Make a fresh permanent id for a review created in the dashboard. */
 export const newReviewId = () => `rv_${Date.now().toString(36)}_${Math.random().toString(36).slice(2, 8)}`;
 

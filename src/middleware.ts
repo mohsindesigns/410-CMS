@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { verifyToken } from '@/lib/auth';
+import { BASE_URL } from '@/lib/constants';
 
 const ADMIN_COOKIE = 'admin_session';
 const PUBLIC_PATHS = [
@@ -10,6 +11,13 @@ const PUBLIC_PATHS = [
 
 export async function middleware(req: NextRequest) {
   const { pathname } = req.nextUrl;
+
+  // One canonical host: www.<domain> permanently redirects to <domain> (same path + query).
+  const requestHost = (req.headers.get('host') || '').toLowerCase().split(':')[0];
+  const canonicalHost = new URL(BASE_URL).hostname.toLowerCase();
+  if (requestHost && !canonicalHost.startsWith('www.') && requestHost === 'www.' + canonicalHost) {
+    return NextResponse.redirect(new URL(pathname + req.nextUrl.search, BASE_URL), 301);
+  }
 
   const isStaticAsset =
     pathname.startsWith('/_next') ||

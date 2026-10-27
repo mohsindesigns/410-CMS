@@ -55,9 +55,6 @@ export async function generateMetadata(): Promise<Metadata> {
       shortcut: `${BASE_URL}/favicon.ico`,
       apple: [{ url: `${BASE_URL}/icons/apple-touch-icon.png`, sizes: "180x180", type: "image/png" }],
     },
-    facebook: {
-      appId: "410-Muscle-Therapy-61564977483096",
-    },
     title: {
       default: settings.siteTitle,
       template: settings.siteTemplate,
@@ -84,7 +81,7 @@ export async function generateMetadata(): Promise<Metadata> {
       description: settings.siteDescription,
       images: [
         {
-          url: settings.favicon || `${BASE_URL}/logo.png`,
+          url: `${BASE_URL}/og-default.png`,
           width: 1200,
           height: 630,
           alt: "410 Muscle Therapy – Performance Recovery & Clinical Bodywork Maryland",
@@ -98,7 +95,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: settings.siteTitle,
       description: settings.siteDescription,
-      images: [settings.favicon || `${BASE_URL}/logo.png`],
+      images: [`${BASE_URL}/og-default.png`],
       creator: "@410MuscleTherapy",
       site: "@410MuscleTherapy",
     },

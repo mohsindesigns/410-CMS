@@ -12,7 +12,8 @@ import ServiceDetailTemplate from '@/components/templates/ServiceDetailTemplate'
 import { Metadata } from 'next';
 import { generateSchema } from '@/lib/schema-generator';
 import { BASE_URL } from '@/lib/constants';
-import { toPositiveNumber } from '@/lib/reviews';
+import { computeAggregateRating } from '@/lib/reviews';
+import { stripHtml } from '@/lib/utils';
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
@@ -47,7 +48,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
     const seo = service.seo || {};
     const title = seo.metaTitle || service.title;
-    const description = seo.metaDescription || service.description || "";
+    const description = seo.metaDescription || stripHtml(service.description) || "";
     const pageUrl = `${BASE_URL}/${slug}/`;
     const ogImage = getAbsoluteUrl(seo.ogImage || seo.featuredImage || service.image || service.heroImage);
     const twitterImage = getAbsoluteUrl(seo.twitterImage || seo.ogImage || seo.featuredImage || service.image || service.heroImage);
@@ -68,14 +69,12 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         images: [
           {
             url: ogImage || `${BASE_URL}/logo.png`,
-            width: 1200,
-            height: 630,
-            alt: title,
+            alt: seo.featuredImageAlt || title,
           }
         ],
       },
       twitter: {
-        card: "summary_large_image",
+        card: seo.twitterCard === "summary" ? "summary" : "summary_large_image",
         title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || title,
         description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || description,
         images: [twitterImage || `${BASE_URL}/logo.png`],
@@ -87,34 +86,34 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
 
   const seo = page.seo || {};
   const pageUrl = `${BASE_URL}/${slug}/`;
+  // no meta description saved -> fall back to the page's own intro text (never the site-wide default)
+  const pageDescription = seo.metaDescription || stripHtml((page as any).data?.description || (page as any).content?.hero?.description) || undefined;
 
   return {
     title: buildPageTitle(seo.metaTitle || page.title),
-    description: seo.metaDescription,
+    description: pageDescription,
     alternates: {
       canonical: seo.canonicalUrl || pageUrl,
     },
     robots: getRobotsMetadata(settings, seo),
     openGraph: {
       title: seo.ogTitle || seo.metaTitle || page.title,
-      description: seo.ogDescription || seo.metaDescription,
+      description: seo.ogDescription || pageDescription,
       url: pageUrl,
       siteName: "410 Muscle Therapy",
       type: "website",
       images: [
         {
           url: getAbsoluteUrl(seo.ogImage || seo.featuredImage) || `${BASE_URL}/logo.png`,
-          width: 1200,
-          height: 630,
-          alt: page.title,
+          alt: seo.featuredImageAlt || page.title,
         }
       ],
     },
     twitter: {
-      card: "summary_large_image",
+      card: seo.twitterCard === "summary" ? "summary" : "summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || page.title,
-      description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
-      images: [getAbsoluteUrl(seo.twitterImage || seo.ogImage || seo.featuredImage) || `${BASE_URL}/logo.png`],
+      description: seo.twitterDescription || seo.ogDescription || pageDescription,
+      images: [getAbsoluteUrl(seo.twitterImage || seo.ogImage || seo.featuredImage) || `${BASE_URL}/og-default.png`],
       site: "@410MuscleTherapy",
       creator: "@410MuscleTherapy",
     },
@@ -140,12 +139,7 @@ export default async function DynamicPage({ params }: PageProps) {
 
   // Rating used in search-result markup: managed in Admin > Reviews (stats), else the figures saved by the
   // Google import, else computed from the review list. Omitted when there are no reviews at all.
-  const rvData = globalData.testimonials || {};
-  const rvList: any[] = Array.isArray(rvData.testimonials) ? rvData.testimonials : [];
-  const rvRating = toPositiveNumber(rvData.stats?.rating) ?? toPositiveNumber(rvData.googleRating)
-    ?? (rvList.length ? rvList.reduce((a: number, r: any) => a + Number(r.rating || 5), 0) / rvList.length : null);
-  const rvCount = toPositiveNumber(rvData.stats?.count) ?? toPositiveNumber(rvData.googleReviewCount) ?? (rvList.length || null);
-  const aggregateRating = rvRating && rvCount ? { ratingValue: Math.round(rvRating * 10) / 10, reviewCount: Math.round(rvCount) } : null;
+  const aggregateRating = computeAggregateRating(globalData.testimonials);
 
   // If no Page found, check if a Service matches this slug!
   if (!pageDoc) {
@@ -201,8 +195,9 @@ export default async function DynamicPage({ params }: PageProps) {
       }
 
       const schema = generateSchema({
-        title: service?.seo?.metaTitle || service?.title || "",
-        description: service?.seo?.metaDescription || service?.description || "",
+        title: service?.title || service?.seo?.metaTitle || "",
+        pageTitle: service?.seo?.metaTitle || service?.title || "",
+        description: service?.seo?.metaDescription || stripHtml(service?.description) || "",
         slug: slug,
         type: "Service",
         faqs: customFaqSchema ? undefined : serviceFaqItems,
@@ -210,8 +205,8 @@ export default async function DynamicPage({ params }: PageProps) {
         breadcrumbTitle: service?.seo?.breadcrumbTitle,
         isService: true,
         image: featuredImage,
-        datePublished: (service.publishedAt || service.createdAt ? new Date(service.publishedAt || service.createdAt) : new Date("2025-02-07T15:28:30Z")).toISOString(),
-        dateModified: (service.updatedAt || service.publishedAt || service.createdAt ? new Date(service.updatedAt || service.publishedAt || service.createdAt) : new Date("2026-07-24T16:08:21Z")).toISOString()
+        datePublished: (service.publishedAt || service.createdAt) ? new Date(service.publishedAt || service.createdAt).toISOString() : undefined,
+        dateModified: (service.updatedAt || service.publishedAt || service.createdAt) ? new Date(service.updatedAt || service.publishedAt || service.createdAt).toISOString() : undefined
       });
 
       return (
@@ -347,8 +342,8 @@ export default async function DynamicPage({ params }: PageProps) {
     isService: page.template === 'service-detail',
     aggregateRating,
     image: featuredImage,
-    datePublished: (page.publishedAt || page.createdAt ? new Date(page.publishedAt || page.createdAt) : new Date("2025-02-07T15:28:30Z")).toISOString(),
-    dateModified: (page.updatedAt || page.publishedAt || page.createdAt ? new Date(page.updatedAt || page.publishedAt || page.createdAt) : new Date("2026-07-24T16:08:21Z")).toISOString()
+    datePublished: (page.publishedAt || page.createdAt) ? new Date(page.publishedAt || page.createdAt).toISOString() : undefined,
+    dateModified: (page.updatedAt || page.publishedAt || page.createdAt) ? new Date(page.updatedAt || page.publishedAt || page.createdAt).toISOString() : undefined
   });
 
   // Use TemplateWrapper to handle local content context overrides

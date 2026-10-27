@@ -31,6 +31,12 @@ const PostSchema = new Schema({
     ogDescription: String,
     ogImage: String,
     twitterCard: { type: String, default: 'summary_large_image' },
+    twitterTitle: String,
+    twitterDescription: String,
+    twitterImage: String,
+    schemaData: String,
+    breadcrumbTitle: String,
+    secondaryKeywords: String,
     featuredImage: String,
     featuredImageAlt: String
   },

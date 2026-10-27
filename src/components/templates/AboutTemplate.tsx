@@ -248,7 +248,7 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
             />
 
             <div className="flex flex-row gap-3 sm:gap-4 justify-center lg:justify-start items-center">
-              <Link href={hero.ctaLink || "/contact-us"} className="w-full sm:w-auto">
+              <Link href={hero.ctaLink || "/#contact"} className="w-full sm:w-auto">
                 <motion.div
                   whileHover={{ y: -5, boxShadow: '0 20px 40px rgba(0,0,0,0.1)' }}
                   whileTap={{ scale: 0.98 }}
@@ -835,7 +835,7 @@ const AwardCTABanner = ({ content: passedContent }: { content?: any }) => {
         </div>
         <div className="flex flex-col sm:flex-row gap-4">
           <Link href={"https://www.greensky.com/prequal/gs/prequalify-for-loan?merchant=81115616&channel=External-Button-Prequal"}><button className="px-8 py-4 bg-primary text-primary-foreground font-bold rounded-full shadow-lg hover:scale-105 transition-transform">{ctaBanner.primaryCta || "Contact Us"}</button></Link>
-          <Link href={"/contact-us"}><button className="px-8 py-4 bg-background text-primary border-2 border-primary font-bold rounded-full hover:bg-primary hover:text-white transition-all">{ctaBanner.secondaryCta || "Free Estimate"}</button></Link>
+          <Link href={"/#contact"}><button className="px-8 py-4 bg-background text-primary border-2 border-primary font-bold rounded-full hover:bg-primary hover:text-white transition-all">{ctaBanner.secondaryCta || "Free Estimate"}</button></Link>
         </div>
       </div>
     </motion.div>

@@ -27,7 +27,7 @@ import ShareButton from "@/components/blog/ShareButton";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import { BASE_URL } from "@/lib/constants";
 import { makeLinksDoFollow, cleanMojibake } from "@/lib/utils";
-import { getRobotsMetadata, buildPageTitle } from "@/lib/seo";
+import { getRobotsMetadata, buildPageTitle, resolvePostCanonical } from "@/lib/seo";
 import { normalizeBlogImage } from "@/lib/blogImage";
 
 export const revalidate = 60; // Cache for 1 minute, updated via revalidatePath in admin panel
@@ -57,11 +57,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     post.seo?.metaDescription ||
     post.excerpt ||
     `${post.title} - Specialized recovery insights, deep tissue protocols, and clinical tips from 410 Muscle Therapy.`;
-  const pageImage = normalizeBlogImage(post.seo?.ogImage || post.featuredImage) || `${BASE_URL}/logo.png`;
-  let canonicalUrl = post.seo?.canonicalUrl || `${BASE_URL}/blogs/${post.slug}/`;
-  if (canonicalUrl.includes('/blog/')) {
-    canonicalUrl = canonicalUrl.replace('/blog/', '/blogs/');
-  }
+  const absUrl = (u?: string | null) => (!u ? undefined : /^https?:\/\//i.test(u) ? u : `${BASE_URL}${u.startsWith('/') ? '' : '/'}${u}`);
+  const seoData = post.seo || {};
+  const pageImage = absUrl(normalizeBlogImage(seoData.ogImage || seoData.featuredImage || post.featuredImage)) || `${BASE_URL}/og-default.png`;
+  const twitterImage = absUrl(seoData.twitterImage ? normalizeBlogImage(seoData.twitterImage) : undefined) || pageImage;
+  const canonicalUrl = resolvePostCanonical(post).url;
 
   return {
     title: buildPageTitle(pageTitle),
@@ -83,20 +83,20 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
         ? new Date(post.updatedAt || post.publishedAt || post.createdAt)
         : new Date("2026-07-24T16:08:21Z")
       ).toISOString(),
+      siteName: "410 Muscle Therapy",
+      locale: "en_US",
       images: [
         {
           url: pageImage,
-          width: 1200,
-          height: 630,
-          alt: post.title
+          alt: seoData.featuredImageAlt || post.title
         }
       ]
     },
     twitter: {
-      card: "summary_large_image",
-      title: post.seo?.ogTitle || pageTitle,
-      description: post.seo?.ogDescription || pageDesc,
-      images: [pageImage],
+      card: seoData.twitterCard === "summary" ? "summary" : "summary_large_image",
+      title: seoData.twitterTitle || seoData.ogTitle || pageTitle,
+      description: seoData.twitterDescription || seoData.ogDescription || pageDesc,
+      images: [twitterImage],
       site: "@410MuscleTherapy",
       creator: "@410MuscleTherapy"
     }
@@ -285,6 +285,12 @@ export default async function BlogPostPage({ params }: Props) {
     : new Date("2026-07-24T16:08:21Z")
   ).toISOString();
 
+  // JSON-LD images must be absolute URLs; the SEO "featured image" wins over the post's own image.
+  const schemaImage = (() => {
+    const u = normalizeBlogImage(post.seo?.featuredImage || post.featuredImage) || featuredImage;
+    return /^https?:\/\//i.test(u) ? u : `${BASE_URL}${u.startsWith('/') ? '' : '/'}${u}`;
+  })();
+
   // 5. Schema.org Article Graph JSON-LD
   const schemaGraph = {
     "@context": "https://schema.org",
@@ -293,7 +299,7 @@ export default async function BlogPostPage({ params }: Props) {
         "@type": "WebPage",
         "@id": url,
         "url": url,
-        "name": `${post.title} | 410 Muscle Therapy`,
+        "name": post.seo?.metaTitle || post.title,
         "isPartOf": { "@id": `${BASE_URL}/#website` },
         "primaryImageOfPage": { "@id": `${url}#primaryimage` },
         "datePublished": publishDate,
@@ -321,7 +327,7 @@ export default async function BlogPostPage({ params }: Props) {
           {
             "@type": "ListItem",
             "position": 3,
-            "name": post.title,
+            "name": post.seo?.breadcrumbTitle || post.title,
             "item": url
           }
         ]
@@ -337,7 +343,7 @@ export default async function BlogPostPage({ params }: Props) {
           "jobTitle": authorInfo.role
         },
         "headline": post.title,
-        "description": post.excerpt || post.title,
+        "description": post.seo?.metaDescription || post.excerpt || post.title,
         "datePublished": publishDate,
         "dateModified": modifiedDate,
         "mainEntityOfPage": { "@id": url },
@@ -354,9 +360,9 @@ export default async function BlogPostPage({ params }: Props) {
         "image": {
           "@type": "ImageObject",
           "@id": `${url}#primaryimage`,
-          "url": featuredImage
+          "url": schemaImage
         },
-        "thumbnailUrl": featuredImage,
+        "thumbnailUrl": schemaImage,
         "keywords": post.tags?.map((t: any) => t.name).join(", "),
         "inLanguage": "en-US"
       }

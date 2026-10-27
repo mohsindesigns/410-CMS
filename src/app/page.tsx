@@ -6,6 +6,7 @@ import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
 import Page from "@/models/Page";
 import { getHomepageSchemas } from "@/lib/schema-generator";
+import { computeAggregateRating } from "@/lib/reviews";
 import { TemplateWrapper } from "@/components/templates/TemplateRegistry";
 import ServiceDetailTemplate from "@/components/templates/ServiceDetailTemplate";
 import { BASE_URL } from "@/lib/constants";
@@ -45,7 +46,9 @@ export async function generateMetadata(): Promise<Metadata> {
 
   if (homepageId) {
     // Check if it's a page
-    const page = await Page.findOne({ _id: homepageId, isTrashed: { $ne: true } }).lean() as any;
+    const page = (/^[0-9a-fA-F]{24}$/.test(String(homepageId))
+      ? await Page.findOne({ _id: homepageId, status: 'published', isTrashed: { $ne: true } }).lean()
+      : null) as any;
     if (page) {
       const seo = page.seo || {};
       const metaDescription = seo.metaDescription || page.content?.hero?.description || settings?.siteDescription || "";
@@ -54,7 +57,7 @@ export async function generateMetadata(): Promise<Metadata> {
         title: buildPageTitle(seo.metaTitle || page.title),
         description: metaDescription,
         alternates: {
-          canonical: seo.canonicalUrl || pageUrl,
+          canonical: pageUrl, // the homepage's canonical is always "/" (a stored slug URL here would redirect back to "/")
         },
         openGraph: {
           ...metadata.openGraph,
@@ -82,7 +85,7 @@ export async function generateMetadata(): Promise<Metadata> {
         title: buildPageTitle(seo.metaTitle || service.title),
         description: metaDescription,
         alternates: {
-          canonical: seo.canonicalUrl || pageUrl,
+          canonical: pageUrl, // the homepage's canonical is always "/" (a stored slug URL here would redirect back to "/")
         },
         openGraph: {
           ...metadata.openGraph,
@@ -126,7 +129,7 @@ export async function generateMetadata(): Promise<Metadata> {
     description: metaDescription,
     robots: getRobotsMetadata(settings, seo),
     alternates: {
-      canonical: seo.canonicalUrl || pageUrl,
+      canonical: pageUrl, // the homepage's canonical is always "/" (a stored slug URL here would redirect back to "/")
     },
     openGraph: {
       title: seo.ogTitle || metaTitle,
@@ -136,7 +139,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "410 Muscle Therapy",
       images: [
         {
-          url: seo.ogImage || seo.featuredImage || settings?.favicon || `${BASE_URL}/logo.png`,
+          url: seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`,
           width: 1200,
           height: 630,
           alt: "410 Muscle Therapy – Performance Recovery & Clinical Bodywork Maryland",
@@ -148,7 +151,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || metaTitle,
       description: seo.twitterDescription || seo.ogDescription || metaDescription,
-      images: [seo.twitterImage || seo.ogImage || seo.featuredImage || settings?.favicon || `${BASE_URL}/logo.png`],
+      images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`],
       creator: "@410MuscleTherapy",
       site: "@410MuscleTherapy",
     },
@@ -172,7 +175,7 @@ export default async function HomePage() {
     (item.visibility === 'specific' && item.targetPages?.includes('home'))
   );
 
-  const { homepageSchema, faqSchema } = getHomepageSchemas(servicesList, faqs);
+  const { homepageSchema, faqSchema } = getHomepageSchemas(servicesList, faqs, computeAggregateRating(content?.data?.testimonials));
 
   const schemaScripts = (
     <>

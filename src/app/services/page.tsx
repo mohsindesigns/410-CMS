@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
   const [content, pageDoc] = await Promise.all([
     SiteContent.findOne({ key: 'complete_data' }).lean() as any,
-    Page.findOne({ slug: 'services' }).lean() as any
+    Page.findOne({ slug: 'services', status: 'published', isTrashed: { $ne: true } }).lean() as any
   ]);
   
   const settings = content?.data?.settings;
@@ -39,14 +39,18 @@ export async function generateMetadata(): Promise<Metadata> {
       title: seo.ogTitle || seo.metaTitle || pageDoc?.title || "Our Services",
       description: seo.ogDescription || seo.metaDescription || servicesData?.description,
       url: pageUrl,
+      siteName: "410 Muscle Therapy",
+      locale: "en_US",
       type: 'website',
-      images: [seo.ogImage || seo.featuredImage].filter(Boolean) as string[],
+      images: [seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`],
     },
     twitter: {
-      card: 'summary_large_image',
-      title: seo.twitterTitle || seo.ogTitle || seo.metaTitle,
-      description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
-      images: [seo.twitterImage || seo.ogImage || seo.featuredImage].filter(Boolean) as string[],
+      card: seo.twitterCard === 'summary' ? 'summary' : 'summary_large_image',
+      title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || pageDoc?.title || "Our Services",
+      description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || servicesData?.description,
+      images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`],
+      site: "@410MuscleTherapy",
+      creator: "@410MuscleTherapy",
     },
     robots: getRobotsMetadata(settings, seo)
   };
@@ -58,7 +62,7 @@ export default async function ServicesPage() {
   await connectToDatabase();
   const [content, pageDoc] = await Promise.all([
     SiteContent.findOne({ key: 'complete_data' }).lean() as any,
-    Page.findOne({ slug: 'services' }).lean() as any
+    Page.findOne({ slug: 'services', status: 'published', isTrashed: { $ne: true } }).lean() as any
   ]);
 
   const globalData = content?.data ? JSON.parse(JSON.stringify(content.data)) : {};

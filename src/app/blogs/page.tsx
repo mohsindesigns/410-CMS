@@ -18,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
   const [content, pageDoc] = await Promise.all([
     SiteContent.findOne({ key: 'complete_data' }).lean() as any,
-    Page.findOne({ $or: [{ slug: 'blogs' }, { slug: 'blog' }] }).lean() as any
+    Page.findOne({ $or: [{ slug: 'blogs' }, { slug: 'blog' }], status: 'published', isTrashed: { $ne: true } }).lean() as any
   ]);
 
   const settings = content?.data?.settings;
@@ -29,8 +29,9 @@ export async function generateMetadata(): Promise<Metadata> {
   };
   const pageUrl = `${BASE_URL}/blogs/`;
 
-  const publishedTime = (pageDoc?.publishedAt || pageDoc?.createdAt ? new Date(pageDoc.publishedAt || pageDoc.createdAt) : new Date("2025-02-07T15:28:30Z")).toISOString();
-  const modifiedTime = (pageDoc?.updatedAt || pageDoc?.publishedAt || pageDoc?.createdAt ? new Date(pageDoc.updatedAt || pageDoc.publishedAt || pageDoc.createdAt) : new Date("2026-07-24T16:08:21Z")).toISOString();
+  // real dates only - never fabricated
+  const publishedTime = (pageDoc?.publishedAt || pageDoc?.createdAt) ? new Date(pageDoc.publishedAt || pageDoc.createdAt).toISOString() : undefined;
+  const modifiedTime = (pageDoc?.updatedAt || pageDoc?.publishedAt || pageDoc?.createdAt) ? new Date(pageDoc.updatedAt || pageDoc.publishedAt || pageDoc.createdAt).toISOString() : undefined;
 
   let canonicalUrl = seo.canonicalUrl || pageUrl;
   if (canonicalUrl.endsWith('/blog/') || canonicalUrl.endsWith('/blog')) {
@@ -47,18 +48,20 @@ export async function generateMetadata(): Promise<Metadata> {
       title: seo.ogTitle || seo.metaTitle || pageDoc?.title || "Our Blogs | 410 Muscle Therapy",
       description: seo.ogDescription || seo.metaDescription || blogData?.hero?.description || "Explore our latest articles, insights, and clinical recovery tips.",
       url: pageUrl,
+      siteName: "410 Muscle Therapy",
+      locale: "en_US",
       type: 'website',
-      images: [{ url: seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png` }],
+      images: [{ url: seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png` }],
     },
     other: {
-      'article:published_time': publishedTime,
-      'article:modified_time': modifiedTime,
+      ...(publishedTime ? { 'article:published_time': publishedTime } : {}),
+      ...(modifiedTime ? { 'article:modified_time': modifiedTime } : {}),
     },
     twitter: {
-      card: 'summary_large_image',
+      card: seo.twitterCard === 'summary' ? 'summary' : 'summary_large_image',
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || "Our Blogs | 410 Muscle Therapy",
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || "Explore our latest articles, insights, and clinical recovery tips.",
-      images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png`].filter(Boolean) as string[],
+      images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`].filter(Boolean) as string[],
       site: "@410MuscleTherapy",
       creator: "@410MuscleTherapy",
     },
@@ -76,7 +79,7 @@ export default async function BlogsIndexPage() {
       .populate('categories author')
       .sort({ publishedAt: -1, date: -1 })
       .lean(),
-    Page.findOne({ $or: [{ slug: 'blogs' }, { slug: 'blog' }] }).lean() as any,
+    Page.findOne({ $or: [{ slug: 'blogs' }, { slug: 'blog' }], status: 'published', isTrashed: { $ne: true } }).lean() as any,
     SiteContent.findOne({ key: 'complete_data' }).lean() as any
   ]);
 

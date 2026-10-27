@@ -1,4 +1,5 @@
 import type { Metadata } from 'next';
+import { BASE_URL } from './constants';
 
 /**
  * Returns a page's title exactly as given, with no brand name appended.
@@ -37,4 +38,31 @@ export function getRobotsMetadata(settings: any, pageSeo?: any): Metadata['robot
       'max-snippet': -1,
     }),
   };
+}
+
+/**
+ * Canonical URL for a blog post.
+ *
+ * A custom canonical saved in the post's SEO tab is honoured only when it is a valid blog URL on this site
+ * (/blogs/<slug>/). Anything else - a root-level URL that redirects straight back to the post (a canonical loop),
+ * another host, a legacy /blog/ path - falls back to the post's own URL, because pointing a canonical at a URL
+ * that redirects or does not exist makes Google ignore the tag and pick its own.
+ */
+export function resolvePostCanonical(post: any): { url: string; isSelf: boolean } {
+  const self = `${BASE_URL}/blogs/${post?.slug}/`;
+  const raw = String(post?.seo?.canonicalUrl || '').trim();
+  if (!raw) return { url: self, isSelf: true };
+  let u: URL;
+  try {
+    u = new URL(raw, BASE_URL);
+  } catch {
+    return { url: self, isSelf: true };
+  }
+  const bare = (h: string) => h.toLowerCase().replace(/^www\./, '');
+  if (bare(u.host) !== bare(new URL(BASE_URL).host)) return { url: self, isSelf: true };
+  let path = u.pathname.replace(/^\/blog\//, '/blogs/');
+  if (!path.endsWith('/')) path += '/';
+  if (!/^\/blogs\/[^/]+\/$/.test(path)) return { url: self, isSelf: true };
+  const url = `${BASE_URL}${path}`;
+  return { url, isSelf: url === self };
 }

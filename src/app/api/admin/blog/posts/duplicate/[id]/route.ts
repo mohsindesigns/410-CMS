@@ -29,6 +29,8 @@ export async function POST(
     postObj.title = `${postObj.title} (Copy)`;
     postObj.slug = `${postObj.slug}-copy-${Date.now()}`;
     postObj.status = 'draft';
+    // a copy must never canonicalise to the original (once published it would be treated as a duplicate)
+    if (postObj.seo) postObj.seo.canonicalUrl = '';
     postObj.author = sourcePost.author || (session as any).userId;
     postObj.authorName = sourcePost.authorName || '';
 
