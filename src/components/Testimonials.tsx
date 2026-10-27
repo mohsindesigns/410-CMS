@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import Image from "next/image";
+import Link from "next/link";
 import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useContent } from "../hooks/useContent";
@@ -26,6 +27,27 @@ export default function TestimonialsSection() {
 
   if (!items || items.length === 0) return null;
   const activeTestimonial = items[activeIdx];
+  const many = items.length > 10;
+
+  // Slide body, rendered once for the visible slide and once per slide in an invisible "sizer" layer so the
+  // card is always as tall as the longest review (no height jumps, nav buttons never move).
+  const renderSlide = (t: any) => (
+    <>
+      <p className="text-white/80 text-[13.5px] min-[400px]:text-[15px] md:text-[16px] leading-[1.65] md:leading-[1.75] font-display italic pt-3 sm:pt-4 mb-5 line-clamp-[10] md:line-clamp-[8]">
+        {stripHtml(t.quote)}
+      </p>
+      <div className="flex flex-wrap items-center gap-2.5 pt-4 border-t border-border-dark">
+        <div className="flex gap-0.5 text-gold flex-shrink-0">
+          {Array.from({ length: t.stars || 5 }).map((_, i) => (
+            <Star key={i} size={13} fill="currentColor" stroke="none" />
+          ))}
+        </div>
+        <span className="text-gold text-[11.5px] min-[400px]:text-[12.5px] md:text-[13px] font-semibold tracking-wide">
+          {dash} {stripHtml(t.name)}
+        </span>
+      </div>
+    </>
+  );
 
   return (
     <section id="testimonials" className="bg-dark py-20 md:py-32 relative overflow-hidden border-t border-white/10">
@@ -52,31 +74,26 @@ export default function TestimonialsSection() {
                   {quoteIcon}
                 </span>
 
-                <AnimatePresence mode="wait">
-                  <motion.div
-                    key={activeIdx}
-                    initial={{ opacity: 0, y: 10 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    exit={{ opacity: 0, y: -10 }}
-                    transition={{ duration: 0.25, ease: "easeOut" }}
-                  >
-                    <p className="text-white/80 text-[13.5px] min-[400px]:text-[15px] md:text-[16px] leading-[1.65] md:leading-[1.75] font-display italic pt-3 sm:pt-4 mb-5">
-                      {stripHtml(activeTestimonial.quote)}
-                    </p>
-
-                    {/* Stars + name */}
-                    <div className="flex flex-wrap items-center gap-2.5 pt-4 border-t border-border-dark">
-                      <div className="flex gap-0.5 text-gold flex-shrink-0">
-                        {Array.from({ length: activeTestimonial.stars || 5 }).map((_, i) => (
-                          <Star key={i} size={13} fill="currentColor" stroke="none" />
-                        ))}
-                      </div>
-                      <span className="text-gold text-[11.5px] min-[400px]:text-[12.5px] md:text-[13px] font-semibold tracking-wide">
-                        {dash} {stripHtml(activeTestimonial.name)}
-                      </span>
+                <div className="grid">
+                  {/* invisible sizer: every slide stacked in one cell so the card keeps the tallest height */}
+                  {items.map((t: any, i: number) => (
+                    <div key={i} aria-hidden="true" className="col-start-1 row-start-1 invisible pointer-events-none select-none">
+                      {renderSlide(t)}
                     </div>
-                  </motion.div>
-                </AnimatePresence>
+                  ))}
+                  <AnimatePresence mode="wait">
+                    <motion.div
+                      key={activeIdx}
+                      initial={{ opacity: 0, y: 10 }}
+                      animate={{ opacity: 1, y: 0 }}
+                      exit={{ opacity: 0, y: -10 }}
+                      transition={{ duration: 0.25, ease: "easeOut" }}
+                      className="col-start-1 row-start-1 flex flex-col justify-between"
+                    >
+                      {renderSlide(activeTestimonial)}
+                    </motion.div>
+                  </AnimatePresence>
+                </div>
               </div>
             </div>
 
@@ -96,18 +113,34 @@ export default function TestimonialsSection() {
               >
                 <ChevronRight size={18} className="md:w-5 md:h-5" />
               </button>
-              {/* Dots */}
-              <div className="flex gap-1.5 ml-2">
-                {items.map((_: any, i: number) => (
-                  <button
-                    key={i}
-                    onClick={() => setActiveIdx(i)}
-                    aria-label={`Go to testimonial ${i + 1}`}
-                    className={`h-2 rounded-full transition-all duration-200
-                      ${i === activeIdx ? "bg-gold w-5" : "bg-white/20 w-2 hover:bg-gold/50"}`}
-                  />
-                ))}
-              </div>
+              {many ? (
+                /* 11+ reviews: dots would overflow, so show a counter and a progress bar */
+                <div className="flex items-center gap-3 ml-2 min-w-0 flex-1" aria-live="polite">
+                  <span className="text-gold font-mono text-[12px] font-bold tracking-widest tabular-nums flex-shrink-0">
+                    {String(activeIdx + 1).padStart(2, "0")}<span className="text-white/35"> / {String(items.length).padStart(2, "0")}</span>
+                  </span>
+                  <div className="h-[3px] flex-1 max-w-[140px] rounded-full bg-white/15 overflow-hidden">
+                    <div className="h-full rounded-full bg-gold transition-all duration-300" style={{ width: `${((activeIdx + 1) / items.length) * 100}%` }} />
+                  </div>
+                </div>
+              ) : (
+                <div className="flex gap-1.5 ml-2">
+                  {items.map((_: any, i: number) => (
+                    <button
+                      key={i}
+                      onClick={() => setActiveIdx(i)}
+                      aria-label={`Go to testimonial ${i + 1}`}
+                      className={`h-2 rounded-full transition-all duration-200
+                        ${i === activeIdx ? "bg-gold w-5" : "bg-white/20 w-2 hover:bg-gold/50"}`}
+                    />
+                  ))}
+                </div>
+              )}
+              {many && (
+                <Link href="/reviews/" className="ml-auto flex-shrink-0 text-[11px] font-bold uppercase tracking-[0.16em] text-white/60 hover:text-gold transition-colors">
+                  All reviews →
+                </Link>
+              )}
             </div>
           </div>
 
