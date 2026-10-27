@@ -67,9 +67,6 @@ export async function generateMetadata(): Promise<Metadata> {
 
     // ── Robots & Canonical ──
     robots: getRobotsMetadata(settings),
-    alternates: {
-      canonical: `${BASE_URL}/`,
-    },
 
     // ── Open Graph (Facebook, LinkedIn) ──
     openGraph: {

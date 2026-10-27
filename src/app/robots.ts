@@ -3,7 +3,7 @@ import { BASE_URL } from '@/lib/constants';
 import connectToDatabase from '@/lib/mongodb';
 import SiteContent from '@/models/Content';
 
-export const dynamic = 'force-dynamic';
+export const revalidate = 3600; // cached for an hour (the noindex toggle in Settings applies within that window)
 
 export default async function robots(): Promise<MetadataRoute.Robots> {
   let isNoIndex = false;

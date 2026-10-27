@@ -333,6 +333,11 @@ export default function Footer() {
     };
   });
 
+  // Make sure the Reviews and FAQ pages are linked site-wide (they had no internal links pointing at them)
+  for (const extra of [{ label: "Reviews", href: "/reviews/" }, { label: "FAQ", href: "/faq/" }]) {
+    if (!quickLinksData.some((l: any) => String(l.href).replace(/\/$/, "") === extra.href.replace(/\/$/, ""))) quickLinksData.push(extra);
+  }
+
   const servicesListRaw = (servicesData?.services || []).filter((s: any) => s.status === 'published' || s.status === undefined);
   const servicesDataList = servicesListRaw.slice(0, 6).map((svc: any) => ({
     label: svc.title,

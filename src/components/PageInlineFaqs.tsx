@@ -544,7 +544,8 @@ export default function PageInlineFaqs({
   title,
   subtitle,
   badge,
-  showFilters = false
+  showFilters = false,
+  asH1 = false
 }: {
   faqs?: any[];
   faqSchemaMarkup?: string;
@@ -553,7 +554,10 @@ export default function PageInlineFaqs({
   subtitle?: string;
   badge?: string;
   showFilters?: boolean;
+  /** Render the section heading as the page's <h1> (use on a dedicated FAQ page) */
+  asH1?: boolean;
 }) {
+  const Heading: any = asH1 ? "h1" : "h2";
   const { faq: globalFaq } = useContent();
   const sectionRef = useRef(null);
   const [isClient, setIsClient] = useState(false);
@@ -692,7 +696,7 @@ export default function PageInlineFaqs({
           dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
         />
       ))}
-      {validFaqs.length > 0 && isClient && (
+      {validFaqs.length > 0 && (
         <section
           ref={sectionRef}
           className="relative bg-background py-4 md:py-8 lg:py-12 overflow-hidden"
@@ -707,9 +711,9 @@ export default function PageInlineFaqs({
                 <span className="text-xs font-medium tracking-[0.2em] uppercase text-gold-dark mb-3 block">
                   {badge || section?.badge || "Knowledge Base"}
                 </span>
-                <h2 className="text-3xl sm:text-4xl md:text-5xl font-medium text-foreground mb-4">
+                <Heading className="text-3xl sm:text-4xl md:text-5xl font-medium text-foreground mb-4">
                   {title || section?.headline || "Frequently Asked Questions"}
-                </h2>
+                </Heading>
                 <div className="text-muted-foreground text-base md:text-lg">
                   {subtitle || section?.description ? (
                     typeof (subtitle || section?.description) === "string" ? (

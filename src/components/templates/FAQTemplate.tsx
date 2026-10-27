@@ -24,6 +24,7 @@ export default function FAQTemplate({ pageData, params }: { pageData?: any, para
                 subtitle={subtitle}
                 badge={badge}
                 showFilters={false}
+                asH1
             />
         </main>
     );

@@ -258,15 +258,20 @@ export function generateSchema(options: SchemaOptions) {
         "name": "Home",
         "item": `${BASE_URL}/`
       },
-      ...pathSegments.map((segment, index) => {
-        const url = `${BASE_URL}/${pathSegments.slice(0, index + 1).join('/')}/`;
-        return {
-          "@type": "ListItem",
-          "position": index + 2,
-          "name": index === pathSegments.length - 1 ? (breadcrumbTitle || title) : segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' '),
-          "item": url
-        };
-      })
+      ...(isService
+        ? [
+            { "@type": "ListItem", "position": 2, "name": "Services", "item": `${BASE_URL}/services/` },
+            { "@type": "ListItem", "position": 3, "name": breadcrumbTitle || title, "item": pageUrl }
+          ]
+        : pathSegments.map((segment, index) => {
+            const url = `${BASE_URL}/${pathSegments.slice(0, index + 1).join('/')}/`;
+            return {
+              "@type": "ListItem",
+              "position": index + 2,
+              "name": index === pathSegments.length - 1 ? (breadcrumbTitle || title) : segment.charAt(0).toUpperCase() + segment.slice(1).replace(/-/g, ' '),
+              "item": url
+            };
+          }))
     ]
   } : null;
 

@@ -26,11 +26,19 @@ import ReadingProgress from "@/components/blog/ReadingProgress";
 import ShareButton from "@/components/blog/ShareButton";
 import PageInlineFaqs from "@/components/PageInlineFaqs";
 import { BASE_URL } from "@/lib/constants";
-import { makeLinksDoFollow, cleanMojibake } from "@/lib/utils";
-import { getRobotsMetadata, buildPageTitle, resolvePostCanonical } from "@/lib/seo";
+import { makeLinksDoFollow, cleanMojibake, cleanContentLinks } from "@/lib/utils";
+import { getRobotsMetadata, buildPageTitle, resolvePostCanonical, smartDescription, tidyDescription } from "@/lib/seo";
 import { normalizeBlogImage } from "@/lib/blogImage";
 
 export const revalidate = 60; // Cache for 1 minute, updated via revalidatePath in admin panel
+
+// Dynamic segment + no generateStaticParams = Next renders EVERY request from scratch (TTFB 6-20s, no CDN caching).
+// Exporting generateStaticParams (empty: nothing is pre-built) switches this route to on-demand ISR: the first request
+// renders and caches the page, later requests are served from cache (revalidated every 60s and on every admin save).
+export const dynamicParams = true;
+export async function generateStaticParams() {
+  return [];
+}
 
 interface Props {
   params: Promise<{ slug: string }>;
@@ -54,12 +62,13 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const settings = contentDoc?.data?.settings;
   const pageTitle = post.seo?.metaTitle || post.title;
   const pageDesc =
-    post.seo?.metaDescription ||
-    post.excerpt ||
+    tidyDescription(post.seo?.metaDescription) ||
+    smartDescription(post.excerpt) ||
     `${post.title} - Specialized recovery insights, deep tissue protocols, and clinical tips from 410 Muscle Therapy.`;
   const absUrl = (u?: string | null) => (!u ? undefined : /^https?:\/\//i.test(u) ? u : `${BASE_URL}${u.startsWith('/') ? '' : '/'}${u}`);
   const seoData = post.seo || {};
-  const pageImage = absUrl(normalizeBlogImage(seoData.ogImage || seoData.featuredImage || post.featuredImage)) || `${BASE_URL}/og-default.png`;
+  const usable = (u?: string) => (u && !/\/wp-content\/uploads\//i.test(u) ? u : undefined);
+  const pageImage = absUrl(normalizeBlogImage(usable(seoData.ogImage) || usable(seoData.featuredImage) || post.featuredImage)) || `${BASE_URL}/og-default.png`;
   const twitterImage = absUrl(seoData.twitterImage ? normalizeBlogImage(seoData.twitterImage) : undefined) || pageImage;
   const canonicalUrl = resolvePostCanonical(post).url;
 
@@ -75,6 +84,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description: post.seo?.ogDescription || pageDesc,
       url: `${BASE_URL}/blogs/${post.slug}/`,
       type: "article",
+      authors: post.authorName && typeof post.authorName === "string" && post.authorName.trim() ? [post.authorName.trim()] : undefined,
       publishedTime: (post.publishedAt || post.createdAt
         ? new Date(post.publishedAt || post.createdAt)
         : new Date("2025-02-07T15:28:30Z")
@@ -287,7 +297,8 @@ export default async function BlogPostPage({ params }: Props) {
 
   // JSON-LD images must be absolute URLs; the SEO "featured image" wins over the post's own image.
   const schemaImage = (() => {
-    const u = normalizeBlogImage(post.seo?.featuredImage || post.featuredImage) || featuredImage;
+    const legacy = (x?: string) => (x && !/\/wp-content\/uploads\//i.test(x) ? x : undefined);
+    const u = normalizeBlogImage(legacy(post.seo?.featuredImage) || post.featuredImage) || featuredImage;
     return /^https?:\/\//i.test(u) ? u : `${BASE_URL}${u.startsWith('/') ? '' : '/'}${u}`;
   })();
 
@@ -304,7 +315,7 @@ export default async function BlogPostPage({ params }: Props) {
         "primaryImageOfPage": { "@id": `${url}#primaryimage` },
         "datePublished": publishDate,
         "dateModified": modifiedDate,
-        "description": post.seo?.metaDescription || post.excerpt,
+        "description": tidyDescription(post.seo?.metaDescription, 300) || smartDescription(post.excerpt, 300),
         "breadcrumb": { "@id": `${url}#breadcrumb` },
         "inLanguage": "en-US"
       },
@@ -333,7 +344,7 @@ export default async function BlogPostPage({ params }: Props) {
         ]
       },
       {
-        "@type": "Article",
+        "@type": "BlogPosting",
         "@id": `${url}#article`,
         "isPartOf": { "@id": url },
         "author": {
@@ -343,7 +354,7 @@ export default async function BlogPostPage({ params }: Props) {
           "jobTitle": authorInfo.role
         },
         "headline": post.title,
-        "description": post.seo?.metaDescription || post.excerpt || post.title,
+        "description": tidyDescription(post.seo?.metaDescription, 300) || smartDescription(post.excerpt, 300) || post.title,
         "datePublished": publishDate,
         "dateModified": modifiedDate,
         "mainEntityOfPage": { "@id": url },
@@ -363,7 +374,7 @@ export default async function BlogPostPage({ params }: Props) {
           "url": schemaImage
         },
         "thumbnailUrl": schemaImage,
-        "keywords": post.tags?.map((t: any) => t.name).join(", "),
+        "keywords": [...(post.tags || []), ...(post.categories || [])].map((t: any) => t?.name).filter(Boolean).join(", ") || undefined,
         "inLanguage": "en-US"
       }
     ]
@@ -407,14 +418,15 @@ export default async function BlogPostPage({ params }: Props) {
     return `<a href="${url}" class="text-gold font-semibold underline decoration-gold/50 hover:text-gold-light hover:decoration-gold transition-colors"${target}>${label}</a>`;
   });
 
-  processedContent = cleanMojibake(makeLinksDoFollow(processedContent));
+  processedContent = cleanContentLinks(cleanMojibake(makeLinksDoFollow(processedContent)));
 
   return (
     <article className="min-h-screen bg-dark text-white selection:bg-gold selection:text-dark transition-colors duration-300 pb-24 relative overflow-x-clip font-sans">
-      <Script
+      {/* Plain server-rendered <script>: crawlers see the structured data in the initial HTML (next/script injected it after hydration) */}
+      <script
         id="blog-post-schema"
         type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph) }}
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph).replace(/</g, '\\u003c') }}
       />
       <ReadingProgress />
 

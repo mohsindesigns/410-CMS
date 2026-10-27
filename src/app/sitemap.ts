@@ -5,7 +5,7 @@ import Page from '@/models/Page';
 import Post from '@/models/Post';
 import { BASE_URL } from '@/lib/constants';
 import { resolvePostCanonical } from '@/lib/seo';
-export const revalidate = 0;
+export const revalidate = 600; // rebuilt at most every 10 minutes
 
 type Entry = MetadataRoute.Sitemap[number];
 

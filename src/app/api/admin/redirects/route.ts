@@ -1,6 +1,9 @@
 import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Redirect from '@/models/Redirect';
+import SiteContent from '@/models/Content';
+import Page from '@/models/Page';
+import Post from '@/models/Post';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
 import { recordActivity } from '@/lib/logger';
 
@@ -23,6 +26,34 @@ function normalizePathForLoopCheck(urlStr: string) {
     p = '/' + p;
   }
   return p;
+}
+
+
+// Rules that would break the site: invalid or over-broad regex, redirecting core pages, or hiding a live page.
+async function validateRedirectRule(sourceUrl: string, isRegex: boolean, active: boolean): Promise<string | null> {
+  const CORE = ['/', '/services', '/blogs', '/privacy', '/terms', '/gallery'];
+  const samples = ['/', '/services/', '/blogs/', '/privacy/', '/terms/', '/gallery/', '/reviews/', '/faq/'];
+  if (isRegex) {
+    let re: RegExp;
+    try { re = new RegExp(sourceUrl, 'i'); } catch { return 'The regular expression is not valid.'; }
+    if (re.test('')) return 'This pattern matches an empty path - it would redirect every URL.';
+    const hit = samples.find((p) => re.test(p));
+    if (hit) return `This pattern is too broad: it matches ${hit}, an important page of your site. Anchor it (start with ^ and end with $).`;
+    return null;
+  }
+  const norm = normalizePathForLoopCheck(sourceUrl);
+  if (CORE.includes(norm)) return `${norm} is a core page - it cannot be redirected.`;
+  if (!active) return null;
+  // do not allow a redirect to hide a page that is live (the redirect would win and the page become unreachable)
+  const slug = norm.replace(/^\//, '');
+  const [content, page, post] = await Promise.all([
+    SiteContent.findOne({ key: 'complete_data' }, { 'data.services.services.slug': 1, 'data.services.services.status': 1, 'data.services.services.isTrashed': 1 }).lean() as any,
+    Page.findOne({ slug, status: 'published', isTrashed: { $ne: true } }, { _id: 1 }).lean(),
+    slug.startsWith('blogs/') ? Post.findOne({ slug: slug.replace(/^blogs\//, ''), status: 'published', isTrashed: { $ne: true } }, { _id: 1 }).lean() : Promise.resolve(null),
+  ]);
+  const svc = (content?.data?.services?.services || []).find((s: any) => s?.slug === slug && s.status !== 'draft' && !s.isTrashed);
+  if (svc || page || post) return `A live page already exists at ${norm}. Unpublish or delete it first, otherwise the redirect would make it unreachable.`;
+  return null;
 }
 
 // Loop checker algorithm
@@ -137,6 +168,11 @@ export async function POST(req: NextRequest) {
       return NextResponse.json({ error: 'A URL cannot redirect to itself.' }, { status: 400 });
     }
 
+    const ruleError = await validateRedirectRule(sourceUrl, !!isRegex, (status || 'active') === 'active');
+    if (ruleError) {
+      return NextResponse.json({ error: ruleError }, { status: 400 });
+    }
+
     const hasLoop = await isRedirectLoop(sourceUrl, targetUrl);
     if (hasLoop) {
       return NextResponse.json({ error: 'Redirect loop detected. This redirection would create a circular loop.' }, { status: 400 });
@@ -194,6 +230,11 @@ export async function PUT(req: NextRequest) {
     // Loop checks
     if (normalizePathForLoopCheck(sourceUrl) === normalizePathForLoopCheck(targetUrl)) {
       return NextResponse.json({ error: 'A URL cannot redirect to itself.' }, { status: 400 });
+    }
+
+    const ruleError = await validateRedirectRule(sourceUrl, !!isRegex, (status || 'active') === 'active');
+    if (ruleError) {
+      return NextResponse.json({ error: ruleError }, { status: 400 });
     }
 
     const hasLoop = await isRedirectLoop(sourceUrl, targetUrl, _id);

@@ -69,6 +69,10 @@ export function parseScriptSnippet(code: string): ParsedElement[] {
       const tagName = match[4].toLowerCase() as 'link' | 'meta';
       const rawAttrs = match[5] || '';
       const attrs = parseAttributes(rawAttrs);
+      // SEO tags are owned by the page metadata; a pasted duplicate would create conflicting robots/canonical signals.
+      const a: any = attrs;
+      if (tagName === 'meta' && (/^(robots|googlebot|bingbot|description|viewport)$/i.test(String(a.name || '')) || /^refresh$/i.test(String(a['http-equiv'] || '')))) continue;
+      if (tagName === 'link' && /^(canonical|alternate)$/i.test(String(a.rel || ''))) continue;
       elements.push({ tag: tagName, attrs });
     }
   }

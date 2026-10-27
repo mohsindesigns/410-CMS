@@ -2,6 +2,17 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import Redirect from '@/models/Redirect';
 
+// The middleware calls this for every public page view. Keep the rule list in memory for a short time instead of
+// scanning the collection each time; admin edits take effect within the TTL.
+const RULES_TTL_MS = 30_000;
+let rulesCache: { at: number; rules: any[] } | null = null;
+async function getActiveRedirects() {
+  if (rulesCache && Date.now() - rulesCache.at < RULES_TTL_MS) return rulesCache.rules;
+  const rules = await Redirect.find({ status: 'active' }).lean();
+  rulesCache = { at: Date.now(), rules };
+  return rules;
+}
+
 export async function GET(req: NextRequest) {
   try {
     const urlParam = req.nextUrl.searchParams.get('url');
@@ -10,7 +21,7 @@ export async function GET(req: NextRequest) {
     }
 
     await connectToDatabase();
-    const redirects = await Redirect.find({ status: 'active' }).lean();
+    const redirects = await getActiveRedirects();
 
     // Helper to extract clean path and search
     const extractPathAndSearch = (inputUrl: string) => {

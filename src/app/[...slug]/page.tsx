@@ -2,6 +2,14 @@ import { notFound, permanentRedirect, redirect } from 'next/navigation';
 
 export const revalidate = 60; // Cache for 1 minute, updated via revalidatePath in admin panel
 
+// Dynamic segment + no generateStaticParams = Next renders EVERY request from scratch (TTFB 6-20s, no CDN caching).
+// Exporting generateStaticParams (empty: nothing is pre-built) switches this route to on-demand ISR: the first request
+// renders and caches the page, later requests are served from cache (revalidated every 60s and on every admin save).
+export const dynamicParams = true;
+export async function generateStaticParams() {
+  return [];
+}
+
 import connectToDatabase from '@/lib/mongodb';
 import Page from '@/models/Page';
 import Post from '@/models/Post';
@@ -231,7 +239,8 @@ export default async function DynamicPage({ params }: PageProps) {
     const lastSlug = slug.includes('/') ? slug.split('/').pop() : slug;
     const postDoc = await Post.findOne({
       $or: [{ slug: slug }, { slug: lastSlug }],
-      status: 'published'
+      status: 'published',
+      isTrashed: { $ne: true }
     }).lean();
 
     if (postDoc) {

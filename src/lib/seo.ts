@@ -66,3 +66,42 @@ export function resolvePostCanonical(post: any): { url: string; isSelf: boolean 
   const url = `${BASE_URL}${path}`;
   return { url, isSelf: url === self };
 }
+
+/**
+ * Plain-text description cut at a sentence (or word) boundary instead of mid-word.
+ * Strips tags, collapses whitespace/newlines and the "In This Blog, We Will Learn" boilerplate.
+ */
+export function smartDescription(input: any, max = 155): string {
+  let t = String(input || '')
+    .replace(/<[^>]*>/g, ' ')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&amp;/g, '&')
+    .replace(/&#39;|&rsquo;/g, "'")
+    .replace(/&quot;/g, '"')
+    .replace(/\s+/g, ' ')
+    .replace(/^\s*in this blog,?\s*we will learn:?\s*/i, '')
+    .trim();
+  if (!t) return '';
+  if (t.length > 0) t = t.charAt(0).toUpperCase() + t.slice(1);
+  if (t.length <= max) return t;
+  const cut = t.slice(0, max);
+  const sentenceEnd = Math.max(cut.lastIndexOf('. '), cut.lastIndexOf('! '), cut.lastIndexOf('? '));
+  if (sentenceEnd >= Math.floor(max * 0.55)) return cut.slice(0, sentenceEnd + 1).trim();
+  const lastSpace = cut.lastIndexOf(' ');
+  return (lastSpace > 0 ? cut.slice(0, lastSpace) : cut).replace(/[\s,;:\-–—]+$/, '') + '…';
+}
+
+/**
+ * Clean a saved meta description for output: normalises whitespace/newlines, drops the "In This Blog, We Will Learn"
+ * boilerplate, and if it was saved cut off mid-sentence (a raw slice of the article) trims it back to the last full
+ * sentence - or the last whole word - instead of ending mid-word.
+ */
+export function tidyDescription(input: any, max = 160): string {
+  const t = smartDescription(input, 100000);
+  if (!t) return '';
+  // judge 'was cut off' on the original length (the boilerplate removed above would otherwise hide a 160-char slice)
+  const rawLength = String(input || '').replace(/<[^>]*>/g, ' ').replace(/s+/g, ' ').trim().length;
+  const endsCleanly = /[.!?…)"”']$/.test(t);
+  if (rawLength >= 140 && !endsCleanly) return smartDescription(t, t.length - 1);
+  return t.length > max ? smartDescription(t, max) : t;
+}

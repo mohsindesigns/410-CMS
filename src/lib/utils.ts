@@ -110,3 +110,42 @@ export function stripHtml(html: string | undefined | null): string {
 }
 
 
+
+/**
+ * Clean the links inside article HTML when it is rendered:
+ *  - strips tracking parameters (utm_*), which were copied in from AI tools / social shares
+ *  - adds the trailing slash internal URLs need (the site redirects slash-less URLs, costing a hop)
+ *  - repoints known dead URLs (removed pages, old /health-wellness/ paths) to their live equivalents
+ * Content in the database is left untouched; this only affects the HTML sent to visitors and Google.
+ */
+const SITE_HOST = /^(www\.)?410-muscletherapy\.com$/i;
+const TRACKING_PARAMS = ['utm_source', 'utm_medium', 'utm_campaign', 'utm_term', 'utm_content'];
+const LINK_MAP: Record<string, string> = {
+  '/russian-massage-maryland': '/blogs/what-is-russian-massage/',
+  '/blogs/muscle-therapy-maryland-guide': '/blogs/complete-natural-guide-to-muscle-therapy/',
+  '/health-wellness/deep-tissue-massage-for-muscle-knots': '/deep-tissue-massage-maryland/',
+  '/health-wellness/myofascial-release-therapy-benefits': '/myofascial-release-maryland/',
+};
+export function cleanContentLinks(html: string): string {
+  if (!html) return html;
+  return html.replace(/href=(["'])([^"']*)\1/gi, (match: string, quote: string, href: string) => {
+    if (!href || /^(mailto:|tel:|javascript:|data:)/i.test(href)) return match;
+    if (href === '#maryland-sports-massage-therapist') return `href=${quote}/maryland-sports-massage-therapist/${quote}`;
+    if (href.startsWith('#')) return match;
+    const absolute = /^https?:\/\//i.test(href);
+    if (!absolute && !href.startsWith('/')) return match;
+    let url: URL;
+    try { url = new URL(href, 'https://410-muscletherapy.com'); } catch { return match; }
+    const internal = !absolute || SITE_HOST.test(url.hostname);
+    const hadTracking = TRACKING_PARAMS.some((k) => url.searchParams.has(k));
+    TRACKING_PARAMS.forEach((k) => url.searchParams.delete(k));
+    if (!internal) return hadTracking ? `href=${quote}${url.toString()}${quote}` : match;
+
+    let path = url.pathname.replace(/\/+$/, '') || '/';
+    if (LINK_MAP[path]) path = LINK_MAP[path];
+    else if (path.startsWith('/health-wellness/')) path = `/blogs/${path.replace('/health-wellness/', '')}/`;
+    if (!/\.[a-z0-9]{2,5}$/i.test(path) && !path.endsWith('/')) path += '/';
+    const out = (absolute ? 'https://410-muscletherapy.com' : '') + path + url.search + url.hash;
+    return out === href ? match : `href=${quote}${out}${quote}`;
+  });
+}

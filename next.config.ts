@@ -43,6 +43,11 @@ const nextConfig: NextConfig = {
         destination: '/#contact',
         permanent: true,
       },
+      // Removed / mistyped URLs that were linked from articles -> closest live page (the old rule sent one of them to the homepage)
+      { source: '/russian-massage-maryland', destination: '/blogs/what-is-russian-massage/', permanent: true },
+      { source: '/blogs/muscle-therapy-maryland-guide', destination: '/blogs/complete-natural-guide-to-muscle-therapy/', permanent: true },
+      { source: '/health-wellness/deep-tissue-massage-for-muscle-knots', destination: '/deep-tissue-massage-maryland/', permanent: true },
+      { source: '/health-wellness/myofascial-release-therapy-benefits', destination: '/myofascial-release-maryland/', permanent: true },
       {
         source: '/blog',
         destination: '/blogs/',
