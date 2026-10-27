@@ -366,7 +366,7 @@ export default async function BlogPostPage({ params }: Props) {
           "url": BASE_URL,
           "logo": {
             "@type": "ImageObject",
-            "url": `${BASE_URL}/logo.png`
+            "url": `${BASE_URL}/icons/icon-512.png`
           }
         },
         "image": {

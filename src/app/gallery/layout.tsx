@@ -15,7 +15,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = pageDoc?.seo || galleryData.seo || {};
   const settings = content?.data?.settings;
   const pageUrl = `${BASE_URL}/gallery/`;
-  const ogImage = seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png`;
+  const ogImage = seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`;
 
   return {
     title: seo.metaTitle || "Project Gallery",

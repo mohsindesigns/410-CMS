@@ -41,7 +41,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "website",
       images: [
         {
-          url: seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png`,
+          url: seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`,
           width: 1200,
           height: 630,
           alt: title,
@@ -52,7 +52,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: "summary_large_image",
       title,
       description,
-      images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png`],
+      images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`],
       site: "@410MuscleTherapy",
       creator: "@410MuscleTherapy",
     },

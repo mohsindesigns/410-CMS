@@ -63,13 +63,13 @@ export async function generateMetadata(): Promise<Metadata> {
           ...metadata.openGraph,
           title: seo.ogTitle || seo.metaTitle || page.title,
           description: seo.ogDescription || seo.metaDescription || metaDescription,
-          images: [{ url: seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png` }],
+          images: [{ url: seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png` }],
         },
         twitter: {
           ...metadata.twitter,
           title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || page.title,
           description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || metaDescription,
-          images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png`].filter(Boolean) as string[],
+          images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`].filter(Boolean) as string[],
         },
         robots: getRobotsMetadata(settings, seo)
       };
@@ -91,13 +91,13 @@ export async function generateMetadata(): Promise<Metadata> {
           ...metadata.openGraph,
           title: seo.ogTitle || seo.metaTitle || service.title,
           description: seo.ogDescription || seo.metaDescription || metaDescription,
-          images: [{ url: seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png` }],
+          images: [{ url: seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png` }],
         },
         twitter: {
           ...metadata.twitter,
           title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || service.title,
           description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || metaDescription,
-          images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/logo.png`].filter(Boolean) as string[],
+          images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`].filter(Boolean) as string[],
         },
         robots: getRobotsMetadata(settings, seo)
       };

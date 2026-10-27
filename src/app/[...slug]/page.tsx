@@ -76,7 +76,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         type: "website",
         images: [
           {
-            url: ogImage || `${BASE_URL}/logo.png`,
+            url: ogImage || `${BASE_URL}/og-default.png`,
             alt: seo.featuredImageAlt || title,
           }
         ],
@@ -85,7 +85,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         card: seo.twitterCard === "summary" ? "summary" : "summary_large_image",
         title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || title,
         description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || description,
-        images: [twitterImage || `${BASE_URL}/logo.png`],
+        images: [twitterImage || `${BASE_URL}/og-default.png`],
         site: "@410MuscleTherapy",
         creator: "@410MuscleTherapy",
       },
@@ -112,7 +112,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       type: "website",
       images: [
         {
-          url: getAbsoluteUrl(seo.ogImage || seo.featuredImage) || `${BASE_URL}/logo.png`,
+          url: getAbsoluteUrl(seo.ogImage || seo.featuredImage) || `${BASE_URL}/og-default.png`,
           alt: seo.featuredImageAlt || page.title,
         }
       ],

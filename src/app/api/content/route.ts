@@ -147,6 +147,21 @@ export async function PUT(req: NextRequest) {
         { $or: [{ slug: 'home' }, { slug: '/' }, { template: 'home' }] },
         { $set: { content: finalData, updatedAt: new Date() } }
       );
+      // The Reviews page record keeps a full copy of the reviews + summary (visible in the database); the public page
+      // always reads the master list, this copy just mirrors it on every save.
+      const t = finalData?.testimonials;
+      if (t && Array.isArray(t.testimonials)) {
+        await Page.updateMany(
+          { template: 'reviews' },
+          { $set: {
+              'content.testimonials.testimonials': t.testimonials,
+              'content.testimonials.stats': t.stats || {},
+              'content.testimonials.googleRating': t.googleRating,
+              'content.testimonials.googleReviewCount': t.googleReviewCount,
+              updatedAt: new Date(),
+          } }
+        );
+      }
     } catch (pageErr) {
       console.error('Failed to sync content to home Page doc:', pageErr);
     }

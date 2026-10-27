@@ -52,9 +52,11 @@ function buildBusinessEntity(opts: { aggregateRating?: AggregateRatingInput; wit
     "url": `${BASE_URL}/`,
     "logo": {
       "@type": "ImageObject",
-      "url": `${BASE_URL}/logo.png`
+      "url": `${BASE_URL}/icons/icon-512.png`,
+      "width": 512,
+      "height": 512
     },
-    "image": `${BASE_URL}/logo.png`,
+    "image": `${BASE_URL}/og-default.png`,
     "telephone": "+1-443-473-2322",
     "email": "antoine.lyles@yahoo.com",
     "sameAs": [

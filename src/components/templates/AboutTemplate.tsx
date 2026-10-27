@@ -9,7 +9,7 @@ import { Icon } from "../../config/icons";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-import owner from "@/assets/ownerupdatedimage.jpeg";
+const owner = "/images/theraphist.jpeg"; // default founder portrait (410 Muscle Therapy specialist)
 
 import {
   ShieldCheck,
