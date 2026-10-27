@@ -12,6 +12,7 @@ import ServiceDetailTemplate from '@/components/templates/ServiceDetailTemplate'
 import { Metadata } from 'next';
 import { generateSchema } from '@/lib/schema-generator';
 import { BASE_URL } from '@/lib/constants';
+import { toPositiveNumber } from '@/lib/reviews';
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
@@ -137,6 +138,15 @@ export default async function DynamicPage({ params }: PageProps) {
   const globalData = globalContent?.data || {};
   const settings = globalData.settings || {};
 
+  // Rating used in search-result markup: managed in Admin > Reviews (stats), else the figures saved by the
+  // Google import, else computed from the review list. Omitted when there are no reviews at all.
+  const rvData = globalData.testimonials || {};
+  const rvList: any[] = Array.isArray(rvData.testimonials) ? rvData.testimonials : [];
+  const rvRating = toPositiveNumber(rvData.stats?.rating) ?? toPositiveNumber(rvData.googleRating)
+    ?? (rvList.length ? rvList.reduce((a: number, r: any) => a + Number(r.rating || 5), 0) / rvList.length : null);
+  const rvCount = toPositiveNumber(rvData.stats?.count) ?? toPositiveNumber(rvData.googleReviewCount) ?? (rvList.length || null);
+  const aggregateRating = rvRating && rvCount ? { ratingValue: Math.round(rvRating * 10) / 10, reviewCount: Math.round(rvCount) } : null;
+
   // If no Page found, check if a Service matches this slug!
   if (!pageDoc) {
     const services = globalData.services?.services || [];
@@ -196,6 +206,7 @@ export default async function DynamicPage({ params }: PageProps) {
         slug: slug,
         type: "Service",
         faqs: customFaqSchema ? undefined : serviceFaqItems,
+        aggregateRating,
         breadcrumbTitle: service?.seo?.breadcrumbTitle,
         isService: true,
         image: featuredImage,
@@ -334,6 +345,7 @@ export default async function DynamicPage({ params }: PageProps) {
     faqs: pageFaqs.length > 0 ? pageFaqs : undefined,
     breadcrumbTitle: page.seo?.breadcrumbTitle,
     isService: page.template === 'service-detail',
+    aggregateRating,
     image: featuredImage,
     datePublished: (page.publishedAt || page.createdAt ? new Date(page.publishedAt || page.createdAt) : new Date("2025-02-07T15:28:30Z")).toISOString(),
     dateModified: (page.updatedAt || page.publishedAt || page.createdAt ? new Date(page.updatedAt || page.publishedAt || page.createdAt) : new Date("2026-07-24T16:08:21Z")).toISOString()
@@ -342,7 +354,7 @@ export default async function DynamicPage({ params }: PageProps) {
   // Use TemplateWrapper to handle local content context overrides
   const { TemplateWrapper } = await import('@/components/templates/TemplateRegistry');
 
-  const mergedPageData = {
+  const mergedPageData: any = {
     ...(page.data || {}),
     ...page,
     content: {
@@ -351,6 +363,26 @@ export default async function DynamicPage({ params }: PageProps) {
       ...(page.content || {})
     }
   };
+
+  // Reviews page: the review LIST always comes from the master inventory (Admin > Reviews), so edits there show up
+  // here immediately. The page itself only stores presentation (heading, buttons, which reviews to show).
+  if (page.template === 'reviews') {
+    const g = globalData.testimonials || {};
+    const own = page.content?.testimonials || {};
+    const masterList = Array.isArray(g.testimonials) && g.testimonials.length ? g.testimonials : (Array.isArray(own.testimonials) ? own.testimonials : []);
+    mergedPageData.content.testimonials = {
+      ...g,
+      ...own,
+      testimonials: masterList,
+      section: { ...(g.section || {}), ...(own.section || {}) },
+      // the page's own badge wins over the home-page "Client Experiences" label
+      label: String(own.section?.badge || own.label || '').trim() || 'CLIENT REVIEWS',
+      // rating / total are global (one source for this page and the search-result markup)
+      stats: g.stats || own.stats || {},
+      googleRating: g.googleRating ?? own.googleRating,
+      googleReviewCount: g.googleReviewCount ?? own.googleReviewCount,
+    };
+  }
 
   return (
     <main>

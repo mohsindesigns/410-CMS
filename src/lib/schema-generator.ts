@@ -13,6 +13,8 @@ interface SchemaOptions {
   servicesList?: Array<{ name: string; description?: string }>;
   datePublished?: string;
   dateModified?: string;
+  /** Rating shown in search results; managed in Admin > Reviews. Omitted entirely when not provided. */
+  aggregateRating?: { ratingValue: number; reviewCount: number } | null;
 }
 
 export function getHomepageSchemas(servicesList?: Array<{ name: string }>, faqs?: Array<{ question?: string; answer?: string; q?: string; a?: string }>) {
@@ -158,7 +160,8 @@ export function generateSchema(options: SchemaOptions) {
     image,
     servicesList,
     datePublished = "2025-02-07T15:28:30+00:00",
-    dateModified = "2026-07-24T16:08:21+00:00"
+    dateModified = "2026-07-24T16:08:21+00:00",
+    aggregateRating
   } = options;
   const safeSlug = String(slug || "");
   const normalizedSlug = safeSlug.startsWith('/') ? safeSlug : `/${safeSlug}`;
@@ -225,11 +228,13 @@ export function generateSchema(options: SchemaOptions) {
         "closes": "21:00"
       }
     ],
-    "aggregateRating": {
-      "@type": "AggregateRating",
-      "ratingValue": "5",
-      "reviewCount": "28"
-    },
+    ...(aggregateRating && aggregateRating.reviewCount > 0 ? {
+      "aggregateRating": {
+        "@type": "AggregateRating",
+        "ratingValue": String(aggregateRating.ratingValue),
+        "reviewCount": String(aggregateRating.reviewCount)
+      }
+    } : {}),
     "areaServed": [
       { "@type": "AdministrativeArea", "name": "Maryland" },
       { "@type": "AdministrativeArea", "name": "Baltimore County" },

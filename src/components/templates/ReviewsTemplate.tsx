@@ -5,8 +5,11 @@ import { ArrowRight, Star } from "lucide-react";
 import { useContent } from "../../hooks/useContent";
 import { stripHtml } from "../../lib/utils";
 import CtaBanner from "@/components/CtaBanner";
+import { resolveReviewSelection, toPositiveNumber } from "@/lib/reviews";
 
+// Defaults only - every text and link below can be changed in Admin > Pages > Reviews page.
 const GOOGLE_MAPS_REVIEW_URL = "https://maps.app.goo.gl/PbvRBs4tJsDAJVMy6";
+const DEFAULT_SUMMARY = "Based on {count} verified Google reviews from clients across Timonium, Towson, Lutherville and Cockeysville.";
 const DEFAULT_BOOKING_URL = "https://www.styleseat.com/m/v/410muscletherapy";
 
 /** "Oct 2026" - UTC so the server and the browser always print the same month. */
@@ -71,18 +74,29 @@ const ReviewCard = ({ review, index }: { review: any; index: number }) => {
 
 export default function ReviewsTemplate({ pageData, params }: { pageData?: any, params?: any }) {
     const { testimonials: data, globalMetadata } = useContent();
-    const { section, testimonials = [], googleRating, googleReviewCount } = (data || {}) as any;
+    const { section, testimonials = [], selected, stats, googleRating, googleReviewCount } = (data || {}) as any;
     const reduceMotion = useReducedMotion();
 
-    const reviews: any[] = Array.isArray(testimonials) ? testimonials.filter((r: any) => r && (r.text || r.quote)) : [];
+    // Master list (Admin > Reviews), narrowed by the page's saved selection; no selection = show everything.
+    const reviews: any[] = resolveReviewSelection(testimonials, selected).filter((r: any) => r && (r.text || r.quote));
     const bookingUrl = globalMetadata?.bookingUrl || DEFAULT_BOOKING_URL;
 
-    // Summary numbers: the figures saved with the Google import, otherwise computed from the list.
+    // Rating box: CMS values (Admin > Reviews > Summary), else the Google-import figures, else computed from the list.
     const computedAvg = reviews.length
         ? reviews.reduce((sum, r) => sum + Number(r.rating || r.stars || 5), 0) / reviews.length
         : 5;
-    const rating = Number(googleRating) > 0 ? Number(googleRating) : computedAvg;
-    const total = Number(googleReviewCount) > 0 ? Number(googleReviewCount) : reviews.length;
+    const rating = toPositiveNumber(stats?.rating) ?? toPositiveNumber(googleRating) ?? computedAvg;
+    const total = Math.round(toPositiveNumber(stats?.count) ?? toPositiveNumber(googleReviewCount) ?? reviews.length);
+    const showSummary = section?.showSummary !== false;
+    const ratingLabel = stripHtml(stats?.label) || "Google rating";
+    const summaryText = (stripHtml(section?.summaryText) || DEFAULT_SUMMARY).replace(/{rating}/g, rating.toFixed(1));
+    const summaryParts = summaryText.split("{count}");
+
+    const primaryText = stripHtml(section?.ctaPrimaryText) || "Leave a Google Review";
+    const primaryUrl = (section?.ctaPrimaryUrl || "").trim() || GOOGLE_MAPS_REVIEW_URL;
+    const secondaryText = stripHtml(section?.ctaSecondaryText) || "Book Appointment";
+    const secondaryUrl = (section?.ctaSecondaryUrl || "").trim() || bookingUrl;
+    const emptyText = stripHtml(section?.emptyText) || "Reviews are coming soon.";
 
     const label = (stripHtml(section?.badge) || "").toUpperCase() === "REVIEWS" || !section?.badge ? "CLIENT REVIEWS" : stripHtml(section?.badge);
     const headline = stripHtml(section?.headline) || "What Our Clients Say";
@@ -106,7 +120,7 @@ export default function ReviewsTemplate({ pageData, params }: { pageData?: any, 
                 <div aria-hidden className="pointer-events-none absolute -bottom-40 right-0 h-[380px] w-[380px] rounded-full bg-[rgba(135,100,4,0.18)] blur-[150px]" />
 
                 <div className="site-container relative">
-                    <div className="grid grid-cols-1 items-end gap-10 lg:grid-cols-[1.55fr_1fr] lg:gap-14">
+                    <div className={`grid grid-cols-1 items-end gap-10 ${showSummary ? "lg:grid-cols-[1.55fr_1fr] lg:gap-14" : ""}`}>
                         <div>
                             <motion.div {...rise(0)} className="mb-5 flex items-center gap-3">
                                 <span className="h-px w-10 bg-gold" />
@@ -124,29 +138,40 @@ export default function ReviewsTemplate({ pageData, params }: { pageData?: any, 
                             )}
 
                             <motion.div {...rise(0.24)} className="mt-9 flex flex-col gap-4 sm:flex-row sm:items-center">
-                                <a href={GOOGLE_MAPS_REVIEW_URL} target="_blank" rel="noopener noreferrer" className="btn-gold w-full justify-center text-center sm:w-auto">
-                                    Leave a Google Review <ArrowRight size={14} className="ml-1" />
-                                </a>
-                                <a href={bookingUrl} target="_blank" rel="noopener noreferrer" className="btn-outline-white w-full justify-center text-center sm:w-auto">
-                                    Book Appointment <ArrowRight size={14} className="ml-1" />
-                                </a>
+                                {primaryText && (
+                                    <a href={primaryUrl} target={/^https?:/i.test(primaryUrl) ? "_blank" : undefined} rel="noopener noreferrer" className="btn-gold w-full justify-center text-center sm:w-auto">
+                                        {primaryText} <ArrowRight size={14} className="ml-1" />
+                                    </a>
+                                )}
+                                {secondaryText && (
+                                    <a href={secondaryUrl} target={/^https?:/i.test(secondaryUrl) ? "_blank" : undefined} rel="noopener noreferrer" className="btn-outline-white w-full justify-center text-center sm:w-auto">
+                                        {secondaryText} <ArrowRight size={14} className="ml-1" />
+                                    </a>
+                                )}
                             </motion.div>
                         </div>
 
                         {/* Rating summary */}
+                        {showSummary && (
                         <motion.div {...rise(0.2)} className="rounded-xl border border-border-dark bg-[rgba(26,26,26,0.75)] p-7 sm:p-9 backdrop-blur-sm">
                             <div className="flex items-end gap-4">
                                 <span className="font-display text-[72px] md:text-[88px] font-bold leading-[0.9] text-gold">{rating.toFixed(1)}</span>
                                 <div className="pb-2">
                                     <Stars count={Math.round(rating)} size={18} />
-                                    <p className="mt-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-white/60">Google rating</p>
+                                    <p className="mt-2 text-[12px] font-semibold uppercase tracking-[0.16em] text-white/60">{ratingLabel}</p>
                                 </div>
                             </div>
                             <div className="my-6 h-px w-full bg-border-dark" />
                             <p className="text-[14px] font-light leading-relaxed text-white/70">
-                                Based on <strong className="font-semibold text-white">{total}</strong> verified Google reviews from clients across Timonium, Towson, Lutherville and Cockeysville.
+                                {summaryParts.map((part, i) => (
+                                    <span key={i}>
+                                        {part}
+                                        {i < summaryParts.length - 1 && <strong className="font-semibold text-white">{total}</strong>}
+                                    </span>
+                                ))}
                             </p>
                         </motion.div>
+                        )}
                     </div>
                 </div>
             </section>
@@ -162,7 +187,7 @@ export default function ReviewsTemplate({ pageData, params }: { pageData?: any, 
                             ))}
                         </div>
                     ) : (
-                        <p className="py-20 text-center text-white/60">Reviews are coming soon.</p>
+                        <p className="py-20 text-center text-white/60">{emptyText}</p>
                     )}
                 </div>
             </section>
