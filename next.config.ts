@@ -3,6 +3,8 @@ import type { NextConfig } from "next";
 const nextConfig: NextConfig = {
   trailingSlash: true,
   poweredByHeader: false,
+  // Pages that read the database at build time (/blogs, sitemap) can exceed the 60s default when the DB is slow
+  staticPageGenerationTimeout: 240,
   compress: true,
   experimental: {
     optimizePackageImports: ['lucide-react', 'framer-motion', 'date-fns'],
