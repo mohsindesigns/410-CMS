@@ -29,6 +29,7 @@ import { BASE_URL } from "@/lib/constants";
 import { makeLinksDoFollow, cleanMojibake, cleanContentLinks } from "@/lib/utils";
 import { getRobotsMetadata, buildPageTitle, resolvePostCanonical, smartDescription, tidyDescription } from "@/lib/seo";
 import { normalizeBlogImage } from "@/lib/blogImage";
+import { parseCustomSchema, serializeJsonLd, customSchemaMode } from "@/lib/schema-generator";
 
 export const revalidate = 60; // Cache for 1 minute, updated via revalidatePath in admin panel
 
@@ -424,11 +425,29 @@ export default async function BlogPostPage({ params }: Props) {
   return (
     <article className="min-h-screen bg-dark text-white selection:bg-gold selection:text-dark transition-colors duration-300 pb-24 relative overflow-x-clip font-sans">
       {/* Plain server-rendered <script>: crawlers see the structured data in the initial HTML (next/script injected it after hydration) */}
-      <script
-        id="blog-post-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph).replace(/</g, '\\u003c') }}
-      />
+      {(() => {
+        const custom = parseCustomSchema(post.seo?.schemaData);
+        const useAuto = !custom || customSchemaMode(post.seo) === "append";
+        return (
+          <>
+            {useAuto && (
+              <script
+                id="blog-post-schema"
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: JSON.stringify(schemaGraph).replace(/</g, '\\u003c') }}
+              />
+            )}
+            {custom && custom.map((block: any, i: number) => (
+              <script
+                key={i}
+                id={`json-ld-custom-${i}`}
+                type="application/ld+json"
+                dangerouslySetInnerHTML={{ __html: serializeJsonLd(block) }}
+              />
+            ))}
+          </>
+        );
+      })()}
       <ReadingProgress />
 
       {/* ── 1. HERO SECTION WITH RICH TEXTURE & BREADCRUMBS ─────────────── */}

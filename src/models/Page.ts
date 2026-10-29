@@ -36,7 +36,8 @@ const PageSchema = new mongoose.Schema({
     twitterTitle: { type: String },
     twitterDescription: { type: String },
     twitterImage: { type: String },
-    schemaData: { type: String }, // JSON string for structured data
+    schemaData: { type: String }, // custom JSON-LD for this page only
+    schemaMode: { type: String, enum: ['replace', 'append'], default: 'replace' },
     breadcrumbTitle: { type: String },
     featuredImage: { type: String },
     featuredImageAlt: { type: String },

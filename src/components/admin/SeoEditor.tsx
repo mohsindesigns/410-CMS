@@ -25,6 +25,7 @@ interface SeoData {
   twitterDescription?: string;
   twitterImage?: string;
   schemaData?: string;
+  schemaMode?: string;
   breadcrumbTitle?: string;
   secondaryKeywords?: string;
   featuredImage?: string;
@@ -123,6 +124,7 @@ export default function SeoEditor({ data, setData, pageSlug, pageTitle, pageCont
         {[
           { id: 'general', label: 'General', icon: Search },
           { id: 'social', label: 'Social', icon: Share2 },
+          { id: 'schema', label: 'Schema', icon: FileJson },
           { id: 'analysis', label: 'Analysis', icon: CheckCircle },
         ].map((tab) => (
           <button
@@ -262,6 +264,63 @@ export default function SeoEditor({ data, setData, pageSlug, pageTitle, pageCont
                 </div>
               </motion.div>
             )}
+
+            {activeTab === 'schema' && (() => {
+              const raw = (data.schemaData || '').trim();
+              let status: { ok: boolean; msg: string } | null = null;
+              if (raw) {
+                try {
+                  const chunks: string[] = [];
+                  const re = /<script[^>]*>([\s\S]*?)<\/script>/gi;
+                  let m: RegExpExecArray | null;
+                  while ((m = re.exec(raw)) !== null) chunks.push(m[1]);
+                  if (!chunks.length) chunks.push(raw);
+                  const nodes: any[] = [];
+                  chunks.forEach((c) => { const v = JSON.parse(c.trim()); (Array.isArray(v) ? v : [v]).forEach((x: any) => nodes.push(...(x && x['@graph'] ? x['@graph'] : [x]))); });
+                  const types = nodes.map((n: any) => [].concat(n?.['@type'] || []).join('/')).filter(Boolean);
+                  status = { ok: true, msg: `Valid JSON-LD: ${nodes.length} item(s)${types.length ? ' — ' + types.slice(0, 8).join(', ') : ''}` };
+                } catch (e: any) {
+                  status = { ok: false, msg: 'Not valid JSON: ' + String(e?.message || e).slice(0, 140) + ' — until this is fixed the page keeps using its automatic schema.' };
+                }
+              }
+              const mode = data.schemaMode === 'append' ? 'append' : 'replace';
+              return (
+                <motion.div key="schema" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-4">
+                  <div className="rounded-[3px] border border-[#c3c4c7] bg-[#f6f7f7] p-4 text-[12px] text-[#50575e] leading-relaxed">
+                    <strong className="text-[#1d2327]">Custom schema for this page only.</strong> Paste JSON-LD (or the whole <code>&lt;script type="application/ld+json"&gt;</code> block). It is used on this page and nowhere else. Leave the box empty to use the automatic schema.
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[12px] font-bold text-[#1d2327] uppercase tracking-wide">How should it be used?</label>
+                    <select value={mode} onChange={(e) => updateField('schemaMode', e.target.value)} className="w-full border border-[#c3c4c7] bg-white px-3 py-2 text-[13px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none">
+                      <option value="replace">Replace the automatic schema (this is the only schema on the page)</option>
+                      <option value="append">Add to the automatic schema (both are output)</option>
+                    </select>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className="text-[12px] font-bold text-[#1d2327] uppercase tracking-wide">JSON-LD</label>
+                    <textarea
+                      value={data.schemaData || ''}
+                      onChange={(e) => updateField('schemaData', e.target.value)}
+                      rows={18}
+                      spellCheck={false}
+                      className="w-full border border-[#c3c4c7] px-3 py-2 text-[12px] font-mono rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none leading-relaxed"
+                      placeholder={'{\n  "@context": "https://schema.org",\n  "@type": "Service",\n  ...\n}'}
+                    />
+                  </div>
+                  {status && (
+                    <div className={`flex items-start gap-2 p-3 text-[12px] rounded-[3px] border-l-4 ${status.ok ? 'bg-green-50 border-green-500 text-green-700' : 'bg-red-50 border-red-500 text-red-700'}`}>
+                      {status.ok ? <CheckCircle className="w-4 h-4 mt-px flex-shrink-0" /> : <AlertCircle className="w-4 h-4 mt-px flex-shrink-0" />}
+                      <span>{status.msg}</span>
+                    </div>
+                  )}
+                  {raw && (
+                    <button type="button" onClick={() => updateField('schemaData', '')} className="text-[12px] text-[#d63638] underline">
+                      Remove custom schema (go back to the automatic one)
+                    </button>
+                  )}
+                </motion.div>
+              );
+            })()}
 
             {activeTab === 'analysis' && (
               <motion.div key="analysis" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-3">

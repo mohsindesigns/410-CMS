@@ -21,6 +21,7 @@ import { Metadata } from 'next';
 import { generateSchema } from '@/lib/schema-generator';
 import { BASE_URL } from '@/lib/constants';
 import { computeAggregateRating } from '@/lib/reviews';
+import { parseCustomSchema, serializeJsonLd, customSchemaMode } from '@/lib/schema-generator';
 import { stripHtml } from '@/lib/utils';
 
 interface PageProps {
@@ -217,20 +218,34 @@ export default async function DynamicPage({ params }: PageProps) {
         dateModified: (service.updatedAt || service.publishedAt || service.createdAt) ? new Date(service.updatedAt || service.publishedAt || service.createdAt).toISOString() : undefined
       });
 
+      // Custom schema for THIS service only (Admin > Services > SEO > Schema). Default mode replaces the automatic schema.
+      const customBlocks = parseCustomSchema(service?.seo?.schemaData);
+      const useAutoSchema = !customBlocks || customSchemaMode(service?.seo) === 'append';
+
       return (
         <main>
-          <script
-            id="json-ld-schema"
-            type="application/ld+json"
-            dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-          />
-          {customFaqSchema && (
+          {useAutoSchema && (
+            <script
+              id="json-ld-schema"
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+            />
+          )}
+          {useAutoSchema && customFaqSchema && (
             <script
               id="json-ld-faq-schema"
               type="application/ld+json"
               dangerouslySetInnerHTML={{ __html: customFaqSchema }}
             />
           )}
+          {customBlocks && customBlocks.map((block: any, i: number) => (
+            <script
+              key={i}
+              id={`json-ld-custom-${i}`}
+              type="application/ld+json"
+              dangerouslySetInnerHTML={{ __html: serializeJsonLd(block) }}
+            />
+          ))}
           <ServiceDetailTemplate pageData={service} params={Promise.resolve({ slug })} />
         </main>
       );
@@ -388,13 +403,27 @@ export default async function DynamicPage({ params }: PageProps) {
     };
   }
 
+  // Custom schema for THIS page only (Admin > Pages > SEO > Schema). Default mode replaces the automatic schema.
+  const customPageBlocks = parseCustomSchema(page.seo?.schemaData);
+  const useAutoPageSchema = !customPageBlocks || customSchemaMode(page.seo) === 'append';
+
   return (
     <main>
-      <script
-        id="json-ld-schema"
-        type="application/ld+json"
-        dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
-      />
+      {useAutoPageSchema && (
+        <script
+          id="json-ld-schema"
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }}
+        />
+      )}
+      {customPageBlocks && customPageBlocks.map((block: any, i: number) => (
+        <script
+          key={i}
+          id={`json-ld-custom-${i}`}
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: serializeJsonLd(block) }}
+        />
+      ))}
       <TemplateWrapper
         templateName={page.template}
         pageData={mergedPageData}

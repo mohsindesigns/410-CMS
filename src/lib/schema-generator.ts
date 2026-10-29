@@ -371,3 +371,34 @@ export function generateSchema(options: SchemaOptions) {
     "@graph": graph
   };
 }
+
+/**
+ * Custom JSON-LD pasted into a page's SEO > Schema tab.
+ * Accepts raw JSON (object or array) or one/several pasted <script type="application/ld+json"> blocks.
+ * Returns the list of JSON-LD objects, or null when empty/invalid (the automatic schema is then used, so a typo can never break a page).
+ */
+export function parseCustomSchema(raw: any): any[] | null {
+  if (typeof raw !== "string" || !raw.trim()) return null;
+  const text = raw.trim();
+  const chunks: string[] = [];
+  const scriptRe = /<script[^>]*>([\s\S]*?)<\/script>/gi;
+  let m: RegExpExecArray | null;
+  while ((m = scriptRe.exec(text)) !== null) chunks.push(m[1]);
+  if (chunks.length === 0) chunks.push(text);
+  const out: any[] = [];
+  for (const c of chunks) {
+    try {
+      const v = JSON.parse(c.trim());
+      if (Array.isArray(v)) out.push(...v); else out.push(v);
+    } catch {
+      return null;
+    }
+  }
+  return out.filter((x) => x && typeof x === "object").length ? out : null;
+}
+
+/** JSON-LD safe to embed in a <script> tag (cannot close the tag early). */
+export const serializeJsonLd = (value: any): string => JSON.stringify(value).replace(/</g, "\\u003c");
+
+/** "replace" (default): the custom schema is the ONLY schema on that page. "append": it is added after the automatic one. */
+export const customSchemaMode = (seo: any): "replace" | "append" => (seo?.schemaMode === "append" ? "append" : "replace");

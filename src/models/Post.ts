@@ -35,6 +35,7 @@ const PostSchema = new Schema({
     twitterDescription: String,
     twitterImage: String,
     schemaData: String,
+    schemaMode: String,
     breadcrumbTitle: String,
     secondaryKeywords: String,
     featuredImage: String,
