@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getSiteContent } from "@/lib/siteContent";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
 import { BASE_URL } from "@/lib/constants";
@@ -11,7 +12,7 @@ type Props = {
 export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const { slug } = await params;
   await connectToDatabase();
-  const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
+  const content = await getSiteContent();
   const settings = content?.data?.settings;
   const services = content?.data?.services?.services || [];
   const service = services.find((s: any) => s.slug === slug);

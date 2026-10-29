@@ -1,6 +1,7 @@
-export const revalidate = 60; // Cache for 1 minute, updated via revalidatePath in admin panel
+export const revalidate = 3600; // cached for an hour; admin saves refresh pages immediately via revalidatePath
 
 import HomeTemplate from "@/components/templates/HomeTemplate";
+import { getSiteContent } from "@/lib/siteContent";
 import { Metadata } from "next";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
@@ -15,7 +16,7 @@ import { getRobotsMetadata, buildPageTitle } from "@/lib/seo";
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
   const [content, homePageDoc] = await Promise.all([
-    SiteContent.findOne({ key: "complete_data" }).lean() as any,
+    getSiteContent(),
     Page.findOne({
       $or: [{ slug: "/" }, { slug: "home" }, { title: /^home$/i }],
       status: "published",
@@ -160,7 +161,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
 export default async function HomePage() {
   await connectToDatabase();
-  const content = await SiteContent.findOne({ key: 'complete_data' }).lean() as any;
+  const content = await getSiteContent();
   const settings = content?.data?.settings || {};
   const homepageId = settings.homepageId;
 

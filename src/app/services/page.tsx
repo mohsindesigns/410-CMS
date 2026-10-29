@@ -1,4 +1,5 @@
 import connectToDatabase from '@/lib/mongodb';
+import { getSiteContent } from "@/lib/siteContent";
 import SiteContent from '@/models/Content';
 import Page from '@/models/Page';
 import { Metadata } from 'next';
@@ -10,14 +11,14 @@ import WhyChooseUsSection from '@/components/sections/WhyChooseUsSection';
 import ContactFaqSection from '@/components/sections/ContactFaqSection';
 import CtaBanner from '@/components/sections/CtaBanner';
 
-export const revalidate = 60; // Cache for 1 minute
+export const revalidate = 3600; // cached for an hour; admin saves refresh pages immediately via revalidatePath
 
 import { getRobotsMetadata, buildPageTitle } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
   const [content, pageDoc] = await Promise.all([
-    SiteContent.findOne({ key: 'complete_data' }).lean() as any,
+    getSiteContent(),
     Page.findOne({ slug: 'services', status: 'published', isTrashed: { $ne: true } }).lean() as any
   ]);
   
@@ -61,7 +62,7 @@ import { ContentProvider } from '@/context/ContentContext';
 export default async function ServicesPage() {
   await connectToDatabase();
   const [content, pageDoc] = await Promise.all([
-    SiteContent.findOne({ key: 'complete_data' }).lean() as any,
+    getSiteContent(),
     Page.findOne({ slug: 'services', status: 'published', isTrashed: { $ne: true } }).lean() as any
   ]);
 

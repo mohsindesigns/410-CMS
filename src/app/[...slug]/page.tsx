@@ -1,6 +1,7 @@
 import { notFound, permanentRedirect, redirect } from 'next/navigation';
+import { getSiteContent } from "@/lib/siteContent";
 
-export const revalidate = 60; // Cache for 1 minute, updated via revalidatePath in admin panel
+export const revalidate = 3600; // cached for an hour; admin saves refresh pages immediately via revalidatePath
 
 // Dynamic segment + no generateStaticParams = Next renders EVERY request from scratch (TTFB 6-20s, no CDN caching).
 // Exporting generateStaticParams (empty: nothing is pre-built) switches this route to on-demand ISR: the first request
@@ -43,7 +44,7 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
   await connectToDatabase();
   const [page, content] = await Promise.all([
     Page.findOne({ slug, status: 'published', isTrashed: { $ne: true } }).lean(),
-    SiteContent.findOne({ key: 'complete_data' }).lean() as any
+    getSiteContent()
   ]);
 
   const settings = content?.data?.settings;
@@ -142,7 +143,7 @@ export default async function DynamicPage({ params }: PageProps) {
     isTrashed: { $ne: true }
   }).lean();
 
-  const globalContent = await SiteContent.findOne({ key: 'complete_data' }).lean() as any;
+  const globalContent = await getSiteContent();
   const globalData = globalContent?.data || {};
   const settings = globalData.settings || {};
 

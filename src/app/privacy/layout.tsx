@@ -1,4 +1,5 @@
 import connectToDatabase from "@/lib/mongodb";
+import { getSiteContent } from "@/lib/siteContent";
 import SiteContent from "@/models/Content";
 import { BASE_URL } from "@/lib/constants";
 import { Metadata } from "next";
@@ -7,7 +8,7 @@ import { getRobotsMetadata } from "@/lib/seo";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
-  const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
+  const content = await getSiteContent();
   const settings = content?.data?.settings;
   const privacyData = content?.data?.privacyPage || {};
   const seo = privacyData.seo || {};

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { getSiteContent } from "@/lib/siteContent";
 import { Space_Grotesk, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
@@ -34,7 +35,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   try {
     await connectToDatabase();
-    const content = await SiteContent.findOne({ key: 'complete_data' }).lean() as any;
+    const content = await getSiteContent();
     if (content?.data?.settings) settings = content.data.settings;
   } catch (e) {
     console.error("Failed to fetch settings for metadata", e);
@@ -136,7 +137,7 @@ export default async function RootLayout({
   let initialGlobalData = null;
   let initialBlogs = [];
   try {
-    const globalContent = await SiteContent.findOne({ key: 'complete_data' }).lean() as any;
+    const globalContent = await getSiteContent();
     const mongoose = (await import('mongoose')).default;
     const Post = (await import('@/models/Post')).default;
 

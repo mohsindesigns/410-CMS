@@ -1,4 +1,5 @@
 import connectToDatabase from '@/lib/mongodb';
+import { getSiteContent } from "@/lib/siteContent";
 import Post from '@/models/Post';
 import Category from '@/models/Category';
 import { Calendar, User, ArrowRight, BookOpen, Search } from 'lucide-react';
@@ -6,7 +7,7 @@ import Link from 'next/link';
 import { Metadata } from 'next';
 import { BASE_URL } from '@/lib/constants';
 
-export const revalidate = 60; // Cache for 1 minute
+export const revalidate = 3600; // cached for an hour; admin saves refresh pages immediately via revalidatePath
 
 import SiteContent from '@/models/Content';
 import Page from '@/models/Page';
@@ -17,7 +18,7 @@ import { normalizeBlogImage } from '@/lib/blogImage';
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
   const [content, pageDoc] = await Promise.all([
-    SiteContent.findOne({ key: 'complete_data' }).lean() as any,
+    getSiteContent(),
     Page.findOne({ $or: [{ slug: 'blogs' }, { slug: 'blog' }], status: 'published', isTrashed: { $ne: true } }).lean() as any
   ]);
 
@@ -80,7 +81,7 @@ export default async function BlogsIndexPage() {
       .sort({ publishedAt: -1, date: -1 })
       .lean(),
     Page.findOne({ $or: [{ slug: 'blogs' }, { slug: 'blog' }], status: 'published', isTrashed: { $ne: true } }).lean() as any,
-    SiteContent.findOne({ key: 'complete_data' }).lean() as any
+    getSiteContent()
   ]);
 
   const globalBlogsPage = content?.data?.blogsPage || content?.data?.blogPage || {};

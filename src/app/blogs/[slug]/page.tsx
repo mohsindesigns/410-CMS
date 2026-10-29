@@ -1,4 +1,5 @@
 import { Metadata } from "next";
+import { getSiteContent } from "@/lib/siteContent";
 import { notFound } from "next/navigation";
 import Image from "next/image";
 import Link from "next/link";
@@ -31,7 +32,7 @@ import { getRobotsMetadata, buildPageTitle, resolvePostCanonical, smartDescripti
 import { normalizeBlogImage } from "@/lib/blogImage";
 import { parseCustomSchema, serializeJsonLd, customSchemaMode } from "@/lib/schema-generator";
 
-export const revalidate = 60; // Cache for 1 minute, updated via revalidatePath in admin panel
+export const revalidate = 3600; // cached for an hour; admin saves refresh pages immediately via revalidatePath
 
 // Dynamic segment + no generateStaticParams = Next renders EVERY request from scratch (TTFB 6-20s, no CDN caching).
 // Exporting generateStaticParams (empty: nothing is pre-built) switches this route to on-demand ISR: the first request
@@ -55,7 +56,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       status: "published",
       isTrashed: { $ne: true }
     }).populate("categories"),
-    SiteContent.findOne({ key: "complete_data" }).lean() as any
+    getSiteContent()
   ]);
 
   if (!post) return { title: buildPageTitle("Article Not Found") };
@@ -134,7 +135,7 @@ export default async function BlogPostPage({ params }: Props) {
     Page.findOne({
       $or: [{ slug: { $in: ["blogs", "/blogs", "blog", "/blog"] } }, { template: { $in: ["blogs", "blog"] } }]
     }).lean() as any,
-    SiteContent.findOne({ key: "complete_data" }).lean() as any
+    getSiteContent()
   ]);
 
   const globalContent = contentDoc?.data || {};

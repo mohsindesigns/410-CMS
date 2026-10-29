@@ -1,5 +1,6 @@
 import Page from "@/models/Page";
-export const revalidate = 60; // Cache for 1 minute
+import { getSiteContent } from "@/lib/siteContent";
+export const revalidate = 3600; // cached for an hour; admin saves refresh pages immediately via revalidatePath
 import { Metadata } from "next";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
@@ -19,7 +20,7 @@ export async function generateMetadata(): Promise<Metadata> {
     isTrashed: { $ne: true }
   }).lean() as any;
 
-  const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
+  const content = await getSiteContent();
   const globalData = content?.data || {};
   const settings = globalData?.settings;
 
@@ -73,7 +74,7 @@ export default async function GalleryPage() {
     isTrashed: { $ne: true }
   }).lean();
 
-  const content = await SiteContent.findOne({ key: "complete_data" }).lean() as any;
+  const content = await getSiteContent();
   const globalData = content?.data || {};
 
   const page = pageDoc ? JSON.parse(JSON.stringify(pageDoc)) : null;

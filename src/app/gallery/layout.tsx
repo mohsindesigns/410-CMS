@@ -1,4 +1,5 @@
 import connectToDatabase from "@/lib/mongodb";
+import { getSiteContent } from "@/lib/siteContent";
 import SiteContent from "@/models/Content";
 import Page from "@/models/Page";
 import { BASE_URL } from "@/lib/constants";
@@ -8,7 +9,7 @@ import { getRobotsMetadata } from "@/lib/seo";
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
   const [content, pageDoc] = await Promise.all([
-    SiteContent.findOne({ key: "complete_data" }).lean() as any,
+    getSiteContent(),
     Page.findOne({ slug: "gallery", status: "published", isTrashed: { $ne: true } }).lean() as any,
   ]);
   const galleryData = content?.data?.galleryPage || content?.data?.gallery || {};
