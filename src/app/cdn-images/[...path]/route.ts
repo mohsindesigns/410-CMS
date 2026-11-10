@@ -10,7 +10,10 @@ import { NextRequest } from "next/server";
  *
  * Only Cloudinary "image/upload" paths of our own account are ever fetched (the host and account are fixed).
  */
-const UPSTREAM = "https://res.cloudinary.com/dytytwyp6/image/upload/f_auto,q_auto/";
+// ALWAYS WebP (never f_auto): Cloudflare keeps ONE copy per URL for every visitor, so the format must not depend on
+// the requester. f_auto would hand a crawler (Accept: */*) a JPEG XL file that Chrome/Firefox cannot display, and
+// that copy would then be served to everyone. WebP is supported by all current browsers.
+const UPSTREAM = "https://res.cloudinary.com/dytytwyp6/image/upload/f_webp,q_auto/";
 
 const encodeSegment = (s: string) => encodeURIComponent(s).replace(/%2C/gi, ",");
 
@@ -23,7 +26,6 @@ async function handle(req: NextRequest, ctx: { params: Promise<{ path?: string[]
   let upstream: Response;
   try {
     upstream = await fetch(UPSTREAM + path.map(encodeSegment).join("/"), {
-      headers: { Accept: req.headers.get("accept") || "image/*,*/*;q=0.8" },
       signal: AbortSignal.timeout(20000),
       cache: "no-store",
     });
@@ -42,7 +44,6 @@ async function handle(req: NextRequest, ctx: { params: Promise<{ path?: string[]
   const headers = new Headers({
     "Content-Type": upstream.headers.get("content-type") as string,
     "Cache-Control": "public, max-age=31536000, immutable",
-    Vary: "Accept",
     "X-Content-Type-Options": "nosniff",
   });
   const len = upstream.headers.get("content-length");
