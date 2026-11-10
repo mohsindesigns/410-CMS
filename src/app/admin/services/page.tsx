@@ -1386,6 +1386,7 @@ export default function ServicesAdminPage() {
                           </div>
                           <div>
                             <strong className="text-[#2271b1] block text-[14px]">{service.title} {service.status === 'draft' && <span className="text-[#646970] font-normal italic">— Draft</span>}</strong>
+                            <span className="block text-[11px] text-[#646970] mt-0.5">Menu label: {service.menuLabel?.trim() ? <b className="text-[#1d2327]">{service.menuLabel}</b> : <i>not set (menu shows the full title)</i>}</span>
                             <div className="flex items-center gap-2 mt-1 opacity-0 group-hover:opacity-100 transition-opacity">
                               <button onClick={() => handleEdit(service)} className="text-[#2271b1] hover:underline text-[12px]">Edit</button>
                               <span className="text-[#a7aaad]">|</span>
@@ -1468,6 +1469,17 @@ export default function ServicesAdminPage() {
                         onChange={(e) => setQuickEditing({ ...quickEditing, slug: e.target.value })}
                         className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
                       />
+                    </div>
+                    <div>
+                      <label className="block text-[#1d2327] text-[12px] font-bold mb-1">Menu Label (short name for the Services menu)</label>
+                      <input
+                        type="text"
+                        value={quickEditing.menuLabel || ""}
+                        placeholder={quickEditing.title}
+                        onChange={(e) => setQuickEditing({ ...quickEditing, menuLabel: e.target.value })}
+                        className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px] focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1] outline-none"
+                      />
+                      <p className="text-[11px] text-[#646970] mt-1">Shown in the Services mega menu, mobile menu and footer. Empty = uses the title.</p>
                     </div>
                   </div>
                   <div className="space-y-4">

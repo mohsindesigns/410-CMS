@@ -1,5 +1,7 @@
 import Page from "@/models/Page";
+import { localizeImageUrl } from "@/lib/imageUrl";
 import { getSiteContent } from "@/lib/siteContent";
+import { localizeDeep } from "@/lib/imageUrl";
 export const revalidate = 3600; // cached for an hour; admin saves refresh pages immediately via revalidatePath
 import { Metadata } from "next";
 import connectToDatabase from "@/lib/mongodb";
@@ -25,7 +27,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const globalData = content?.data || {};
   const settings = globalData?.settings;
 
-  const page = pageDoc ? JSON.parse(JSON.stringify(pageDoc)) : null;
+  const page = pageDoc ? localizeDeep(JSON.parse(JSON.stringify(pageDoc))) : null;
   const pageContent = page?.content || {};
   
   // Resolve gallery Page data
@@ -53,13 +55,13 @@ export async function generateMetadata(): Promise<Metadata> {
       url: pageUrl,
       siteName: "410 Muscle Therapy",
       type: "website",
-      images: [{ url: seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png` }],
+      images: [{ url: localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png` }],
     },
     twitter: {
       card: seo.twitterCard === "summary" ? "summary" : "summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || metaTitle,
       description: seo.twitterDescription || seo.ogDescription || metaDescription,
-      images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`].filter(Boolean) as string[],
+      images: [localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`].filter(Boolean) as string[],
     },
     robots: getRobotsMetadata(settings, seo)
   };
@@ -78,7 +80,7 @@ export default async function GalleryPage() {
   const content = await getSiteContent();
   const globalData = content?.data || {};
 
-  const page = pageDoc ? JSON.parse(JSON.stringify(pageDoc)) : null;
+  const page = pageDoc ? localizeDeep(JSON.parse(JSON.stringify(pageDoc))) : null;
 
   // Determine metadata values for schema
   const galleryData = page?.content?.galleryPage || globalData?.galleryPage || {};

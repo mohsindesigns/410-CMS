@@ -1,4 +1,5 @@
 import connectToDatabase from "@/lib/mongodb";
+import { localizeImageUrl } from "@/lib/imageUrl";
 import { getSiteContent } from "@/lib/siteContent";
 import SiteContent from "@/models/Content";
 import { BASE_URL } from "@/lib/constants";
@@ -27,13 +28,13 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "410 Muscle Therapy",
       type: "website",
       locale: "en_US",
-      images: [{ url: seo.ogImage || `${BASE_URL}/og-default.png` }],
+      images: [{ url: localizeImageUrl(seo.ogImage) || `${BASE_URL}/og-default.png` }],
     },
     twitter: {
       card: "summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || "Terms & Conditions | 410 Muscle Therapy",
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
-      images: [seo.twitterImage || seo.ogImage || `${BASE_URL}/og-default.png`],
+      images: [localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || `${BASE_URL}/og-default.png`],
       site: "@410MuscleTherapy",
     },
     robots: getRobotsMetadata(settings, seo),

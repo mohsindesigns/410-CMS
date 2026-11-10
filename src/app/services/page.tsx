@@ -1,5 +1,6 @@
 import connectToDatabase from '@/lib/mongodb';
 import { getSiteContent } from "@/lib/siteContent";
+import { localizeDeep, localizeImageUrl } from "@/lib/imageUrl";
 import SiteContent from '@/models/Content';
 import Page from '@/models/Page';
 import { Metadata } from 'next';
@@ -43,13 +44,13 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "410 Muscle Therapy",
       locale: "en_US",
       type: 'website',
-      images: [seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`],
+      images: [localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`],
     },
     twitter: {
       card: seo.twitterCard === 'summary' ? 'summary' : 'summary_large_image',
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || pageDoc?.title || "Our Services",
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || servicesData?.description,
-      images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`],
+      images: [localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`],
       site: "@410MuscleTherapy",
       creator: "@410MuscleTherapy",
     },
@@ -66,8 +67,8 @@ export default async function ServicesPage() {
     Page.findOne({ slug: 'services', status: 'published', isTrashed: { $ne: true } }).lean() as any
   ]);
 
-  const globalData = content?.data ? JSON.parse(JSON.stringify(content.data)) : {};
-  const pageContent = pageDoc?.content ? JSON.parse(JSON.stringify(pageDoc.content)) : {};
+  const globalData = content?.data ? localizeDeep(JSON.parse(JSON.stringify(content.data))) : {};
+  const pageContent = pageDoc?.content ? localizeDeep(JSON.parse(JSON.stringify(pageDoc.content))) : {};
   const mergedData = {
     ...globalData,
     ...pageContent,

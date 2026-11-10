@@ -1,4 +1,5 @@
 import connectToDatabase from "@/lib/mongodb";
+import { localizeImageUrl } from "@/lib/imageUrl";
 import { getSiteContent } from "@/lib/siteContent";
 import SiteContent from "@/models/Content";
 import Page from "@/models/Page";
@@ -16,7 +17,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = pageDoc?.seo || galleryData.seo || {};
   const settings = content?.data?.settings;
   const pageUrl = `${BASE_URL}/gallery/`;
-  const ogImage = seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`;
+  const ogImage = localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`;
 
   return {
     title: seo.metaTitle || "Project Gallery",
@@ -35,7 +36,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || "Project Gallery",
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
-      images: [seo.twitterImage || ogImage],
+      images: [localizeImageUrl(seo.twitterImage) || ogImage],
     },
     robots: getRobotsMetadata(settings, seo),
   };

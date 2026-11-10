@@ -1,6 +1,7 @@
 import { cache } from "react";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
+import { localizeDeep } from "@/lib/imageUrl";
 
 /**
  * The global content document (site_contents / complete_data, ~320 KB) is needed by the root layout, the page,
@@ -10,5 +11,6 @@ import SiteContent from "@/models/Content";
  */
 export const getSiteContent = cache(async (): Promise<any> => {
   await connectToDatabase();
-  return (await SiteContent.findOne({ key: "complete_data" }).lean()) as any;
+  // Public pages show images from our own domain (/cdn-images/...); stored data keeps the original URLs.
+  return localizeDeep((await SiteContent.findOne({ key: "complete_data" }).lean()) as any);
 });

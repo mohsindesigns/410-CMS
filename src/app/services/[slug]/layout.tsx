@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import { localizeImageUrl } from "@/lib/imageUrl";
 import { getSiteContent } from "@/lib/siteContent";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
@@ -42,7 +43,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       type: "website",
       images: [
         {
-          url: seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`,
+          url: localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`,
           width: 1200,
           height: 630,
           alt: title,
@@ -53,7 +54,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       card: "summary_large_image",
       title,
       description,
-      images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`],
+      images: [localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`],
       site: "@410MuscleTherapy",
       creator: "@410MuscleTherapy",
     },

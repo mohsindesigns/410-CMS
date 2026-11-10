@@ -1,7 +1,9 @@
 export const revalidate = 3600; // cached for an hour; admin saves refresh pages immediately via revalidatePath
 
 import HomeTemplate from "@/components/templates/HomeTemplate";
+import { localizeImageUrl } from "@/lib/imageUrl";
 import { getSiteContent } from "@/lib/siteContent";
+import { localizeDeep } from "@/lib/imageUrl";
 import { Metadata } from "next";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
@@ -65,13 +67,13 @@ export async function generateMetadata(): Promise<Metadata> {
           ...metadata.openGraph,
           title: seo.ogTitle || seo.metaTitle || page.title,
           description: seo.ogDescription || seo.metaDescription || metaDescription,
-          images: [{ url: seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png` }],
+          images: [{ url: localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png` }],
         },
         twitter: {
           ...metadata.twitter,
           title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || page.title,
           description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || metaDescription,
-          images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`].filter(Boolean) as string[],
+          images: [localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`].filter(Boolean) as string[],
         },
         robots: getRobotsMetadata(settings, seo)
       };
@@ -93,13 +95,13 @@ export async function generateMetadata(): Promise<Metadata> {
           ...metadata.openGraph,
           title: seo.ogTitle || seo.metaTitle || service.title,
           description: seo.ogDescription || seo.metaDescription || metaDescription,
-          images: [{ url: seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png` }],
+          images: [{ url: localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png` }],
         },
         twitter: {
           ...metadata.twitter,
           title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || service.title,
           description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || metaDescription,
-          images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`].filter(Boolean) as string[],
+          images: [localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`].filter(Boolean) as string[],
         },
         robots: getRobotsMetadata(settings, seo)
       };
@@ -141,7 +143,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "410 Muscle Therapy",
       images: [
         {
-          url: seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`,
+          url: localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`,
           width: 1200,
           height: 630,
           alt: "410 Muscle Therapy – Performance Recovery & Clinical Bodywork Maryland",
@@ -153,7 +155,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || metaTitle,
       description: seo.twitterDescription || seo.ogDescription || metaDescription,
-      images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`],
+      images: [localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`],
       creator: "@410MuscleTherapy",
       site: "@410MuscleTherapy",
     },
@@ -203,7 +205,7 @@ export default async function HomePage() {
       isTrashed: { $ne: true } 
     }).lean();
     if (pageDoc) {
-      const page = JSON.parse(JSON.stringify(pageDoc));
+      const page = localizeDeep(JSON.parse(JSON.stringify(pageDoc)));
       return (
         <>
           {schemaScripts}
@@ -242,7 +244,7 @@ export default async function HomePage() {
     status: "published",
     isTrashed: { $ne: true },
   }).lean();
-  const homePage = homePageDoc ? JSON.parse(JSON.stringify(homePageDoc)) : null;
+  const homePage = homePageDoc ? localizeDeep(JSON.parse(JSON.stringify(homePageDoc))) : null;
 
   return (
     <>

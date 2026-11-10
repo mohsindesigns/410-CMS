@@ -1,5 +1,6 @@
 import { notFound, permanentRedirect, redirect } from 'next/navigation';
 import { getSiteContent } from "@/lib/siteContent";
+import { localizeDeep, localizeImageUrl } from "@/lib/imageUrl";
 
 export const revalidate = 3600; // cached for an hour; admin saves refresh pages immediately via revalidatePath
 
@@ -39,6 +40,7 @@ function safeIso(v: any): string | undefined {
 
 function getAbsoluteUrl(path: string | undefined) {
   if (!path) return undefined;
+  path = localizeImageUrl(path);
   if (path.startsWith('http')) return path;
   return `${BASE_URL}${path.startsWith('/') ? '' : '/'}${path}`;
 }
@@ -172,7 +174,7 @@ export default async function DynamicPage({ params }: PageProps) {
         permanentRedirect("/");
       }
 
-      const service = JSON.parse(JSON.stringify(serviceDoc));
+      const service = localizeDeep(JSON.parse(JSON.stringify(serviceDoc)));
       const allFaqs = globalData.faq?.items || [];
 
       const faqs = allFaqs.filter((item: any) =>
@@ -310,7 +312,7 @@ export default async function DynamicPage({ params }: PageProps) {
   }
 
   // Convert to plain object to avoid Mongoose serialization issues in Client Components
-  const page = JSON.parse(JSON.stringify(pageDoc));
+  const page = localizeDeep(JSON.parse(JSON.stringify(pageDoc)));
 
   // If this page is set as the homepage, redirect slug to root /
   if (settings.homepageId && String(pageDoc._id) === String(settings.homepageId)) {

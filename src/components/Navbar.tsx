@@ -27,6 +27,8 @@ const Navbar = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
   const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
+  // Legal pages have a light hero, so the white nav text needs the solid dark bar from the top.
+  const lightHeroPage = ["/privacy", "/terms"].some((p) => (pathname || "").startsWith(p));
   const [isHoveringMegaMenu, setIsHoveringMegaMenu] = useState(false);
   const [hoveredService, setHoveredService] = useState<string | null>(null);
   const [expandedMobileLink, setExpandedMobileLink] = useState<string | null>(null);
@@ -124,7 +126,7 @@ const Navbar = () => {
   return (
     <>
       <nav
-        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled || isMenuOpen ? 'bg-dark shadow-[0_4px_24px_rgba(0,0,0,0.6)] py-1' : 'bg-transparent py-3'}`}
+        className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${scrolled || isMenuOpen || lightHeroPage ? 'bg-dark shadow-[0_4px_24px_rgba(0,0,0,0.6)] py-1' : 'bg-transparent py-3'}`}
       >
         <div className="site-container flex items-center justify-between h-[76px]">
 

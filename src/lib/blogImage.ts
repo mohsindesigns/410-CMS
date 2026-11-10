@@ -1,3 +1,5 @@
+import { localizeImageUrl } from './imageUrl';
+
 /**
  * Normalizes blog image URLs.
  * Handles legacy WordPress wp-content paths, Cloudinary URLs, and local uploads.
@@ -12,9 +14,9 @@ export function normalizeBlogImage(url?: string | null): string {
     return '/images/service-massage.webp';
   }
 
-  // Already a Cloudinary URL
+  // Cloudinary URL: serve it from our own domain (/cdn-images/ proxies the same file)
   if (trimmed.includes('cloudinary.com')) {
-    return trimmed;
+    return localizeImageUrl(trimmed);
   }
 
   // Legacy WordPress wp-content path: convert to /uploads/blog/<filename>

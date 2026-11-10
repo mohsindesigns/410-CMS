@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { getSiteContent } from "@/lib/siteContent";
+import { localizeDeep } from "@/lib/imageUrl";
 import { Space_Grotesk, DM_Sans } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/components/Providers";
@@ -177,7 +178,7 @@ export default async function RootLayout({
     });
 
     if (globalContent?.data) initialGlobalData = globalContent.data;
-    initialBlogs = JSON.parse(JSON.stringify(blogPosts));
+    initialBlogs = localizeDeep(JSON.parse(JSON.stringify(blogPosts)));
   } catch (e) {
     console.error("Failed to fetch initial data for provider", e);
   }

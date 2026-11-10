@@ -152,6 +152,9 @@ export default function SettingsEditor() {
   const [activeTab, setActiveTab] = useState("general");
   const [saving, setSaving] = useState(false);
   const [toast, setToast] = useState<{ type: "ok" | "err"; msg: string } | null>(null);
+  // Services menu labels edited on the Header tab (key = service slug/id). Saved separately via the services scope.
+  const [menuLabels, setMenuLabels] = useState<Record<string, string>>({});
+  const [savingLabels, setSavingLabels] = useState(false);
 
   // Redirect Manager States
   const [redirects, setRedirects] = useState<any[]>([]);
@@ -308,6 +311,41 @@ export default function SettingsEditor() {
       fetchRedirects();
     }
   }, [activeTab, redirectsPage, redirectSearch, redirectStatusFilter, redirectTypeFilter]);
+
+  const saveMenuLabels = async () => {
+    setSavingLabels(true);
+    try {
+      // Re-read the live content first so nothing edited elsewhere is overwritten, then change ONLY menuLabel.
+      const freshRes = await fetch("/api/content", { cache: "no-store" });
+      if (!freshRes.ok) throw new Error("load");
+      const fresh = await freshRes.json();
+      const list = (fresh?.services?.services || []).map((svc: any) => {
+        const key = svc.slug || svc.id;
+        return Object.prototype.hasOwnProperty.call(menuLabels, key) ? { ...svc, menuLabel: (menuLabels[key] || "").trim() } : svc;
+      });
+      const body = { ...fresh, services: { ...(fresh.services || {}), services: list } };
+      const res = await fetch("/api/content", { method: "PUT", headers: { "Content-Type": "application/json", "X-Content-Scope": "services" }, body: JSON.stringify(body) });
+      if (res.ok) {
+        setData((prev: any) => ({
+          ...prev,
+          services: { ...(prev?.services || {}), services: (prev?.services?.services || []).map((svc: any) => {
+            const key = svc.slug || svc.id;
+            return Object.prototype.hasOwnProperty.call(menuLabels, key) ? { ...svc, menuLabel: (menuLabels[key] || "").trim() } : svc;
+          }) },
+        }));
+        setMenuLabels({});
+        setToast({ type: "ok", msg: "Menu labels saved." });
+      } else {
+        const err = await res.json().catch(() => ({}));
+        setToast({ type: "err", msg: `Failed to save menu labels (${res.status}): ${err?.error || "server error"}` });
+      }
+    } catch {
+      setToast({ type: "err", msg: "Failed to save menu labels." });
+    } finally {
+      setSavingLabels(false);
+      setTimeout(() => setToast(null), 3500);
+    }
+  };
 
   const handleSave = async () => {
     setSaving(true);
@@ -584,6 +622,39 @@ export default function SettingsEditor() {
                         </div>
                      ))}
                   </div>
+               </div>
+
+               <div className="mt-10 border-t border-[#c3c4c7] pt-6">
+                  <h3 className="text-[15px] font-bold text-[#1d2327] mb-1">Services menu labels</h3>
+                  <p className="text-[12px] text-[#646970] mb-4">Short names shown in the Services mega menu, the mobile menu and the footer. Leave a field empty to show the full service title. Page titles, headings and URLs are not affected. You can also set this per service in Services → Edit → Hero Banner.</p>
+                  <div className="space-y-2">
+                     {(Array.isArray(data.services?.services) ? data.services.services : []).map((svc: any) => {
+                        const key = svc.slug || svc.id;
+                        const val = Object.prototype.hasOwnProperty.call(menuLabels, key) ? menuLabels[key] : (svc.menuLabel || "");
+                        return (
+                           <div key={key} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 bg-[#f6f7f7] p-3 border border-[#c3c4c7] rounded-sm">
+                              <label htmlFor={`menulabel-${key}`} className="sm:w-1/2 text-[12px] text-[#50575e] break-words">{svc.title}</label>
+                              <input
+                                 id={`menulabel-${key}`}
+                                 type="text"
+                                 maxLength={40}
+                                 value={val}
+                                 placeholder="Short label, e.g. Deep Tissue"
+                                 onChange={(e) => setMenuLabels((prev) => ({ ...prev, [key]: e.target.value }))}
+                                 className="flex-1 border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]"
+                              />
+                           </div>
+                        );
+                     })}
+                  </div>
+                  <button
+                     type="button"
+                     onClick={saveMenuLabels}
+                     disabled={savingLabels || Object.keys(menuLabels).length === 0}
+                     className="mt-4 bg-[#2271b1] hover:bg-[#135e96] disabled:opacity-50 text-white text-[13px] px-4 py-1.5 rounded-[3px]"
+                  >
+                     {savingLabels ? "Saving..." : "Save menu labels"}
+                  </button>
                </div>
             </motion.div>
           )}

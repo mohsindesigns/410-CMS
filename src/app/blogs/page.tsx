@@ -1,4 +1,5 @@
 import connectToDatabase from '@/lib/mongodb';
+import { localizeImageUrl } from "@/lib/imageUrl";
 import { getSiteContent } from "@/lib/siteContent";
 import Post from '@/models/Post';
 import Category from '@/models/Category';
@@ -52,7 +53,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "410 Muscle Therapy",
       locale: "en_US",
       type: 'website',
-      images: [{ url: seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png` }],
+      images: [{ url: localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png` }],
     },
     other: {
       ...(publishedTime ? { 'article:published_time': publishedTime } : {}),
@@ -62,7 +63,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: seo.twitterCard === 'summary' ? 'summary' : 'summary_large_image',
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || "Our Blogs | 410 Muscle Therapy",
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || "Explore our latest articles, insights, and clinical recovery tips.",
-      images: [seo.twitterImage || seo.ogImage || seo.featuredImage || `${BASE_URL}/og-default.png`].filter(Boolean) as string[],
+      images: [localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`].filter(Boolean) as string[],
       site: "@410MuscleTherapy",
       creator: "@410MuscleTherapy",
     },
