@@ -25,6 +25,7 @@ export async function middleware(req: NextRequest) {
     pathname.startsWith('/uploads') ||
     pathname.startsWith('/assets') ||
     pathname.startsWith('/images') ||
+    pathname.startsWith('/cdn-images') ||
     /\.(png|jpg|jpeg|gif|svg|ico|webp|js|css|map|json|woff|woff2|ttf|eot|txt|xml)$/i.test(pathname);
 
   // 1. Check for global redirects (only for public HTML pages, skipping root homepage)

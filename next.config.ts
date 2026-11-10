@@ -64,11 +64,9 @@ const nextConfig: NextConfig = {
   },
   async rewrites() {
     return [
-      {
-        // Proxy /cdn-images/:path* → Cloudinary with modern format and compression (WebP/AVIF)
-        source: '/cdn-images/:path*',
-        destination: 'https://res.cloudinary.com/dytytwyp6/image/upload/f_auto,q_auto/:path*',
-      },
+      // NOTE: /cdn-images/* is served by src/app/cdn-images/[...path]/route.ts (same Cloudinary files, but with a
+      // PUBLIC long-term cache header so Cloudflare can cache them). It used to be a plain rewrite here; a rewrite
+      // would win over that route, so it must not be re-added.
       {
         // Route legacy WordPress uploads to uploads API / Cloudinary CDN
         source: '/wp-content/uploads/:path*',
