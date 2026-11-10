@@ -29,6 +29,13 @@ interface PageProps {
   params: Promise<{ slug: string[] }>;
 }
 
+/** ISO string for a valid date value, otherwise undefined (so nothing is emitted and nothing throws). */
+function safeIso(v: any): string | undefined {
+  if (!v) return undefined;
+  const d = new Date(v);
+  return isNaN(d.getTime()) ? undefined : d.toISOString();
+}
+
 function getAbsoluteUrl(path: string | undefined) {
   if (!path) return undefined;
   if (path.startsWith('http')) return path;
@@ -215,8 +222,9 @@ export default async function DynamicPage({ params }: PageProps) {
         breadcrumbTitle: service?.seo?.breadcrumbTitle,
         isService: true,
         image: featuredImage,
-        datePublished: (service.publishedAt || service.createdAt) ? new Date(service.publishedAt || service.createdAt).toISOString() : undefined,
-        dateModified: (service.updatedAt || service.publishedAt || service.createdAt) ? new Date(service.updatedAt || service.publishedAt || service.createdAt).toISOString() : undefined
+        // Services: datePublished only when an admin entered a "Published date" (no createdAt fallback, never invented).
+        datePublished: safeIso(service.publishedAt),
+        dateModified: safeIso(service.modifiedAt) || safeIso(service.updatedAt)
       });
 
       // Custom schema for THIS service only (Admin > Services > SEO > Schema). Default mode replaces the automatic schema.
@@ -224,7 +232,7 @@ export default async function DynamicPage({ params }: PageProps) {
       const useAutoSchema = !customBlocks || customSchemaMode(service?.seo) === 'append';
 
       return (
-        <main>
+        <div>
           {useAutoSchema && (
             <script
               id="json-ld-schema"
@@ -248,7 +256,7 @@ export default async function DynamicPage({ params }: PageProps) {
             />
           ))}
           <ServiceDetailTemplate pageData={service} params={Promise.resolve({ slug })} />
-        </main>
+        </div>
       );
     }
 
@@ -409,7 +417,7 @@ export default async function DynamicPage({ params }: PageProps) {
   const useAutoPageSchema = !customPageBlocks || customSchemaMode(page.seo) === 'append';
 
   return (
-    <main>
+    <div>
       {useAutoPageSchema && (
         <script
           id="json-ld-schema"
@@ -430,7 +438,7 @@ export default async function DynamicPage({ params }: PageProps) {
         pageData={mergedPageData}
         params={resolvedParams}
       />
-    </main>
+    </div>
   );
 }
 

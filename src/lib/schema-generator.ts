@@ -1,5 +1,6 @@
 
 import { BASE_URL } from "./constants";
+import { BUSINESS } from "./businessInfo";
 
 interface SchemaOptions {
   /** Clean entity name (e.g. the service name) - used for the Service name/serviceType and the breadcrumb. */
@@ -48,7 +49,7 @@ function buildBusinessEntity(opts: { aggregateRating?: AggregateRatingInput; wit
   return {
     "@type": ["LocalBusiness", "MassageTherapist"],
     "@id": BUSINESS_ID,
-    "name": "410 Muscle Therapy",
+    "name": BUSINESS.name,
     "url": `${BASE_URL}/`,
     "logo": {
       "@type": "ImageObject",
@@ -57,41 +58,29 @@ function buildBusinessEntity(opts: { aggregateRating?: AggregateRatingInput; wit
       "height": 512
     },
     "image": `${BASE_URL}/og-default.png`,
-    "telephone": "+1-443-473-2322",
-    "email": "antoine.lyles@yahoo.com",
-    "sameAs": [
-      "https://www.instagram.com/410muscletherapy/",
-      "https://www.tiktok.com/@410muscletherapy",
-      "https://www.youtube.com/@Twon410"
-    ],
+    "telephone": BUSINESS.phoneE164,
+    "email": BUSINESS.email,
+    "sameAs": [...BUSINESS.sameAs],
     "description": "410 Muscle Therapy provides personalized massage therapy, sports massage, performance recovery, mobility restoration, and specialized muscle therapy services in Timonium, Maryland.",
     "address": {
       "@type": "PostalAddress",
-      "streetAddress": "1301 York Rd, 8th Floor, Suite 48",
-      "addressLocality": "Timonium",
-      "addressRegion": "MD",
-      "postalCode": "21093",
-      "addressCountry": "US"
+      "streetAddress": BUSINESS.streetAddress,
+      "addressLocality": BUSINESS.locality,
+      "addressRegion": BUSINESS.region,
+      "postalCode": BUSINESS.postalCode,
+      "addressCountry": BUSINESS.country
     },
     "geo": {
       "@type": "GeoCoordinates",
-      "latitude": 39.4376,
-      "longitude": -76.6197
+      "latitude": BUSINESS.geo.latitude,
+      "longitude": BUSINESS.geo.longitude
     },
-    "openingHoursSpecification": [
-      {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": ["Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday"],
-        "opens": "07:00",
-        "closes": "21:00"
-      },
-      {
-        "@type": "OpeningHoursSpecification",
-        "dayOfWeek": "Sunday",
-        "opens": "09:00",
-        "closes": "21:00"
-      }
-    ],
+    "openingHoursSpecification": BUSINESS.hours.map(h => ({
+      "@type": "OpeningHoursSpecification",
+      "dayOfWeek": h.days.length === 1 ? h.days[0] : [...h.days],
+      "opens": h.opens,
+      "closes": h.closes
+    })),
     ...(aggregateRating && aggregateRating.reviewCount > 0 ? {
       "aggregateRating": {
         "@type": "AggregateRating",

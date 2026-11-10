@@ -42,6 +42,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
     const footerContact = footer?.contact || {};
     const [isSubmitting, setIsSubmitting] = useState(false);
     const [showSuccess, setShowSuccess] = useState(false);
+    const [errorMsg, setErrorMsg] = useState<string | null>(null);
     const [formData, setFormData] = useState<Record<string, string>>({});
 
     // Fallback data if CMS has no data yet
@@ -59,6 +60,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
         setIsSubmitting(true);
+        setErrorMsg(null);
         try {
             const response = await fetch('/api/send', {
                 method: 'POST',
@@ -71,16 +73,19 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
             });
 
             const result = await response.json().catch(() => ({}));
-            if (response.ok || result.success || result.submissionId) {
+            if (response.ok && result.success) {
                 setShowSuccess(true);
                 setFormData({});
             } else {
-                console.error('Submission failed:', response.status, result);
-                alert(`Error: ${result.error || 'Submission failed'}`);
+                setErrorMsg(
+                    response.status === 429
+                        ? 'Too many attempts. Please wait a few minutes and try again.'
+                        : (typeof result?.error === 'string' && result.error) || 'Your message could not be sent. Please try again or call us.'
+                );
             }
         } catch (error) {
             console.error('Contact form error:', error);
-            alert('Failed to send message. Please try again.');
+            setErrorMsg('Failed to send message. Please try again.');
         } finally {
             setIsSubmitting(false);
         }
@@ -101,7 +106,7 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
     };
 
     return (
-        <main className="relative bg-background py-24 min-h-screen overflow-hidden">
+        <div className="relative bg-background py-24 min-h-screen overflow-hidden">
             {/* Background decoration */}
             <div className="absolute inset-0 pointer-events-none">
                 <div
@@ -181,6 +186,26 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
                             </div>
                         ))}
 
+                        {/* Honeypot: hidden from people and assistive tech, bots tend to fill it */}
+                        <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", width: "1px", height: "1px", overflow: "hidden" }}>
+                            <label htmlFor="contact-website">Leave this field empty</label>
+                            <input
+                                id="contact-website"
+                                name="website"
+                                type="text"
+                                tabIndex={-1}
+                                autoComplete="off"
+                                value={formData.website || ""}
+                                onChange={(e) => setFormData(prev => ({ ...prev, website: e.target.value }))}
+                            />
+                        </div>
+
+                        {errorMsg && (
+                            <p role="alert" className="text-sm font-medium text-red-600 bg-red-500/10 border border-red-500/30 rounded-xl px-4 py-3">
+                                {errorMsg}
+                            </p>
+                        )}
+
                         <motion.button
                             type="submit"
                             disabled={isSubmitting}
@@ -190,6 +215,13 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
                         >
                             {isSubmitting ? 'Sending Message...' : 'Send Message'}
                         </motion.button>
+
+                        <p className="text-xs leading-relaxed text-muted-foreground text-center">
+                            By sending this message you agree that we may use your details to reply to your enquiry. Please don&apos;t include sensitive medical details. See our{' '}
+                            <Link href="/privacy/" className="text-primary underline underline-offset-2 hover:no-underline">Privacy Policy</Link>
+                            {' '}and{' '}
+                            <Link href="/terms/" className="text-primary underline underline-offset-2 hover:no-underline">Terms</Link>.
+                        </p>
                     </form>
                 </motion.div>
 
@@ -272,6 +304,6 @@ export default function ContactTemplate({ pageData }: { pageData?: any }) {
                 )}
             </AnimatePresence>
 
-        </main>
+        </div>
     );
 }

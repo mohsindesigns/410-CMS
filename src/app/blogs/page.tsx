@@ -120,7 +120,7 @@ export default async function BlogsIndexPage() {
   });
 
   return (
-    <main className="bg-dark min-h-screen pt-[140px] pb-24 relative overflow-hidden">
+    <div className="bg-dark min-h-screen pt-[140px] pb-24 relative overflow-hidden">
       <script
         id="blogs-schema"
         type="application/ld+json"
@@ -212,6 +212,6 @@ export default async function BlogsIndexPage() {
           </div>
         )}
       </div>
-    </main>
+    </div>
   );
 }

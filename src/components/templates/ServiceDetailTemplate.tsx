@@ -1,6 +1,5 @@
 "use client";
 
-import { useState, useEffect } from 'react';
 import Link from 'next/link';
 import {
   ArrowLeft,
@@ -13,6 +12,29 @@ import {
 } from 'lucide-react';
 import { useContent } from "../../hooks/useContent";
 import ContactFaqSection from '../QAForm';
+import { BUSINESS } from "@/lib/businessInfo";
+
+/** Image URL hygiene: accept a string or {src}; trim, force https, collapse accidental double slashes. */
+function cleanImageSrc(value: any): string {
+  let v = typeof value === 'string' ? value : (value && typeof value.src === 'string' ? value.src : '');
+  v = v.trim();
+  if (!v) return "";
+  if (/^\/\/[^/]+\.[a-z]{2,}(\/|$)/i.test(v)) v = `https:${v}`; // protocol-relative host
+  if (/^http:\/\//i.test(v)) v = v.replace(/^http:\/\//i, 'https://');
+  if (/^https:\/\//i.test(v)) {
+    const m = v.match(/^(https:\/\/[^/]+)(\/.*)?$/i);
+    return m ? `${m[1]}${(m[2] || '').replace(/\/{2,}/g, '/')}` : v;
+  }
+  return v.replace(/\/{2,}/g, '/');
+}
+
+/** "March 5, 2026" in the business time zone (deterministic on server and client). */
+function formatLongDate(iso: any): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' });
+}
 
 /** Convert markdown links [Label](url) and HTML links to styled clickable anchors */
 function formatRichText(content: string | undefined | null, isDark: boolean = false): string {
@@ -76,9 +98,9 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
 
   if (!service || (!service.slug && !service.title && !service.id)) {
     return (
-      <main className="bg-dark min-h-screen pt-[140px] flex items-center justify-center">
+      <div className="bg-dark min-h-screen pt-[140px] flex items-center justify-center">
         <div className="w-8 h-8 border-4 border-gold border-t-transparent rounded-full animate-spin" />
-      </main>
+      </div>
     );
   }
 
@@ -86,8 +108,9 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
   const pageContent = pageData?.content || {};
   const serviceDetailPage = pageContent.serviceDetailPage || globalServiceDetailPage || {};
 
-  const defaultBookingUrl = "https://www.styleseat.com/m/v/410muscletherapy";
-  const globalBooking = globalMetadata?.bookingUrl || defaultBookingUrl;
+  // ONE booking URL for the whole page (and the contact/FAQ form below): service override > global setting > StyleSeat.
+  const bookingUrl: string = service.bookingCtaUrl || globalMetadata?.bookingUrl || BUSINESS.bookingUrl;
+  const globalBooking = bookingUrl;
 
   // Hydrate configurations cleanly with zero duplicate texts
   const pg = {
@@ -98,7 +121,9 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
     heroDescription: service.heroDescription || service.heroSubtitle || service.heroDescriptionSuffix || serviceDetailPage.heroDescription || "Targeted manual therapy engineered to eliminate chronic pain, unlock joint mobility, and accelerate athletic recovery.",
 
     // Specs Strip
-    specDurationValue: service.specDurationValue || serviceDetailPage.specDurationValue || "60 / 90 Mins",
+    // No literal fallback: the duration chip is only rendered when a real value is set.
+    specDurationValue: service.specDurationValue || serviceDetailPage.specDurationValue || "",
+    safetyNotice: service.safetyNotice || serviceDetailPage.safetyNotice || "",
     specIntensityValue: service.specIntensityValue || serviceDetailPage.specIntensityValue || "Targeted Deep",
     specFocusValue: service.specFocusValue || serviceDetailPage.specFocusValue || "Trigger Mapping",
 
@@ -123,7 +148,8 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
     overviewTitle1: service.overviewTitle1 || service.overviewTitlePrefix || serviceDetailPage.overviewTitle1 || "Targeted Bodywork.",
     overviewTitle2: service.overviewTitle2 || service.overviewTitleHighlight || serviceDetailPage.overviewTitle2 || "Engineered For Recovery.",
     overviewWatermark: service.overviewWatermark || serviceDetailPage.overviewWatermark || "SPECIALIST PRACTICE • EST. 2020",
-    overviewSuccessRate: service.overviewSuccessRate || serviceDetailPage.overviewSuccessRate || "5.0 RATED PRACTICE",
+    // No fixed claim in code: shown only when entered in the CMS.
+    overviewSuccessRate: service.overviewSuccessRate || serviceDetailPage.overviewSuccessRate || "",
     tailoredLabel: service.tailoredLabel ?? serviceDetailPage.tailoredLabel ?? "100% Tailored Therapy",
     tailoredSub: service.tailoredSub ?? serviceDetailPage.tailoredSub ?? "Individualized Protocols",
 
@@ -140,7 +166,6 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
     candidateTitle2: service.candidateTitle2 || serviceDetailPage.candidateTitle2 || "Built Around You.",
     candidateDescription: service.candidateDescription || serviceDetailPage.candidateDescription || "Movement work shaped around what your body can comfortably do. The goal is useful progress, not a rushed routine or generic adjustment.",
     profileBadgePrefix: service.profileBadgePrefix || serviceDetailPage.profileBadgePrefix || "ADVANTAGE",
-    candidateSuitability: service.candidateSuitability ?? serviceDetailPage.candidateSuitability ?? "CLINICAL STANDARD",
     whoProfiles: service.whoProfiles || serviceDetailPage.whoProfiles || [
       {
         label: "Eight Years Of Experience",
@@ -159,7 +184,7 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
       },
       {
         label: "York Road Convenience",
-        desc: "Conveniently located at 1301 York Rd., Timonium, MD, serving Towson, Lutherville, Cockeysville, and Baltimore County with dedicated one-on-one care.",
+        desc: `Conveniently located at ${BUSINESS.streetAddress.split(",")[0]}., ${BUSINESS.locality}, ${BUSINESS.region}, serving Towson, Lutherville, Cockeysville, and Baltimore County with dedicated one-on-one care.`,
         suitability: "TIMONIUM, MD"
       }
     ],
@@ -170,7 +195,8 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
     protocolTitle2: service.protocolTitle2 || serviceDetailPage.protocolTitle2 || "Looks Like.",
     protocolDescription: service.protocolDescription || serviceDetailPage.protocolDescription || "Your visit follows a clear path: listen, observe, release, practice, and retest so you always know what we are working on and why.",
     protocolPhasePrefix: service.protocolPhasePrefix || serviceDetailPage.protocolPhasePrefix || "STEP 0",
-    protocolDurations: service.protocolDurations || serviceDetailPage.protocolDurations || ["15 MIN", "30 MIN", "30 MIN", "15 MIN"],
+    // No literal fallback: a step shows a duration pill only when a duration was entered for it.
+    protocolDurations: (Array.isArray(service.protocolDurations) ? service.protocolDurations : (Array.isArray(serviceDetailPage.protocolDurations) ? serviceDetailPage.protocolDurations : [])) as Array<string | null | undefined>,
     protocolBannerBadge: service.protocolBannerBadge || serviceDetailPage.protocolBannerBadge || "MOVE BETTER STARTING RIGHT HERE",
     protocolBannerTitle: service.protocolBannerTitle || serviceDetailPage.protocolBannerTitle,
     protocolBannerTitlePrefix: service.protocolBannerTitlePrefix || serviceDetailPage.protocolBannerTitlePrefix || "Ready to experience",
@@ -215,7 +241,32 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
   const titleWords = serviceName.split(' ');
   const mainTitle = titleWords.slice(0, -1).join(' ');
   const lastTitleWord = titleWords[titleWords.length - 1] || "";
-  const serviceImage = service.image || service.featuredImage || "/images/service-massage.webp";
+  // Card/listing image is also the fallback for the two dedicated images. (/images/service-massage.webp ships in /public.)
+  const serviceImage = cleanImageSrc(service.image) || cleanImageSrc(service.featuredImage) || "/images/service-massage.webp";
+  const heroImageSrc = cleanImageSrc(service.heroImage) || serviceImage;
+  const overviewImageSrc = cleanImageSrc(service.overviewImage) || serviceImage;
+  const heroImageAlt = typeof service.heroImageAlt === 'string' ? service.heroImageAlt.trim() : "";
+  const overviewImageAlt = (typeof service.overviewImageAlt === 'string' ? service.overviewImageAlt.trim() : "") || serviceName;
+  const heroImagePosition = typeof service.heroImagePosition === 'string' ? service.heroImagePosition.trim() : "";
+  const overviewImagePosition = typeof service.overviewImagePosition === 'string' ? service.overviewImagePosition.trim() : "";
+
+  // Breadcrumb text: identical to the BreadcrumbList name in the JSON-LD (seo.breadcrumbTitle, else the title)
+  const breadcrumbLabel = sh(service.seo?.breadcrumbTitle) || serviceName;
+
+  const safetyNoticeHtml = sh(pg.safetyNotice) ? formatRichText(pg.safetyNotice, true) : "";
+  const heroSpecs: Array<{ key: string; icon: any; value: string }> = [
+    { key: 'duration', icon: Clock, value: sh(pg.specDurationValue) },
+    { key: 'intensity', icon: Activity, value: sh(pg.specIntensityValue) },
+    { key: 'focus', icon: Target, value: sh(pg.specFocusValue) },
+  ].filter(spec => !!spec.value);
+
+  const lastUpdatedLabel = formatLongDate(service.modifiedAt);
+
+  // Optional related services (slugs picked in Admin > Services); at most 3, only published ones that exist
+  const relatedServices: any[] = (Array.isArray(service.relatedServices) ? service.relatedServices : [])
+    .map((slug: any) => servicesList.find((s: any) => s.slug === String(slug)))
+    .filter((s: any) => !!s && s.slug !== service.slug)
+    .slice(0, 3);
 
   // Format clinical benefits array
   const benefits = (service.benefits && service.benefits.length > 0) ? service.benefits : [
@@ -256,16 +307,24 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
 
   return (
     <>
-      <main className="w-full bg-off-white text-body overflow-hidden">
+      <div className="w-full bg-off-white text-body overflow-hidden">
         {/* ════════════════════════════════════════════════════════
            1. HERO SECTION (Matching Site Hero Aesthetics)
            ════════════════════════════════════════════════════════ */}
         <section className="relative bg-dark min-h-[80vh] flex items-center pt-[130px] pb-20 border-b border-border-dark overflow-hidden">
           {/* Ambient Background Image */}
           <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
+            {/* LCP image: eager + high priority. Decorative (empty alt, hidden from AT) unless an alt text was set. */}
             <img
-              src={serviceImage}
-              alt={serviceName}
+              src={heroImageSrc}
+              alt={heroImageAlt}
+              aria-hidden={heroImageAlt ? undefined : true}
+              width={1600}
+              height={900}
+              loading="eager"
+              fetchPriority="high"
+              decoding="async"
+              style={heroImagePosition ? { objectPosition: heroImagePosition } : undefined}
               className="w-full h-full object-cover object-center filter contrast-105 saturate-110"
             />
             {/* Multi-directional luxury gradient masks */}
@@ -279,14 +338,26 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
           <div className="site-container relative z-10 w-full text-left">
             {/* Breadcrumbs & Navigation */}
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-              <nav aria-label="Breadcrumb" className="flex items-center gap-2 text-[11.5px] sm:text-[12px] font-mono tracking-wider text-white/50">
-                <Link href="/" className="hover:text-gold transition-colors text-white/70">
-                  Home
-                </Link>
-                <span className="text-gold/50">/</span>
-                <span className="text-gold font-medium truncate max-w-[280px] sm:max-w-none">
-                  {serviceName}
-                </span>
+              <nav aria-label="Breadcrumb" className="text-[11.5px] sm:text-[12px] font-mono tracking-wider text-white/50">
+                <ol className="flex flex-wrap items-center gap-2">
+                  <li>
+                    <Link href="/" className="hover:text-gold transition-colors text-white/70">
+                      Home
+                    </Link>
+                  </li>
+                  <li aria-hidden="true" className="text-gold/50">/</li>
+                  <li>
+                    <Link href="/services/" className="hover:text-gold transition-colors text-white/70">
+                      Services
+                    </Link>
+                  </li>
+                  <li aria-hidden="true" className="text-gold/50">/</li>
+                  <li className="min-w-0">
+                    <span aria-current="page" className="text-gold font-medium block truncate max-w-[220px] sm:max-w-none">
+                      {breadcrumbLabel}
+                    </span>
+                  </li>
+                </ol>
               </nav>
 
               <Link
@@ -320,22 +391,29 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
               />
 
               {/* Quick Specs Pill Strip */}
-              <div className="flex flex-wrap items-center gap-5 py-3.5 px-6 rounded-md bg-white/[0.05] border border-white/10 backdrop-blur-md mb-9 max-w-fit shadow-xl">
-                <div className="flex items-center gap-2 text-white text-[13px] font-medium">
-                  <Clock size={16} className="text-gold flex-shrink-0" />
-                  <span>{pg.specDurationValue}</span>
-                </div>
-                <span className="text-white/20">|</span>
-                <div className="flex items-center gap-2 text-white text-[13px] font-medium">
-                  <Activity size={16} className="text-gold flex-shrink-0" />
-                  <span>{pg.specIntensityValue}</span>
-                </div>
-                <span className="text-white/20">|</span>
-                <div className="flex items-center gap-2 text-white text-[13px] font-medium">
-                  <Target size={16} className="text-gold flex-shrink-0" />
-                  <span>{pg.specFocusValue}</span>
-                </div>
+              <div className={`flex flex-wrap items-center gap-5 py-3.5 px-6 rounded-md bg-white/[0.05] border border-white/10 backdrop-blur-md max-w-fit shadow-xl ${safetyNoticeHtml ? 'mb-5' : 'mb-9'}`}>
+                {heroSpecs.map((spec, specIdx) => {
+                  const SpecIcon = spec.icon;
+                  return (
+                    <div key={spec.key} className="flex items-center gap-5">
+                      {specIdx > 0 && <span className="text-white/20" aria-hidden="true">|</span>}
+                      <div className="flex items-center gap-2 text-white text-[13px] font-medium">
+                        <SpecIcon size={16} className="text-gold flex-shrink-0" />
+                        <span>{spec.value}</span>
+                      </div>
+                    </div>
+                  );
+                })}
               </div>
+
+              {/* Optional safety notice (per service, or global fallback). Nothing is rendered when empty. */}
+              {safetyNoticeHtml && (
+                <div
+                  role="note"
+                  className="mb-9 max-w-[560px] rounded-md border border-[rgba(200,150,12,0.45)] bg-[rgba(200,150,12,0.08)] px-4 py-3 text-[12.5px] leading-relaxed text-white/80"
+                  dangerouslySetInnerHTML={{ __html: safetyNoticeHtml }}
+                />
+              )}
 
               {/* Dual CTA Buttons */}
               <div className="flex flex-col sm:flex-row items-center gap-4 w-full sm:w-auto">
@@ -406,8 +484,13 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                 <div className="relative w-full h-full min-h-[460px] rounded-lg overflow-hidden shadow-2xl border border-border-light p-2.5 bg-warm-white/80 group">
                   <div className="relative w-full h-full min-h-[440px] rounded-md overflow-hidden">
                     <img
-                      src={serviceImage}
-                      alt={serviceName}
+                      src={overviewImageSrc}
+                      alt={overviewImageAlt}
+                      width={800}
+                      height={1000}
+                      loading="lazy"
+                      decoding="async"
+                      style={overviewImagePosition ? { objectPosition: overviewImagePosition } : undefined}
                       className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter contrast-[1.02]"
                     />
                     <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-transparent to-transparent" />
@@ -430,7 +513,9 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                           <p className="text-dark/50 text-[10.5px] font-mono uppercase tracking-wider">{pg.tailoredSub}</p>
                         </div>
                       </div>
-                      <span className="text-gold-dark font-mono text-[11px] font-bold">{pg.overviewSuccessRate}</span>
+                      {sh(pg.overviewSuccessRate) && (
+                        <span className="text-gold-dark font-mono text-[11px] font-bold">{pg.overviewSuccessRate}</span>
+                      )}
                     </div>
                   </div>
                 </div>
@@ -491,6 +576,13 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                     <span>{pg.overviewHipaaText}</span>
                   </div>
                 </div>
+
+                {/* Only after an admin saved the service (modifiedAt): visible freshness signal matching the schema dateModified */}
+                {lastUpdatedLabel && (
+                  <p className="pt-4 text-[11.5px] font-mono text-[rgba(10,10,10,0.5)]">
+                    Last updated <time dateTime={new Date(service.modifiedAt).toISOString()}>{lastUpdatedLabel}</time>
+                  </p>
+                )}
               </div>
 
             </div>
@@ -553,8 +645,9 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                   </div>
 
                   <div className="mt-8 pt-4 border-t border-border-light/80 flex items-center justify-between text-gold-dark text-[11.5px] font-mono font-bold tracking-wider uppercase relative z-10">
-                    <span>{profile.suitability || profile.status || pg.candidateSuitability}</span>
-                    <ArrowRight size={14} className="group-hover:translate-x-1 transition-transform" />
+                    {/* Badge only when the card has its own tag (no shared fallback text) */}
+                    {sh(profile.suitability || profile.status) && <span>{profile.suitability || profile.status}</span>}
+                    <ArrowRight size={14} className="ml-auto group-hover:translate-x-1 transition-transform" />
                   </div>
                 </div>
               ))}
@@ -601,9 +694,11 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                       <div className="stepper-step-num w-12 h-12 rounded-lg bg-gold/15 flex items-center justify-center text-gold font-mono font-bold text-[15px] transition-all">
                         {step.num || `0${idx + 1}`}
                       </div>
-                      <span className="stepper-step-time px-3 py-1 rounded-full bg-gold/10 text-gold text-[10px] font-mono font-bold tracking-widest uppercase">
-                        {pg.protocolDurations[idx] || '15 MIN'}
-                      </span>
+                      {sh(pg.protocolDurations[idx]) && (
+                        <span className="stepper-step-time px-3 py-1 rounded-full bg-gold/10 text-gold text-[10px] font-mono font-bold tracking-widest uppercase">
+                          {pg.protocolDurations[idx]}
+                        </span>
+                      )}
                     </div>
 
                     <h3 className="text-white font-bold text-[19px] mb-3 leading-snug group-hover:text-gold transition-colors">
@@ -666,12 +761,57 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
 
           </div>
         </section>
-      </main>
+
+        {/* ════════════════════════════════════════════════════════
+           5b. RELATED SERVICES (only when picked in Admin > Services)
+           ════════════════════════════════════════════════════════ */}
+        {relatedServices.length > 0 && (
+          <section aria-labelledby="related-services-heading" className="py-16 md:py-20 bg-white border-b border-border-light">
+            <div className="site-container">
+              <h2 id="related-services-heading" className="font-display font-medium text-[28px] md:text-[36px] text-dark leading-tight tracking-tight mb-8">
+                Related Services
+              </h2>
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
+                {relatedServices.map((rel: any) => {
+                  const relImage = cleanImageSrc(rel.image);
+                  const relLabel = sh((typeof rel.menuLabel === 'string' && rel.menuLabel.trim()) || rel.title || rel.name);
+                  return (
+                    <Link
+                      key={rel.slug}
+                      href={`/${rel.slug}/`}
+                      className="group block rounded-xl overflow-hidden bg-card-bg border border-border-light hover:border-gold-dark transition-all duration-300 shadow-sm hover:shadow-xl"
+                    >
+                      {relImage && (
+                        <div className="relative w-full aspect-[4/3] overflow-hidden bg-dark">
+                          <img
+                            src={relImage}
+                            alt=""
+                            aria-hidden="true"
+                            width={400}
+                            height={300}
+                            loading="lazy"
+                            decoding="async"
+                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                          />
+                        </div>
+                      )}
+                      <div className="p-5 flex items-center justify-between gap-3">
+                        <h3 className="text-dark font-bold text-[17px] leading-snug group-hover:text-gold-dark transition-colors">{relLabel}</h3>
+                        <ArrowRight size={16} className="text-gold-dark flex-shrink-0 group-hover:translate-x-1 transition-transform" />
+                      </div>
+                    </Link>
+                  );
+                })}
+              </div>
+            </div>
+          </section>
+        )}
+      </div>
 
       {/* ════════════════════════════════════════════════════════
          6. BUILT-IN CONTACT & FAQ SECTION
          ════════════════════════════════════════════════════════ */}
-      <ContactFaqSection pageData={service} />
+      <ContactFaqSection pageData={{ ...service, bookingCtaUrl: bookingUrl }} />
     </>
   );
 }

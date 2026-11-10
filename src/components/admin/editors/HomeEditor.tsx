@@ -113,8 +113,9 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
           formStyleSeatBtn: "BOOK ON STYLESEAT",
           formBtnSubmit: "SEND MESSAGE",
           formSuccessToast: "Thank you! Your inquiry has been sent. We will reply within 24 hours.",
-          trustHipa: "HIPAA Compliant & Secure",
-          trustResponse: "Avg Response: 2 Hours",
+          trustHipa: "",
+          trustResponse: "",
+          privacyNote: "",
           services: [
             { label: "Corrective Movement Therapy", value: "corrective-movement" },
             { label: "Maryland Sports Massage", value: "sports-massage" },
@@ -1170,23 +1171,37 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className={UI.label}>HIPAA Trust Text</label>
+                      <label className={UI.label}>Privacy / trust note (optional)</label>
                       <input
                         type="text"
-                        value={data.quote?.trustHipa || "HIPAA Compliant & Secure"}
+                        value={data.quote?.trustHipa ?? ""}
                         onChange={(e) => updateSection("quote", "trustHipa", e.target.value)}
                         className={UI.input}
+                        placeholder="Leave empty to hide"
                       />
                     </div>
                     <div className="space-y-1.5">
-                      <label className={UI.label}>Response Time Text</label>
+                      <label className={UI.label}>Response Time Text (optional)</label>
                       <input
                         type="text"
-                        value={data.quote?.trustResponse || "Avg Response: 2 Hours"}
+                        value={data.quote?.trustResponse ?? ""}
                         onChange={(e) => updateSection("quote", "trustResponse", e.target.value)}
                         className={UI.input}
+                        placeholder="Leave empty to hide"
                       />
                     </div>
+                  </div>
+
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Privacy line under the Submit button</label>
+                    <input
+                      type="text"
+                      value={data.quote?.privacyNote ?? ""}
+                      onChange={(e) => updateSection("quote", "privacyNote", e.target.value)}
+                      className={UI.input}
+                      placeholder="We use the details you send only to reply to your enquiry. Please don't include sensitive medical details here."
+                    />
+                    <p className="text-[11px] text-[#646970]">Leave empty to use the default. The Privacy Policy and Terms links are always added after this text.</p>
                   </div>
 
                   <div className="space-y-1.5">

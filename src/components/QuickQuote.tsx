@@ -127,29 +127,20 @@ const QuickQuote = () => {
 
         setIsSubmitting(true);
 
-        const emailContent = `
-🔨 NEW QUICK QUOTE REQUEST - 410 Muscle Therapy
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-
-📋 CUSTOMER INFORMATION
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-Name: ${formData.name}
-Email: ${formData.email}
-Phone: ${formData.phone}
-Project Type: ${(projectTypes as any[]).find((t: any) => t.value === formData.projectType)?.label || 'Not specified'}
-SMS Consent: Yes
-
-📝 MESSAGE
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-${formData.message}
-
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-⏱️ Submitted: ${new Date().toLocaleString()}
-🌐 Source: Quick Quote Widget
-⚡ 410 Muscle Therapy • Performance Bodywork
-━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
-    `;
+        const emailContent = [
+            "New enquiry from the 410 Muscle Therapy website (quick form)",
+            "",
+            `Name: ${formData.name}`,
+            `Email: ${formData.email}`,
+            `Phone: ${formData.phone}`,
+            `Service of interest: ${(projectTypes as any[]).find((t: any) => t.value === formData.projectType)?.label || "Not specified"}`,
+            "SMS consent: Yes",
+            "",
+            "Message:",
+            formData.message,
+            "",
+            `Submitted: ${new Date().toLocaleString()}`,
+        ].join("\n");
 
         try {
             try {
@@ -160,7 +151,7 @@ ${formData.message}
                     },
                     body: JSON.stringify({
                         type: 'Quote Request',
-                        subject: `Quick Quote - ${formData.name}`,
+                        subject: `Website enquiry - ${formData.name}`,
                         name: formData.name,
                         email: formData.email,
                         phone: formData.phone,
@@ -170,19 +161,22 @@ ${formData.message}
                     })
                 });
 
-                const result = await response.json().catch(() => ({}));
-                console.log('Quick Quote Response Status:', response.status);
-                console.log('Quick Quote Response Body:', result);
-
                 if (response.ok) {
                     showSuccess();
+                    return;
+                }
+
+                // Rejected by validation / rate limit: tell the visitor, do not pretend it was sent
+                if (response.status === 400 || response.status === 429) {
+                    const result = await response.json().catch(() => ({}));
+                    alert(result?.error || 'Your request could not be sent. Please check your details and try again.');
                     return;
                 }
             } catch (fetchError) {
                 console.error('Quick Quote fetch error:', fetchError);
             }
 
-            const mailtoLink = `mailto:antoine.lyles@yahoo.com?subject=🔨 Quick Quote - ${formData.name}&body=${encodeURIComponent(emailContent)}`;
+            const mailtoLink = `mailto:antoine.lyles@yahoo.com?subject=${encodeURIComponent(`Website enquiry - ${formData.name}`)}&body=${encodeURIComponent(emailContent)}`;
             window.location.href = mailtoLink;
             showSuccess();
 
@@ -549,7 +543,7 @@ ${formData.message}
                                                             {i}
                                                         </motion.div>
                                                         <span className="text-xs font-medium text-muted-foreground hidden md:block">
-                                                            {quickQuote.steps?.[i - 1] || (i === 1 ? 'Details' : i === 2 ? 'Project' : 'Message')}
+                                                            {quickQuote.steps?.[i - 1] || (i === 1 ? 'Details' : i === 2 ? 'Service' : 'Message')}
                                                         </span>
                                                     </motion.div>
                                                 ))}
@@ -588,7 +582,7 @@ ${formData.message}
                                                                 onChange={handleInputChange}
                                                                 required
                                                                 className="w-full px-5 py-4 bg-muted border border-border rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
-                                                                placeholder="John Doe"
+                                                                placeholder="Jane Smith"
                                                             />
                                                         </div>
                                                         <div>
@@ -603,7 +597,7 @@ ${formData.message}
                                                                 onChange={handleInputChange}
                                                                 required
                                                                 className="w-full px-5 py-4 bg-muted border border-border rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
-                                                                placeholder="john@example.com"
+                                                                placeholder="name@example.com"
                                                             />
                                                         </div>
                                                     </motion.div>
@@ -630,13 +624,13 @@ ${formData.message}
                                                                 onChange={handleInputChange}
                                                                 required
                                                                 className="w-full px-5 py-4 bg-muted border border-border rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-foreground"
-                                                                placeholder="(636) 449-9714"
+                                                                placeholder="(410) 555-0100"
                                                             />
                                                         </div>
                                                         <div>
                                                             <label className="block text-sm font-medium text-foreground mb-2">
                                                                 <Icon name="Home" className="w-4 h-4 inline mr-2 text-primary" />
-                                                                {quickQuote.formLabels?.projectType || "Project Type"}
+                                                                {quickQuote.formLabels?.projectType || "Service of Interest"}
                                                             </label>
                                                             <select
                                                                 name="projectType"
@@ -644,7 +638,7 @@ ${formData.message}
                                                                 onChange={handleInputChange}
                                                                 className="w-full px-5 py-4 bg-muted border border-border rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-foreground appearance-none"
                                                             >
-                                                                <option value="">Select project type</option>
+                                                                <option value="">Select a service</option>
                                                                 {projectTypes.map((type: any) => (
                                                                     <option key={type.value} value={type.value}>
                                                                         {type.label}
@@ -667,7 +661,7 @@ ${formData.message}
                                                         <div>
                                                             <label className="block text-sm font-medium text-foreground mb-2">
                                                                 <Icon name="MessageSquare" className="w-4 h-4 inline mr-2 text-primary" />
-                                                                {quickQuote.formLabels?.message || "Tell us about your project"}
+                                                                {quickQuote.formLabels?.message || "How can we help?"}
                                                             </label>
                                                             <textarea
                                                                 name="message"
@@ -676,7 +670,7 @@ ${formData.message}
                                                                 required
                                                                 rows={5}
                                                                 className="w-full px-5 py-4 bg-muted border border-border rounded-xl focus:outline-none focus:border-primary focus:ring-4 focus:ring-primary/10 transition-all text-foreground resize-none"
-                                                                placeholder="Briefly describe your exterior remodeling needs..."
+                                                                placeholder="Briefly tell us what you are looking for..."
                                                             />
                                                         </div>
                                                     </motion.div>

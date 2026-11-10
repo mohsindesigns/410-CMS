@@ -11,6 +11,10 @@ export default function SubmissionsPage() {
   const [filterType, setFilterType] = useState<string>("All");
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedSubmission, setSelectedSubmission] = useState<any>(null);
+  const [selectedIds, setSelectedIds] = useState<string[]>([]);
+  const [bulkAction, setBulkAction] = useState("");
+  const [deleting, setDeleting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     fetchSubmissions();
@@ -20,9 +24,11 @@ export default function SubmissionsPage() {
     try {
       const res = await fetch("/api/admin/submissions");
       const data = await res.json();
+      if (!res.ok || !Array.isArray(data)) throw new Error(data?.error || "Failed to load submissions");
       setSubmissions(data);
     } catch (e) {
       console.error(e);
+      setError("Could not load submissions.");
     } finally {
       setLoading(false);
     }
@@ -39,6 +45,51 @@ export default function SubmissionsPage() {
     });
   }, [submissions, filterType, searchQuery]);
 
+  const deleteSubmissions = async (ids: string[]) => {
+    if (ids.length === 0 || deleting) return;
+    const label = ids.length === 1 ? "this submission" : `${ids.length} submissions`;
+    if (!confirm(`Permanently delete ${label}? This cannot be undone.`)) return;
+
+    const previous = submissions;
+    setError(null);
+    setDeleting(true);
+    // Optimistic update; restored below if the server rejects it
+    setSubmissions((prev) => prev.filter((s) => !ids.includes(s._id)));
+    setSelectedIds((prev) => prev.filter((id) => !ids.includes(id)));
+    if (selectedSubmission && ids.includes(selectedSubmission._id)) setSelectedSubmission(null);
+    try {
+      const res = await fetch("/api/admin/submissions", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ ids }),
+      });
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(data?.error || "Delete failed");
+      }
+    } catch (e: any) {
+      console.error(e);
+      setSubmissions(previous);
+      setError(e?.message || "Delete failed. Nothing was removed.");
+    } finally {
+      setDeleting(false);
+    }
+  };
+
+  const applyBulkAction = () => {
+    if (bulkAction === "delete") {
+      deleteSubmissions(selectedIds).then(() => setBulkAction(""));
+    }
+  };
+
+  const allVisibleSelected = filteredSubmissions.length > 0 && filteredSubmissions.every((s) => selectedIds.includes(s._id));
+  const toggleAllVisible = () => {
+    const visible = filteredSubmissions.map((s) => s._id);
+    setSelectedIds((prev) => (allVisibleSelected ? prev.filter((id) => !visible.includes(id)) : Array.from(new Set([...prev, ...visible]))));
+  };
+  const toggleOne = (id: string) =>
+    setSelectedIds((prev) => (prev.includes(id) ? prev.filter((x) => x !== id) : [...prev, id]));
+
   if (loading) return <div className="flex h-screen items-center justify-center text-[#646970] font-serif">Loading Submissions...</div>;
 
   return (
@@ -47,6 +98,13 @@ export default function SubmissionsPage() {
       <div className="flex items-center gap-4 mb-2">
         <h1 className="text-[23px] font-normal text-[#1d2327] font-serif m-0">Submissions</h1>
       </div>
+
+      {error && (
+        <div role="alert" className="flex items-center justify-between gap-3 border-l-4 border-[#d63638] bg-white px-3 py-2 text-[13px] text-[#1d2327] shadow-[0_1px_1px_rgba(0,0,0,0.04)]">
+          <span>{error}</span>
+          <button onClick={() => setError(null)} className="text-[#787c82] hover:text-[#d63638]" aria-label="Dismiss"><X className="w-4 h-4" /></button>
+        </div>
+      )}
 
       {/* Filter Links */}
       <div className="flex items-center gap-2 text-[13px]">
@@ -69,11 +127,22 @@ export default function SubmissionsPage() {
       {/* Top Bar: Bulk Actions & Search */}
       <div className="flex items-center justify-between gap-4">
         <div className="flex items-center gap-2">
-          <select className="border border-[#8c8f94] bg-white text-[#2c3338] px-2 py-1 text-[13px] rounded-[3px] outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1]">
+          <select
+            value={bulkAction}
+            onChange={(e) => setBulkAction(e.target.value)}
+            className="border border-[#8c8f94] bg-white text-[#2c3338] px-2 py-1 text-[13px] rounded-[3px] outline-none focus:border-[#2271b1] focus:ring-1 focus:ring-[#2271b1]"
+          >
             <option value="">Bulk actions</option>
             <option value="delete">Delete Permanently</option>
           </select>
-          <button className="bg-white border border-[#8c8f94] text-[#2c3338] px-3 py-1 text-[13px] rounded-[3px] hover:bg-[#f6f7f7] transition-colors">Apply</button>
+          <button
+            onClick={applyBulkAction}
+            disabled={!bulkAction || selectedIds.length === 0 || deleting}
+            className="bg-white border border-[#8c8f94] text-[#2c3338] px-3 py-1 text-[13px] rounded-[3px] hover:bg-[#f6f7f7] transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            Apply
+          </button>
+          {selectedIds.length > 0 && <span className="text-[12px] text-[#646970]">{selectedIds.length} selected</span>}
         </div>
 
         <div className="flex items-center gap-2">
@@ -93,7 +162,7 @@ export default function SubmissionsPage() {
         <table className="w-full text-left border-collapse">
           <thead>
             <tr className="border-b border-[#c3c4c7] text-[#1d2327]">
-              <th className="w-8 py-2 px-3"><input type="checkbox" className="w-4 h-4 border-[#8c8f94] rounded-[3px]" /></th>
+              <th className="w-8 py-2 px-3"><input type="checkbox" aria-label="Select all" checked={allVisibleSelected} onChange={toggleAllVisible} className="w-4 h-4 border-[#8c8f94] rounded-[3px]" /></th>
               <th className="py-2 px-3 text-[14px] font-semibold">Contact</th>
               <th className="py-2 px-3 text-[14px] font-semibold">Type</th>
               <th className="py-2 px-3 text-[14px] font-semibold">Message</th>
@@ -111,7 +180,7 @@ export default function SubmissionsPage() {
                   onClick={() => setSelectedSubmission(sub)}
                 >
                   <td className="py-3 px-3 align-top" onClick={e => e.stopPropagation()}>
-                    <input type="checkbox" className="w-4 h-4 border-[#8c8f94] rounded-[3px]" />
+                    <input type="checkbox" aria-label={`Select ${sub.name}`} checked={selectedIds.includes(sub._id)} onChange={() => toggleOne(sub._id)} className="w-4 h-4 border-[#8c8f94] rounded-[3px]" />
                   </td>
                   <td className="py-3 px-3 align-top">
                     <strong className="text-[#2271b1] block text-[14px]">{sub.name}</strong>
@@ -121,7 +190,7 @@ export default function SubmissionsPage() {
                       <span className="text-[#a7aaad]">|</span>
                       <a href={`mailto:${sub.email}`} className="text-[#2271b1] hover:underline text-[12px]">Email</a>
                       <span className="text-[#a7aaad]">|</span>
-                      <button className="text-[#d63638] hover:underline text-[12px]">Delete</button>
+                      <button onClick={(e) => { e.stopPropagation(); deleteSubmissions([sub._id]); }} disabled={deleting} className="text-[#d63638] hover:underline text-[12px] disabled:opacity-50">Delete</button>
                     </div>
                   </td>
                   <td className="py-3 px-3 align-top">

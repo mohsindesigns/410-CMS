@@ -32,9 +32,10 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
       <section id="achievements">
         <StatsSection />
       </section>
-      <section id="services">
+      {/* #services anchor lives on the inner <section id="services"> in Services.tsx (one id per page) */}
+      <div>
         <Services />
-      </section>
+      </div>
       <FeatureCards />
       <section id="leadership">
         <Leadership />

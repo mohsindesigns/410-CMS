@@ -5,9 +5,10 @@ import path from 'path';
  * Universal upload function that handles both Cloudinary CDN and local storage fallback
  */
 export async function uploadFile(file: File, buffer: Buffer): Promise<{ url: string; publicId?: string }> {
-  let cloudName = process.env.CLOUDINARY_CLOUD_NAME || 'dytytwyp6';
-  let apiKey = process.env.CLOUDINARY_API_KEY || '665655696219164';
-  let apiSecret = process.env.CLOUDINARY_API_SECRET || 'PXKKxzem3z2pqHtTUI3-J7lcH9k';
+  // Credentials come from the environment only. If none are configured the upload falls through to local storage.
+  let cloudName = process.env.CLOUDINARY_CLOUD_NAME || '';
+  let apiKey = process.env.CLOUDINARY_API_KEY || '';
+  let apiSecret = process.env.CLOUDINARY_API_SECRET || '';
   const uploadPreset = process.env.CLOUDINARY_UPLOAD_PRESET;
   const cloudinaryUrl = process.env.CLOUDINARY_URL;
 

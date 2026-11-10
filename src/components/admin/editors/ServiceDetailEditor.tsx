@@ -24,7 +24,7 @@ const DEFAULT_SERVICE_DETAIL = {
   backLink: "Back to All Services",
   heroSectionLabel: "CLINICAL RECOVERY PROTOCOL",
   heroDescription: "Targeted manual therapy engineered to eliminate chronic pain, unlock joint mobility, and accelerate athletic recovery.",
-  specDurationValue: "60 / 90 Mins",
+  specDurationValue: "",
   specIntensityValue: "Targeted Deep",
   specFocusValue: "Trigger Mapping",
   bookingCta: "Book Appointment Now",
@@ -80,7 +80,7 @@ const DEFAULT_SERVICE_DETAIL = {
   candidateTitle2: "Built Around You.",
   candidateDescription: "Movement work shaped around what your body can comfortably do. The goal is useful progress, not a rushed routine or generic adjustment.",
   profileBadgePrefix: "ADVANTAGE",
-  candidateSuitability: "CLINICAL STANDARD",
+  candidateSuitability: "",
   whoProfiles: [
     {
       label: "Eight Years Of Experience",
@@ -110,7 +110,7 @@ const DEFAULT_SERVICE_DETAIL = {
   protocolTitle2: "Looks Like.",
   protocolDescription: "Your visit follows a clear path: listen, observe, release, practice, and retest so you always know what we are working on and why.",
   protocolPhasePrefix: "STEP",
-  protocolDurations: ["15 MIN", "30 MIN", "30 MIN", "15 MIN"],
+  protocolDurations: [],
   sessionSteps: [
     {
       num: "01",
@@ -541,7 +541,7 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                           </div>
                         </div>
                       ))}
-                      <button onClick={() => updateField("whoProfiles", [...(data.whoProfiles || []), { label: "", desc: "", suitability: "SUITABILITY: OPTIMAL" }])} className={UI.buttonAdd}>+ Add Card</button>
+                      <button onClick={() => updateField("whoProfiles", [...(data.whoProfiles || []), { label: "", desc: "", suitability: "" }])} className={UI.buttonAdd}>+ Add Card</button>
                     </div>
                   </div>
                 </div>
@@ -597,14 +597,14 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                             <div className="flex items-center gap-3">
                               <input
                                 type="text"
-                                value={data.protocolDurations?.[i] || "15 MIN"}
+                                value={data.protocolDurations?.[i] || ""}
                                 onChange={(e) => {
-                                  const newDur = [...(data.protocolDurations || ["15 MIN", "30 MIN", "30 MIN", "15 MIN"])];
+                                  const newDur = [...(data.protocolDurations || [])];
                                   newDur[i] = e.target.value;
                                   updateField("protocolDurations", newDur);
                                 }}
                                 className="w-24 border border-[#8c8f94] px-2 py-0.5 text-xs text-center font-mono"
-                                placeholder="15 MIN"
+                                placeholder="e.g. 15 MIN (optional)"
                               />
                               <button onClick={() => {
                                 const newP = (data.sessionSteps || data.process || []).filter((_: any, idx: number) => idx !== i);
@@ -641,7 +641,7 @@ export default function ServiceDetailEditor({ pageId, data, setData }: { pageId:
                       <button onClick={() => {
                         const nextNum = `0${(data.sessionSteps || data.process || []).length + 1}`;
                         const newP = [...(data.sessionSteps || data.process || []), { num: nextNum, title: "", desc: "" }];
-                        const newD = [...(data.protocolDurations || []), "15 MIN"];
+                        const newD = [...(data.protocolDurations || []), ""];
                         setData({ ...data, sessionSteps: newP, process: newP, protocolDurations: newD });
                       }} className={UI.buttonAdd}>+ Add Treatment Step</button>
                     </div>

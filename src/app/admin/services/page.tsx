@@ -98,7 +98,7 @@ const DEFAULT_SERVICE_FIELDS = {
   backLink: "Back to All Services",
   heroSectionLabel: "CLINICAL RECOVERY PROTOCOL",
   heroDescription: "Targeted manual therapy engineered to eliminate chronic pain, unlock joint mobility, and accelerate athletic recovery.",
-  specDurationValue: "60 / 90 Mins",
+  specDurationValue: "",
   specIntensityValue: "Targeted Deep",
   specFocusValue: "Trigger Mapping",
   bookingCta: "Book Appointment Now",
@@ -121,7 +121,7 @@ const DEFAULT_SERVICE_FIELDS = {
   overviewTitle1: "Targeted Bodywork.",
   overviewTitle2: "Engineered For Recovery.",
   overviewWatermark: "SPECIALIST PRACTICE • EST. 2020",
-  overviewSuccessRate: "5.0 RATED PRACTICE",
+  overviewSuccessRate: "",
   tailoredLabel: "100% Tailored Therapy",
   tailoredSub: "Individualized Protocols",
   overviewDescription: "We look at mobility, stability, posture, soft-tissue restrictions, and movement habits. Then we pair bodywork with guided exercises that help your body share the load more comfortably.",
@@ -153,7 +153,7 @@ const DEFAULT_SERVICE_FIELDS = {
   candidateTitle2: "Built Around You.",
   candidateDescription: "Movement work shaped around what your body can comfortably do. The goal is useful progress, not a rushed routine or generic adjustment.",
   profileBadgePrefix: "ADVANTAGE",
-  candidateSuitability: "CLINICAL STANDARD",
+  candidateSuitability: "",
   whoProfiles: [
     {
       label: "Eight Years Of Experience",
@@ -183,7 +183,7 @@ const DEFAULT_SERVICE_FIELDS = {
   protocolTitle2: "Looks Like.",
   protocolDescription: "Your visit follows a clear path: listen, observe, release, practice, and retest so you always know what we are working on and why.",
   protocolPhasePrefix: "STEP",
-  protocolDurations: ["15 MIN", "30 MIN", "30 MIN", "15 MIN"],
+  protocolDurations: [] as string[],
   sessionSteps: [
     {
       num: "01",
@@ -216,30 +216,25 @@ const DEFAULT_SERVICE_FIELDS = {
   faqBadge: "FAQ",
   faqTitle: "Frequently Asked Questions",
   faqDescription: "Everything you need to know about your session and our clinical approach.",
-  faq: [
-    {
-      question: "What is corrective movement therapy, and who is it for?",
-      answer: "Corrective movement therapy looks at how you move through simple tasks and mobility drills. It suits active adults with stiffness or inefficient movement habits."
-    },
-    {
-      question: "How is corrective movement therapy different from physical therapy?",
-      answer: "Physical therapy is licensed medical healthcare for diagnosed injuries and rehabilitation. Corrective movement focuses on soft tissue feel, movement mechanics, and safe exercise cues."
-    },
-    {
-      question: "Can corrective movement therapy help recurring back pain or sciatica?",
-      answer: "Research supports guided movement for chronic non-specific discomfort. We keep movement comfortable and refer to medical providers when red flags appear."
-    },
-    {
-      question: "What happens at the first session, and what should I wear?",
-      answer: "We discuss symptoms, evaluate movement, apply targeted hands-on work, and practice drills. Wear comfortable clothing that lets you bend and move freely."
-    },
-    {
-      question: "How many sessions will I need, and do I need a referral?",
-      answer: "There is no fixed count. We plan your visits based on response. No medical referral is required to book a session."
-    }
-  ],
+  faq: [] as Array<{ question: string; answer: string }>,
   faqSchemaMarkup: ""
 };
+
+/** ISO string -> value for <input type="datetime-local"> (local time). */
+function isoToLocalInput(iso?: string): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(d.getHours())}:${pad(d.getMinutes())}`;
+}
+
+/** <input type="datetime-local"> value -> ISO string ("" when empty/invalid). */
+function localInputToIso(v: string): string {
+  if (!v) return "";
+  const d = new Date(v);
+  return isNaN(d.getTime()) ? "" : d.toISOString();
+}
 
 export default function ServicesAdminPage() {
   const [data, setData] = useState<any>(null);
@@ -254,6 +249,8 @@ export default function ServicesAdminPage() {
   const [selectedIds, setSelectedIds] = useState<string[]>([]);
   const [bulkAction, setBulkAction] = useState("");
   const [quickEditing, setQuickEditing] = useState<any>(null);
+  // true once the admin typed/picked a "Last modified" value in the current edit session (manual value wins on save)
+  const [modifiedTouched, setModifiedTouched] = useState(false);
 
   const [form, setForm] = useState<any>({
     title: "",
@@ -303,7 +300,15 @@ export default function ServicesAdminPage() {
           if (updatedForm) {
             // Only adopt server-assigned identity. Replacing the whole form with the pre-save
             // snapshot would wipe anything typed while the save was in flight.
-            setForm((prev: any) => ({ ...prev, id: updatedForm.id, number: updatedForm.number }));
+            setForm((prev: any) => ({
+              ...prev,
+              id: updatedForm.id,
+              number: updatedForm.number,
+              createdAt: updatedForm.createdAt,
+              updatedAt: updatedForm.updatedAt,
+              modifiedAt: updatedForm.modifiedAt
+            }));
+            setModifiedTouched(false);
           }
         } else {
           setIsEditing(null);
@@ -322,7 +327,8 @@ export default function ServicesAdminPage() {
     const newServices = [...services];
     const idx = services.findIndex(s => s.id === quickEditing.id);
     if (idx !== -1) {
-      newServices[idx] = { ...newServices[idx], ...quickEditing, updatedAt: new Date().toISOString() };
+      const nowIso = new Date().toISOString();
+      newServices[idx] = { ...newServices[idx], ...quickEditing, updatedAt: nowIso, modifiedAt: nowIso };
       saveToDb(newServices);
       setQuickEditing(null);
     }
@@ -350,12 +356,17 @@ export default function ServicesAdminPage() {
     }
 
     const newServices = [...services];
+    const nowIso = new Date().toISOString();
     const serviceData = {
       ...form,
       seo: seo,
       id: form.id || Date.now().toString(),
-      createdAt: form.createdAt || new Date().toISOString(),
-      updatedAt: new Date().toISOString(),
+      createdAt: form.createdAt || nowIso,
+      updatedAt: nowIso,
+      // Search-engine dates: a manually entered "Last modified" wins, otherwise it is the time of this save.
+      modifiedAt: modifiedTouched && form.modifiedAt ? form.modifiedAt : nowIso,
+      // Empty "Published date" stays empty (nothing is emitted in the schema).
+      publishedAt: form.publishedAt || "",
       number: form.number || (services.length + 1).toString().padStart(2, '0')
     };
     
@@ -371,16 +382,19 @@ export default function ServicesAdminPage() {
 
   const handleEdit = (service: any) => {
     const originalIdx = services.findIndex(orig => orig.id === service.id);
+    // Existing services keep exactly what was saved: DEFAULT_SERVICE_FIELDS is NOT merged in (that used to write
+    // starter content, incl. a corrective-movement FAQ, into every service on save). Empty fields simply show
+    // their placeholder, and the public page falls back to its own defaults for anything left empty.
     setForm({
-      ...DEFAULT_SERVICE_FIELDS,
       ...service,
-      // Ensure arrays fall back gracefully
-      benefits: (service.benefits && service.benefits.length > 0) ? service.benefits : DEFAULT_SERVICE_FIELDS.benefits,
-      whoProfiles: (service.whoProfiles && service.whoProfiles.length > 0) ? service.whoProfiles : DEFAULT_SERVICE_FIELDS.whoProfiles,
-      sessionSteps: (service.sessionSteps && service.sessionSteps.length > 0) ? service.sessionSteps : (service.process || DEFAULT_SERVICE_FIELDS.sessionSteps),
-      protocolDurations: (service.protocolDurations && service.protocolDurations.length > 0) ? service.protocolDurations : DEFAULT_SERVICE_FIELDS.protocolDurations,
-      faq: (service.faq && service.faq.length > 0) ? service.faq : (service.faqs || DEFAULT_SERVICE_FIELDS.faq)
+      sessionSteps: (service.sessionSteps && service.sessionSteps.length > 0)
+        ? service.sessionSteps
+        : (Array.isArray(service.process) && service.process.length > 0
+          ? service.process.map((p: any, i: number) => ({ num: p.num || String(i + 1).padStart(2, '0'), title: p.title || "", desc: p.desc || p.description || "" }))
+          : undefined),
+      faq: (service.faq && service.faq.length > 0) ? service.faq : (service.faqs || [])
     });
+    setModifiedTouched(false);
     setSeo(service.seo || {});
     setIsEditing(originalIdx);
     setActiveTab("hero");
@@ -405,6 +419,8 @@ export default function ServicesAdminPage() {
       seo: { ...(s.seo || {}), canonicalUrl: '' },
       createdAt: new Date().toISOString(),
       updatedAt: new Date().toISOString(),
+      modifiedAt: new Date().toISOString(),
+      publishedAt: "",
       status: 'draft'
     };
     const newServices = [...services, newService];
@@ -464,6 +480,7 @@ export default function ServicesAdminPage() {
                 ...DEFAULT_SERVICE_FIELDS
               });
               setSeo({});
+              setModifiedTouched(false);
               setActiveTab("hero");
             }}
             className="bg-white border border-[#2271b1] text-[#2271b1] hover:bg-[#f6f7f7] hover:text-[#135e96] hover:border-[#135e96] px-2 py-1 text-[13px] rounded-[3px] transition-colors"
@@ -546,6 +563,12 @@ export default function ServicesAdminPage() {
                         </div>
                       </div>
 
+                      <div className="space-y-1">
+                        <label className="text-[13px] font-bold">Menu Label (optional)</label>
+                        <input type="text" value={form.menuLabel || ""} onChange={(e) => setForm({ ...form, menuLabel: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder={form.title || "e.g. Deep Tissue"} />
+                        <p className="text-[11px] text-[#646970]">Short name shown in the Services menu, mobile menu and footer. Leave empty to use the title. The page heading and title are not affected.</p>
+                      </div>
+
                       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
                         <div className="space-y-1">
                           <label className="text-[13px] font-bold">Breadcrumb Backlink Text</label>
@@ -586,6 +609,17 @@ export default function ServicesAdminPage() {
                         </div>
                       </div>
 
+                      <div className="border-t border-[#f0f0f1] pt-4 space-y-1">
+                        <label className="text-[13px] font-bold">Safety Notice (optional)</label>
+                        <textarea
+                          value={form.safetyNotice || ""}
+                          onChange={(e) => setForm({ ...form, safetyNotice: e.target.value })}
+                          className="w-full border border-[#8c8f94] px-3 py-2 text-[14px] rounded-[3px] h-20"
+                          placeholder="Leave empty to show no notice. Shown as a small note box between the specs strip and the booking buttons."
+                        />
+                        <p className="text-[11px] text-[#646970]">Nothing is shown unless you fill this in. Markdown links are supported.</p>
+                      </div>
+
                       <div className="border-t border-[#f0f0f1] pt-4">
                         <h4 className="text-[13px] font-bold mb-2 text-[#1d2327]">Call-to-Action Buttons & Links</h4>
                         <div className="grid grid-cols-2 gap-4 mb-4">
@@ -611,7 +645,32 @@ export default function ServicesAdminPage() {
                       </div>
 
                       <div className="border-t border-[#f0f0f1] pt-4">
-                        <ImageField label="Hero & Overview Featured Image" value={form.image || ""} onChange={(url) => setForm({ ...form, image: url })} />
+                        <ImageField
+                          label="Card / Listing Image (also the fallback for the hero and overview photos)"
+                          value={form.image || ""}
+                          onChange={(url) => setForm({ ...form, image: url })}
+                          description="Used on the services list and home cards. If no Hero Background Image or Overview Photo is set below, this image is used for both."
+                        />
+                      </div>
+
+                      <div className="border-t border-[#f0f0f1] pt-4 space-y-3">
+                        <h4 className="text-[13px] font-bold text-[#1d2327]">Hero Background Image (optional)</h4>
+                        <ImageField
+                          label="Hero Background Image"
+                          value={form.heroImage || ""}
+                          onChange={(url) => setForm({ ...form, heroImage: url })}
+                          description="Dark background photo behind the page title. Leave empty to use the Card / Listing Image."
+                        />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-[12px] font-bold text-[#646970]">Hero Image Alt Text (optional)</label>
+                            <input type="text" value={form.heroImageAlt || ""} onChange={(e) => setForm({ ...form, heroImageAlt: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="Leave empty if the photo is purely decorative" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[12px] font-bold text-[#646970]">Hero Focal Point (optional)</label>
+                            <input type="text" value={form.heroImagePosition || ""} onChange={(e) => setForm({ ...form, heroImagePosition: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. 50% 30%" />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}
@@ -693,6 +752,26 @@ export default function ServicesAdminPage() {
                         </div>
                       </div>
 
+                      <div className="border-t border-[#c3c4c7] pt-4 space-y-3">
+                        <h4 className="text-[13px] font-bold text-[#1d2327]">Overview Section Photo (optional)</h4>
+                        <ImageField
+                          label="Overview Photo"
+                          value={form.overviewImage || ""}
+                          onChange={(url) => setForm({ ...form, overviewImage: url })}
+                          description="Photo beside the overview text. Leave empty to use the Card / Listing Image."
+                        />
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-[12px] font-bold text-[#646970]">Overview Photo Alt Text (optional)</label>
+                            <input type="text" value={form.overviewImageAlt || ""} onChange={(e) => setForm({ ...form, overviewImageAlt: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="Leave empty to use the service name" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[12px] font-bold text-[#646970]">Overview Photo Focal Point (optional)</label>
+                            <input type="text" value={form.overviewImagePosition || ""} onChange={(e) => setForm({ ...form, overviewImagePosition: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="e.g. 50% 30%" />
+                          </div>
+                        </div>
+                      </div>
+
                       <div className="space-y-1">
                         <label className="text-[13px] font-bold">Clinical Overview Narrative / Description</label>
                         <QuillEditor
@@ -712,6 +791,12 @@ export default function ServicesAdminPage() {
                           <button type="button" onClick={() => setForm({ ...form, benefits: [...(form.benefits || []), { title: "", description: "" }] })} className="text-[#2271b1] text-xs font-bold underline">+ Add Focus Area</button>
                         </div>
 
+                        {!(form.benefits && form.benefits.length > 0) && (
+                          <div className="bg-[#fcf9e8] border border-[#dba617] p-3 text-[12px] text-[#50575e] flex flex-wrap items-center justify-between gap-2">
+                            <span>No custom focus areas saved. The public page currently shows the site&apos;s standard focus areas.</span>
+                            <button type="button" onClick={() => setForm({ ...form, benefits: DEFAULT_SERVICE_FIELDS.benefits.map(b => ({ ...b })) })} className="text-[#2271b1] font-bold underline">Copy the standard ones here to edit</button>
+                          </div>
+                        )}
                         <div className="space-y-4">
                           {(form.benefits || []).map((b: any, i: number) => (
                             <div key={i} className="bg-[#f6f7f7] border border-[#c3c4c7] p-4 rounded-sm space-y-3">
@@ -809,9 +894,15 @@ export default function ServicesAdminPage() {
                             <h3 className="text-[14px] font-bold text-[#1d2327]">Differentiators / Candidate Profiles Cards</h3>
                             <p className="text-[12px] text-[#646970]">Add experience points, guarantees, location convenience, or client profiles.</p>
                           </div>
-                          <button type="button" onClick={() => setForm({ ...form, whoProfiles: [...(form.whoProfiles || []), { label: "", desc: "", suitability: "SUITABILITY: OPTIMAL" }] })} className="text-[#2271b1] text-xs font-bold underline">+ Add Card</button>
+                          <button type="button" onClick={() => setForm({ ...form, whoProfiles: [...(form.whoProfiles || []), { label: "", desc: "", suitability: "" }] })} className="text-[#2271b1] text-xs font-bold underline">+ Add Card</button>
                         </div>
 
+                        {!(form.whoProfiles && form.whoProfiles.length > 0) && (
+                          <div className="bg-[#fcf9e8] border border-[#dba617] p-3 text-[12px] text-[#50575e] flex flex-wrap items-center justify-between gap-2">
+                            <span>No custom cards saved. The public page currently shows the site&apos;s standard cards.</span>
+                            <button type="button" onClick={() => setForm({ ...form, whoProfiles: DEFAULT_SERVICE_FIELDS.whoProfiles.map(p => ({ ...p })) })} className="text-[#2271b1] font-bold underline">Copy the standard ones here to edit</button>
+                          </div>
+                        )}
                         <div className="space-y-4">
                           {(form.whoProfiles || []).map((p: any, pIdx: number) => (
                             <div key={pIdx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-4 rounded-sm space-y-3">
@@ -919,11 +1010,17 @@ export default function ServicesAdminPage() {
                             setForm({
                               ...form,
                               sessionSteps: [...(form.sessionSteps || []), { num: nextNum, title: "", desc: "" }],
-                              protocolDurations: [...(form.protocolDurations || []), "15 MIN"]
+                              protocolDurations: [...(form.protocolDurations || []), ""]
                             });
                           }} className="text-[#2271b1] text-xs font-bold underline">+ Add Step</button>
                         </div>
 
+                        {!(form.sessionSteps && form.sessionSteps.length > 0) && (
+                          <div className="bg-[#fcf9e8] border border-[#dba617] p-3 text-[12px] text-[#50575e] flex flex-wrap items-center justify-between gap-2">
+                            <span>No custom steps saved. The public page currently shows the site&apos;s standard session steps (without duration pills).</span>
+                            <button type="button" onClick={() => setForm({ ...form, sessionSteps: DEFAULT_SERVICE_FIELDS.sessionSteps.map(s => ({ ...s })), protocolDurations: [] })} className="text-[#2271b1] font-bold underline">Copy the standard ones here to edit</button>
+                          </div>
+                        )}
                         <div className="space-y-4">
                           {(form.sessionSteps || []).map((step: any, sIdx: number) => (
                             <div key={sIdx} className="bg-[#f6f7f7] border border-[#c3c4c7] p-4 rounded-sm space-y-3">
@@ -934,14 +1031,14 @@ export default function ServicesAdminPage() {
                                     <label className="text-[11px] font-bold text-[#646970]">Duration Pill:</label>
                                     <input
                                       type="text"
-                                      value={form.protocolDurations?.[sIdx] || "15 MIN"}
+                                      value={form.protocolDurations?.[sIdx] || ""}
                                       onChange={(e) => {
-                                        const nd = [...(form.protocolDurations || ["15 MIN", "30 MIN", "30 MIN", "15 MIN"])];
+                                        const nd = [...(form.protocolDurations || [])];
                                         nd[sIdx] = e.target.value;
                                         setForm({ ...form, protocolDurations: nd });
                                       }}
                                       className="w-24 border border-[#8c8f94] px-2 py-0.5 text-xs text-center font-mono"
-                                      placeholder="15 MIN"
+                                      placeholder="e.g. 15 MIN (optional)"
                                     />
                                   </div>
                                   <button type="button" onClick={() => {
@@ -1019,6 +1116,38 @@ export default function ServicesAdminPage() {
                             <input type="text" value={form.protocolBannerCtaUrl || ""} onChange={(e) => setForm({ ...form, protocolBannerCtaUrl: e.target.value })} className="w-full border border-[#8c8f94] px-3 py-1.5 text-[14px] rounded-[3px]" placeholder="Defaults to booking URL" />
                           </div>
                         </div>
+                      </div>
+
+                      {/* Related services (optional) */}
+                      <div className="border-t border-[#c3c4c7] pt-6 space-y-3">
+                        <div>
+                          <h3 className="text-[14px] font-bold text-[#1d2327]">Related Services (optional)</h3>
+                          <p className="text-[12px] text-[#646970]">Pick up to 3 services to link from the bottom of this page. Nothing is shown if none are selected.</p>
+                        </div>
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 max-h-56 overflow-y-auto border border-[#c3c4c7] bg-[#f6f7f7] p-3">
+                          {services
+                            .filter((s: any) => s.slug && s.slug !== form.slug && !s.isTrashed && s.status !== 'draft')
+                            .map((s: any) => {
+                              const selected: string[] = Array.isArray(form.relatedServices) ? form.relatedServices : [];
+                              const checked = selected.includes(s.slug);
+                              return (
+                                <label key={s.slug} className="flex items-center gap-2 text-[13px] cursor-pointer">
+                                  <input
+                                    type="checkbox"
+                                    checked={checked}
+                                    onChange={() => setForm({
+                                      ...form,
+                                      relatedServices: checked ? selected.filter((x) => x !== s.slug) : [...selected, s.slug]
+                                    })}
+                                  />
+                                  <span className="truncate">{s.title}</span>
+                                </label>
+                              );
+                            })}
+                        </div>
+                        {Array.isArray(form.relatedServices) && form.relatedServices.length > 3 && (
+                          <p className="text-[11px] text-[#d63638]">More than 3 selected: only the first 3 are shown on the page.</p>
+                        )}
                       </div>
                     </div>
                   )}
@@ -1126,6 +1255,35 @@ export default function ServicesAdminPage() {
                         </Link>
                       </p>
                     )}
+                  </div>
+
+                  <div className="border-t border-[#f0f0f1] pt-3 space-y-3">
+                    <h3 className="text-[12px] font-bold text-[#1d2327]">Dates (for search engines)</h3>
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-[#646970]">Published date</label>
+                      <input
+                        type="datetime-local"
+                        value={isoToLocalInput(form.publishedAt)}
+                        onChange={(e) => setForm({ ...form, publishedAt: localInputToIso(e.target.value) })}
+                        className="w-full border border-[#8c8f94] px-2 py-1 text-[12px] rounded-[3px]"
+                      />
+                      <div className="flex items-center justify-between">
+                        <button type="button" onClick={() => setForm({ ...form, publishedAt: new Date().toISOString() })} className="text-[#2271b1] underline text-[11px]">Set to now</button>
+                        {form.publishedAt && <button type="button" onClick={() => setForm({ ...form, publishedAt: "" })} className="text-[#d63638] underline text-[11px]">Clear</button>}
+                      </div>
+                      <p className="text-[11px] text-[#646970]">Empty = no published date is sent to search engines.</p>
+                    </div>
+                    <div className="space-y-1">
+                      <label className="text-[11px] font-bold text-[#646970]">Last modified</label>
+                      <input
+                        type="datetime-local"
+                        value={isoToLocalInput(form.modifiedAt)}
+                        onChange={(e) => { setModifiedTouched(true); setForm({ ...form, modifiedAt: localInputToIso(e.target.value) }); }}
+                        className="w-full border border-[#8c8f94] px-2 py-1 text-[12px] rounded-[3px]"
+                      />
+                      <button type="button" onClick={() => { setModifiedTouched(true); setForm({ ...form, modifiedAt: new Date().toISOString() }); }} className="text-[#2271b1] underline text-[11px]">Set to now</button>
+                      <p className="text-[11px] text-[#646970]">Unless you change this field, it is set to the time you click Update.</p>
+                    </div>
                   </div>
                 </div>
                 <div className="px-3 py-2 bg-[#f6f7f7] border-t border-[#c3c4c7] flex justify-between items-center">

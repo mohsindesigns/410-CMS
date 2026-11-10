@@ -31,8 +31,8 @@ export default function ContactEditor({ pageId, data, setData }: { pageId: strin
              { name: "phone", label: "Phone Number", type: "tel", required: false, icon: "Phone" },
              { name: "message", label: "Your Message", type: "textarea", required: true, icon: "MessageSquare" }
            ],
-           info: { address: "St. Louis, MO", phone: "314-XXX-XXXX", email: "antoine.lyles@yahoo.com", hours: "Mon-Fri: 8am-6pm" },
-           social: { facebook: "#", instagram: "#", linkedin: "#" }
+           info: { address: "1301 York Rd, 8th Floor, Suite 48, Timonium, MD 21093", phone: "443-473-2322", email: "antoine.lyles@yahoo.com", hours: "Mon-Sat 7am-9pm, Sun 9am-9pm" },
+           social: { facebook: "", instagram: "", linkedin: "" }
          }
        });
     }

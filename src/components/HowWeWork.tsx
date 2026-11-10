@@ -7,13 +7,6 @@ import { motion, AnimatePresence } from "framer-motion";
 import { useContent } from "../hooks/useContent";
 import { stripHtml } from "../lib/utils";
 
-const stepImages = [
-  "/uploads/blog/what-to-expect-during-a-deep-tissue-massage.jpg.jpeg",
-  "/uploads/blog/how-corrective-movement-helps-improve-posture-mobility.jpg.jpeg",
-  "/uploads/blog/deep-tissue-massage.jpg",
-  "/uploads/blog/fascial-stretch-therapy-explained-benefits-process.jpg.jpeg",
-];
-
 export default function HowItWorksSection() {
   const [activeIdx, setActiveIdx] = useState(0);
   const { process } = useContent();
@@ -25,6 +18,11 @@ export default function HowItWorksSection() {
     phaseLabel = "PHASE",
     items = []
   } = process || {};
+
+  // Images come ONLY from the CMS (Admin > Process). No hardcoded fallbacks: a step without an image shows no photo,
+  // and when no step has one the section collapses to a single column.
+  const hasAnyImage = (items || []).some((it: any) => !!it?.image);
+  const activeImage: string = items[activeIdx]?.image || "";
 
   // Scroll-based sync: finds the step whose center is closest to 40% from the top of the viewport
   useEffect(() => {
@@ -80,10 +78,12 @@ export default function HowItWorksSection() {
         </div>
 
         {/* ── Sticky Scroll Reveal Grid ── */}
-        <div className="grid grid-cols-1 md:grid-cols-[1.2fr_1fr] gap-12 md:gap-20">
+        <div className={`grid grid-cols-1 gap-12 md:gap-20 ${hasAnyImage ? "md:grid-cols-[1.2fr_1fr]" : ""}`}>
 
           {/* Left Column: Full-height container, sticky image frame */}
+          {hasAnyImage && (
           <div className="hidden md:block">
+            {activeImage && (
             <div className="sticky top-36 h-[460px] w-full overflow-hidden rounded-xl shadow-2xl border border-border-light bg-dark">
               <AnimatePresence mode="wait">
                 <motion.div
@@ -95,8 +95,8 @@ export default function HowItWorksSection() {
                   className="absolute inset-0 w-full h-full"
                 >
                   <Image
-                    src={items[activeIdx]?.image || stepImages[activeIdx] || stepImages[0]}
-                    alt={items[activeIdx]?.title || "Recovery Phase"}
+                    src={activeImage}
+                    alt={stripHtml(items[activeIdx]?.title) || "Recovery Phase"}
                     fill
                     sizes="45vw"
                     className="object-cover"
@@ -122,10 +122,12 @@ export default function HowItWorksSection() {
                 </div>
               )}
             </div>
+            )}
           </div>
+          )}
 
           {/* Right Column: Scroll Trigger Items */}
-          <div className="flex flex-col gap-8 md:gap-14">
+          <div className={`flex flex-col gap-8 md:gap-14 ${hasAnyImage ? "" : "max-w-3xl"}`}>
             {(items || []).map((step: any, idx: number) => {
               const actions = step.actions || [];
               const isActive = activeIdx === idx;
@@ -151,14 +153,17 @@ export default function HowItWorksSection() {
                   </div>
 
                   {/* Mobile Image Preview for responsive excellence */}
-                  <div className="md:hidden relative w-full h-[180px] rounded-lg overflow-hidden my-3 border border-border-light">
-                    <Image
-                      src={step.image || stepImages[idx] || stepImages[0]}
-                      alt={step.title}
-                      fill
-                      className="object-cover"
-                    />
-                  </div>
+                  {step.image && (
+                    <div className="md:hidden relative w-full h-[180px] rounded-lg overflow-hidden my-3 border border-border-light">
+                      <Image
+                        src={step.image}
+                        alt={stripHtml(step.title) || "Recovery Phase"}
+                        fill
+                        sizes="100vw"
+                        className="object-cover"
+                      />
+                    </div>
+                  )}
 
                   <h3 className={`font-bold text-[19px] md:text-[22px] mb-3 tracking-tight leading-snug transition-colors
                     ${isActive ? "text-dark" : "text-dark/80"}`}>

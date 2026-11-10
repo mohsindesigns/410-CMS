@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { Send, ArrowRight, ShieldCheck, Clock, Plus, Minus } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useContent } from "../hooks/useContent";
@@ -23,23 +24,26 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
     formClinicPortalSub = "Book directly on StyleSeat portal",
     formStyleSeatBtn = "BOOK ON STYLESEAT",
     formNameLabel = "YOUR FULL NAME",
-    formNamePlaceholder = "Antoine Lyles",
+    formNamePlaceholder = "Jane Smith",
     formEmailLabel = "EMAIL ADDRESS",
-    formEmailPlaceholder = "antoine@example.com",
+    formEmailPlaceholder = "name@example.com",
     formPhoneLabel = "PHONE NUMBER",
-    formPhonePlaceholder = "(410) 555-0199",
+    formPhonePlaceholder = "(410) 555-0100",
     formServiceLabel = "DESIRED SERVICE CATEGORY",
     formServicePlaceholder = "Select a service category",
-    formMessageLabel = "YOUR MESSAGE / INJURY DETAILS",
-    formMessagePlaceholder = "Please describe any pain, stiffness, or injuries...",
+    formMessageLabel = "YOUR MESSAGE",
+    formMessagePlaceholder = "How can we help?",
     formBtnSubmit = "SEND MESSAGE",
     formBtnSuccess = "MESSAGE SENT!",
     formSuccessToast = "Thank you! Your inquiry has been sent. We will reply within 24 hours.",
-    trustHipa = "HIPAA Compliant & Secure",
-    trustResponse = "Avg Response: 2 Hours",
     formServicesOptions = [],
     faqs = []
   } = contactFaq || {};
+
+  // Optional trust badges: an empty string (admin blanked the field) hides the badge.
+  const trustHipa: string = typeof contactFaq?.trustHipa === "string" ? contactFaq.trustHipa : "";
+  const trustResponse: string = typeof contactFaq?.trustResponse === "string" ? contactFaq.trustResponse : "";
+  const privacyNote: string = typeof contactFaq?.privacyNote === "string" ? contactFaq.privacyNote.trim() : "";
 
   // Read page-specific overrides if editing or viewing on a specific page
   const rawPageFaqs: any[] = (() => {
@@ -98,31 +102,50 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
     email: "",
     phone: "",
     service: "",
-    message: ""
+    message: "",
+    website: "" // honeypot: real visitors never see or fill this
   });
   const [submitted, setSubmitted] = useState(false);
+  const [sending, setSending] = useState(false);
+  const [errorMsg, setErrorMsg] = useState<string | null>(null);
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setSubmitted(true);
+    if (sending) return;
+    setSending(true);
+    setErrorMsg(null);
 
     try {
-      await fetch("/api/contact", {
+      const res = await fetch("/api/contact", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify(formData)
       });
-    } catch (err) {
+      if (!res.ok) {
+        const data = await res.json().catch(() => ({}));
+        throw new Error(
+          res.status === 429
+            ? "Too many attempts. Please wait a few minutes and try again."
+            : (typeof data?.error === "string" && data.error) || "Sorry, your message could not be sent. Please try again or call us."
+        );
+      }
+      setSubmitted(true);
+      setTimeout(() => {
+        setSubmitted(false);
+        setFormData({ name: "", email: "", phone: "", service: "", message: "", website: "" });
+      }, 3000);
+    } catch (err: any) {
       console.error("Submission error:", err);
+      setErrorMsg(err?.message || "Sorry, your message could not be sent. Please try again or call us.");
+    } finally {
+      setSending(false);
     }
-
-    setTimeout(() => {
-      setSubmitted(false);
-      setFormData({ name: "", email: "", phone: "", service: "", message: "" });
-    }, 3000);
   };
 
-  const bookingUrl = globalMetadata?.bookingUrl || "https://www.styleseat.com/m/v/410muscletherapy";
+  const bookingUrl =
+    pageData?.bookingCtaUrl ||
+    globalMetadata?.bookingUrl ||
+    "https://www.styleseat.com/m/v/410muscletherapy";
 
   return (
     <section id="contact-support" className="bg-warm-cream py-20 md:py-28 overflow-hidden relative border-t border-brand-border-light">
@@ -183,7 +206,11 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
                   </label>
                   <input
                     id="name"
+                    name="name"
                     type="text"
+                    autoComplete="name"
+                    maxLength={100}
+                    aria-required="true"
                     required
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
@@ -200,7 +227,11 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
                     </label>
                     <input
                       id="email"
+                      name="email"
                       type="email"
+                      autoComplete="email"
+                      maxLength={254}
+                      aria-required="true"
                       required
                       value={formData.email}
                       onChange={(e) => setFormData({ ...formData, email: e.target.value })}
@@ -216,7 +247,11 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
                     </label>
                     <input
                       id="phone"
+                      name="phone"
                       type="tel"
+                      autoComplete="tel"
+                      maxLength={30}
+                      aria-required="true"
                       required
                       value={formData.phone}
                       onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
@@ -233,6 +268,8 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
                   </label>
                   <select
                     id="service"
+                    name="service"
+                    aria-required="true"
                     required
                     value={formData.service}
                     onChange={(e) => setFormData({ ...formData, service: e.target.value })}
@@ -254,7 +291,9 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
                   </label>
                   <textarea
                     id="message"
+                    name="message"
                     rows={3}
+                    maxLength={2000}
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
                     placeholder={formMessagePlaceholder}
@@ -262,10 +301,30 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
                   />
                 </div>
 
+                {/* Honeypot: hidden from people and assistive tech, bots tend to fill it */}
+                <div aria-hidden="true" style={{ position: "absolute", left: "-10000px", top: "auto", width: "1px", height: "1px", overflow: "hidden" }}>
+                  <label htmlFor="website">Leave this field empty</label>
+                  <input
+                    id="website"
+                    name="website"
+                    type="text"
+                    tabIndex={-1}
+                    autoComplete="off"
+                    value={formData.website}
+                    onChange={(e) => setFormData({ ...formData, website: e.target.value })}
+                  />
+                </div>
+
+                {errorMsg && (
+                  <p role="alert" className="text-[13px] font-medium text-red-700 bg-red-50 border border-red-200 rounded-md px-4 py-3">
+                    {errorMsg}
+                  </p>
+                )}
+
                 {/* Submit button */}
                 <button
                   type="submit"
-                  disabled={submitted}
+                  disabled={submitted || sending}
                   className="btn-gold justify-center py-4 w-full text-[12px] font-bold shadow-xl tracking-widest group relative overflow-hidden transition-all duration-300 mt-2 rounded-md"
                 >
                   {submitted ? (
@@ -278,24 +337,41 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
                     </span>
                   )}
                 </button>
+
+                {/* Privacy note (always shown; CMS text can replace the sentence, links stay) */}
+                <p className="text-[12px] leading-relaxed text-[rgba(10,10,10,0.6)] -mt-2">
+                  {privacyNote || "We use the details you send only to reply to your enquiry. Please don't include sensitive medical details here."}{" "}
+                  See our{" "}
+                  <Link href="/privacy/" className="text-gold-dark underline underline-offset-2 hover:no-underline">Privacy Policy</Link>
+                  {" "}and{" "}
+                  <Link href="/terms/" className="text-gold-dark underline underline-offset-2 hover:no-underline">Terms</Link>.
+                </p>
               </form>
 
-              {/* Trust markers */}
-              <div className="mt-8 pt-6 border-t border-brand-border-light flex items-center justify-between gap-4 text-[12px] text-dark/50 font-mono">
-                <span className="flex items-center gap-2">
-                  <ShieldCheck size={16} className="text-gold-dark" />
-                  {trustHipa}
-                </span>
-                <span className="flex items-center gap-2">
-                  <Clock size={16} className="text-gold-dark" />
-                  {trustResponse}
-                </span>
-              </div>
+              {/* Trust markers (each badge only renders when it has text) */}
+              {(trustHipa || trustResponse) && (
+                <div className="mt-8 pt-6 border-t border-brand-border-light flex flex-wrap items-center justify-between gap-x-4 gap-y-2 text-[12px] text-dark/50 font-mono">
+                  {trustHipa && (
+                    <span className="flex items-center gap-2">
+                      <ShieldCheck size={16} className="text-gold-dark" />
+                      {trustHipa}
+                    </span>
+                  )}
+                  {trustResponse && (
+                    <span className="flex items-center gap-2">
+                      <Clock size={16} className="text-gold-dark" />
+                      {trustResponse}
+                    </span>
+                  )}
+                </div>
+              )}
 
               {/* Success Notification Alert */}
               <AnimatePresence>
                 {submitted && (
                   <motion.div
+                    role="status"
+                    aria-live="polite"
                     initial={{ opacity: 0, y: 10 }}
                     animate={{ opacity: 1, y: 0 }}
                     exit={{ opacity: 0, y: -10 }}
@@ -339,6 +415,10 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
                       ${isOpen ? "bg-white/40" : ""}`}
                   >
                     <button
+                      type="button"
+                      id={`faq-btn-${i}`}
+                      aria-expanded={isOpen}
+                      aria-controls={`faq-panel-${i}`}
                       onClick={() => setOpenIdx(isOpen ? null : i)}
                       className="w-full text-left flex items-start gap-5 group px-3 md:px-4 focus:outline-none"
                     >
@@ -364,6 +444,9 @@ export default function ContactFaqSection({ pageData }: QAFormProps) {
                     <AnimatePresence initial={false}>
                       {isOpen && (
                         <motion.div
+                          id={`faq-panel-${i}`}
+                          role="region"
+                          aria-labelledby={`faq-btn-${i}`}
                           initial={{ height: 0, opacity: 0 }}
                           animate={{ height: "auto", opacity: 1 }}
                           exit={{ height: 0, opacity: 0 }}

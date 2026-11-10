@@ -1,4 +1,4 @@
-import { useRef, useEffect, useState } from "react";
+import { useRef, useEffect, useState, useId } from "react";
 import {
   motion,
   useScroll,
@@ -74,6 +74,7 @@ const FloatingParticles = () => {
 };
 
 const AccordionItem = ({ item, index, isOpen, onToggle }: { item: any; index: number; isOpen: boolean; onToggle: (index: number) => void }) => {
+  const gid = useId().replace(/:/g, "");
   const [isHovered, setIsHovered] = useState(false);
   const buttonRef = useRef(null);
 
@@ -116,7 +117,7 @@ const AccordionItem = ({ item, index, isOpen, onToggle }: { item: any; index: nu
           y="0"
           width="100%"
           height="100%"
-          fill="url(#liquidGradient)"
+          fill={`url(#${gid}-liquid)`}
           opacity={isHovered ? 0.08 : 0.03}
           style={{
             x: useTransform(springX, [0, 100], [-5, 5]),
@@ -125,7 +126,7 @@ const AccordionItem = ({ item, index, isOpen, onToggle }: { item: any; index: nu
           transition={{ duration: 0.2 }}
         />
         <defs>
-          <radialGradient id="liquidGradient">
+          <radialGradient id={`${gid}-liquid`}>
             <stop offset="0%" stopColor="hsl(var(--primary))" stopOpacity="0.2" />
             <stop offset="100%" stopColor="hsl(var(--primary))" stopOpacity="0.05" />
           </radialGradient>
@@ -175,7 +176,7 @@ const AccordionItem = ({ item, index, isOpen, onToggle }: { item: any; index: nu
             width="calc(100% - 4px)"
             height="calc(100% - 4px)"
             fill="none"
-            stroke="url(#borderGradient)"
+            stroke={`url(#${gid}-border)`}
             strokeWidth="1.2"
             strokeDasharray="6 6"
             initial={{ pathLength: 0, opacity: 0 }}
@@ -189,7 +190,7 @@ const AccordionItem = ({ item, index, isOpen, onToggle }: { item: any; index: nu
             transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
           />
           <defs>
-            <linearGradient id="borderGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+            <linearGradient id={`${gid}-border`} x1="0%" y1="0%" x2="100%" y2="100%">
               <stop offset="0%" stopColor="hsl(var(--primary))" />
               <stop offset="100%" stopColor="hsl(var(--primary)/80)" />
             </linearGradient>

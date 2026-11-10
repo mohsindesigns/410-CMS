@@ -16,7 +16,7 @@ export default function FAQTemplate({ pageData, params }: { pageData?: any, para
     const badge = pageData?.content?.faqBadge || pageData?.faqBadge || section?.badge;
 
     return (
-        <main>
+        <div>
             <PageInlineFaqs 
                 faqs={items} 
                 faqSchemaMarkup={bulkSchema} 
@@ -26,6 +26,6 @@ export default function FAQTemplate({ pageData, params }: { pageData?: any, para
                 showFilters={false}
                 asH1
             />
-        </main>
+        </div>
     );
 }

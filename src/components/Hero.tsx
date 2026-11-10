@@ -79,6 +79,9 @@ export default function HeroSection() {
         <div className="absolute inset-0 bg-gradient-to-l from-dark/40 via-transparent to-transparent" />
       </div>
 
+      {/* Mobile-only uniform scrim so the white text keeps its contrast over any part of the photo */}
+      <div className="absolute inset-0 z-0 pointer-events-none bg-[rgba(10,10,10,0.45)] md:bg-transparent" aria-hidden="true" />
+
       {/* ── Main Content ───────────────────────────────── */}
       <div className="relative site-container pt-32 pb-16 md:pt-40 md:pb-24 w-full z-10">
         <div className="max-w-[620px] text-center md:text-left mx-auto md:mx-0 flex flex-col items-center md:items-start md:border-l md:border-white/10 md:pl-8">

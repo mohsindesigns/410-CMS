@@ -446,22 +446,23 @@ export const useContent = () => {
             const formStyleSeatBtn = quoteObj.formStyleSeatBtn || "BOOK ON STYLESEAT";
             
             const formNameLabel = quoteObj.formNameLabel || "YOUR FULL NAME";
-            const formNamePlaceholder = quoteObj.formNamePlaceholder || "Antoine Lyles";
+            const formNamePlaceholder = quoteObj.formNamePlaceholder || "Jane Smith";
             const formEmailLabel = quoteObj.formEmailLabel || "EMAIL ADDRESS";
-            const formEmailPlaceholder = quoteObj.formEmailPlaceholder || "antoine@example.com";
+            const formEmailPlaceholder = quoteObj.formEmailPlaceholder || "name@example.com";
             const formPhoneLabel = quoteObj.formPhoneLabel || "PHONE NUMBER";
-            const formPhonePlaceholder = quoteObj.formPhonePlaceholder || "(410) 555-0199";
+            const formPhonePlaceholder = quoteObj.formPhonePlaceholder || "(410) 555-0100";
             const formServiceLabel = quoteObj.formServiceLabel || "DESIRED SERVICE CATEGORY";
             const formServicePlaceholder = quoteObj.formServicePlaceholder || "Select a service category";
-            const formMessageLabel = quoteObj.formMessageLabel || "YOUR MESSAGE / INJURY DETAILS";
-            const formMessagePlaceholder = quoteObj.formMessagePlaceholder || "Please describe any pain, stiffness, or injuries...";
+            const formMessageLabel = quoteObj.formMessageLabel || "YOUR MESSAGE";
+            const formMessagePlaceholder = quoteObj.formMessagePlaceholder || "How can we help?";
             
             const formBtnSubmit = quoteObj.formBtnSubmit || "SEND MESSAGE";
             const formBtnSuccess = quoteObj.formBtnSuccess || "MESSAGE SENT!";
             const formSuccessToast = quoteObj.formSuccessToast || "Thank you! Your inquiry has been sent. We will reply within 24 hours.";
             
-            const trustHipa = quoteObj.trustHipa || "HIPAA Compliant & Secure";
-            const trustResponse = quoteObj.trustResponse || "Avg Response: 2 Hours";
+            const trustHipa = typeof quoteObj.trustHipa === "string" ? quoteObj.trustHipa : "";
+            const trustResponse = typeof quoteObj.trustResponse === "string" ? quoteObj.trustResponse : "";
+            const privacyNote = typeof quoteObj.privacyNote === "string" && quoteObj.privacyNote.trim() ? quoteObj.privacyNote : "";
             
             // Map quote.services to options format { label, value }
             const formServicesOptions = Array.isArray(quoteObj.services) && quoteObj.services.length > 0 
@@ -500,6 +501,7 @@ export const useContent = () => {
                 formSuccessToast,
                 trustHipa,
                 trustResponse,
+                privacyNote,
                 formServicesOptions,
                 faqs: formattedFaqs
             };

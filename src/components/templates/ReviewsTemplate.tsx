@@ -112,7 +112,7 @@ export default function ReviewsTemplate({ pageData, params }: { pageData?: any, 
     });
 
     return (
-        <main className="relative bg-dark">
+        <div className="relative bg-dark">
             {/* ═════════ HERO ═════════ */}
             <section className="relative overflow-hidden border-b border-border-dark pt-[140px] pb-16 md:pb-20">
                 <div aria-hidden className="pointer-events-none absolute inset-0 bg-radial-dots-gold opacity-[0.04]" />
@@ -194,6 +194,6 @@ export default function ReviewsTemplate({ pageData, params }: { pageData?: any, 
 
             {/* ═════════ CTA ═════════ */}
             <CtaBanner />
-        </main>
+        </div>
     );
 }

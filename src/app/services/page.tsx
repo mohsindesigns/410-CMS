@@ -79,13 +79,13 @@ export default async function ServicesPage() {
 
   return (
     <ContentProvider initialData={mergedData}>
-      <main>
+      <div>
         <ServicesHeroSection />
         <WhyChooseUsSection />
         <StickyServicesSection />
         <CtaBanner />
         <ContactFaqSection />
-      </main>
+      </div>
     </ContentProvider>
   );
 }

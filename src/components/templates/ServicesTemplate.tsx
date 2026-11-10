@@ -8,12 +8,12 @@ import CtaBanner from '@/components/sections/CtaBanner';
 
 export default function ServicesTemplate({ pageData, params }: { pageData?: any, params?: any }) {
   return (
-    <main>
+    <div>
       <ServicesHeroSection />
       <WhyChooseUsSection />
       <StickyServicesSection />
       <CtaBanner />
       <ContactFaqSection />
-    </main>
+    </div>
   );
 }

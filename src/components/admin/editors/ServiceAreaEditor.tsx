@@ -12,6 +12,7 @@ import {
 import dynamic from "next/dynamic";
 import { UI } from "./styles";
 import MediaSelector from "@/components/admin/MediaSelector";
+import { BUSINESS } from "@/lib/businessInfo";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
@@ -103,9 +104,9 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             bullet1Title: "Primary Coverage Area",
             bullet1Text: "Timonium, Baltimore County, Howard County & surrounding Maryland communities.",
             bullet2Title: "Clinic Hours",
-            bullet2Text: "Sun - Sat: 8:00 AM - 7:00 PM (By Appointment)",
+            bullet2Text: BUSINESS.hoursDisplayLines.join(" · "),
             bullet3Title: "Direct Contact Hotline",
-            bullet3Text: "(410) 555-0199"
+            bullet3Text: BUSINESS.phoneDisplay
           },
           materials: data.materials || {
             headline: "Clinical Modalities",

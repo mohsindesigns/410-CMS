@@ -896,7 +896,7 @@ export default function AboutTemplate({ pageData, params }: { pageData?: any, pa
   const { allBlogs, blogSection } = useContent();
 
   return (
-    <main className="bg-background">
+    <div className="bg-background">
       <Hero content={content.hero} />
       <RecognitionMarquee content={content.recognition} />
       <FounderStory content={content.story} />
@@ -923,6 +923,6 @@ export default function AboutTemplate({ pageData, params }: { pageData?: any, pa
         posts={allBlogs.filter((p: any) => (content.blogSection?.selectedPosts || []).includes(p._id))}
       />
 
-    </main>
+    </div>
   );
 }

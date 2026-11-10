@@ -57,7 +57,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any }) {
 
   return (
     <>
-      <main className="bg-dark min-h-screen pt-[140px] pb-24 relative overflow-hidden">
+      <div className="bg-dark min-h-screen pt-[140px] pb-24 relative overflow-hidden">
         {/* Subtle background texture */}
         <div className="absolute inset-0 opacity-[0.03] bg-radial-dots-gold pointer-events-none" />
 
@@ -143,7 +143,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any }) {
             </a>
           </div>
         </div>
-      </main>
+      </div>
     </>
   );
 }

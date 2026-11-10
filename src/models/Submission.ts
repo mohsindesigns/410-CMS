@@ -15,14 +15,15 @@ export interface ISubmission extends Document {
 
 const SubmissionSchema = new Schema<ISubmission>(
   {
-    name: { type: String, required: true },
-    email: { type: String, required: true },
-    phone: { type: String },
-    subject: { type: String },
-    message: { type: String, required: false, default: "" },
-    type: { type: String, default: "Contact Form" },
-    source: { type: String, default: "Website" },
-    attachmentUrl: { type: String },
+    // maxlength only applies when a document is validated on create/save, so existing documents are unaffected.
+    name: { type: String, required: true, maxlength: 200 },
+    email: { type: String, required: true, maxlength: 254 },
+    phone: { type: String, maxlength: 50 },
+    subject: { type: String, maxlength: 300 },
+    message: { type: String, required: false, default: "", maxlength: 5000 },
+    type: { type: String, default: "Contact Form", maxlength: 100 },
+    source: { type: String, default: "Website", maxlength: 100 },
+    attachmentUrl: { type: String, maxlength: 2000 },
     extraData: { type: Schema.Types.Mixed },
   },
   { timestamps: true }
