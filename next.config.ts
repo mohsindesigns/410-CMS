@@ -10,6 +10,9 @@ const nextConfig: NextConfig = {
     optimizePackageImports: ['lucide-react', 'framer-motion', 'date-fns'],
   },
   images: {
+    // Clean own-domain image links (/cdn-images/c_limit,w_<width>/...) instead of /_next/image/?url=... - see imageLoader.ts
+    loader: 'custom',
+    loaderFile: './src/lib/imageLoader.ts',
     formats: ['image/avif', 'image/webp'],
     remotePatterns: [
       {

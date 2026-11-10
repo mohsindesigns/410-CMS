@@ -12,6 +12,9 @@ import {
 } from 'lucide-react';
 import { useContent } from "../../hooks/useContent";
 import ContactFaqSection from '../QAForm';
+import Image from 'next/image';
+import Testimonials from '../Testimonials';
+import BlogSection from '../sections/BlogSection';
 import { BUSINESS } from "@/lib/businessInfo";
 
 /** Image URL hygiene: accept a string or {src}; trim, force https, collapse accidental double slashes. */
@@ -82,7 +85,7 @@ function sh(html: string | undefined | null): string {
 }
 
 export default function ServiceDetailTemplate({ pageData, params: syncParams }: { pageData?: any, params?: any }) {
-  const { services: servicesData, globalMetadata, serviceDetailPage: globalServiceDetailPage } = useContent();
+  const { services: servicesData, globalMetadata, serviceDetailPage: globalServiceDetailPage, allBlogs, blogSection } = useContent();
 
   const resolvedSlug = pageData?.slug || (syncParams?.slug ? (Array.isArray(syncParams.slug) ? syncParams.slug.join('/') : syncParams.slug) : null);
   const servicesList = (servicesData as any)?.services || [];
@@ -262,11 +265,42 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
 
   const lastUpdatedLabel = formatLongDate(service.modifiedAt);
 
-  // Optional related services (slugs picked in Admin > Services); at most 3, only published ones that exist
-  const relatedServices: any[] = (Array.isArray(service.relatedServices) ? service.relatedServices : [])
-    .map((slug: any) => servicesList.find((s: any) => s.slug === String(slug)))
-    .filter((s: any) => !!s && s.slug !== service.slug)
-    .slice(0, 3);
+  // Recommended services: the ones picked in Admin > Services (max 3); otherwise the next 3 published services
+  // after this one in the list, so the section is never empty.
+  const recommendedServices: any[] = (() => {
+    const picked = (Array.isArray(service.relatedServices) ? service.relatedServices : [])
+      .map((slug: any) => servicesList.find((s: any) => s.slug === String(slug)))
+      .filter((s: any) => !!s && s.slug !== service.slug)
+      .slice(0, 3);
+    if (picked.length > 0) return picked;
+    const idx = servicesList.findIndex((s: any) => s.slug === service.slug);
+    const ordered = idx >= 0 ? [...servicesList.slice(idx + 1), ...servicesList.slice(0, idx)] : servicesList;
+    return ordered.filter((s: any) => s && s.slug && s.slug !== service.slug && s.status !== 'draft').slice(0, 3);
+  })();
+
+  // Blog posts for this page: the ones that mention this service's key words first, then the newest, max 3.
+  const blogPosts: any[] = (() => {
+    const all: any[] = Array.isArray(allBlogs) ? allBlogs : [];
+    if (all.length === 0) return [];
+    const pickedIds: string[] = Array.isArray(service.blogPostIds) ? service.blogPostIds.map(String) : [];
+    if (pickedIds.length > 0) {
+      const chosen = pickedIds.map((id) => all.find((p: any) => String(p._id) === id)).filter(Boolean);
+      if (chosen.length > 0) return chosen.slice(0, 6);
+    }
+    const STOP = new Set(['maryland', 'timonium', 'massage', 'therapy', 'therapist', 'muscle', 'service', 'services', 'expert', 'best', 'clinic']);
+    const tokens = sh(service.menuLabel || service.title || service.name).toLowerCase().split(/[^a-z]+/).filter((w) => w.length >= 4 && !STOP.has(w));
+    const scored = all
+      .map((p: any, i: number) => {
+        const hay = `${p.title || ''} ${p.slug || ''} ${p.excerpt || ''}`.toLowerCase();
+        return { p, i, score: tokens.reduce((n, t) => n + (hay.includes(t) ? 1 : 0), 0) };
+      })
+      .sort((x, y) => y.score - x.score || x.i - y.i);
+    return scored.slice(0, 3).map((x) => x.p);
+  })();
+
+  const showRecommended = service.showRecommendedServices !== false && recommendedServices.length > 0;
+  const showReviews = service.showReviews !== false;
+  const showBlog = service.showBlogSection !== false && blogPosts.length > 0;
 
   // Format clinical benefits array
   const benefits = (service.benefits && service.benefits.length > 0) ? service.benefits : [
@@ -763,43 +797,64 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
         </section>
 
         {/* ════════════════════════════════════════════════════════
-           5b. RELATED SERVICES (only when picked in Admin > Services)
+           5b. RECOMMENDED SERVICES (cards use the same look as the blog cards)
            ════════════════════════════════════════════════════════ */}
-        {relatedServices.length > 0 && (
-          <section aria-labelledby="related-services-heading" className="py-16 md:py-20 bg-white border-b border-border-light">
+        {showRecommended && (
+          <section id="recommended-services" aria-labelledby="recommended-services-heading" className="py-20 md:py-28 bg-white border-b border-border-light">
             <div className="site-container">
-              <h2 id="related-services-heading" className="font-display font-medium text-[28px] md:text-[36px] text-dark leading-tight tracking-tight mb-8">
-                Related Services
-              </h2>
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-                {relatedServices.map((rel: any) => {
-                  const relImage = cleanImageSrc(rel.image);
+              <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16">
+                <div className="inline-flex items-center gap-3 mb-3.5">
+                  <span className="w-6 h-[1px] bg-gold-dark" />
+                  <p className="section-label text-gold-dark">{service.recommendedLabel || "Keep Exploring"}</p>
+                  <span className="w-6 h-[1px] bg-gold-dark" />
+                </div>
+                <h2 id="recommended-services-heading" className="font-display font-medium text-[34px] min-[400px]:text-[44px] md:text-[52px] text-dark leading-[1.08] tracking-tight">
+                  {service.recommendedTitle1 || "Recommended"}{' '}
+                  <span className="text-gold-dark italic font-light block sm:inline">{service.recommendedTitle2 || "Services."}</span>
+                </h2>
+                {sh(service.recommendedDescription) && (
+                  <p className="mt-4 text-dark/60 text-[15px] leading-relaxed font-light">{sh(service.recommendedDescription)}</p>
+                )}
+              </div>
+
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
+                {recommendedServices.map((rel: any) => {
+                  const relImage = cleanImageSrc(rel.image) || "/images/service-massage.webp";
                   const relLabel = sh((typeof rel.menuLabel === 'string' && rel.menuLabel.trim()) || rel.title || rel.name);
+                  const relTag = sh(rel.tag);
+                  const relText = sh(String(rel.heroDescription || rel.description || "").replace(/\[([^\]]+)\]\([^)]*\)/g, '$1'));
                   return (
-                    <Link
-                      key={rel.slug}
-                      href={`/${rel.slug}/`}
-                      className="group block rounded-xl overflow-hidden bg-card-bg border border-border-light hover:border-gold-dark transition-all duration-300 shadow-sm hover:shadow-xl"
-                    >
-                      {relImage && (
-                        <div className="relative w-full aspect-[4/3] overflow-hidden bg-dark">
-                          <img
+                    <article key={rel.slug} className="blog-card group bg-[#fbfbfa] border border-border-light hover:border-gold-dark/40 hover:shadow-xl rounded-sm overflow-hidden flex flex-col h-full transition-all duration-300">
+                      <Link href={`/${rel.slug}/`} className="flex flex-col flex-1 no-underline">
+                        <div className="img-blog relative h-[210px] w-full overflow-hidden bg-dark/10">
+                          <Image
                             src={relImage}
-                            alt=""
-                            aria-hidden="true"
-                            width={400}
-                            height={300}
-                            loading="lazy"
-                            decoding="async"
-                            className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700"
+                            alt={relLabel}
+                            fill
+                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                            className="object-cover transition-transform duration-500 group-hover:scale-105"
                           />
+                          {relTag && (
+                            <span className="absolute top-3 left-3 bg-gold-dark text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-xs shadow-sm">
+                              {relTag}
+                            </span>
+                          )}
                         </div>
-                      )}
-                      <div className="p-5 flex items-center justify-between gap-3">
-                        <h3 className="text-dark font-bold text-[17px] leading-snug group-hover:text-gold-dark transition-colors">{relLabel}</h3>
-                        <ArrowRight size={16} className="text-gold-dark flex-shrink-0 group-hover:translate-x-1 transition-transform" />
-                      </div>
-                    </Link>
+                        <div className="flex flex-col flex-1 p-5 sm:p-6 justify-between">
+                          <div>
+                            <h3 className="text-dark font-bold text-[16px] sm:text-[17px] leading-snug mb-2.5 group-hover:text-gold-dark transition-colors duration-200 line-clamp-2">
+                              {relLabel}
+                            </h3>
+                            {relText && (
+                              <p className="text-dark/60 text-[13px] leading-relaxed mb-4 line-clamp-3 font-light">{relText}</p>
+                            )}
+                          </div>
+                          <span className="flex items-center gap-2 text-gold-dark text-[11.5px] font-bold tracking-wider uppercase group-hover:gap-3 transition-all duration-200 pt-2 border-t border-border-light/60">
+                            {sh(service.recommendedCtaText) || "Explore Service"} <ArrowRight size={13} />
+                          </span>
+                        </div>
+                      </Link>
+                    </article>
                   );
                 })}
               </div>
@@ -807,6 +862,33 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
           </section>
         )}
       </div>
+
+      {/* ════════════════════════════════════════════════════════
+         5c. CLIENT REVIEWS (same section as the home page; reviews are managed in Admin > Reviews)
+         ════════════════════════════════════════════════════════ */}
+      {showReviews && (
+        <Testimonials
+          label={service.reviewsLabel}
+          title1={service.reviewsTitle1}
+          title2={service.reviewsTitle2}
+          description={service.reviewsDescription}
+          reviewKeys={Array.isArray(service.reviewKeys) ? service.reviewKeys : undefined}
+        />
+      )}
+
+      {/* ════════════════════════════════════════════════════════
+         5d. BLOG ARTICLES (same section as the home page)
+         ════════════════════════════════════════════════════════ */}
+      {showBlog && (
+        <BlogSection
+          title={sh(service.blogTitle) || blogSection?.title}
+          subtitle={sh(service.blogLabel) || blogSection?.subtitle}
+          description={blogSection?.description}
+          ctaAll={sh(service.blogCtaAll) || blogSection?.ctaAll}
+          ctaReadMore={sh(service.blogCtaReadMore) || blogSection?.ctaReadMore}
+          posts={blogPosts}
+        />
+      )}
 
       {/* ════════════════════════════════════════════════════════
          6. BUILT-IN CONTACT & FAQ SECTION

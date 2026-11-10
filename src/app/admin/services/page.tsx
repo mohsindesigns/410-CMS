@@ -26,6 +26,8 @@ import * as LucideIcons from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import Link from "next/link";
 import ImageField from "@/components/admin/ImageField";
+import BlogSelector from "@/components/admin/BlogSelector";
+import ContentSelector from "@/components/admin/ContentSelector";
 import SeoEditor from "@/components/admin/SeoEditor";
 import dynamic from "next/dynamic";
 
@@ -1121,8 +1123,8 @@ export default function ServicesAdminPage() {
                       {/* Related services (optional) */}
                       <div className="border-t border-[#c3c4c7] pt-6 space-y-3">
                         <div>
-                          <h3 className="text-[14px] font-bold text-[#1d2327]">Related Services (optional)</h3>
-                          <p className="text-[12px] text-[#646970]">Pick up to 3 services to link from the bottom of this page. Nothing is shown if none are selected.</p>
+                          <h3 className="text-[14px] font-bold text-[#1d2327]">Recommended Services (optional)</h3>
+                          <p className="text-[12px] text-[#646970]">Pick up to 3 services to recommend at the bottom of this page. If you pick none, the next 3 services in your list are shown automatically.</p>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 max-h-56 overflow-y-auto border border-[#c3c4c7] bg-[#f6f7f7] p-3">
                           {services
@@ -1148,6 +1150,117 @@ export default function ServicesAdminPage() {
                         {Array.isArray(form.relatedServices) && form.relatedServices.length > 3 && (
                           <p className="text-[11px] text-[#d63638]">More than 3 selected: only the first 3 are shown on the page.</p>
                         )}
+                      </div>
+
+                      {/* Sections shown at the bottom of the page, under the treatment protocol */}
+                      <div className="border-t border-[#c3c4c7] pt-6 space-y-5">
+                        <div>
+                          <h3 className="text-[14px] font-bold text-[#1d2327]">Bottom-of-page sections</h3>
+                          <p className="text-[12px] text-[#646970]">These three sections appear under the treatment protocol, in this order. Leave any text empty to use the default wording (the same wording as the home page). Tick or untick to show or hide a section on this page.</p>
+                        </div>
+
+                        {/* A. Recommended services */}
+                        <div className="border border-[#c3c4c7] bg-[#f6f7f7] p-4 space-y-3">
+                        <label className="flex items-center gap-2 text-[13px] font-semibold cursor-pointer">
+                          <input type="checkbox" checked={form.showRecommendedServices !== false} onChange={(e) => setForm({ ...form, showRecommendedServices: e.target.checked })} />
+                          <span>A. Recommended services</span>
+                        </label>
+                          <p className="text-[12px] text-[#646970]">Which services are shown is chosen in "Recommended Services" above (none picked = the next 3 services in your list).</p>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Small label</label>
+                            <input type="text" value={form.recommendedLabel || ""} placeholder="Keep Exploring" onChange={(e) => setForm({ ...form, recommendedLabel: e.target.value })} className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px]" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Title line 1</label>
+                            <input type="text" value={form.recommendedTitle1 || ""} placeholder="Recommended" onChange={(e) => setForm({ ...form, recommendedTitle1: e.target.value })} className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px]" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Title line 2 (gold)</label>
+                            <input type="text" value={form.recommendedTitle2 || ""} placeholder="Services." onChange={(e) => setForm({ ...form, recommendedTitle2: e.target.value })} className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px]" />
+                          </div>
+                          <div className="space-y-1 md:col-span-2">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Short text under the title (optional)</label>
+                            <textarea rows={2} value={form.recommendedDescription || ""} placeholder="One or two sentences" onChange={(e) => setForm({ ...form, recommendedDescription: e.target.value })} className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px]" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Card button text</label>
+                            <input type="text" value={form.recommendedCtaText || ""} placeholder="Explore Service" onChange={(e) => setForm({ ...form, recommendedCtaText: e.target.value })} className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px]" />
+                          </div>
+                          </div>
+                        </div>
+
+                        {/* B. Reviews */}
+                        <div className="border border-[#c3c4c7] bg-[#f6f7f7] p-4 space-y-3">
+                        <label className="flex items-center gap-2 text-[13px] font-semibold cursor-pointer">
+                          <input type="checkbox" checked={form.showReviews !== false} onChange={(e) => setForm({ ...form, showReviews: e.target.checked })} />
+                          <span>B. Client reviews</span>
+                        </label>
+                          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Small label</label>
+                            <input type="text" value={form.reviewsLabel || ""} placeholder="Clients Love Us" onChange={(e) => setForm({ ...form, reviewsLabel: e.target.value })} className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px]" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Title line 1</label>
+                            <input type="text" value={form.reviewsTitle1 || ""} placeholder="Real People." onChange={(e) => setForm({ ...form, reviewsTitle1: e.target.value })} className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px]" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Title line 2 (gold)</label>
+                            <input type="text" value={form.reviewsTitle2 || ""} placeholder="Real Results." onChange={(e) => setForm({ ...form, reviewsTitle2: e.target.value })} className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px]" />
+                          </div>
+                          <div className="space-y-1 md:col-span-2">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Short text under the title (optional)</label>
+                            <textarea rows={2} value={form.reviewsDescription || ""} placeholder="One or two sentences" onChange={(e) => setForm({ ...form, reviewsDescription: e.target.value })} className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px]" />
+                          </div>
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Which reviews to show</label>
+                            <p className="text-[12px] text-[#646970]">Pick specific reviews for this page, or leave empty to show the same reviews as the home page. Reviews themselves are written in Reviews.</p>
+                            <ContentSelector
+                              type="reviews"
+                              valueMode="ids"
+                              label="Select reviews for this page"
+                              selectedItems={Array.isArray(form.reviewKeys) ? form.reviewKeys : []}
+                              onSelect={(ids: any[]) => setForm({ ...form, reviewKeys: ids })}
+                            />
+                          </div>
+                        </div>
+
+                        {/* C. Blog */}
+                        <div className="border border-[#c3c4c7] bg-[#f6f7f7] p-4 space-y-3">
+                        <label className="flex items-center gap-2 text-[13px] font-semibold cursor-pointer">
+                          <input type="checkbox" checked={form.showBlogSection !== false} onChange={(e) => setForm({ ...form, showBlogSection: e.target.checked })} />
+                          <span>C. Blog articles</span>
+                        </label>
+                          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Small label</label>
+                            <input type="text" value={form.blogLabel || ""} placeholder="From the blog" onChange={(e) => setForm({ ...form, blogLabel: e.target.value })} className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px]" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Section title</label>
+                            <input type="text" value={form.blogTitle || ""} placeholder="Insights & Recovery Tips" onChange={(e) => setForm({ ...form, blogTitle: e.target.value })} className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px]" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">"View all" link text</label>
+                            <input type="text" value={form.blogCtaAll || ""} placeholder="View All Articles" onChange={(e) => setForm({ ...form, blogCtaAll: e.target.value })} className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px]" />
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Card link text</label>
+                            <input type="text" value={form.blogCtaReadMore || ""} placeholder="Read Article" onChange={(e) => setForm({ ...form, blogCtaReadMore: e.target.value })} className="w-full border border-[#8c8f94] bg-white px-3 py-1 text-[13px] rounded-[3px]" />
+                          </div>
+                          </div>
+                          <div className="space-y-1">
+                            <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Which articles to show</label>
+                            <p className="text-[12px] text-[#646970]">Pick the articles for this page, or leave empty to show the newest articles that mention this service.</p>
+                            <BlogSelector
+                              label="Select articles for this page"
+                              selectedIds={Array.isArray(form.blogPostIds) ? form.blogPostIds : []}
+                              onChange={(ids: string[]) => setForm({ ...form, blogPostIds: ids })}
+                            />
+                          </div>
+                        </div>
                       </div>
                     </div>
                   )}

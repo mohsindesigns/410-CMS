@@ -7,20 +7,45 @@ import { Star, ChevronLeft, ChevronRight } from "lucide-react";
 import { motion, AnimatePresence } from "framer-motion";
 import { useContent } from "../hooks/useContent";
 import { stripHtml } from "../lib/utils";
+import { resolveReviewSelection } from "../lib/reviews";
 
-export default function TestimonialsSection() {
+/** Optional overrides used by the service pages. With no props the section is exactly the home-page one. */
+interface TestimonialsProps {
+  label?: string;
+  title1?: string;
+  title2?: string;
+  description?: string;
+  /** review keys picked in the admin; when set, only these reviews are shown */
+  reviewKeys?: any[];
+}
+
+export default function TestimonialsSection({ label: labelProp, title1: title1Prop, title2: title2Prop, description, reviewKeys }: TestimonialsProps = {}) {
   const [activeIdx, setActiveIdx] = useState(0);
   const { testimonials } = useContent();
 
   const {
-    label = "Clients Love Us",
-    title1 = "Real People.",
-    title2 = "Real Results.",
+    label: labelDefault = "Clients Love Us",
+    title1: title1Default = "Real People.",
+    title2: title2Default = "Real Results.",
     quoteIcon = "\"",
     dash = "—",
-    items = [],
+    items: homeItems = [],
     results = []
   } = testimonials || {};
+
+  const label = (labelProp || "").trim() || labelDefault;
+  const title1 = (title1Prop || "").trim() || title1Default;
+  const title2 = (title2Prop || "").trim() || title2Default;
+
+  // Picked reviews (service pages): resolved from the master review list and mapped to the same shape as the home items.
+  const picked = Array.isArray(reviewKeys) && reviewKeys.length > 0
+    ? resolveReviewSelection((testimonials as any)?.testimonials || [], reviewKeys).map((r: any) => ({
+        quote: r.text || r.quote || "",
+        name: r.name || "",
+        stars: r.rating || r.stars || 5,
+      }))
+    : [];
+  const items = picked.length > 0 ? picked : homeItems;
 
   const prev = () => setActiveIdx((i) => (i === 0 ? items.length - 1 : i - 1));
   const next = () => setActiveIdx((i) => (i === items.length - 1 ? 0 : i + 1));
@@ -66,6 +91,10 @@ export default function TestimonialsSection() {
                 <span className="text-[32px] min-[400px]:text-[38px] md:text-[48px]">{title1}</span><br />
                 <span className="text-[32px] min-[400px]:text-[38px] md:text-[48px] text-gold italic">{title2}</span>
               </h2>
+
+              {description && description.trim() && (
+                <p className="text-white/70 text-[13.5px] leading-[1.8] font-light -mt-4 mb-8 md:mb-10 max-w-md">{description}</p>
+              )}
 
               {/* Quote card */}
               <div className="border border-border-dark bg-dark-3/60 p-5 sm:p-8 mb-6 md:mb-8 relative min-h-[220px] md:min-h-[240px] flex flex-col justify-between rounded-lg">
