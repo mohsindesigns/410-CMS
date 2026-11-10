@@ -16,6 +16,7 @@ import Image from 'next/image';
 import Testimonials from '../Testimonials';
 import BlogSection from '../sections/BlogSection';
 import { BUSINESS } from "@/lib/businessInfo";
+import { servicePageText } from "@/lib/servicePageText";
 
 /** Image URL hygiene: accept a string or {src}; trim, force https, collapse accidental double slashes. */
 function cleanImageSrc(value: any): string {
@@ -372,17 +373,17 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
           <div className="site-container relative z-10 w-full text-left">
             {/* Breadcrumbs & Navigation */}
             <div className="mb-6 flex flex-wrap items-center justify-between gap-4">
-              <nav aria-label="Breadcrumb" className="text-[11.5px] sm:text-[12px] font-mono tracking-wider text-white/50">
+              <nav aria-label={servicePageText(null, globalServiceDetailPage, 'breadcrumbAria')} className="text-[11.5px] sm:text-[12px] font-mono tracking-wider text-white/50">
                 <ol className="flex flex-wrap items-center gap-2">
                   <li>
                     <Link href="/" className="hover:text-gold transition-colors text-white/70">
-                      Home
+                      {servicePageText(null, globalServiceDetailPage, 'breadcrumbHome')}
                     </Link>
                   </li>
                   <li aria-hidden="true" className="text-gold/50">/</li>
                   <li>
                     <Link href="/services/" className="hover:text-gold transition-colors text-white/70">
-                      Services
+                      {servicePageText(null, globalServiceDetailPage, 'breadcrumbServices')}
                     </Link>
                   </li>
                   <li aria-hidden="true" className="text-gold/50">/</li>
@@ -614,7 +615,7 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                 {/* Only after an admin saved the service (modifiedAt): visible freshness signal matching the schema dateModified */}
                 {lastUpdatedLabel && (
                   <p className="pt-4 text-[11.5px] font-mono text-[rgba(10,10,10,0.5)]">
-                    Last updated <time dateTime={new Date(service.modifiedAt).toISOString()}>{lastUpdatedLabel}</time>
+                    {servicePageText(service, globalServiceDetailPage, 'lastUpdatedLabel')} <time dateTime={new Date(service.modifiedAt).toISOString()}>{lastUpdatedLabel}</time>
                   </p>
                 )}
               </div>
@@ -805,15 +806,15 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
               <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16">
                 <div className="inline-flex items-center gap-3 mb-3.5">
                   <span className="w-6 h-[1px] bg-gold-dark" />
-                  <p className="section-label text-gold-dark">{service.recommendedLabel || "Keep Exploring"}</p>
+                  <p className="section-label text-gold-dark">{servicePageText(service, globalServiceDetailPage, 'recommendedLabel')}</p>
                   <span className="w-6 h-[1px] bg-gold-dark" />
                 </div>
                 <h2 id="recommended-services-heading" className="font-display font-medium text-[34px] min-[400px]:text-[44px] md:text-[52px] text-dark leading-[1.08] tracking-tight">
-                  {service.recommendedTitle1 || "Recommended"}{' '}
-                  <span className="text-gold-dark italic font-light block sm:inline">{service.recommendedTitle2 || "Services."}</span>
+                  {servicePageText(service, globalServiceDetailPage, 'recommendedTitle1')}{' '}
+                  <span className="text-gold-dark italic font-light block sm:inline">{servicePageText(service, globalServiceDetailPage, 'recommendedTitle2')}</span>
                 </h2>
-                {sh(service.recommendedDescription) && (
-                  <p className="mt-4 text-dark/60 text-[15px] leading-relaxed font-light">{sh(service.recommendedDescription)}</p>
+                {servicePageText(service, globalServiceDetailPage, 'recommendedDescription') && (
+                  <p className="mt-4 text-dark/60 text-[15px] leading-relaxed font-light">{servicePageText(service, globalServiceDetailPage, 'recommendedDescription')}</p>
                 )}
               </div>
 
@@ -850,7 +851,7 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                             )}
                           </div>
                           <span className="flex items-center gap-2 text-gold-dark text-[11.5px] font-bold tracking-wider uppercase group-hover:gap-3 transition-all duration-200 pt-2 border-t border-border-light/60">
-                            {sh(service.recommendedCtaText) || "Explore Service"} <ArrowRight size={13} />
+                            {servicePageText(service, globalServiceDetailPage, 'recommendedCtaText')} <ArrowRight size={13} />
                           </span>
                         </div>
                       </Link>
@@ -868,10 +869,10 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
          ════════════════════════════════════════════════════════ */}
       {showReviews && (
         <Testimonials
-          label={service.reviewsLabel}
-          title1={service.reviewsTitle1}
-          title2={service.reviewsTitle2}
-          description={service.reviewsDescription}
+          label={servicePageText(service, globalServiceDetailPage, 'reviewsLabel')}
+          title1={servicePageText(service, globalServiceDetailPage, 'reviewsTitle1')}
+          title2={servicePageText(service, globalServiceDetailPage, 'reviewsTitle2')}
+          description={servicePageText(service, globalServiceDetailPage, 'reviewsDescription')}
           reviewKeys={Array.isArray(service.reviewKeys) ? service.reviewKeys : undefined}
         />
       )}
@@ -881,11 +882,11 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
          ════════════════════════════════════════════════════════ */}
       {showBlog && (
         <BlogSection
-          title={sh(service.blogTitle) || blogSection?.title}
-          subtitle={sh(service.blogLabel) || blogSection?.subtitle}
+          title={servicePageText(service, globalServiceDetailPage, 'blogTitle') || blogSection?.title}
+          subtitle={servicePageText(service, globalServiceDetailPage, 'blogLabel') || blogSection?.subtitle}
           description={blogSection?.description}
-          ctaAll={sh(service.blogCtaAll) || blogSection?.ctaAll}
-          ctaReadMore={sh(service.blogCtaReadMore) || blogSection?.ctaReadMore}
+          ctaAll={servicePageText(service, globalServiceDetailPage, 'blogCtaAll') || blogSection?.ctaAll}
+          ctaReadMore={servicePageText(service, globalServiceDetailPage, 'blogCtaReadMore') || blogSection?.ctaReadMore}
           posts={blogPosts}
         />
       )}

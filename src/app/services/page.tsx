@@ -5,6 +5,10 @@ import SiteContent from '@/models/Content';
 import Page from '@/models/Page';
 import { Metadata } from 'next';
 import { BASE_URL } from '@/lib/constants';
+import { generateSchema } from '@/lib/schema-generator';
+import { resolveSameAs } from '@/lib/businessInfo';
+import { getPageDates } from '@/lib/pageDates';
+import { servicePageText } from '@/lib/servicePageText';
 
 import ServicesHeroSection from '@/components/sections/ServicesHeroSection';
 import StickyServicesSection from '@/components/sections/StickyServicesSection';
@@ -78,8 +82,21 @@ export default async function ServicesPage() {
     }
   };
 
+  const dates = await getPageDates('services');
+  const schema = generateSchema({
+    title: servicePageText(null, globalData?.serviceDetailPage, 'breadcrumbServices'),
+    pageTitle: pageContent?.seo?.metaTitle || globalData?.services?.seo?.metaTitle || "Services | 410 Muscle Therapy",
+    description: pageContent?.seo?.metaDescription || globalData?.services?.seo?.metaDescription || globalData?.services?.description || "Massage and performance-recovery services at 410 Muscle Therapy in Timonium, Maryland.",
+    slug: "/services",
+    type: "CollectionPage",
+    breadcrumbTitle: servicePageText(null, globalData?.serviceDetailPage, 'breadcrumbServices'),
+    sameAs: resolveSameAs(globalData?.footer?.social),
+    ...dates,
+  });
+
   return (
     <ContentProvider initialData={mergedData}>
+      <script id="json-ld-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
       <div>
         <ServicesHeroSection />
         <WhyChooseUsSection />

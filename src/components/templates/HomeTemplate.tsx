@@ -15,6 +15,7 @@ const HowWeWork = dynamic(() => import("@/components/HowWeWork"), { ssr: false }
 const QAForm = dynamic(() => import("@/components/QAForm"), { ssr: false });
 const FAQ = dynamic(() => import("@/components/FAQ"), { ssr: false });
 const QuickQuote = dynamic(() => import("@/components/QuickQuote"), { ssr: false });
+import Certificates from "@/components/Certificates";
 const BlogSection = dynamic(() => import("@/components/sections/BlogSection"), { ssr: false });
 const CtaBanner = dynamic(() => import("@/components/CtaBanner"), { ssr: false });
 
@@ -40,6 +41,8 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
       <section id="leadership">
         <Leadership />
       </section>
+
+      <Certificates />
 
 
       <section id="about">

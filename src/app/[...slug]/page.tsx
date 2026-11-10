@@ -1,6 +1,6 @@
 import { notFound, permanentRedirect, redirect } from 'next/navigation';
 import { getSiteContent } from "@/lib/siteContent";
-import { localizeDeep, localizeImageUrl } from "@/lib/imageUrl";
+import { localizeDeep, localizeImageUrl, webpifyOwnImageUrls } from "@/lib/imageUrl";
 
 export const revalidate = 3600; // cached for an hour; admin saves refresh pages immediately via revalidatePath
 
@@ -232,7 +232,7 @@ export default async function DynamicPage({ params }: PageProps) {
       });
 
       // Custom schema for THIS service only (Admin > Services > SEO > Schema). Default mode replaces the automatic schema.
-      const customBlocks = parseCustomSchema(service?.seo?.schemaData);
+      const customBlocks = parseCustomSchema(webpifyOwnImageUrls(service?.seo?.schemaData));
       const useAutoSchema = !customBlocks || customSchemaMode(service?.seo) === 'append';
 
       return (
@@ -375,7 +375,7 @@ export default async function DynamicPage({ params }: PageProps) {
     slug: page.slug,
     type: pageType,
     faqs: pageFaqs.length > 0 ? pageFaqs : undefined,
-    breadcrumbTitle: page.seo?.breadcrumbTitle,
+    breadcrumbTitle: page.seo?.breadcrumbTitle || ({ reviews: "Reviews", faq: "FAQ", gallery: "Gallery", services: "Services", blogs: "Blogs" } as Record<string, string>)[String(page.slug)] || page.title,
     isService: page.template === 'service-detail',
     aggregateRating,
     sameAs: resolveSameAs(globalData.footer?.social),
@@ -418,7 +418,7 @@ export default async function DynamicPage({ params }: PageProps) {
   }
 
   // Custom schema for THIS page only (Admin > Pages > SEO > Schema). Default mode replaces the automatic schema.
-  const customPageBlocks = parseCustomSchema(page.seo?.schemaData);
+  const customPageBlocks = parseCustomSchema(webpifyOwnImageUrls(page.seo?.schemaData));
   const useAutoPageSchema = !customPageBlocks || customSchemaMode(page.seo) === 'append';
 
   return (

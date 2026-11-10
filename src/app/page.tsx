@@ -11,6 +11,7 @@ import Page from "@/models/Page";
 import { getHomepageSchemas } from "@/lib/schema-generator";
 import { computeAggregateRating } from "@/lib/reviews";
 import { resolveSameAs } from "@/lib/businessInfo";
+import { getPageDates } from "@/lib/pageDates";
 import { TemplateWrapper } from "@/components/templates/TemplateRegistry";
 import ServiceDetailTemplate from "@/components/templates/ServiceDetailTemplate";
 import { BASE_URL } from "@/lib/constants";
@@ -179,7 +180,8 @@ export default async function HomePage() {
     (item.visibility === 'specific' && item.targetPages?.includes('home'))
   );
 
-  const { homepageSchema, faqSchema } = getHomepageSchemas(servicesList, faqs, computeAggregateRating(content?.data?.testimonials), resolveSameAs(content?.data?.footer?.social));
+  const homeDates = await getPageDates('home');
+  const { homepageSchema, faqSchema } = getHomepageSchemas(servicesList, faqs, computeAggregateRating(content?.data?.testimonials), resolveSameAs(content?.data?.footer?.social), homeDates);
 
   const schemaScripts = (
     <>

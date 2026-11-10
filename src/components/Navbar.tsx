@@ -179,25 +179,8 @@ const Navbar = () => {
                       }
                     }}
                   >
-                    <button
-                      type="button"
-                      id={`trigger-mega-${linkIdx}`}
-                      aria-haspopup="true"
-                      aria-expanded={activeMegaMenu === `mega-${linkIdx}`}
-                      aria-controls={`mega-panel-${linkIdx}`}
-                      onClick={() => {
-                        if (timeoutRef.current) clearTimeout(timeoutRef.current);
-                        if (activeMegaMenu === `mega-${linkIdx}` && megaPinnedRef.current) {
-                          // second click closes
-                          megaPinnedRef.current = false;
-                          setActiveMegaMenu(null);
-                          setHoveredService(null);
-                        } else {
-                          // first click (or a click while only hover-opened) keeps it open
-                          megaPinnedRef.current = true;
-                          setActiveMegaMenu(`mega-${linkIdx}`);
-                        }
-                      }}
+                    <div
+                      className="flex items-center gap-1"
                       onMouseEnter={() => {
                         if (timeoutRef.current) clearTimeout(timeoutRef.current);
                         setActiveMegaMenu(`mega-${linkIdx}`);
@@ -208,20 +191,54 @@ const Navbar = () => {
                           if (!isHoveringMegaMenu) setActiveMegaMenu(null);
                         }, 150);
                       }}
-                      className={`flex items-center gap-1 text-[13.5px] font-medium transition-colors duration-200 cursor-pointer
-                        ${activeMegaMenu === `mega-${linkIdx}` || active
-                          ? 'text-gold'
-                          : 'text-white/75 hover:text-white'
-                        }`}
                     >
-                      {link.icon && <Icon name={link.icon} className="h-4 w-4" />}
-                      <span>{link.label}</span>
+                      {/* The label is a real link: clicking it opens the page (e.g. /services/). Hovering still opens the menu. */}
+                      <Link
+                        href={linkHref}
+                        onClick={() => {
+                          megaPinnedRef.current = false;
+                          handleLinkClick();
+                        }}
+                        aria-current={active ? "page" : undefined}
+                        className={`flex items-center gap-1 text-[13.5px] font-medium transition-colors duration-200
+                          ${activeMegaMenu === `mega-${linkIdx}` || active
+                            ? 'text-gold'
+                            : 'text-white/75 hover:text-white'
+                          }`}
+                      >
+                        {link.icon && <Icon name={link.icon} className="h-4 w-4" />}
+                        <span>{link.label}</span>
+                      </Link>
                       {services.length > 0 && (
-                        <motion.span animate={{ rotate: activeMegaMenu === `mega-${linkIdx}` ? 180 : 0 }}>
-                          <ChevronDown size={14} className="opacity-70 ml-0.5" />
-                        </motion.span>
+                        <button
+                          type="button"
+                          id={`trigger-mega-${linkIdx}`}
+                          aria-haspopup="true"
+                          aria-expanded={activeMegaMenu === `mega-${linkIdx}`}
+                          aria-controls={`mega-panel-${linkIdx}`}
+                          aria-label={`${activeMegaMenu === `mega-${linkIdx}` ? ((navbar as any).ariaClose || "Close") : ((navbar as any).ariaOpen || "Open")} ${stripHtml(String(link.label || ""))} ${(navbar as any).ariaMenuWord || "menu"}`}
+                          onClick={() => {
+                            if (timeoutRef.current) clearTimeout(timeoutRef.current);
+                            if (activeMegaMenu === `mega-${linkIdx}` && megaPinnedRef.current) {
+                              // second click closes
+                              megaPinnedRef.current = false;
+                              setActiveMegaMenu(null);
+                              setHoveredService(null);
+                            } else {
+                              // first click (or a click while only hover-opened) keeps it open
+                              megaPinnedRef.current = true;
+                              setActiveMegaMenu(`mega-${linkIdx}`);
+                            }
+                          }}
+                          className={`p-0.5 cursor-pointer transition-colors duration-200
+                            ${activeMegaMenu === `mega-${linkIdx}` || active ? 'text-gold' : 'text-white/75 hover:text-white'}`}
+                        >
+                          <motion.span animate={{ rotate: activeMegaMenu === `mega-${linkIdx}` ? 180 : 0 }} className="block">
+                            <ChevronDown size={14} className="opacity-70" />
+                          </motion.span>
+                        </button>
                       )}
-                    </button>
+                    </div>
 
                     <AnimatePresence>
                       {activeMegaMenu === `mega-${linkIdx}` && (
@@ -253,9 +270,9 @@ const Navbar = () => {
                                     <Icon name={service.icon} className="h-4 w-4" />
                                   </div>
                                   <div className="flex-1 min-w-0">
-                                    <h3 className={`text-[13px] font-semibold transition-colors leading-snug truncate ${isThisHovered ? "text-gold" : "text-white"}`}>
+                                    <span className={`block text-[13px] font-semibold transition-colors leading-snug truncate ${isThisHovered ? "text-gold" : "text-white"}`}>
                                       {label}
-                                    </h3>
+                                    </span>
                                     <p className="text-white/45 text-[11px] leading-tight line-clamp-1 mt-0.5 font-light">
                                       {stripHtml(service.heroDescription || service.description || "Specialized clinical therapy protocol")}
                                     </p>
@@ -366,7 +383,7 @@ const Navbar = () => {
             <button
               onClick={() => setIsMenuOpen(!isMenuOpen)}
               className="md:hidden w-10 h-10 border border-white/20 flex items-center justify-center text-white hover:border-gold hover:text-gold transition-colors"
-              aria-label="Toggle menu"
+              aria-label={(navbar as any).ariaToggle || "Toggle menu"}
               aria-expanded={isMenuOpen}
               aria-controls="mobile-menu"
             >
@@ -437,7 +454,7 @@ const Navbar = () => {
                             type="button"
                             onClick={() => setExpandedMobileLink(isExpanded ? null : link.label)}
                             aria-expanded={isExpanded}
-                            aria-label={`${isExpanded ? "Collapse" : "Expand"} ${stripHtml(String(link.label || ""))} menu`}
+                            aria-label={`${isExpanded ? ((navbar as any).ariaCollapse || "Collapse") : ((navbar as any).ariaExpand || "Expand")} ${stripHtml(String(link.label || ""))} ${(navbar as any).ariaMenuWord || "menu"}`}
                             className="p-1 text-white/50 hover:text-gold transition-colors"
                           >
                             <motion.div

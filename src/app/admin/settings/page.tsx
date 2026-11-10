@@ -2,7 +2,9 @@
 
 import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { Save, Loader2, Settings, LayoutTemplate, Type, Image as ImageIcon, ChevronRight, Globe, Mail, Phone, MapPin, Share2, Plus, Trash2, List, ExternalLink, Search, Check, X, Upload, ChevronUp, ChevronDown, RefreshCw } from "lucide-react";
+import { SERVICE_PAGE_DEFAULTS } from "@/lib/servicePageText";
+import { DEFAULT_PRIVACY, formatLegalDate, type PrivacySection } from "@/lib/privacy";
+import { Briefcase, FileText, Save, Loader2, Settings, LayoutTemplate, Type, Image as ImageIcon, ChevronRight, Globe, Mail, Phone, MapPin, Share2, Plus, Trash2, List, ExternalLink, Search, Check, X, Upload, ChevronUp, ChevronDown, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import * as LucideIcons from "lucide-react";
 import ImageField from "@/components/admin/ImageField";
@@ -388,6 +390,8 @@ export default function SettingsEditor() {
     { id: "footer", label: "Footer", icon: List },
     { id: "contact", label: "Contact", icon: Phone },
     { id: "social", label: "Social Media", icon: Share2 },
+    { id: "servicePages", label: "Service Pages", icon: Briefcase },
+    { id: "privacy", label: "Privacy Policy", icon: FileText },
     { id: "redirects", label: "Redirect Manager", icon: RefreshCw },
   ];
 
@@ -474,6 +478,14 @@ export default function SettingsEditor() {
                <h2 className="text-xl font-normal text-[#1d2327] mb-6 font-serif">Header & Navigation</h2>
                <SettingsRow label="Navbar Logo">
                   <ImageField value={data.navbar?.logo || ""} onChange={(val) => updateData("navbar", "logo", val)} label="Logo" />
+               </SettingsRow>
+               <SettingsRow label="Menu button wording (screen readers)">
+                  <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+                     {([["ariaToggle", "Toggle menu"], ["ariaOpen", "Open"], ["ariaClose", "Close"], ["ariaExpand", "Expand"], ["ariaCollapse", "Collapse"], ["ariaMenuWord", "menu"]] as const).map(([k, ph]) => (
+                        <input key={k} type="text" placeholder={ph} value={(data.navbar as any)?.[k] || ""} onChange={(e) => updateData("navbar", k, e.target.value)} className="border border-[#8c8f94] px-3 py-1.5 text-[13px] rounded-[3px]" />
+                     ))}
+                  </div>
+                  <p className="text-[11px] text-[#646970] mt-1">Read aloud by screen readers for the menu buttons. Empty = the grey default.</p>
                </SettingsRow>
                <SettingsRow label="CTA Button">
                   <div className="flex gap-4">
@@ -989,6 +1001,166 @@ export default function SettingsEditor() {
                </div>
             </motion.div>
           )}
+
+          {activeTab === "servicePages" && (
+            <motion.div key="servicePages" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
+               <div>
+                  <h2 className="text-xl font-normal text-[#1d2327] mb-2 font-serif">Service Pages: shared wording</h2>
+                  <p className="text-[12px] text-[#646970]">Wording used on every service page and on the Services page. Each service can override the section texts in Services &rarr; Edit &rarr; Page Sections. A field left empty uses the default shown in grey. Click "Save Changes" below to save.</p>
+               </div>
+
+               <div className="space-y-3">
+                  <h3 className="text-[14px] font-bold text-[#1d2327]">Breadcrumb</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">First crumb</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.breadcrumbHome || ""} placeholder={SERVICE_PAGE_DEFAULTS.breadcrumbHome || "Same as the home page"} onChange={(e) => updateData("serviceDetailPage", "breadcrumbHome", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Services crumb</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.breadcrumbServices || ""} placeholder={SERVICE_PAGE_DEFAULTS.breadcrumbServices || "Same as the home page"} onChange={(e) => updateData("serviceDetailPage", "breadcrumbServices", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Screen-reader label</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.breadcrumbAria || ""} placeholder={SERVICE_PAGE_DEFAULTS.breadcrumbAria || "Same as the home page"} onChange={(e) => updateData("serviceDetailPage", "breadcrumbAria", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">"Last updated" wording (shown under the overview)</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.lastUpdatedLabel || ""} placeholder={SERVICE_PAGE_DEFAULTS.lastUpdatedLabel} onChange={(e) => updateData("serviceDetailPage", "lastUpdatedLabel", e.target.value)} />
+                     </div>
+                  </div>
+               </div>
+
+               <div className="space-y-3">
+                  <h3 className="text-[14px] font-bold text-[#1d2327]">Recommended services section</h3>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Small label</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.recommendedLabel || ""} placeholder={SERVICE_PAGE_DEFAULTS.recommendedLabel || "Same as the home page"} onChange={(e) => updateData("serviceDetailPage", "recommendedLabel", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Title line 1</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.recommendedTitle1 || ""} placeholder={SERVICE_PAGE_DEFAULTS.recommendedTitle1 || "Same as the home page"} onChange={(e) => updateData("serviceDetailPage", "recommendedTitle1", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Title line 2 (gold)</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.recommendedTitle2 || ""} placeholder={SERVICE_PAGE_DEFAULTS.recommendedTitle2 || "Same as the home page"} onChange={(e) => updateData("serviceDetailPage", "recommendedTitle2", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Card button text</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.recommendedCtaText || ""} placeholder={SERVICE_PAGE_DEFAULTS.recommendedCtaText || "Same as the home page"} onChange={(e) => updateData("serviceDetailPage", "recommendedCtaText", e.target.value)} />
+                     </div>
+                  </div>
+                  <div>
+                     <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Short text under the title (optional)</label>
+                     <textarea rows={2} className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.recommendedDescription || ""} onChange={(e) => updateData("serviceDetailPage", "recommendedDescription", e.target.value)} />
+                  </div>
+               </div>
+
+               <div className="space-y-3">
+                  <h3 className="text-[14px] font-bold text-[#1d2327]">Client reviews section</h3>
+                  <p className="text-[12px] text-[#646970]">Leave empty to use the wording of the home page reviews section.</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Small label</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.reviewsLabel || ""} placeholder={SERVICE_PAGE_DEFAULTS.reviewsLabel || "Same as the home page"} onChange={(e) => updateData("serviceDetailPage", "reviewsLabel", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Title line 1</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.reviewsTitle1 || ""} placeholder={SERVICE_PAGE_DEFAULTS.reviewsTitle1 || "Same as the home page"} onChange={(e) => updateData("serviceDetailPage", "reviewsTitle1", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Title line 2 (gold)</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.reviewsTitle2 || ""} placeholder={SERVICE_PAGE_DEFAULTS.reviewsTitle2 || "Same as the home page"} onChange={(e) => updateData("serviceDetailPage", "reviewsTitle2", e.target.value)} />
+                     </div>
+                  </div>
+                  <div>
+                     <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Short text under the title (optional)</label>
+                     <textarea rows={2} className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.reviewsDescription || ""} onChange={(e) => updateData("serviceDetailPage", "reviewsDescription", e.target.value)} />
+                  </div>
+               </div>
+
+               <div className="space-y-3">
+                  <h3 className="text-[14px] font-bold text-[#1d2327]">Blog section</h3>
+                  <p className="text-[12px] text-[#646970]">Leave empty to use the wording of the home page blog section.</p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Small label</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.blogLabel || ""} placeholder={SERVICE_PAGE_DEFAULTS.blogLabel || "Same as the home page"} onChange={(e) => updateData("serviceDetailPage", "blogLabel", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Section title</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.blogTitle || ""} placeholder={SERVICE_PAGE_DEFAULTS.blogTitle || "Same as the home page"} onChange={(e) => updateData("serviceDetailPage", "blogTitle", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">"View all" link text</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.blogCtaAll || ""} placeholder={SERVICE_PAGE_DEFAULTS.blogCtaAll || "Same as the home page"} onChange={(e) => updateData("serviceDetailPage", "blogCtaAll", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Card link text</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.blogCtaReadMore || ""} placeholder={SERVICE_PAGE_DEFAULTS.blogCtaReadMore || "Same as the home page"} onChange={(e) => updateData("serviceDetailPage", "blogCtaReadMore", e.target.value)} />
+                     </div>
+                  </div>
+               </div>
+            </motion.div>
+          )}
+
+          {activeTab === "privacy" && (() => {
+            const pv = data.privacyPage || {};
+            const sections: PrivacySection[] = Array.isArray(pv.sections) ? pv.sections : DEFAULT_PRIVACY.sections;
+            const setPv = (patch: Record<string, any>) => updateData("privacyPage", null, { ...pv, ...patch });
+            const setSections = (next: PrivacySection[]) => setPv({ sections: next });
+            const setSec = (i: number, patch: Partial<PrivacySection>) => setSections(sections.map((x, idx) => (idx === i ? { ...x, ...patch } : x)));
+            const moveSec = (i: number, d: -1 | 1) => { const j = i + d; if (j < 0 || j >= sections.length) return; const n = [...sections]; [n[i], n[j]] = [n[j], n[i]]; setSections(n); };
+            return (
+              <motion.div key="privacy" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+                 <div>
+                    <h2 className="text-xl font-normal text-[#1d2327] mb-2 font-serif">Privacy Policy</h2>
+                    <p className="text-[12px] text-[#646970]">The text of the /privacy/ page. In a section: a blank line starts a new paragraph, lines starting with "- " become bullet points, **bold** makes text bold, and [link text](/page/) makes a link. Click "Save Changes" below to save. This is plain-language text; have it reviewed by counsel if you need that.</p>
+                 </div>
+                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                    <div><label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Small label</label><input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.label ?? ""} placeholder={DEFAULT_PRIVACY.label} onChange={(e) => setPv({ label: e.target.value })} /></div>
+                    <div><label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Title word 1</label><input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.title1 ?? ""} placeholder={DEFAULT_PRIVACY.title1} onChange={(e) => setPv({ title1: e.target.value })} /></div>
+                    <div><label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Title word 2 (gold)</label><input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.title2 ?? ""} placeholder={DEFAULT_PRIVACY.title2} onChange={(e) => setPv({ title2: e.target.value })} /></div>
+                    <div><label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Wording before the date</label><input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.updatedPrefix ?? ""} placeholder={DEFAULT_PRIVACY.updatedPrefix} onChange={(e) => setPv({ updatedPrefix: e.target.value })} /></div>
+                    <div>
+                       <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Last updated (also sent to search engines)</label>
+                       <input type="date" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={(pv.updatedIso || DEFAULT_PRIVACY.updatedIso).slice(0, 10)} onChange={(e) => { const v = e.target.value; if (!v) return; const iso = v + "T12:00:00.000Z"; setPv({ updatedIso: iso, updatedLabel: formatLegalDate(iso) }); }} />
+                    </div>
+                 </div>
+
+                 {sections.map((sec, i) => (
+                    <div key={sec.id || i} className="border border-[#c3c4c7] bg-[#f6f7f7] p-4 space-y-3 rounded-[3px]">
+                       <div className="flex items-center justify-between gap-3">
+                          <span className="text-[12px] font-bold text-[#1d2327] uppercase tracking-wide">Section {i + 1}</span>
+                          <div className="flex items-center gap-2">
+                             <select value={sec.style || "normal"} onChange={(e) => setSec(i, { style: e.target.value as any })} className="border border-[#8c8f94] bg-white px-2 py-1 text-[12px] rounded-[3px]">
+                                <option value="normal">Normal</option>
+                                <option value="highlight">Highlighted box</option>
+                             </select>
+                             <button type="button" onClick={() => moveSec(i, -1)} disabled={i === 0} className="p-1.5 text-[#50575e] hover:text-[#2271b1] disabled:opacity-30" aria-label="Move up"><ChevronUp className="w-4 h-4" /></button>
+                             <button type="button" onClick={() => moveSec(i, 1)} disabled={i === sections.length - 1} className="p-1.5 text-[#50575e] hover:text-[#2271b1] disabled:opacity-30" aria-label="Move down"><ChevronDown className="w-4 h-4" /></button>
+                             <button type="button" onClick={() => { if (confirm("Remove this section?")) setSections(sections.filter((_, idx) => idx !== i)); }} className="p-1.5 text-[#d63638] hover:bg-white rounded" aria-label="Remove"><Trash2 className="w-4 h-4" /></button>
+                          </div>
+                       </div>
+                       <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px] font-bold" value={sec.heading || ""} onChange={(e) => setSec(i, { heading: e.target.value })} placeholder="Section heading" />
+                       <textarea rows={Math.min(14, Math.max(4, (sec.body || "").split("\n").length + 1))} className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px] leading-relaxed" value={sec.body || ""} onChange={(e) => setSec(i, { body: e.target.value })} />
+                    </div>
+                 ))}
+                 <div className="flex flex-wrap items-center gap-4">
+                    <button type="button" onClick={() => setSections([...sections, { id: "sec-" + Date.now().toString(36), heading: "", body: "", style: "normal" }])} className="text-[#2271b1] text-xs underline font-bold">+ Add section</button>
+                    <button type="button" onClick={() => { if (confirm("Replace everything on this tab with the original text?")) updateData("privacyPage", null, { ...(pv.seo ? { seo: pv.seo } : {}) }); }} className="text-[#646970] text-xs underline">Restore the original text</button>
+                 </div>
+
+                 <div className="border border-[#c3c4c7] bg-[#f6f7f7] p-4 space-y-3 rounded-[3px]">
+                    <span className="text-[12px] font-bold text-[#1d2327] uppercase tracking-wide">Contact box at the bottom</span>
+                    <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px] font-bold" value={pv.contactHeading ?? ""} placeholder={DEFAULT_PRIVACY.contactHeading} onChange={(e) => setPv({ contactHeading: e.target.value })} />
+                    <textarea rows={5} className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.contactBody ?? DEFAULT_PRIVACY.contactBody} onChange={(e) => setPv({ contactBody: e.target.value })} />
+                    <p className="text-[11px] text-[#646970]">One line per row. Email addresses and phone numbers become links automatically.</p>
+                 </div>
+              </motion.div>
+            );
+          })()}
 
           {activeTab === "redirects" && (
             <motion.div key="redirects" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>

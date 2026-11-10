@@ -6,6 +6,10 @@ import { BASE_URL } from "@/lib/constants";
 import { Metadata } from "next";
 
 import { getRobotsMetadata } from "@/lib/seo";
+import { generateSchema } from "@/lib/schema-generator";
+import { resolveSameAs } from "@/lib/businessInfo";
+import { getPageDates } from "@/lib/pageDates";
+import { PRIVACY_UPDATED } from "@/lib/legalDates";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
@@ -41,10 +45,27 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function PrivacyLayout({
+export default async function PrivacyLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  const [content, dates] = await Promise.all([getSiteContent(), getPageDates("privacy")]);
+  const schema = generateSchema({
+    title: "Privacy Policy",
+    description: "How 410 Muscle Therapy collects, uses and protects personal information collected through this website.",
+    slug: "/privacy",
+    type: "WebPage",
+    breadcrumbTitle: "Privacy Policy",
+    sameAs: resolveSameAs(content?.data?.footer?.social),
+    datePublished: dates.datePublished,
+    // the "Last updated" date of the policy text (Admin > Settings > Privacy Policy; fallback lib/legalDates.ts)
+    dateModified: content?.data?.privacyPage?.updatedIso || PRIVACY_UPDATED.iso,
+  });
+  return (
+    <>
+      <script id="json-ld-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      {children}
+    </>
+  );
 }

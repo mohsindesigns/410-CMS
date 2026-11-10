@@ -8,6 +8,7 @@ import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
 import { generateSchema } from "@/lib/schema-generator";
 import { resolveSameAs } from "@/lib/businessInfo";
+import { isoDate } from "@/lib/pageDates";
 import { BASE_URL } from "@/lib/constants";
 
 
@@ -101,6 +102,9 @@ export default async function GalleryPage() {
     description,
     slug: "/gallery",
     sameAs: resolveSameAs(globalData?.footer?.social),
+    breadcrumbTitle: "Gallery",
+    datePublished: isoDate(page?.publishedAt || page?.createdAt),
+    dateModified: isoDate(page?.updatedAt || page?.publishedAt || page?.createdAt),
     type: "CollectionPage"
   });
 

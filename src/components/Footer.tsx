@@ -372,9 +372,9 @@ export default function Footer() {
 
             {/* Col 2 — Quick Links */}
             <div className="flex flex-col items-start text-left">
-              <h4 className="text-white font-bold text-[12px] tracking-[0.18em] uppercase mb-5">
+              <h2 className="text-white font-bold text-[12px] tracking-[0.18em] uppercase mb-5">
                 {quickLinksLabel}
-              </h4>
+              </h2>
               <ul className="flex flex-col gap-3">
                 {quickLinksData.map((link: any) => (
                   <li key={link.label}>
@@ -389,9 +389,9 @@ export default function Footer() {
 
             {/* Col 3 — Services */}
             <div className="flex flex-col items-start text-left">
-              <h4 className="text-white font-bold text-[12px] tracking-[0.18em] uppercase mb-5">
+              <h2 className="text-white font-bold text-[12px] tracking-[0.18em] uppercase mb-5">
                 {servicesLabel}
-              </h4>
+              </h2>
               <ul className="flex flex-col gap-3">
                 {servicesDataList.map((svc: any) => (
                   <li key={svc.label}>
@@ -406,9 +406,9 @@ export default function Footer() {
 
             {/* Col 4 — Contact */}
             <div className="flex flex-col items-start text-left">
-              <h4 className="text-white font-bold text-[12px] tracking-[0.18em] uppercase mb-5">
+              <h2 className="text-white font-bold text-[12px] tracking-[0.18em] uppercase mb-5">
                 {contactLabel}
-              </h4>
+              </h2>
               <ul className="flex flex-col gap-3.5 w-full">
                 {[
                   {

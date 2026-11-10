@@ -23,7 +23,7 @@ function proxyAllUrls(obj: any): any {
   if (!obj) return obj;
   if (typeof obj === 'string') {
     if (obj.includes("https://res.cloudinary.com/dytytwyp6/image/upload/")) {
-      return obj.replace(/https:\/\/res\.cloudinary\.com\/dytytwyp6\/image\/upload\//g, "/cdn-images/");
+      return obj.replace(/https:\/\/res\.cloudinary\.com\/dytytwyp6\/image\/upload\//g, "/cdn-images/f_webp/");
     }
     return obj;
   }
@@ -586,5 +586,8 @@ export const useContent = () => {
             selectedPosts: []
         }),
         allBlogs: Array.isArray(completeData?.allBlogs) ? completeData.allBlogs : [],
+        // Home-page certificates (null until saved in Admin > Home > Certificates; components fall back to lib/certificates defaults)
+        privacyPage: completeData?.privacyPage && typeof completeData.privacyPage === "object" ? completeData.privacyPage : null,
+        certificates: completeData?.certificates && typeof completeData.certificates === "object" ? completeData.certificates : null,
     };
 };

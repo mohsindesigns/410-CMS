@@ -99,7 +99,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any }) {
                     )}
                     <div className="absolute inset-0 bg-gradient-to-t from-dark/80 via-dark/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-4">
                       <div className="text-left">
-                        <h4 className="text-white text-sm font-bold truncate">{project.title}</h4>
+                        <h2 className="text-white text-sm font-bold truncate">{project.title}</h2>
                         {project.category && <p className="text-gold text-xs font-mono tracking-wider mt-0.5">{project.category}</p>}
                       </div>
                     </div>

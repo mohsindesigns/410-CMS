@@ -527,8 +527,9 @@ export default function ServicesAdminPage() {
                       { id: "overview", label: "3. Clinical Overview & Focus Areas" },
                       { id: "candidates", label: "4. Why Us & Candidates" },
                       { id: "stepper", label: "5. Treatment Protocol" },
-                      { id: "faq", label: "6. FAQs & Support" },
-                      { id: "seo", label: "7. SEO Settings" }
+                      { id: "sections", label: "6. Page Sections" },
+                      { id: "faq", label: "7. FAQs & Support" },
+                      { id: "seo", label: "8. SEO Settings" }
                     ].map(tab => (
                       <button
                         key={tab.id}
@@ -1120,6 +1121,16 @@ export default function ServicesAdminPage() {
                         </div>
                       </div>
 
+                    </div>
+                  )}
+
+                  {/* 6. PAGE SECTIONS: recommended services, reviews and blog shown at the bottom of the page */}
+                  {activeTab === "sections" && (
+                    <div className="space-y-6">
+                      <div>
+                        <h3 className="text-[15px] font-bold text-[#1d2327]">Sections at the bottom of this page</h3>
+                        <p className="text-[12px] text-[#646970] mt-1">Choose which services and articles appear on this page, and switch any section off to hide it. They appear under the treatment protocol, in this order: recommended services, client reviews, blog articles.</p>
+                      </div>
                       {/* Related services (optional) */}
                       <div className="border-t border-[#c3c4c7] pt-6 space-y-3">
                         <div>
@@ -1265,7 +1276,7 @@ export default function ServicesAdminPage() {
                     </div>
                   )}
 
-                  {/* 6. FAQS & SUPPORT */}
+                  {/* 7. FAQS & SUPPORT */}
                   {activeTab === "faq" && (
                     <div className="space-y-6">
                       <div className="grid grid-cols-1 md:grid-cols-3 gap-4 pb-4 border-b border-[#c3c4c7]">

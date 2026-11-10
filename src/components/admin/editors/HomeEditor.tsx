@@ -5,13 +5,14 @@ import { motion, AnimatePresence } from "framer-motion";
 import {
   Plus, Trash2, Loader2, Image as ImageIcon,
   LayoutTemplate, Type, Star, Briefcase, Users,
-  List, Mail, BookOpen, ChevronRight, Check, LayoutGrid
+  List, Mail, BookOpen, ChevronRight, Check, LayoutGrid, Award
 } from "lucide-react";
 import dynamic from "next/dynamic";
 import ContentSelector, { getReviewKey } from "@/components/admin/ContentSelector";
 import ImageField from "@/components/admin/ImageField";
 import BlogSelector from "@/components/admin/BlogSelector";
 import FeatureCardsPanel from "@/components/admin/editors/FeatureCardsPanel";
+import CertificatesPanel from "@/components/admin/editors/CertificatesPanel";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), {
   ssr: false,
@@ -175,6 +176,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
     { id: "ctaBanner", label: "8. CTA Banner", icon: LayoutTemplate },
     { id: "contact", label: "9. Contact & FAQs", icon: Mail },
     { id: "blog", label: "10. Blog Insights", icon: BookOpen },
+    { id: "certificates", label: "11. Certificates", icon: Award },
   ];
 
   return (
@@ -588,6 +590,10 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
           ═══════════════════════════════════════════════════════════════ */}
           {activeTab === "featureCards" && (
             <FeatureCardsPanel data={data} updateSection={updateSection} />
+          )}
+
+          {activeTab === "certificates" && (
+            <CertificatesPanel data={data} updateSection={updateSection} />
           )}
 
           {activeTab === "leadership" && (

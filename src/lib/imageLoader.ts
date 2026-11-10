@@ -14,7 +14,7 @@ const CLOUDINARY_PREFIX = /^https?:\/\/res\.cloudinary\.com\/dytytwyp6\/image\/u
 const LOCAL_PREFIX = "/cdn-images/";
 
 export default function imageLoader({ src, width }: { src: string; width: number; quality?: number }): string {
-  const local = src.replace(CLOUDINARY_PREFIX, LOCAL_PREFIX);
+  const local = src.replace(CLOUDINARY_PREFIX, LOCAL_PREFIX + "f_webp/");
   if (local.startsWith(LOCAL_PREFIX)) {
     // Already-resized URLs (a width transformation in the path) are left alone.
     const rest = local.slice(LOCAL_PREFIX.length);

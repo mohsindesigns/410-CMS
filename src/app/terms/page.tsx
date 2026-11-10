@@ -4,6 +4,7 @@
 import { motion } from "framer-motion";
 import Link from "next/link";
 import { Icon } from "../../config/icons";
+import { TERMS_UPDATED } from "../../lib/legalDates";
 
 export default function TermsPage() {
   return (
@@ -29,7 +30,7 @@ export default function TermsPage() {
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-foreground mb-4">
               Terms & <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">Conditions</span>
             </h1>
-            <p className="text-muted-foreground text-lg">Last updated: {new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' })}</p>
+            <p className="text-muted-foreground text-lg">Last updated: {TERMS_UPDATED.label}</p>
           </motion.div>
         </div>
       </section>

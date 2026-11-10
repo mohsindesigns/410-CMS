@@ -149,7 +149,8 @@ export function getHomepageSchemas(
   servicesList?: Array<{ name: string }>,
   faqs?: Array<{ question?: string; answer?: string; q?: string; a?: string }>,
   aggregateRating?: AggregateRatingInput,
-  sameAs?: string[]
+  sameAs?: string[],
+  dates?: { datePublished?: string; dateModified?: string }
 ) {
   void servicesList; // kept for call-site compatibility; the homepage offer catalog is fixed
 
@@ -176,7 +177,9 @@ export function getHomepageSchemas(
     },
     "mainEntity": {
       "@id": BUSINESS_ID
-    }
+    },
+    ...(dates?.datePublished ? { "datePublished": dates.datePublished } : {}),
+    ...(dates?.dateModified ? { "dateModified": dates.dateModified } : {})
   };
 
   const homepageSchema = {
@@ -227,7 +230,7 @@ export function generateSchema(options: SchemaOptions) {
   const isRoot = normalizedSlug === '/' || normalizedSlug === '';
 
   if (isRoot) {
-    return getHomepageSchemas(servicesList, faqs, aggregateRating, sameAs);
+    return getHomepageSchemas(servicesList, faqs, aggregateRating, sameAs, { datePublished, dateModified });
   }
 
   const pageUrl = `${BASE_URL}${normalizedSlug.endsWith('/') ? normalizedSlug : `${normalizedSlug}/`}`;

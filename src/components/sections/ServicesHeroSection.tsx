@@ -1,12 +1,14 @@
 'use client';
 import Image from 'next/image';
+import Link from 'next/link';
 import { ArrowRight } from 'lucide-react';
 import { motion } from 'framer-motion';
 import { useContent } from '@/hooks/useContent';
 import { stripHtml } from '@/lib/utils';
+import { servicePageText } from '@/lib/servicePageText';
 
 export default function ServicesHeroSection() {
-  const { services: servicesData, globalMetadata } = useContent();
+  const { services: servicesData, globalMetadata, serviceDetailPage } = useContent();
 
   const label = servicesData?.badge || servicesData?.label || "Precision Care & Recovery";
   const title1 = servicesData?.headline?.prefix || servicesData?.titleLine1 || "Therapies";
@@ -65,6 +67,17 @@ export default function ServicesHeroSection() {
 
       {/* ── Main Content ───────────────────────────────── */}
       <div className="relative site-container pt-32 pb-16 md:pt-40 md:pb-24 w-full z-10">
+        <nav aria-label={servicePageText(null, serviceDetailPage, 'breadcrumbAria')} className="mb-6 text-[11.5px] sm:text-[12px] font-mono tracking-wider text-white/50">
+          <ol className="flex flex-wrap items-center justify-center md:justify-start gap-2">
+            <li>
+              <Link href="/" className="hover:text-gold transition-colors text-white/70">{servicePageText(null, serviceDetailPage, 'breadcrumbHome')}</Link>
+            </li>
+            <li aria-hidden="true" className="text-gold/50">/</li>
+            <li>
+              <span aria-current="page" className="text-gold font-medium">{servicePageText(null, serviceDetailPage, 'breadcrumbServices')}</span>
+            </li>
+          </ol>
+        </nav>
         <motion.div
           variants={containerVariants}
           initial="hidden"

@@ -6,6 +6,10 @@ import { BASE_URL } from "@/lib/constants";
 import { Metadata } from "next";
 
 import { getRobotsMetadata } from "@/lib/seo";
+import { generateSchema } from "@/lib/schema-generator";
+import { resolveSameAs } from "@/lib/businessInfo";
+import { getPageDates } from "@/lib/pageDates";
+import { TERMS_UPDATED } from "@/lib/legalDates";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
@@ -41,10 +45,27 @@ export async function generateMetadata(): Promise<Metadata> {
   };
 }
 
-export default function TermsLayout({
+export default async function TermsLayout({
   children,
 }: {
   children: React.ReactNode;
 }) {
-  return <>{children}</>;
+  const [content, dates] = await Promise.all([getSiteContent(), getPageDates("terms")]);
+  const schema = generateSchema({
+    title: "Terms & Conditions",
+    description: "The terms and conditions for using the 410 Muscle Therapy website and services.",
+    slug: "/terms",
+    type: "WebPage",
+    breadcrumbTitle: "Terms & Conditions",
+    sameAs: resolveSameAs(content?.data?.footer?.social),
+    datePublished: dates.datePublished,
+    // the visible "Last updated" date of the page text (lib/legalDates.ts)
+    dateModified: TERMS_UPDATED.iso,
+  });
+  return (
+    <>
+      <script id="json-ld-schema" type="application/ld+json" dangerouslySetInnerHTML={{ __html: JSON.stringify(schema) }} />
+      {children}
+    </>
+  );
 }
