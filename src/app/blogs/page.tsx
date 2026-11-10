@@ -71,6 +71,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 import { generateSchema } from '@/lib/schema-generator';
+import { resolveSameAs } from '@/lib/businessInfo';
 
 export default async function BlogsIndexPage() {
   await connectToDatabase();
@@ -115,8 +116,10 @@ export default async function BlogsIndexPage() {
     slug: "blogs",
     type: "CollectionPage",
     breadcrumbTitle: "Blogs",
-    datePublished: (pageDoc?.publishedAt || pageDoc?.createdAt ? new Date(pageDoc.publishedAt || pageDoc.createdAt) : new Date("2025-02-07T15:28:30Z")).toISOString(),
-    dateModified: (pageDoc?.updatedAt || pageDoc?.publishedAt || pageDoc?.createdAt ? new Date(pageDoc.updatedAt || pageDoc.publishedAt || pageDoc.createdAt) : new Date("2026-07-24T16:08:21Z")).toISOString()
+    sameAs: resolveSameAs(content?.data?.footer?.social),
+    // Only real dates are emitted - nothing is invented when the page record has none.
+    datePublished: (pageDoc?.publishedAt || pageDoc?.createdAt) ? new Date(pageDoc.publishedAt || pageDoc.createdAt).toISOString() : undefined,
+    dateModified: (pageDoc?.updatedAt || pageDoc?.publishedAt || pageDoc?.createdAt) ? new Date(pageDoc.updatedAt || pageDoc.publishedAt || pageDoc.createdAt).toISOString() : undefined
   });
 
   return (

@@ -62,6 +62,26 @@ function OfficeHoursDayRow({ label, value, onChange }: { label: string; value?: 
   );
 }
 
+const SOCIAL_STANDARD = [
+  { platform: "Facebook", label: "Facebook", icon: "Facebook", match: ["facebook"], placeholder: "https://www.facebook.com/your-page" },
+  { platform: "Instagram", label: "Instagram", icon: "Instagram", match: ["instagram"], placeholder: "https://www.instagram.com/your-handle/" },
+  { platform: "TikTok", label: "TikTok", icon: "TikTok", match: ["tiktok"], placeholder: "https://www.tiktok.com/@your-handle" },
+  { platform: "YouTube", label: "YouTube", icon: "Youtube", match: ["youtube"], placeholder: "https://www.youtube.com/@your-channel" },
+  { platform: "Google Business", label: "Google Business Profile", icon: "Google", match: ["google"], placeholder: "https://g.page/your-business" },
+  { platform: "X", label: "X (Twitter)", icon: "Twitter", match: ["twitter", "x"], placeholder: "https://x.com/your-handle" },
+  { platform: "LinkedIn", label: "LinkedIn", icon: "Linkedin", match: ["linkedin"], placeholder: "https://www.linkedin.com/company/your-company" },
+];
+/** Shown (and saved on first edit) when no social list has ever been stored - same profiles the footer falls back to. */
+const DEFAULT_SOCIAL_ROWS = [
+  { platform: "Instagram", href: "https://www.instagram.com/410muscletherapy/", icon: "Instagram" },
+  { platform: "TikTok", href: "https://www.tiktok.com/@410muscletherapy", icon: "TikTok" },
+  { platform: "YouTube", href: "https://www.youtube.com/@Twon410", icon: "Youtube" },
+];
+const socialRowMatches = (row: any, p: { match: string[] }) => {
+  const name = String(row?.platform || "").trim().toLowerCase();
+  return p.match.some((m) => (m === "x" ? name === "x" : name.includes(m)));
+};
+
 function IconPicker({ value, onChange }: { value: string, onChange: (val: string) => void }) {
   const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
@@ -309,7 +329,20 @@ export default function SettingsEditor() {
     setData((prev: any) => ({ ...prev, [section]: field ? { ...prev[section], [field]: value } : value }));
   };
 
+  /** Set/clear the link for one of the standard networks (creates the row on first use, keeps it when emptied). */
+  const setSocialUrl = (p: { platform: string; icon: string; match: string[] }, href: string) => {
+    setData((prev: any) => {
+      const list: any[] = Array.isArray(prev?.footer?.social) ? [...prev.footer.social] : DEFAULT_SOCIAL_ROWS.map((r) => ({ ...r }));
+      const idx = list.findIndex((r) => socialRowMatches(r, p));
+      if (idx >= 0) list[idx] = { ...list[idx], href };
+      else list.push({ platform: p.platform, href, icon: p.icon });
+      return { ...prev, footer: { ...(prev?.footer || {}), social: list } };
+    });
+  };
+
   if (!data) return <div className="flex h-screen items-center justify-center text-[#646970] font-serif">Loading...</div>;
+
+  const socialRows: any[] = Array.isArray(data?.footer?.social) ? data.footer.social : DEFAULT_SOCIAL_ROWS;
 
   const tabs = [
     { id: "general", label: "General", icon: Globe },
@@ -823,38 +856,65 @@ export default function SettingsEditor() {
 
           {activeTab === "social" && (
             <motion.div key="social" initial={{ opacity: 0 }} animate={{ opacity: 1 }}>
-               <h2 className="text-xl font-normal text-[#1d2327] mb-6 font-serif">Social Media Profiles</h2>
+               <h2 className="text-xl font-normal text-[#1d2327] mb-2 font-serif">Social Media Profiles</h2>
+               <p className="text-[12px] text-[#646970] mb-6">Paste the full profile link for each network (starting with https://). A profile with a link appears as an icon in the website footer and is added to the search-engine business markup. Leave a field empty to hide that network.</p>
+               <div className="space-y-3 mb-8">
+                  {SOCIAL_STANDARD.map((p) => {
+                     const row = socialRows.find((r: any) => socialRowMatches(r, p));
+                     const href = row?.href || "";
+                     const invalid = href.trim() !== "" && !/^https?:\/\//i.test(href.trim());
+                     return (
+                        <div key={p.platform} className="flex flex-col sm:flex-row sm:items-center gap-2 sm:gap-4 bg-[#f6f7f7] p-3 border border-[#c3c4c7] rounded-sm">
+                           <label htmlFor={`social-${p.platform}`} className="sm:w-44 text-[12px] font-bold text-[#1d2327]">{p.label}</label>
+                           <div className="flex-1">
+                              <input
+                                 id={`social-${p.platform}`}
+                                 type="url"
+                                 value={href}
+                                 placeholder={p.placeholder}
+                                 onChange={(e) => setSocialUrl(p, e.target.value)}
+                                 className={`w-full border px-2 py-1.5 text-[13px] rounded-[3px] ${invalid ? "border-[#d63638]" : "border-[#8c8f94]"}`}
+                              />
+                              {invalid && <p className="text-[11px] text-[#d63638] mt-1">Link must start with https://</p>}
+                           </div>
+                        </div>
+                     );
+                  })}
+               </div>
+               <h3 className="text-[13px] font-bold text-[#1d2327] mb-3">Other networks</h3>
                <div className="space-y-4">
-                  {(data.footer?.social || []).map((s: any, i: number) => (
+                  {socialRows.map((s: any, i: number) => (
+                     SOCIAL_STANDARD.some((p) => socialRowMatches(s, p)) ? null : (
                      <div key={i} className="flex gap-4 items-end bg-[#f6f7f7] p-4 border border-[#c3c4c7] rounded-sm">
                         <div className="flex-1 space-y-1">
                            <label className="text-[11px] font-bold">Platform Name</label>
                            <input type="text" value={s.platform} onChange={(e) => {
-                              const ns = [...data.footer.social];
-                              ns[i].platform = e.target.value;
+                              const ns = [...socialRows];
+                              ns[i] = { ...ns[i], platform: e.target.value };
                               updateData("footer", "social", ns);
                            }} className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
                         </div>
                         <div className="flex-1 space-y-1">
                            <label className="text-[11px] font-bold">URL</label>
                            <input type="text" value={s.href} onChange={(e) => {
-                              const ns = [...data.footer.social];
-                              ns[i].href = e.target.value;
+                              const ns = [...socialRows];
+                              ns[i] = { ...ns[i], href: e.target.value };
                               updateData("footer", "social", ns);
                            }} className="w-full border border-[#8c8f94] px-2 py-1 text-[13px] rounded-[3px]" />
                         </div>
                         <div className="space-y-1">
                            <label className="text-[11px] font-bold">Icon</label>
                            <IconPicker value={s.icon} onChange={(v) => {
-                              const ns = [...data.footer.social];
-                              ns[i].icon = v;
+                              const ns = [...socialRows];
+                              ns[i] = { ...ns[i], icon: v };
                               updateData("footer", "social", ns);
                            }} />
                         </div>
-                        <button onClick={() => updateData("footer", "social", data.footer.social.filter((_:any,idx:number)=>idx!==i))} className="p-2 text-[#d63638] hover:bg-white rounded transition-colors"><Trash2 className="w-4 h-4" /></button>
+                        <button onClick={() => updateData("footer", "social", socialRows.filter((_:any,idx:number)=>idx!==i))} className="p-2 text-[#d63638] hover:bg-white rounded transition-colors" aria-label="Remove"><Trash2 className="w-4 h-4" /></button>
                      </div>
+                     )
                   ))}
-                  <button onClick={() => updateData("footer", "social", [...(data.footer?.social || []), { platform: "Facebook", href: "", icon: "Facebook" }])} className="text-[#2271b1] text-xs underline font-bold">+ Add New Social Profile</button>
+                  <button onClick={() => updateData("footer", "social", [...socialRows, { platform: "", href: "", icon: "Globe" }])} className="text-[#2271b1] text-xs underline font-bold">+ Add another network</button>
                </div>
             </motion.div>
           )}

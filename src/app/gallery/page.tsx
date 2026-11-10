@@ -5,6 +5,7 @@ import { Metadata } from "next";
 import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
 import { generateSchema } from "@/lib/schema-generator";
+import { resolveSameAs } from "@/lib/businessInfo";
 import { BASE_URL } from "@/lib/constants";
 
 
@@ -97,6 +98,7 @@ export default async function GalleryPage() {
     title,
     description,
     slug: "/gallery",
+    sameAs: resolveSameAs(globalData?.footer?.social),
     type: "CollectionPage"
   });
 

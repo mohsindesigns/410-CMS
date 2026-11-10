@@ -207,9 +207,15 @@ export default function Footer() {
   const contactInfo = footer?.contact || {};
   const companyInfo = footer?.company || {};
   const bottomInfo = footer?.bottom || {};
-  const socialLinks: any[] = Array.isArray(rawFooter.social) ? rawFooter.social
+  // Admin > Settings > Social Media. Only when that list has never been saved do the built-in profiles show.
+  const savedSocial: any[] | null = Array.isArray(rawFooter.social) ? rawFooter.social
     : Array.isArray((footer as any)?.social) ? (footer as any).social
-      : [];
+      : null;
+  const socialLinks: any[] = savedSocial ?? BUSINESS.sameAs.map((href) => ({
+    platform: href.includes("instagram") ? "Instagram" : href.includes("tiktok") ? "TikTok" : href.includes("youtube") ? "YouTube" : "Profile",
+    href,
+    icon: href.includes("instagram") ? "Instagram" : href.includes("youtube") ? "Youtube" : "Globe",
+  }));
 
   const {
     quickLinksLabel = "Quick Links",

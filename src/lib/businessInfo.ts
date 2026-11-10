@@ -12,9 +12,9 @@ export const BUSINESS = {
   region: "MD",
   postalCode: "21093",
   country: "US",
-  // TODO(owner): these coordinates are NOT confirmed to be the exact pin of the clinic. They are kept
-  // unchanged on purpose (no output change); the business owner must decide/verify them before they are edited.
-  geo: { latitude: 39.4376, longitude: -76.6197 },
+  // Pin of the clinic as shown on the Google Business Profile (matches the footer map and the per-service custom
+  // schema). The previous 39.4376,-76.6197 is the centre of the Timonium area, ~2 km north of 1301 York Rd.
+  geo: { latitude: 39.4179884, longitude: -76.6145248 },
   bookingUrl: "https://www.styleseat.com/m/v/410muscletherapy",
   sameAs: [
     "https://www.instagram.com/410muscletherapy/",
@@ -34,3 +34,16 @@ export const BUSINESS = {
   /** Two-line postal address for the footer. */
   addressDisplayMultiline: "1301 York Rd, 8th Floor, Suite 48\nTimonium, MD 21093",
 } as const;
+
+/**
+ * Public profile links for the business. Managed in Admin > Settings > Social Media (footer.social); the footer
+ * icons AND the schema.org sameAs list are both built from that one list. Falls back to BUSINESS.sameAs only
+ * when no social list has ever been saved.
+ */
+export function resolveSameAs(footerSocial?: unknown): string[] {
+  if (!Array.isArray(footerSocial)) return [...BUSINESS.sameAs];
+  const urls = footerSocial
+    .map((s: any) => String(s?.href ?? "").trim())
+    .filter((u) => u.toLowerCase().startsWith("http://") || u.toLowerCase().startsWith("https://"));
+  return Array.from(new Set(urls));
+}

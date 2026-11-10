@@ -20,6 +20,8 @@ interface SchemaOptions {
   dateModified?: string;
   /** Rating shown in search results; managed in Admin > Reviews. Omitted entirely when not provided. */
   aggregateRating?: AggregateRatingInput;
+  /** Public profile URLs (Admin > Settings > Social Media). Falls back to the built-in list when omitted. */
+  sameAs?: string[];
 }
 
 export type AggregateRatingInput = { ratingValue: number; reviewCount: number } | null | undefined;
@@ -44,8 +46,9 @@ const HOMEPAGE_SERVICES: Array<{ name: string; slug: string }> = [
  * see a single consistent business instead of an Organization + LocalBusiness on inner pages and a different
  * LocalBusiness on the homepage. Values per the confirmed business details.
  */
-function buildBusinessEntity(opts: { aggregateRating?: AggregateRatingInput; withOfferCatalog?: boolean } = {}) {
+function buildBusinessEntity(opts: { aggregateRating?: AggregateRatingInput; withOfferCatalog?: boolean; sameAs?: string[] } = {}) {
   const { aggregateRating, withOfferCatalog } = opts;
+  const sameAs = Array.isArray(opts.sameAs) ? opts.sameAs : [...BUSINESS.sameAs];
   return {
     "@type": ["LocalBusiness", "MassageTherapist"],
     "@id": BUSINESS_ID,
@@ -60,7 +63,7 @@ function buildBusinessEntity(opts: { aggregateRating?: AggregateRatingInput; wit
     "image": `${BASE_URL}/og-default.png`,
     "telephone": BUSINESS.phoneE164,
     "email": BUSINESS.email,
-    "sameAs": [...BUSINESS.sameAs],
+    ...(sameAs.length ? { "sameAs": sameAs } : {}),
     "description": "410 Muscle Therapy provides personalized massage therapy, sports massage, performance recovery, mobility restoration, and specialized muscle therapy services in Timonium, Maryland.",
     "address": {
       "@type": "PostalAddress",
@@ -145,7 +148,8 @@ function buildFaqEntities(faqs: Array<{ question?: string; answer?: string; q?: 
 export function getHomepageSchemas(
   servicesList?: Array<{ name: string }>,
   faqs?: Array<{ question?: string; answer?: string; q?: string; a?: string }>,
-  aggregateRating?: AggregateRatingInput
+  aggregateRating?: AggregateRatingInput,
+  sameAs?: string[]
 ) {
   void servicesList; // kept for call-site compatibility; the homepage offer catalog is fixed
 
@@ -178,7 +182,7 @@ export function getHomepageSchemas(
   const homepageSchema = {
     "@context": "https://schema.org",
     "@graph": [
-      buildBusinessEntity({ aggregateRating, withOfferCatalog: true }),
+      buildBusinessEntity({ aggregateRating, withOfferCatalog: true, sameAs }),
       websiteSchema,
       webpageSchema
     ]
@@ -215,14 +219,15 @@ export function generateSchema(options: SchemaOptions) {
     servicesList,
     datePublished,
     dateModified,
-    aggregateRating
+    aggregateRating,
+    sameAs
   } = options;
   const safeSlug = String(slug || "");
   const normalizedSlug = safeSlug.startsWith('/') ? safeSlug : `/${safeSlug}`;
   const isRoot = normalizedSlug === '/' || normalizedSlug === '';
 
   if (isRoot) {
-    return getHomepageSchemas(servicesList, faqs, aggregateRating);
+    return getHomepageSchemas(servicesList, faqs, aggregateRating, sameAs);
   }
 
   const pageUrl = `${BASE_URL}${normalizedSlug.endsWith('/') ? normalizedSlug : `${normalizedSlug}/`}`;
@@ -323,7 +328,7 @@ export function generateSchema(options: SchemaOptions) {
   } : null;
 
   const graph: any[] = [
-    buildBusinessEntity({ aggregateRating }),
+    buildBusinessEntity({ aggregateRating, sameAs }),
     websiteSchema
   ];
 

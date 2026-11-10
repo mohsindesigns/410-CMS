@@ -8,6 +8,7 @@ import SiteContent from "@/models/Content";
 import Page from "@/models/Page";
 import { getHomepageSchemas } from "@/lib/schema-generator";
 import { computeAggregateRating } from "@/lib/reviews";
+import { resolveSameAs } from "@/lib/businessInfo";
 import { TemplateWrapper } from "@/components/templates/TemplateRegistry";
 import ServiceDetailTemplate from "@/components/templates/ServiceDetailTemplate";
 import { BASE_URL } from "@/lib/constants";
@@ -176,7 +177,7 @@ export default async function HomePage() {
     (item.visibility === 'specific' && item.targetPages?.includes('home'))
   );
 
-  const { homepageSchema, faqSchema } = getHomepageSchemas(servicesList, faqs, computeAggregateRating(content?.data?.testimonials));
+  const { homepageSchema, faqSchema } = getHomepageSchemas(servicesList, faqs, computeAggregateRating(content?.data?.testimonials), resolveSameAs(content?.data?.footer?.social));
 
   const schemaScripts = (
     <>

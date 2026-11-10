@@ -20,6 +20,7 @@ import { getTemplate } from '@/components/templates/TemplateRegistry';
 import ServiceDetailTemplate from '@/components/templates/ServiceDetailTemplate';
 import { Metadata } from 'next';
 import { generateSchema } from '@/lib/schema-generator';
+import { resolveSameAs } from '@/lib/businessInfo';
 import { BASE_URL } from '@/lib/constants';
 import { computeAggregateRating } from '@/lib/reviews';
 import { parseCustomSchema, serializeJsonLd, customSchemaMode } from '@/lib/schema-generator';
@@ -219,6 +220,7 @@ export default async function DynamicPage({ params }: PageProps) {
         type: "Service",
         faqs: customFaqSchema ? undefined : serviceFaqItems,
         aggregateRating,
+        sameAs: resolveSameAs(globalData.footer?.social),
         breadcrumbTitle: service?.seo?.breadcrumbTitle,
         isService: true,
         image: featuredImage,
@@ -374,6 +376,7 @@ export default async function DynamicPage({ params }: PageProps) {
     breadcrumbTitle: page.seo?.breadcrumbTitle,
     isService: page.template === 'service-detail',
     aggregateRating,
+    sameAs: resolveSameAs(globalData.footer?.social),
     image: featuredImage,
     datePublished: (page.publishedAt || page.createdAt) ? new Date(page.publishedAt || page.createdAt).toISOString() : undefined,
     dateModified: (page.updatedAt || page.publishedAt || page.createdAt) ? new Date(page.updatedAt || page.publishedAt || page.createdAt).toISOString() : undefined
