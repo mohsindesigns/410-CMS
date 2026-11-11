@@ -127,6 +127,11 @@ export const DEFAULT_PRIVACY: PrivacyContent = {
 
 /** stored block merged with the defaults (a saved, non-empty list of sections replaces the default sections) */
 export function resolvePrivacy(raw: any): PrivacyContent {
+  return resolveLegal(raw, DEFAULT_PRIVACY);
+}
+
+/** same merge for any legal page (privacy, terms) */
+export function resolveLegal(raw: any, DEFAULT_PRIVACY: PrivacyContent): PrivacyContent {
   const r = raw && typeof raw === "object" ? raw : {};
   const pick = (v: any, d: string) => (typeof v === "string" && v.trim() ? v : d);
   const sections: PrivacySection[] = Array.isArray(r.sections)

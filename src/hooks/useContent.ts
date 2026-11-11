@@ -588,6 +588,7 @@ export const useContent = () => {
         allBlogs: Array.isArray(completeData?.allBlogs) ? completeData.allBlogs : [],
         // Home-page certificates (null until saved in Admin > Home > Certificates; components fall back to lib/certificates defaults)
         privacyPage: completeData?.privacyPage && typeof completeData.privacyPage === "object" ? completeData.privacyPage : null,
+        termsPage: completeData?.termsPage && typeof completeData.termsPage === "object" ? completeData.termsPage : null,
         certificates: completeData?.certificates && typeof completeData.certificates === "object" ? completeData.certificates : null,
     };
 };

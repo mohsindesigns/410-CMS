@@ -4,6 +4,7 @@ import React, { useState, useEffect } from "react";
 import { motion, AnimatePresence } from "framer-motion";
 import { SERVICE_PAGE_DEFAULTS } from "@/lib/servicePageText";
 import { DEFAULT_PRIVACY, formatLegalDate, type PrivacySection } from "@/lib/privacy";
+import { DEFAULT_TERMS } from "@/lib/terms";
 import { Briefcase, FileText, Save, Loader2, Settings, LayoutTemplate, Type, Image as ImageIcon, ChevronRight, Globe, Mail, Phone, MapPin, Share2, Plus, Trash2, List, ExternalLink, Search, Check, X, Upload, ChevronUp, ChevronDown, RefreshCw } from "lucide-react";
 import Link from "next/link";
 import * as LucideIcons from "lucide-react";
@@ -392,6 +393,7 @@ export default function SettingsEditor() {
     { id: "social", label: "Social Media", icon: Share2 },
     { id: "servicePages", label: "Service Pages", icon: Briefcase },
     { id: "privacy", label: "Privacy Policy", icon: FileText },
+    { id: "terms", label: "Terms & Conditions", icon: FileText },
     { id: "redirects", label: "Redirect Manager", icon: RefreshCw },
   ];
 
@@ -1144,27 +1146,30 @@ export default function SettingsEditor() {
             </motion.div>
           )}
 
-          {activeTab === "privacy" && (() => {
-            const pv = data.privacyPage || {};
-            const sections: PrivacySection[] = Array.isArray(pv.sections) ? pv.sections : DEFAULT_PRIVACY.sections;
-            const setPv = (patch: Record<string, any>) => updateData("privacyPage", null, { ...pv, ...patch });
+          {(activeTab === "privacy" || activeTab === "terms") && (() => {
+            const isTerms = activeTab === "terms";
+            const dk = isTerms ? "termsPage" : "privacyPage";
+            const DEF = isTerms ? DEFAULT_TERMS : DEFAULT_PRIVACY;
+            const pv = data[dk] || {};
+            const sections: PrivacySection[] = Array.isArray(pv.sections) ? pv.sections : DEF.sections;
+            const setPv = (patch: Record<string, any>) => updateData(dk, null, { ...pv, ...patch });
             const setSections = (next: PrivacySection[]) => setPv({ sections: next });
             const setSec = (i: number, patch: Partial<PrivacySection>) => setSections(sections.map((x, idx) => (idx === i ? { ...x, ...patch } : x)));
             const moveSec = (i: number, d: -1 | 1) => { const j = i + d; if (j < 0 || j >= sections.length) return; const n = [...sections]; [n[i], n[j]] = [n[j], n[i]]; setSections(n); };
             return (
-              <motion.div key="privacy" initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+              <motion.div key={activeTab} initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
                  <div>
-                    <h2 className="text-xl font-normal text-[#1d2327] mb-2 font-serif">Privacy Policy</h2>
-                    <p className="text-[12px] text-[#646970]">The text of the /privacy/ page. In a section: a blank line starts a new paragraph, lines starting with "- " become bullet points, **bold** makes text bold, and [link text](/page/) makes a link. Click "Save Changes" below to save. This is plain-language text; have it reviewed by counsel if you need that.</p>
+                    <h2 className="text-xl font-normal text-[#1d2327] mb-2 font-serif">{isTerms ? "Terms & Conditions" : "Privacy Policy"}</h2>
+                    <p className="text-[12px] text-[#646970]">The text of the {isTerms ? "/terms/" : "/privacy/"} page. In a section: a blank line starts a new paragraph, lines starting with "- " become bullet points, **bold** makes text bold, and [link text](/page/) makes a link. Click "Save Changes" below to save. This is plain-language text; have it reviewed by counsel if you need that.</p>
                  </div>
                  <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
-                    <div><label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Small label</label><input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.label ?? ""} placeholder={DEFAULT_PRIVACY.label} onChange={(e) => setPv({ label: e.target.value })} /></div>
-                    <div><label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Title word 1</label><input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.title1 ?? ""} placeholder={DEFAULT_PRIVACY.title1} onChange={(e) => setPv({ title1: e.target.value })} /></div>
-                    <div><label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Title word 2 (gold)</label><input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.title2 ?? ""} placeholder={DEFAULT_PRIVACY.title2} onChange={(e) => setPv({ title2: e.target.value })} /></div>
-                    <div><label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Wording before the date</label><input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.updatedPrefix ?? ""} placeholder={DEFAULT_PRIVACY.updatedPrefix} onChange={(e) => setPv({ updatedPrefix: e.target.value })} /></div>
+                    <div><label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Small label</label><input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.label ?? ""} placeholder={DEF.label} onChange={(e) => setPv({ label: e.target.value })} /></div>
+                    <div><label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Title word 1</label><input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.title1 ?? ""} placeholder={DEF.title1} onChange={(e) => setPv({ title1: e.target.value })} /></div>
+                    <div><label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Title word 2 (gold)</label><input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.title2 ?? ""} placeholder={DEF.title2} onChange={(e) => setPv({ title2: e.target.value })} /></div>
+                    <div><label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Wording before the date</label><input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.updatedPrefix ?? ""} placeholder={DEF.updatedPrefix} onChange={(e) => setPv({ updatedPrefix: e.target.value })} /></div>
                     <div>
                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Last updated (also sent to search engines)</label>
-                       <input type="date" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={(pv.updatedIso || DEFAULT_PRIVACY.updatedIso).slice(0, 10)} onChange={(e) => { const v = e.target.value; if (!v) return; const iso = v + "T12:00:00.000Z"; setPv({ updatedIso: iso, updatedLabel: formatLegalDate(iso) }); }} />
+                       <input type="date" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={(pv.updatedIso || DEF.updatedIso).slice(0, 10)} onChange={(e) => { const v = e.target.value; if (!v) return; const iso = v + "T12:00:00.000Z"; setPv({ updatedIso: iso, updatedLabel: formatLegalDate(iso) }); }} />
                     </div>
                  </div>
 
@@ -1188,13 +1193,13 @@ export default function SettingsEditor() {
                  ))}
                  <div className="flex flex-wrap items-center gap-4">
                     <button type="button" onClick={() => setSections([...sections, { id: "sec-" + Date.now().toString(36), heading: "", body: "", style: "normal" }])} className="text-[#2271b1] text-xs underline font-bold">+ Add section</button>
-                    <button type="button" onClick={() => { if (confirm("Replace everything on this tab with the original text?")) updateData("privacyPage", null, { ...(pv.seo ? { seo: pv.seo } : {}) }); }} className="text-[#646970] text-xs underline">Restore the original text</button>
+                    <button type="button" onClick={() => { if (confirm("Replace everything on this tab with the original text?")) updateData(dk, null, { ...(pv.seo ? { seo: pv.seo } : {}) }); }} className="text-[#646970] text-xs underline">Restore the original text</button>
                  </div>
 
                  <div className="border border-[#c3c4c7] bg-[#f6f7f7] p-4 space-y-3 rounded-[3px]">
                     <span className="text-[12px] font-bold text-[#1d2327] uppercase tracking-wide">Contact box at the bottom</span>
-                    <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px] font-bold" value={pv.contactHeading ?? ""} placeholder={DEFAULT_PRIVACY.contactHeading} onChange={(e) => setPv({ contactHeading: e.target.value })} />
-                    <textarea rows={5} className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.contactBody ?? DEFAULT_PRIVACY.contactBody} onChange={(e) => setPv({ contactBody: e.target.value })} />
+                    <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px] font-bold" value={pv.contactHeading ?? ""} placeholder={DEF.contactHeading} onChange={(e) => setPv({ contactHeading: e.target.value })} />
+                    <textarea rows={5} className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.contactBody ?? DEF.contactBody} onChange={(e) => setPv({ contactBody: e.target.value })} />
                     <p className="text-[11px] text-[#646970]">One line per row. Email addresses and phone numbers become links automatically.</p>
                  </div>
               </motion.div>

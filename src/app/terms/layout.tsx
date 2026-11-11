@@ -22,7 +22,7 @@ export async function generateMetadata(): Promise<Metadata> {
 
   return {
     title: { absolute: seo.metaTitle || "Terms & Conditions | 410 Muscle Therapy" },
-    description: seo.metaDescription || "Read the Terms & Conditions for 410 Muscle Therapy, including therapy appointments, payments, cancellations, merchandise, shipping SMS terms and legal policies.",
+    description: seo.metaDescription || "Read the Terms & Conditions for 410 Muscle Therapy, including appointments, payments, cancellations, text messaging terms and legal policies.",
     alternates: {
       canonical: seo.canonicalUrl || pageUrl,
     },
@@ -60,8 +60,8 @@ export default async function TermsLayout({
     breadcrumbTitle: servicePageText(null, content?.data?.serviceDetailPage, 'breadcrumbTerms'),
     sameAs: resolveSameAs(content?.data?.footer?.social),
     datePublished: dates.datePublished,
-    // the visible "Last updated" date of the page text (lib/legalDates.ts)
-    dateModified: TERMS_UPDATED.iso,
+    // the "Last updated" date of the terms text (Admin > Settings > Terms & Conditions; fallback lib/legalDates.ts)
+    dateModified: content?.data?.termsPage?.updatedIso || TERMS_UPDATED.iso,
   });
   return (
     <>
