@@ -1026,10 +1026,6 @@ export default function SettingsEditor() {
                         <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Screen-reader label</label>
                         <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.breadcrumbAria || ""} placeholder={SERVICE_PAGE_DEFAULTS.breadcrumbAria || "Same as the home page"} onChange={(e) => updateData("serviceDetailPage", "breadcrumbAria", e.target.value)} />
                      </div>
-                     <div>
-                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">"Last updated" wording (shown under the overview)</label>
-                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.lastUpdatedLabel || ""} placeholder={SERVICE_PAGE_DEFAULTS.lastUpdatedLabel} onChange={(e) => updateData("serviceDetailPage", "lastUpdatedLabel", e.target.value)} />
-                     </div>
                   </div>
                </div>
 
@@ -1162,13 +1158,12 @@ export default function SettingsEditor() {
                     <h2 className="text-xl font-normal text-[#1d2327] mb-2 font-serif">{isTerms ? "Terms & Conditions" : "Privacy Policy"}</h2>
                     <p className="text-[12px] text-[#646970]">The text of the {isTerms ? "/terms/" : "/privacy/"} page. In a section: a blank line starts a new paragraph, lines starting with "- " become bullet points, **bold** makes text bold, and [link text](/page/) makes a link. Click "Save Changes" below to save. This is plain-language text; have it reviewed by counsel if you need that.</p>
                  </div>
-                 <div className="grid grid-cols-1 md:grid-cols-5 gap-4">
+                 <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
                     <div><label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Small label</label><input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.label ?? ""} placeholder={DEF.label} onChange={(e) => setPv({ label: e.target.value })} /></div>
                     <div><label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Title word 1</label><input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.title1 ?? ""} placeholder={DEF.title1} onChange={(e) => setPv({ title1: e.target.value })} /></div>
                     <div><label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Title word 2 (gold)</label><input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.title2 ?? ""} placeholder={DEF.title2} onChange={(e) => setPv({ title2: e.target.value })} /></div>
-                    <div><label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Wording before the date</label><input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={pv.updatedPrefix ?? ""} placeholder={DEF.updatedPrefix} onChange={(e) => setPv({ updatedPrefix: e.target.value })} /></div>
                     <div>
-                       <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Last updated (also sent to search engines)</label>
+                       <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Last updated (sent to search engines only, not shown on the page)</label>
                        <input type="date" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={(pv.updatedIso || DEF.updatedIso).slice(0, 10)} onChange={(e) => { const v = e.target.value; if (!v) return; const iso = v + "T12:00:00.000Z"; setPv({ updatedIso: iso, updatedLabel: formatLegalDate(iso) }); }} />
                     </div>
                  </div>

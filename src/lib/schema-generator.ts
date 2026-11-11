@@ -259,8 +259,7 @@ export function generateSchema(options: SchemaOptions) {
       },
       ...(isService
         ? [
-            { "@type": "ListItem", "position": 2, "name": "Services", "item": `${BASE_URL}/services/` },
-            { "@type": "ListItem", "position": 3, "name": breadcrumbTitle || title, "item": pageUrl }
+            { "@type": "ListItem", "position": 2, "name": breadcrumbTitle || title, "item": pageUrl }
           ]
         : pathSegments.map((segment, index) => {
             const url = `${BASE_URL}/${pathSegments.slice(0, index + 1).join('/')}/`;

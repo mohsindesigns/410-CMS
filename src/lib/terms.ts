@@ -81,7 +81,7 @@ export const DEFAULT_TERMS: PrivacyContent = {
     {
       id: "changes",
       heading: "10. Changes to these terms",
-      body: `We may update these terms from time to time. The "Last updated" date at the top shows when they last changed.`,
+      body: `We may update these terms from time to time. The version on this page is always the current one.`,
     },
   ],
 };

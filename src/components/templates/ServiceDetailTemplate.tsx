@@ -32,14 +32,6 @@ function cleanImageSrc(value: any): string {
   return v.replace(/\/{2,}/g, '/');
 }
 
-/** "March 5, 2026" in the business time zone (deterministic on server and client). */
-function formatLongDate(iso: any): string {
-  if (!iso) return "";
-  const d = new Date(iso);
-  if (isNaN(d.getTime())) return "";
-  return d.toLocaleDateString('en-US', { month: 'long', day: 'numeric', year: 'numeric', timeZone: 'America/New_York' });
-}
-
 /** Convert markdown links [Label](url) and HTML links to styled clickable anchors */
 function formatRichText(content: string | undefined | null, isDark: boolean = false): string {
   if (!content) return "";
@@ -264,8 +256,6 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
     { key: 'focus', icon: Target, value: sh(pg.specFocusValue) },
   ].filter(spec => !!spec.value);
 
-  const lastUpdatedLabel = formatLongDate(service.modifiedAt);
-
   // Recommended services: the ones picked in Admin > Services; otherwise every other published service, starting with
   // the one after this in the list. They are shown in a slider, so any number can be shown.
   const recommendedServices: any[] = (() => {
@@ -378,12 +368,6 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                   <li>
                     <Link href="/" className="hover:text-gold transition-colors text-white/70">
                       {servicePageText(null, globalServiceDetailPage, 'breadcrumbHome')}
-                    </Link>
-                  </li>
-                  <li aria-hidden="true" className="text-gold/50">/</li>
-                  <li>
-                    <Link href="/services/" className="hover:text-gold transition-colors text-white/70">
-                      {servicePageText(null, globalServiceDetailPage, 'breadcrumbServices')}
                     </Link>
                   </li>
                   <li aria-hidden="true" className="text-gold/50">/</li>
@@ -611,13 +595,6 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                     <span>{pg.overviewHipaaText}</span>
                   </div>
                 </div>
-
-                {/* Only after an admin saved the service (modifiedAt): visible freshness signal matching the schema dateModified */}
-                {lastUpdatedLabel && (
-                  <p className="pt-4 text-[11.5px] font-mono text-[rgba(10,10,10,0.5)]">
-                    {servicePageText(service, globalServiceDetailPage, 'lastUpdatedLabel')} <time dateTime={new Date(service.modifiedAt).toISOString()}>{lastUpdatedLabel}</time>
-                  </p>
-                )}
               </div>
 
             </div>

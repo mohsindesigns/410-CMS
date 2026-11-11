@@ -120,7 +120,7 @@ export const DEFAULT_PRIVACY: PrivacyContent = {
     {
       id: "changes",
       heading: "Changes to this policy",
-      body: `If our practices change we will update this page and the "Last updated" date at the top. Please check back from time to time.`,
+      body: `If our practices change we will update this page. Please check back from time to time.`,
     },
   ],
 };

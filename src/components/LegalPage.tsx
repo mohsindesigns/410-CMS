@@ -67,7 +67,6 @@ export default function LegalPage({ cfg, breadcrumbKey, icon = "Shield" }: { cfg
             <h1 className="text-5xl md:text-6xl lg:text-7xl font-black text-foreground mb-4">
               {cfg.title1} <span className="text-transparent bg-clip-text bg-gradient-to-r from-primary to-primary/60">{cfg.title2}</span>
             </h1>
-            <p className="text-muted-foreground text-lg">{cfg.updatedPrefix}: {cfg.updatedLabel}</p>
           </motion.div>
         </div>
       </section>
