@@ -23,6 +23,7 @@ import img9 from '../../../public/images/blog-2.webp';
 import img10 from '../../../public/images/blog-3.webp';
 import img11 from '../../../public/images/hero-bg.webp';
 import img12 from '../../../public/images/theraphist.jpeg';
+import PageBreadcrumb from "../PageBreadcrumb";
 
 const galleryImages = [
   img1, img11, img3, img8, img5, img12, img7, img9, img6, img2, img10, img4
@@ -63,6 +64,7 @@ export default function GalleryTemplate({ pageData }: { pageData?: any }) {
 
         <div className="site-container relative z-10">
           <div className="mb-12 md:mb-20 text-center flex flex-col items-center">
+            <PageBreadcrumb pageKey="breadcrumbGallery" tone="dark" centered className="mb-6" />
             <p className="section-label mb-4">{label}</p>
             <h1 className="display-heading text-[32px] min-[400px]:text-[44px] md:text-[64px] text-white leading-tight">
               {titleLine1} <span className="text-gold italic font-light">{titleLine2}</span>

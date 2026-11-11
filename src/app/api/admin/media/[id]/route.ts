@@ -1,13 +1,17 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { hasPermission } from '@/lib/rbac';
 import connectToDatabase from '@/lib/mongodb';
 import Media from '@/models/Media';
 import { unlink } from 'fs/promises';
 import path from 'path';
 
 export async function PATCH(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (!(await hasPermission(req, 'media', 'update'))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+  }
   try {
     const { id } = await params;
     await connectToDatabase();
@@ -32,9 +36,12 @@ export async function PATCH(
 }
 
 export async function DELETE(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (!(await hasPermission(req, 'media', 'delete'))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+  }
   try {
     const { id } = await params;
     await connectToDatabase();

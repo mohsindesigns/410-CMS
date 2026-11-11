@@ -16,6 +16,7 @@ import { useContent } from "../hooks/useContent";
 import Link from "next/link";
 import Script from "next/script";
 import RichTextRenderer from "./ui/RichTextRenderer";
+import PageBreadcrumb from "./PageBreadcrumb";
 
 gsap.registerPlugin(ScrollTrigger);
 
@@ -700,7 +701,7 @@ export default function PageInlineFaqs({
       {validFaqs.length > 0 && (
         <section
           ref={sectionRef}
-          className="relative bg-background py-4 md:py-8 lg:py-12 overflow-hidden"
+          className={`relative bg-background overflow-hidden ${asH1 ? "pt-32 md:pt-40 pb-8 md:pb-12" : "py-4 md:py-8 lg:py-12"}`}
         >
           <SubtleBackground />
           <FloatingParticles />
@@ -709,6 +710,7 @@ export default function PageInlineFaqs({
             {/* Section Header */}
             {!hideHeader && (
               <div className="max-w-3xl mx-auto text-center mb-12 md:mb-16 inline-faq-reveal">
+                {asH1 && <PageBreadcrumb pageKey="breadcrumbFaq" tone="light" centered className="mb-5" />}
                 <span className="text-xs font-medium tracking-[0.2em] uppercase text-gold-dark mb-3 block">
                   {badge || section?.badge || "Knowledge Base"}
                 </span>

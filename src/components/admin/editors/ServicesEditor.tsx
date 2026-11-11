@@ -12,6 +12,7 @@ import dynamic from "next/dynamic";
 import ContentSelector from "@/components/admin/ContentSelector";
 import IconSelector from "@/components/admin/IconSelector";
 import ImageField from "@/components/admin/ImageField";
+import BlogSelector from "@/components/admin/BlogSelector";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { 
   ssr: false,
@@ -99,6 +100,7 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
     { id: "hero", label: "Page Introduction (Hero)", icon: Type, title: "Services Hero Section" },
     { id: "catalog", label: "Service Catalog", icon: List, title: "Service Offerings Selector" },
     { id: "whyChooseUs", label: "Why Choose Us (Value Props)", icon: Star, title: "Value Propositions" },
+    { id: "sections", label: "Reviews & Blog", icon: Star, title: "Reviews & Blog Sections" },
     { id: "cta", label: "CTA Banner", icon: LayoutTemplate, title: "Call-to-Action Banner" }
   ];
 
@@ -109,6 +111,8 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
   const whyChooseUs = data.whyChooseUs || {};
   const ctaBanner = data.ctaBanner || {};
   const processData = data.process || {};
+  const sec = data.servicesPageSections || {};
+  const setSec = (field: string, value: any) => updateSection("servicesPageSections", field, value);
 
   return (
     <div className="bg-white">
@@ -317,6 +321,87 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                       const currentStats = whyChooseUs.stats || [];
                       updateSection("whyChooseUs", "stats", [...currentStats, { value: "", suffix: "", label: "" }]);
                     }} className={UI.buttonAdd}>+ Add Metric</button>
+                  </div>
+                </div>
+              </div>
+            )}
+
+            {/* REVIEWS & BLOG SECTIONS (shown under the service list) */}
+            {activeTab === "sections" && (
+              <div className="max-w-4xl space-y-8">
+                <p className="text-[12px] text-[#646970]">These two sections appear on the public Services page under the list of services: client reviews first, then blog articles. Leave any text empty to use the shared wording (Settings &rarr; Service Pages) or, if that is empty too, the wording of the home page.</p>
+
+                <div className={UI.card + " space-y-5"}>
+                  <label className="flex items-center gap-2 text-[14px] font-bold cursor-pointer">
+                    <input type="checkbox" checked={sec.showReviews !== false} onChange={(e) => setSec("showReviews", e.target.checked)} />
+                    <span>Show the client reviews section</span>
+                  </label>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Small label</label>
+                      <input type="text" value={sec.reviewsLabel || ""} onChange={(e) => setSec("reviewsLabel", e.target.value)} className={UI.input} placeholder="Same as the home page" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Title line 1</label>
+                      <input type="text" value={sec.reviewsTitle1 || ""} onChange={(e) => setSec("reviewsTitle1", e.target.value)} className={UI.input} placeholder="Same as the home page" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Title line 2 (gold)</label>
+                      <input type="text" value={sec.reviewsTitle2 || ""} onChange={(e) => setSec("reviewsTitle2", e.target.value)} className={UI.input} placeholder="Same as the home page" />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Short text under the title (optional)</label>
+                    <textarea value={sec.reviewsDescription || ""} onChange={(e) => setSec("reviewsDescription", e.target.value)} className={UI.input + " h-20"} />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Which reviews to show</label>
+                    <p className="text-[12px] text-[#646970]">Pick specific reviews, or leave empty to show the same reviews as the home page.</p>
+                    <ContentSelector
+                      type="reviews"
+                      valueMode="ids"
+                      label="Select reviews for the Services page"
+                      selectedItems={Array.isArray(sec.reviewKeys) ? sec.reviewKeys : []}
+                      onSelect={(ids: any[]) => setSec("reviewKeys", ids)}
+                    />
+                  </div>
+                </div>
+
+                <div className={UI.card + " space-y-5"}>
+                  <label className="flex items-center gap-2 text-[14px] font-bold cursor-pointer">
+                    <input type="checkbox" checked={sec.showBlogSection !== false} onChange={(e) => setSec("showBlogSection", e.target.checked)} />
+                    <span>Show the blog articles section</span>
+                  </label>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Small label</label>
+                      <input type="text" value={sec.blogLabel || ""} onChange={(e) => setSec("blogLabel", e.target.value)} className={UI.input} placeholder="Same as the home page" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Section title</label>
+                      <input type="text" value={sec.blogTitle || ""} onChange={(e) => setSec("blogTitle", e.target.value)} className={UI.input} placeholder="Same as the home page" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>"View all" link text</label>
+                      <input type="text" value={sec.blogCtaAll || ""} onChange={(e) => setSec("blogCtaAll", e.target.value)} className={UI.input} placeholder="Same as the home page" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Card link text</label>
+                      <input type="text" value={sec.blogCtaReadMore || ""} onChange={(e) => setSec("blogCtaReadMore", e.target.value)} className={UI.input} placeholder="Same as the home page" />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>How many newest articles to show when none are picked</label>
+                    <input type="number" min={1} max={12} value={sec.blogCount ?? ""} onChange={(e) => setSec("blogCount", e.target.value === "" ? undefined : Math.max(1, Math.min(12, Number(e.target.value))))} className={UI.input + " max-w-[120px]"} placeholder="3" />
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Which articles to show</label>
+                    <p className="text-[12px] text-[#646970]">Pick the articles for this page, or leave empty to show the newest published articles. Only published articles are ever shown.</p>
+                    <BlogSelector
+                      label="Select articles for the Services page"
+                      selectedIds={Array.isArray(sec.blogPostIds) ? sec.blogPostIds : []}
+                      onChange={(ids: string[]) => setSec("blogPostIds", ids)}
+                    />
                   </div>
                 </div>
               </div>

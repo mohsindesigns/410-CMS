@@ -9,6 +9,7 @@ import SiteContent from "@/models/Content";
 import { generateSchema } from "@/lib/schema-generator";
 import { resolveSameAs } from "@/lib/businessInfo";
 import { isoDate } from "@/lib/pageDates";
+import { servicePageText } from "@/lib/servicePageText";
 import { BASE_URL } from "@/lib/constants";
 
 
@@ -102,7 +103,7 @@ export default async function GalleryPage() {
     description,
     slug: "/gallery",
     sameAs: resolveSameAs(globalData?.footer?.social),
-    breadcrumbTitle: "Gallery",
+    breadcrumbTitle: servicePageText(null, globalData?.serviceDetailPage, 'breadcrumbGallery'),
     datePublished: isoDate(page?.publishedAt || page?.createdAt),
     dateModified: isoDate(page?.updatedAt || page?.publishedAt || page?.createdAt),
     type: "CollectionPage"

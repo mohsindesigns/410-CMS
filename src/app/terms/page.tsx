@@ -5,6 +5,7 @@ import { motion } from "framer-motion";
 import Link from "next/link";
 import { Icon } from "../../config/icons";
 import { TERMS_UPDATED } from "../../lib/legalDates";
+import PageBreadcrumb from "../../components/PageBreadcrumb";
 
 export default function TermsPage() {
   return (
@@ -23,6 +24,7 @@ export default function TermsPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-8"
           >
+            <PageBreadcrumb pageKey="breadcrumbTerms" tone="light" centered className="mb-5" />
             <div className="inline-flex items-center gap-2 bg-primary/5 px-4 py-2 rounded-full border border-primary/10 mb-6">
               <Icon name="FileText" className="w-4 h-4 text-primary" />
               <span className="text-primary uppercase tracking-wider text-xs font-semibold">Legal</span>

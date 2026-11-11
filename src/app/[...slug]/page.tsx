@@ -22,6 +22,7 @@ import ServiceDetailTemplate from '@/components/templates/ServiceDetailTemplate'
 import { Metadata } from 'next';
 import { generateSchema } from '@/lib/schema-generator';
 import { resolveSameAs } from '@/lib/businessInfo';
+import { servicePageText } from '@/lib/servicePageText';
 import { BASE_URL } from '@/lib/constants';
 import { computeAggregateRating } from '@/lib/reviews';
 import { parseCustomSchema, serializeJsonLd, customSchemaMode } from '@/lib/schema-generator';
@@ -375,7 +376,7 @@ export default async function DynamicPage({ params }: PageProps) {
     slug: page.slug,
     type: pageType,
     faqs: pageFaqs.length > 0 ? pageFaqs : undefined,
-    breadcrumbTitle: page.seo?.breadcrumbTitle || ({ reviews: "Reviews", faq: "FAQ", gallery: "Gallery", services: "Services", blogs: "Blogs" } as Record<string, string>)[String(page.slug)] || page.title,
+    breadcrumbTitle: page.seo?.breadcrumbTitle || ({ reviews: 'breadcrumbReviews', faq: 'breadcrumbFaq', gallery: 'breadcrumbGallery', services: 'breadcrumbServices', blogs: 'breadcrumbBlogs' } as Record<string, any>)[String(page.slug)] ? servicePageText(null, globalData.serviceDetailPage, ({ reviews: 'breadcrumbReviews', faq: 'breadcrumbFaq', gallery: 'breadcrumbGallery', services: 'breadcrumbServices', blogs: 'breadcrumbBlogs' } as Record<string, any>)[String(page.slug)]) : page.title,
     isService: page.template === 'service-detail',
     aggregateRating,
     sameAs: resolveSameAs(globalData.footer?.social),

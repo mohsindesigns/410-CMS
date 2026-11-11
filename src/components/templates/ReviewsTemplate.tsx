@@ -6,6 +6,7 @@ import { useContent } from "../../hooks/useContent";
 import { stripHtml } from "../../lib/utils";
 import CtaBanner from "@/components/CtaBanner";
 import { resolveReviewSelection, toPositiveNumber } from "@/lib/reviews";
+import PageBreadcrumb from "@/components/PageBreadcrumb";
 
 // Defaults only - every text and link below can be changed in Admin > Pages > Reviews page.
 const GOOGLE_MAPS_REVIEW_URL = "https://maps.app.goo.gl/PbvRBs4tJsDAJVMy6";
@@ -122,6 +123,7 @@ export default function ReviewsTemplate({ pageData, params }: { pageData?: any, 
                 <div className="site-container relative">
                     <div className={`grid grid-cols-1 items-end gap-10 ${showSummary ? "lg:grid-cols-[1.55fr_1fr] lg:gap-14" : ""}`}>
                         <div>
+                            <PageBreadcrumb pageKey="breadcrumbReviews" tone="dark" className="mb-6" />
                             <motion.div {...rise(0)} className="mb-5 flex items-center gap-3">
                                 <span className="h-px w-10 bg-gold" />
                                 <p className="section-label">{label}</p>

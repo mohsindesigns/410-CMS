@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { hasPermission } from '@/lib/rbac';
 import connectToDatabase from '@/lib/mongodb';
 import SiteContent from '@/models/Content';
 import { randomUUID } from 'crypto';
@@ -21,7 +22,10 @@ async function saveScripts(scripts: any[]) {
 }
 
 // GET — return all scripts
-export async function GET() {
+export async function GET(req: NextRequest) {
+  if (!(await hasPermission(req, 'settings', 'read'))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+  }
   try {
     const scripts = await getScripts();
     return NextResponse.json(scripts);
@@ -31,7 +35,10 @@ export async function GET() {
 }
 
 // POST — create a new script entry
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  if (!(await hasPermission(req, 'settings', 'update'))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+  }
   try {
     const body = await req.json();
     const scripts = await getScripts();
@@ -52,7 +59,10 @@ export async function POST(req: Request) {
 }
 
 // PUT — update an existing script by id
-export async function PUT(req: Request) {
+export async function PUT(req: NextRequest) {
+  if (!(await hasPermission(req, 'settings', 'update'))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+  }
   try {
     const body = await req.json();
     const { id, ...updates } = body;
@@ -68,7 +78,10 @@ export async function PUT(req: Request) {
 }
 
 // DELETE — remove a script by id (passed as ?id=xxx)
-export async function DELETE(req: Request) {
+export async function DELETE(req: NextRequest) {
+  if (!(await hasPermission(req, 'settings', 'update'))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+  }
   try {
     const { searchParams } = new URL(req.url);
     const id = searchParams.get('id');

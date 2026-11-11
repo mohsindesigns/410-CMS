@@ -4,6 +4,9 @@ import Tag from '@/models/Tag';
 import { hasPermission } from '@/lib/rbac';
 
 export async function GET(req: NextRequest) {
+  if (!(await hasPermission(req, 'blog', 'read'))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+  }
   try {
     await connectToDatabase();
     const tags = await Tag.find().sort({ name: 1 });

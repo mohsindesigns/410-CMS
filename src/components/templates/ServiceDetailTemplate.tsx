@@ -12,9 +12,9 @@ import {
 } from 'lucide-react';
 import { useContent } from "../../hooks/useContent";
 import ContactFaqSection from '../QAForm';
-import Image from 'next/image';
 import Testimonials from '../Testimonials';
 import BlogSection from '../sections/BlogSection';
+import RecommendedServices, { type RecommendedItem } from '../sections/RecommendedServices';
 import { BUSINESS } from "@/lib/businessInfo";
 import { servicePageText } from "@/lib/servicePageText";
 
@@ -266,17 +266,17 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
 
   const lastUpdatedLabel = formatLongDate(service.modifiedAt);
 
-  // Recommended services: the ones picked in Admin > Services (max 3); otherwise the next 3 published services
-  // after this one in the list, so the section is never empty.
+  // Recommended services: the ones picked in Admin > Services; otherwise every other published service, starting with
+  // the one after this in the list. They are shown in a slider, so any number can be shown.
   const recommendedServices: any[] = (() => {
     const picked = (Array.isArray(service.relatedServices) ? service.relatedServices : [])
       .map((slug: any) => servicesList.find((s: any) => s.slug === String(slug)))
-      .filter((s: any) => !!s && s.slug !== service.slug)
-      .slice(0, 3);
+      .filter((s: any, i: number, arr: any[]) => !!s && s.slug !== service.slug && arr.indexOf(s) === i)
+      .slice(0, 24);
     if (picked.length > 0) return picked;
     const idx = servicesList.findIndex((s: any) => s.slug === service.slug);
     const ordered = idx >= 0 ? [...servicesList.slice(idx + 1), ...servicesList.slice(0, idx)] : servicesList;
-    return ordered.filter((s: any) => s && s.slug && s.slug !== service.slug && s.status !== 'draft').slice(0, 3);
+    return ordered.filter((s: any) => s && s.slug && s.slug !== service.slug && s.status !== 'draft').slice(0, 24);
   })();
 
   // Blog posts for this page: the ones that mention this service's key words first, then the newest, max 3.
@@ -818,47 +818,18 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                 )}
               </div>
 
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6 md:gap-8">
-                {recommendedServices.map((rel: any) => {
-                  const relImage = cleanImageSrc(rel.image) || "/images/service-massage.webp";
-                  const relLabel = sh((typeof rel.menuLabel === 'string' && rel.menuLabel.trim()) || rel.title || rel.name);
-                  const relTag = sh(rel.tag);
-                  const relText = sh(String(rel.heroDescription || rel.description || "").replace(/\[([^\]]+)\]\([^)]*\)/g, '$1'));
-                  return (
-                    <article key={rel.slug} className="blog-card group bg-[#fbfbfa] border border-border-light hover:border-gold-dark/40 hover:shadow-xl rounded-sm overflow-hidden flex flex-col h-full transition-all duration-300">
-                      <Link href={`/${rel.slug}/`} className="flex flex-col flex-1 no-underline">
-                        <div className="img-blog relative h-[210px] w-full overflow-hidden bg-dark/10">
-                          <Image
-                            src={relImage}
-                            alt={relLabel}
-                            fill
-                            sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                            className="object-cover transition-transform duration-500 group-hover:scale-105"
-                          />
-                          {relTag && (
-                            <span className="absolute top-3 left-3 bg-gold-dark text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-xs shadow-sm">
-                              {relTag}
-                            </span>
-                          )}
-                        </div>
-                        <div className="flex flex-col flex-1 p-5 sm:p-6 justify-between">
-                          <div>
-                            <h3 className="text-dark font-bold text-[16px] sm:text-[17px] leading-snug mb-2.5 group-hover:text-gold-dark transition-colors duration-200 line-clamp-2">
-                              {relLabel}
-                            </h3>
-                            {relText && (
-                              <p className="text-dark/60 text-[13px] leading-relaxed mb-4 line-clamp-3 font-light">{relText}</p>
-                            )}
-                          </div>
-                          <span className="flex items-center gap-2 text-gold-dark text-[11.5px] font-bold tracking-wider uppercase group-hover:gap-3 transition-all duration-200 pt-2 border-t border-border-light/60">
-                            {servicePageText(service, globalServiceDetailPage, 'recommendedCtaText')} <ArrowRight size={13} />
-                          </span>
-                        </div>
-                      </Link>
-                    </article>
-                  );
-                })}
-              </div>
+              <RecommendedServices
+                ctaText={servicePageText(service, globalServiceDetailPage, 'recommendedCtaText')}
+                prevLabel={servicePageText(null, globalServiceDetailPage, 'sliderPrev')}
+                nextLabel={servicePageText(null, globalServiceDetailPage, 'sliderNext')}
+                items={recommendedServices.map((rel: any): RecommendedItem => ({
+                  slug: rel.slug,
+                  label: sh((typeof rel.menuLabel === 'string' && rel.menuLabel.trim()) || rel.title || rel.name),
+                  tag: sh(rel.tag),
+                  text: sh(String(rel.heroDescription || rel.description || "").replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')),
+                  image: cleanImageSrc(rel.image) || "/images/service-massage.webp",
+                }))}
+              />
             </div>
           </section>
         )}

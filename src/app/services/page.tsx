@@ -3,6 +3,9 @@ import { getSiteContent } from "@/lib/siteContent";
 import { localizeDeep, localizeImageUrl } from "@/lib/imageUrl";
 import SiteContent from '@/models/Content';
 import Page from '@/models/Page';
+import Post from '@/models/Post';
+import mongoose from 'mongoose';
+import { sanitizePublicContent } from '@/lib/publicContent';
 import { Metadata } from 'next';
 import { BASE_URL } from '@/lib/constants';
 import { generateSchema } from '@/lib/schema-generator';
@@ -15,6 +18,8 @@ import StickyServicesSection from '@/components/sections/StickyServicesSection';
 import WhyChooseUsSection from '@/components/sections/WhyChooseUsSection';
 import ContactFaqSection from '@/components/sections/ContactFaqSection';
 import CtaBanner from '@/components/sections/CtaBanner';
+import Testimonials from '@/components/Testimonials';
+import BlogSection from '@/components/sections/BlogSection';
 
 export const revalidate = 3600; // cached for an hour; admin saves refresh pages immediately via revalidatePath
 
@@ -72,7 +77,7 @@ export default async function ServicesPage() {
   ]);
 
   const globalData = content?.data ? localizeDeep(JSON.parse(JSON.stringify(content.data))) : {};
-  const pageContent = pageDoc?.content ? localizeDeep(JSON.parse(JSON.stringify(pageDoc.content))) : {};
+  const pageContent = pageDoc?.content ? localizeDeep(sanitizePublicContent({ data: JSON.parse(JSON.stringify(pageDoc.content)) } as any).data) : {};
   const mergedData = {
     ...globalData,
     ...pageContent,
@@ -81,6 +86,29 @@ export default async function ServicesPage() {
       ...(pageContent.whyChooseUs || {})
     }
   };
+
+  // Reviews & Blog sections (managed in Admin > Pages > Services > Reviews & Blog)
+  const sec: any = (mergedData as any).servicesPageSections || {};
+  const shared: any = (mergedData as any).serviceDetailPage;
+  const showReviews = sec.showReviews !== false;
+  const showBlog = sec.showBlogSection !== false;
+  let blogPosts: any[] = [];
+  if (showBlog) {
+    const base = { status: 'published', isTrashed: { $ne: true } };
+    const fields = 'title slug featuredImage excerpt date publishedAt author authorName categories';
+    const picked: string[] = (Array.isArray(sec.blogPostIds) ? sec.blogPostIds : []).map(String).filter((id: string) => mongoose.isValidObjectId(id)).slice(0, 12);
+    let found: any[] = [];
+    if (picked.length > 0) {
+      found = await Post.find({ ...base, _id: { $in: picked } }).select(fields).populate('categories', 'name').populate('author', 'name').lean();
+      found.sort((a: any, b: any) => picked.indexOf(String(a._id)) - picked.indexOf(String(b._id)));
+    }
+    if (found.length === 0) {
+      const count = Math.max(1, Math.min(12, Number(sec.blogCount) || 3));
+      found = await Post.find(base).select(fields).sort({ publishedAt: -1, createdAt: -1 }).limit(count).populate('categories', 'name').populate('author', 'name').lean();
+    }
+    blogPosts = localizeDeep(JSON.parse(JSON.stringify(found)));
+  }
+  const blogSectionDefaults: any = (mergedData as any).blogSection || {};
 
   const dates = await getPageDates('services');
   const schema = generateSchema({
@@ -101,6 +129,24 @@ export default async function ServicesPage() {
         <ServicesHeroSection />
         <WhyChooseUsSection />
         <StickyServicesSection />
+        {showReviews && (
+          <Testimonials
+            label={servicePageText(sec, shared, 'reviewsLabel')}
+            title1={servicePageText(sec, shared, 'reviewsTitle1')}
+            title2={servicePageText(sec, shared, 'reviewsTitle2')}
+            description={servicePageText(sec, shared, 'reviewsDescription')}
+            reviewKeys={Array.isArray(sec.reviewKeys) ? sec.reviewKeys : undefined}
+          />
+        )}
+        {showBlog && blogPosts.length > 0 && (
+          <BlogSection
+            title={servicePageText(sec, shared, 'blogTitle') || blogSectionDefaults.title}
+            subtitle={servicePageText(sec, shared, 'blogLabel') || blogSectionDefaults.subtitle}
+            ctaAll={servicePageText(sec, shared, 'blogCtaAll') || blogSectionDefaults.ctaAll}
+            ctaReadMore={servicePageText(sec, shared, 'blogCtaReadMore') || blogSectionDefaults.ctaReadMore}
+            posts={blogPosts}
+          />
+        )}
         <CtaBanner />
         <ContactFaqSection />
       </div>

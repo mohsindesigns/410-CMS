@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import connectToDatabase from '@/lib/mongodb';
 import SiteContent from '@/models/Content';
 import { hasPermission, getSessionUser } from '@/lib/rbac';
+import { getAuthSession } from '@/lib/auth';
+import { sanitizePublicContent } from '@/lib/publicContent';
 import { recordActivity } from '@/lib/logger';
 import { sanitizeEncoding } from '@/lib/utils';
 
@@ -20,7 +22,7 @@ const NO_STORE = { 'Cache-Control': 'no-store, no-cache, max-age=0, must-revalid
 const REV_KEY = (rev: number | string) => `complete_data_rev_${rev}`;
 const REV_KEEP = 25;
 
-export async function GET() {
+export async function GET(req: NextRequest) {
   try {
     await connectToDatabase();
 
@@ -30,6 +32,11 @@ export async function GET() {
     if (!content) {
       console.warn('Content not found in MongoDB, key: complete_data');
       return NextResponse.json({ error: 'Content not found' }, { status: 404, headers: NO_STORE });
+    }
+
+    // Visitors (no admin login) only ever receive the public version: no drafts / trashed / hidden items, no revision id.
+    if (!(await getAuthSession(req))) {
+      return NextResponse.json(sanitizePublicContent({ data: content.data }).data, { headers: NO_STORE });
     }
 
     const rev = content.lastUpdated ? new Date(content.lastUpdated).getTime() : 0;

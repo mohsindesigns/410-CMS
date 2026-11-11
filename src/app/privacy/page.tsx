@@ -6,6 +6,7 @@ import Link from "next/link";
 import { Icon } from "../../config/icons";
 import { useContent } from "../../hooks/useContent";
 import { parsePrivacyBody, resolvePrivacy } from "../../lib/privacy";
+import PageBreadcrumb from "../../components/PageBreadcrumb";
 
 /** **bold** and [text](/link) inside a line of policy text */
 function renderInline(text: string): React.ReactNode[] {
@@ -60,6 +61,7 @@ export default function PrivacyPolicyPage() {
             transition={{ duration: 0.6 }}
             className="text-center mb-8"
           >
+            <PageBreadcrumb pageKey="breadcrumbPrivacy" tone="light" centered className="mb-5" />
             <div className="inline-flex items-center gap-2 bg-primary/5 px-4 py-2 rounded-full border border-primary/10 mb-6">
               <Icon name="Shield" className="w-4 h-4 text-primary" />
               <span className="text-primary uppercase tracking-wider text-xs font-semibold">{cfg.label}</span>

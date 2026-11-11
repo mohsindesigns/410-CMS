@@ -28,7 +28,7 @@ const Navbar = () => {
   const [activeMegaMenu, setActiveMegaMenu] = useState<string | null>(null);
   const [scrolled, setScrolled] = useState(false);
   // Legal pages have a light hero, so the white nav text needs the solid dark bar from the top.
-  const lightHeroPage = ["/privacy", "/terms"].some((p) => (pathname || "").startsWith(p));
+  const lightHeroPage = ["/privacy", "/terms", "/faq"].some((p) => (pathname || "").startsWith(p));
   const [isHoveringMegaMenu, setIsHoveringMegaMenu] = useState(false);
   const [hoveredService, setHoveredService] = useState<string | null>(null);
   const [expandedMobileLink, setExpandedMobileLink] = useState<string | null>(null);

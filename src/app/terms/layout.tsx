@@ -9,6 +9,7 @@ import { getRobotsMetadata } from "@/lib/seo";
 import { generateSchema } from "@/lib/schema-generator";
 import { resolveSameAs } from "@/lib/businessInfo";
 import { getPageDates } from "@/lib/pageDates";
+import { servicePageText } from "@/lib/servicePageText";
 import { TERMS_UPDATED } from "@/lib/legalDates";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -56,7 +57,7 @@ export default async function TermsLayout({
     description: "The terms and conditions for using the 410 Muscle Therapy website and services.",
     slug: "/terms",
     type: "WebPage",
-    breadcrumbTitle: "Terms & Conditions",
+    breadcrumbTitle: servicePageText(null, content?.data?.serviceDetailPage, 'breadcrumbTerms'),
     sameAs: resolveSameAs(content?.data?.footer?.social),
     datePublished: dates.datePublished,
     // the visible "Last updated" date of the page text (lib/legalDates.ts)

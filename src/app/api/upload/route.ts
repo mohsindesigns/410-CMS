@@ -1,7 +1,11 @@
-import { NextResponse } from "next/server";
+import { NextRequest, NextResponse } from "next/server";
+import { hasPermission } from "@/lib/rbac";
 import { uploadFile } from "@/lib/storage";
 
-export async function POST(req: Request) {
+export async function POST(req: NextRequest) {
+  if (!(await hasPermission(req, "media", "create"))) {
+    return NextResponse.json({ error: "Unauthorized" }, { status: 403 });
+  }
   try {
     const formData = await req.formData();
     const file = formData.get("file") as File;

@@ -10,10 +10,10 @@ export async function GET() {
     await connectToDatabase();
     
     // Fetch only published posts, exclude heavy HTML content by default for lightweight payload
-    const posts = await Post.find({ status: 'published' })
+    const posts = await Post.find({ status: 'published', isTrashed: { $ne: true } })
       .select('title slug featuredImage excerpt date publishedAt author authorName categories tags')
       .populate('categories', 'name')
-      .populate('author', 'username name email')
+      .populate('author', 'name')
       .sort({ publishedAt: -1 })
       .lean();
     

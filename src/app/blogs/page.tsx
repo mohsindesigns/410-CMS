@@ -73,6 +73,8 @@ export async function generateMetadata(): Promise<Metadata> {
 
 import { generateSchema } from '@/lib/schema-generator';
 import { resolveSameAs } from '@/lib/businessInfo';
+import PageBreadcrumb from "@/components/PageBreadcrumb";
+import { servicePageText } from '@/lib/servicePageText';
 
 export default async function BlogsIndexPage() {
   await connectToDatabase();
@@ -116,7 +118,7 @@ export default async function BlogsIndexPage() {
     description: seo.metaDescription || description || "Explore our latest articles, insights, and clinical recovery tips.",
     slug: "blogs",
     type: "CollectionPage",
-    breadcrumbTitle: "Blogs",
+    breadcrumbTitle: servicePageText(null, content?.data?.serviceDetailPage, 'breadcrumbBlogs'),
     sameAs: resolveSameAs(content?.data?.footer?.social),
     // Only real dates are emitted - nothing is invented when the page record has none.
     datePublished: (pageDoc?.publishedAt || pageDoc?.createdAt) ? new Date(pageDoc.publishedAt || pageDoc.createdAt).toISOString() : undefined,
@@ -135,6 +137,7 @@ export default async function BlogsIndexPage() {
 
       <div className="site-container relative z-10">
         <div className="mb-12 md:mb-20 text-center flex flex-col items-center">
+          <PageBreadcrumb pageKey="breadcrumbBlogs" tone="dark" centered className="mb-6" />
           <p className="section-label mb-4">{label}</p>
           <h1 className="display-heading text-[32px] min-[400px]:text-[44px] md:text-[64px] text-white leading-tight">
             {titleLine1} <span className="text-gold italic font-light">{titleLine2}</span>

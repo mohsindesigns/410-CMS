@@ -4,6 +4,7 @@ import User from '@/models/User';
 import nodemailer from 'nodemailer';
 import crypto from 'crypto';
 import { BASE_URL } from '@/lib/constants';
+import { getClientIp, rateLimit } from '@/lib/formSecurity';
 
 // Configure SMTP transport
 const transporter = nodemailer.createTransport({
@@ -18,6 +19,10 @@ const transporter = nodemailer.createTransport({
 
 export async function POST(req: Request) {
   try {
+    const rl = rateLimit(`forgot:${getClientIp(req)}`, 5, 15 * 60 * 1000);
+    if (!rl.ok) {
+      return NextResponse.json({ error: 'Too many requests. Please try again later.' }, { status: 429, headers: { 'Retry-After': String(rl.retryAfter) } });
+    }
     const { email } = await req.json();
 
     if (!email) {

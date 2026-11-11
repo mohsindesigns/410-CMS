@@ -1135,7 +1135,7 @@ export default function ServicesAdminPage() {
                       <div className="border-t border-[#c3c4c7] pt-6 space-y-3">
                         <div>
                           <h3 className="text-[14px] font-bold text-[#1d2327]">Recommended Services (optional)</h3>
-                          <p className="text-[12px] text-[#646970]">Pick up to 3 services to recommend at the bottom of this page. If you pick none, the next 3 services in your list are shown automatically.</p>
+                          <p className="text-[12px] text-[#646970]">Pick the services to recommend at the bottom of this page, as many as you like (they are shown in a slider). If you pick none, all your other services are shown automatically.</p>
                         </div>
                         <div className="grid grid-cols-1 sm:grid-cols-2 gap-1 max-h-56 overflow-y-auto border border-[#c3c4c7] bg-[#f6f7f7] p-3">
                           {services
@@ -1158,9 +1158,6 @@ export default function ServicesAdminPage() {
                               );
                             })}
                         </div>
-                        {Array.isArray(form.relatedServices) && form.relatedServices.length > 3 && (
-                          <p className="text-[11px] text-[#d63638]">More than 3 selected: only the first 3 are shown on the page.</p>
-                        )}
                       </div>
 
                       {/* Sections shown at the bottom of the page, under the treatment protocol */}
@@ -1176,7 +1173,7 @@ export default function ServicesAdminPage() {
                           <input type="checkbox" checked={form.showRecommendedServices !== false} onChange={(e) => setForm({ ...form, showRecommendedServices: e.target.checked })} />
                           <span>A. Recommended services</span>
                         </label>
-                          <p className="text-[12px] text-[#646970]">Which services are shown is chosen in "Recommended Services" above (none picked = the next 3 services in your list).</p>
+                          <p className="text-[12px] text-[#646970]">Which services are shown is chosen in "Recommended Services" above (none picked = all your other services).</p>
                           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                           <div className="space-y-1">
                             <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Small label</label>

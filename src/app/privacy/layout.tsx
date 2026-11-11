@@ -9,6 +9,7 @@ import { getRobotsMetadata } from "@/lib/seo";
 import { generateSchema } from "@/lib/schema-generator";
 import { resolveSameAs } from "@/lib/businessInfo";
 import { getPageDates } from "@/lib/pageDates";
+import { servicePageText } from "@/lib/servicePageText";
 import { PRIVACY_UPDATED } from "@/lib/legalDates";
 
 export async function generateMetadata(): Promise<Metadata> {
@@ -56,7 +57,7 @@ export default async function PrivacyLayout({
     description: "How 410 Muscle Therapy collects, uses and protects personal information collected through this website.",
     slug: "/privacy",
     type: "WebPage",
-    breadcrumbTitle: "Privacy Policy",
+    breadcrumbTitle: servicePageText(null, content?.data?.serviceDetailPage, 'breadcrumbPrivacy'),
     sameAs: resolveSameAs(content?.data?.footer?.social),
     datePublished: dates.datePublished,
     // the "Last updated" date of the policy text (Admin > Settings > Privacy Policy; fallback lib/legalDates.ts)

@@ -1032,6 +1032,37 @@ export default function SettingsEditor() {
                </div>
 
                <div className="space-y-3">
+                  <h3 className="text-[14px] font-bold text-[#1d2327]">Breadcrumb names of the other pages</h3>
+                  <p className="text-[12px] text-[#646970]">The last crumb shown on each page ("Home / Gallery") and used in the page's search-engine data.</p>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Gallery</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.breadcrumbGallery || ""} placeholder={SERVICE_PAGE_DEFAULTS.breadcrumbGallery} onChange={(e) => updateData("serviceDetailPage", "breadcrumbGallery", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Reviews</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.breadcrumbReviews || ""} placeholder={SERVICE_PAGE_DEFAULTS.breadcrumbReviews} onChange={(e) => updateData("serviceDetailPage", "breadcrumbReviews", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">FAQ</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.breadcrumbFaq || ""} placeholder={SERVICE_PAGE_DEFAULTS.breadcrumbFaq} onChange={(e) => updateData("serviceDetailPage", "breadcrumbFaq", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Blogs</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.breadcrumbBlogs || ""} placeholder={SERVICE_PAGE_DEFAULTS.breadcrumbBlogs} onChange={(e) => updateData("serviceDetailPage", "breadcrumbBlogs", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Privacy policy</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.breadcrumbPrivacy || ""} placeholder={SERVICE_PAGE_DEFAULTS.breadcrumbPrivacy} onChange={(e) => updateData("serviceDetailPage", "breadcrumbPrivacy", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Terms</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.breadcrumbTerms || ""} placeholder={SERVICE_PAGE_DEFAULTS.breadcrumbTerms} onChange={(e) => updateData("serviceDetailPage", "breadcrumbTerms", e.target.value)} />
+                     </div>
+                  </div>
+               </div>
+
+               <div className="space-y-3">
                   <h3 className="text-[14px] font-bold text-[#1d2327]">Recommended services section</h3>
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                      <div>
@@ -1049,6 +1080,14 @@ export default function SettingsEditor() {
                      <div>
                         <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Card button text</label>
                         <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.recommendedCtaText || ""} placeholder={SERVICE_PAGE_DEFAULTS.recommendedCtaText || "Same as the home page"} onChange={(e) => updateData("serviceDetailPage", "recommendedCtaText", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Slider "previous" button (screen readers)</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.sliderPrev || ""} placeholder={SERVICE_PAGE_DEFAULTS.sliderPrev} onChange={(e) => updateData("serviceDetailPage", "sliderPrev", e.target.value)} />
+                     </div>
+                     <div>
+                        <label className="text-[11px] font-bold text-[#1d2327] uppercase tracking-wide block mb-1">Slider "next" button (screen readers)</label>
+                        <input type="text" className="w-full border border-[#8c8f94] bg-white px-3 py-1.5 text-[13px] rounded-[3px]" value={data.serviceDetailPage?.sliderNext || ""} placeholder={SERVICE_PAGE_DEFAULTS.sliderNext} onChange={(e) => updateData("serviceDetailPage", "sliderNext", e.target.value)} />
                      </div>
                   </div>
                   <div>

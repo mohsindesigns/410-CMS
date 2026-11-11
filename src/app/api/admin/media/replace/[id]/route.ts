@@ -1,4 +1,5 @@
-import { NextResponse } from 'next/server';
+import { NextRequest, NextResponse } from 'next/server';
+import { hasPermission } from '@/lib/rbac';
 import connectToDatabase from '@/lib/mongodb';
 import Media from '@/models/Media';
 import SiteContent from '@/models/Content';
@@ -6,9 +7,12 @@ import { unlink, writeFile } from 'fs/promises';
 import path from 'path';
 
 export async function POST(
-  req: Request,
+  req: NextRequest,
   { params }: { params: Promise<{ id: string }> }
 ) {
+  if (!(await hasPermission(req, 'media', 'update'))) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 403 });
+  }
   try {
     const { id } = await params;
     await connectToDatabase();
@@ -31,7 +35,7 @@ export async function POST(
     
     // 2. Generate new file info
     const timestamp = Date.now();
-    const filename = `${timestamp}-${file.name.replace(/\s+/g, '-')}`;
+    const filename = `${timestamp}-${path.basename(file.name).replace(/[^A-Za-z0-9._-]+/g, '-')}`;
     const filePath = path.join(process.cwd(), 'public', 'uploads', filename);
     const newUrl = `/uploads/${filename}`;
 

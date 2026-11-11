@@ -72,6 +72,7 @@ export default async function robots(): Promise<MetadataRoute.Robots> {
     // Internal API only. /_next/ must NOT be blocked: it serves the CSS, JS and optimised images Googlebot
     // needs to render pages (blocking it breaks rendering, mobile-friendliness and image indexing).
     '/api/',
+    '/admin/',
   ];
 
   // Specific AI bots, modern crawlers, and international search engines
