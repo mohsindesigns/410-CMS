@@ -66,7 +66,7 @@ export default function StatsSection() {
           <div className="flex flex-col justify-center">
             <p className="section-label text-gold-dark mb-4">{stripHtml(label)}</p>
             <h2 className="display-heading text-[30px] min-[400px]:text-[36px] md:text-[44px] text-dark leading-tight mb-7">
-              {stripHtml(titleLine1)}<br />
+              {stripHtml(titleLine1)}{" "}<br />
               {stripHtml(titleLine2)} <span className="text-gold-dark italic">{stripHtml(titleItalicWord)}</span>
             </h2>
 

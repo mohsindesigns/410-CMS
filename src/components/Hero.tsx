@@ -95,7 +95,7 @@ export default function HeroSection() {
 
           {/* Headline */}
           <h1 className="display-heading text-[33px] min-[400px]:text-[41px] md:text-[60px] leading-[1.1] mb-6 md:mb-8 tracking-tight">
-            <span className="block text-white mb-0">{cleanTitle1}</span>
+            <span className="block text-white mb-0">{cleanTitle1}</span>{" "}
             <span className="block text-gold italic">{cleanTitle2}</span>
           </h1>
 

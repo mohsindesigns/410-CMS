@@ -236,7 +236,7 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
               {hero.headline?.line1} <br />
               <span className="relative inline-block text-transparent bg-clip-text bg-gradient-to-r from-foreground via-foreground/70 to-foreground/90">
                 {hero.headline?.line2}
-              </span>
+              </span>{" "}
               <br />
               {hero.headline?.line3}
             </h1>

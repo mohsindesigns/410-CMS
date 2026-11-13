@@ -304,6 +304,24 @@ export default async function BlogPostPage({ params }: Props) {
     return /^https?:\/\//i.test(u) ? u : `${BASE_URL}${u.startsWith('/') ? '' : '/'}${u}`;
   })();
 
+  // FAQPage schema is generated automatically from the FAQs added to the post (no pasted markup needed).
+  const plainFaqText = (v: any) =>
+    String(v || "")
+      .replace(/<br\s*\/?>/gi, " ")
+      .replace(/<\/(p|li|div|h[1-6])>/gi, " ")
+      .replace(/<[^>]*>/g, "")
+      .replace(/&nbsp;/g, " ").replace(/&amp;/g, "&").replace(/&lt;/g, "<").replace(/&gt;/g, ">").replace(/&quot;/g, '"').replace(/&#0?39;/g, "'")
+      .replace(/\s+/g, " ")
+      .trim();
+  const faqEntities = (Array.isArray(post.faq) ? post.faq : [])
+    .map((item: any) => ({ q: plainFaqText(item?.question), a: plainFaqText(item?.answer) }))
+    .filter((item: { q: string; a: string }) => item.q && item.a)
+    .map((item: { q: string; a: string }) => ({
+      "@type": "Question",
+      "name": item.q,
+      "acceptedAnswer": { "@type": "Answer", "text": item.a },
+    }));
+
   // 5. Schema.org Article Graph JSON-LD
   const schemaGraph = {
     "@context": "https://schema.org",
@@ -379,7 +397,15 @@ export default async function BlogPostPage({ params }: Props) {
         "thumbnailUrl": schemaImage,
         "keywords": [...(post.tags || []), ...(post.categories || [])].map((t: any) => t?.name).filter(Boolean).join(", ") || undefined,
         "inLanguage": "en-US"
-      }
+      },
+      ...(faqEntities.length > 0
+        ? [{
+            "@type": "FAQPage",
+            "@id": `${url}#faq`,
+            "isPartOf": { "@id": url },
+            "mainEntity": faqEntities,
+          }]
+        : []),
     ]
   };
 
@@ -654,7 +680,8 @@ export default async function BlogPostPage({ params }: Props) {
         <div className="mt-16 pt-8 border-t border-white/10">
           <PageInlineFaqs
             faqs={post.faq}
-            faqSchemaMarkup={post.faqSchemaMarkup}
+            // pasted markup is only a fallback: when the post has FAQs the FAQPage above is generated automatically (no duplicate)
+            faqSchemaMarkup={faqEntities.length > 0 ? undefined : post.faqSchemaMarkup}
             badge={post.faqBadge || "ARTICLE FAQ"}
             title={post.faqTitle || "Frequently Asked Questions"}
             subtitle={post.faqDescription || "Key clinical insights and treatment queries answered."}
