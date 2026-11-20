@@ -1,4 +1,5 @@
 import { NextRequest } from "next/server";
+import sharp from "sharp";
 
 /**
  * /cdn-images/<cloudinary path>  ->  the same file on Cloudinary, served from our own domain.
@@ -14,6 +15,31 @@ import { NextRequest } from "next/server";
 // the requester. f_auto would hand a crawler (Accept: */*) a JPEG XL file that Chrome/Firefox cannot display, and
 // that copy would then be served to everyone. WebP is supported by all current browsers.
 const UPSTREAM = "https://res.cloudinary.com/dytytwyp6/image/upload/f_webp,q_auto/";
+
+/**
+ * Images that must stay under 100 KB (page-speed / SEO audit). They are re-encoded as WebP here, lowering the quality
+ * step by step (and only then the size) until the file fits. Matched on the file name inside the Cloudinary path, so
+ * every size variant (w_640, w_3840, none) of these images is covered. Add a file name here to cap another image.
+ */
+const MAX_BYTES = 95 * 1000;
+const COMPRESS_FILES = /(?:^|\/)(?:sports-massage|corrective|deep-tissue|acupressure|myofascial-massage)_\d+\.(?:png|jpe?g|webp)$/i;
+
+async function fitUnderLimit(input: Buffer): Promise<Buffer> {
+  let scale = 1;
+  const meta = await sharp(input).metadata();
+  for (let round = 0; round < 6; round++) {
+    const img = () => {
+      const p = sharp(input);
+      return scale < 1 && meta.width ? p.resize({ width: Math.round(meta.width * scale) }) : p;
+    };
+    for (const quality of [75, 68, 62, 56, 50, 44, 38]) {
+      const out = await img().webp({ quality, effort: 5, smartSubsample: true }).toBuffer();
+      if (out.length <= MAX_BYTES) return out;
+    }
+    scale *= 0.85;
+  }
+  return sharp(input).resize({ width: 800 }).webp({ quality: 40, effort: 5 }).toBuffer();
+}
 
 const encodeSegment = (s: string) => encodeURIComponent(s).replace(/%2C/gi, ",");
 
@@ -39,6 +65,23 @@ async function handle(req: NextRequest, ctx: { params: Promise<{ path?: string[]
       status,
       headers: { "Cache-Control": status === 404 ? "public, max-age=300" : "no-store" },
     });
+  }
+
+  if (COMPRESS_FILES.test(path.join("/"))) {
+    try {
+      const small = await fitUnderLimit(Buffer.from(await upstream.arrayBuffer()));
+      return new Response(head ? null : new Uint8Array(small), {
+        status: 200,
+        headers: {
+          "Content-Type": "image/webp",
+          "Content-Length": String(small.length),
+          "Cache-Control": "public, max-age=31536000, immutable",
+          "X-Content-Type-Options": "nosniff",
+        },
+      });
+    } catch {
+      return new Response("Image unavailable", { status: 502, headers: { "Cache-Control": "no-store" } });
+    }
   }
 
   const headers = new Headers({
