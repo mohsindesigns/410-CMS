@@ -10,6 +10,8 @@
  * (WebP + automatic quality, and the requested width, never upscaled) and returns it with a public cache header so
  * Cloudflare keeps it. Anything that is not a Cloudinary image (files in /public, /uploads, other hosts) is used as-is.
  */
+import { bustCappedImages } from "./imageUrl";
+
 const CLOUDINARY_PREFIX = /^https?:\/\/res\.cloudinary\.com\/dytytwyp6\/image\/upload\//;
 const LOCAL_PREFIX = "/cdn-images/";
 
@@ -18,8 +20,8 @@ export default function imageLoader({ src, width }: { src: string; width: number
   if (local.startsWith(LOCAL_PREFIX)) {
     // Already-resized URLs (a width transformation in the path) are left alone.
     const rest = local.slice(LOCAL_PREFIX.length);
-    if (/^[a-z]_[^/]*\//i.test(rest) && /(^|,)w_\d+/.test(rest.split("/")[0])) return local;
-    return `${LOCAL_PREFIX}w_${width},c_limit/${rest}`;
+    if (/^[a-z]_[^/]*\//i.test(rest) && /(^|,)w_\d+/.test(rest.split("/")[0])) return bustCappedImages(local);
+    return bustCappedImages(`${LOCAL_PREFIX}w_${width},c_limit/${rest}`);
   }
   return src;
 }

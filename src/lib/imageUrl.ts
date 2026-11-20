@@ -12,16 +12,27 @@ const CLOUDINARY_IMAGE_PREFIX = /https?:\/\/res\.cloudinary\.com\/dytytwyp6\/ima
 const LOCAL_PREFIX = "/cdn-images/f_webp/";
 const PLAIN_LOCAL = /\/cdn-images\/(?!f_webp\/)/g;
 
+/**
+ * The five service photos that are capped under 100 KB (see app/cdn-images route). Cloudflare had already cached their old,
+ * larger copies for a year under the plain link, so every link we emit for them carries "?v=2" (a new cache key, ignored by the route).
+ * Raise the number when one of these photos is compressed again.
+ */
+const CAPPED_IMAGE = /\/cdn-images\/(?:[a-z]_[^/]*\/)?f_webp\/v\d+\/(?:sports-massage|corrective|deep-tissue|acupressure|myofascial-massage)_\d+\.(?:png|jpe?g|webp)(?![\w.?])/gi;
+export const CAPPED_IMAGE_VERSION = "?v=2";
+export function bustCappedImages<T>(value: T): T {
+  return (typeof value === "string" ? value.replace(CAPPED_IMAGE, (m) => m + CAPPED_IMAGE_VERSION) : value) as T;
+}
+
 /** Fields that hold JSON-LD / raw markup: they need absolute URLs, so they are left untouched. */
 const SKIP_KEYS = new Set(["schemaData", "faqSchemaMarkup"]);
 
 /** For JSON-LD text (absolute URLs required): own-domain plain /cdn-images/ links -> the cache-safe /cdn-images/f_webp/ form. */
 export function webpifyOwnImageUrls(text: any): any {
-  return typeof text === "string" ? text.replace(/(https?:\/\/410-muscletherapy\.com\/cdn-images\/)(?!f_webp\/|w_)/g, "$1f_webp/") : text;
+  return typeof text === "string" ? bustCappedImages(text.replace(/(https?:\/\/410-muscletherapy\.com\/cdn-images\/)(?!f_webp\/|w_)/g, "$1f_webp/")) : text;
 }
 
 export function localizeImageUrl<T>(value: T): T {
-  return (typeof value === "string" ? value.replace(CLOUDINARY_IMAGE_PREFIX, LOCAL_PREFIX).replace(PLAIN_LOCAL, LOCAL_PREFIX) : value) as T;
+  return (typeof value === "string" ? bustCappedImages(value.replace(CLOUDINARY_IMAGE_PREFIX, LOCAL_PREFIX).replace(PLAIN_LOCAL, LOCAL_PREFIX)) : value) as T;
 }
 
 const isPlainObject = (v: unknown): v is Record<string, unknown> => {
@@ -36,7 +47,7 @@ export function localizeDeep<T>(input: T): T {
   if (Array.isArray(input)) return input.map((v) => localizeDeep(v)) as unknown as T;
   if (isPlainObject(input)) {
     const out: Record<string, unknown> = {};
-    for (const [k, v] of Object.entries(input)) out[k] = SKIP_KEYS.has(k) ? v : localizeDeep(v);
+    for (const [k, v] of Object.entries(input)) out[k] = SKIP_KEYS.has(k) ? bustCappedImages(v) : localizeDeep(v);
     return out as T;
   }
   return input;
