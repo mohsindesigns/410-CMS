@@ -21,7 +21,7 @@ export default function Leadership() {
     ctaLink = "",
     signatureName,
     signatureTitle,
-    image = "/images/theraphist.jpeg",
+    image = "",
     imageAlt = "Antoine Lyles"
   } = leadership || {};
 
@@ -65,13 +65,15 @@ export default function Leadership() {
 
             {/* Main photo container */}
             <div className="img-therapist h-[420px] md:h-[600px] lg:h-full lg:min-h-[600px] rounded-sm overflow-hidden shadow-2xl relative z-10 border border-border-light group">
-              <Image
-                src={image}
-                alt={imageAlt}
-                fill
-                sizes="(max-width: 1024px) 100vw, 45vw"
-                className="object-cover object-top transition-transform duration-750 group-hover:scale-105"
-              />
+              {image && (
+                <Image
+                  src={image}
+                  alt={imageAlt}
+                  fill
+                  sizes="(max-width: 1024px) 100vw, 45vw"
+                  className="object-cover object-top transition-transform duration-750 group-hover:scale-105"
+                />
+              )}
               {/* Overlay */}
               <div className="absolute inset-0 bg-dark/5 group-hover:bg-transparent transition-colors duration-300" />
             </div>

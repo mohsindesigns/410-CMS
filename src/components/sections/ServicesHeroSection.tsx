@@ -19,8 +19,8 @@ export default function ServicesHeroSection() {
   const btn1 = "BOOK APPOINTMENT";
   const btn2 = "EXPLORE SERVICES";
   
-  // Dynamic or fallback background image
-  const image = servicesData?.image || (servicesData?.items?.[0]?.image) || "/images/hero-bg.webp";
+  // Background image comes only from the CMS (Admin > Pages > Services)
+  const image = servicesData?.image || (servicesData?.items?.[0]?.image) || "";
 
   const containerVariants = {
     hidden: { opacity: 0 },
@@ -48,13 +48,15 @@ export default function ServicesHeroSection() {
         transition={{ duration: 1.5, ease: 'easeOut' }}
         className="absolute inset-0 z-0 pointer-events-none"
       >
-        <Image
-          src={image}
-          alt={servicesData?.imageAlt || "Precision Care & Recovery"}
-          fill
-          className="object-cover object-right lg:object-center opacity-80 filter contrast-105"
-          priority
-        />
+        {image && (
+          <Image
+            src={image}
+            alt={servicesData?.imageAlt || "Precision Care & Recovery"}
+            fill
+            className="object-cover object-right lg:object-center opacity-80 filter contrast-105"
+            priority
+          />
+        )}
         
         {/* Multi-directional Luxury Gradient Masks to dissolve all sharp corners */}
         <div className="absolute inset-0 bg-gradient-to-r from-dark via-dark/75 to-transparent" />

@@ -53,7 +53,7 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "410 Muscle Therapy",
       locale: "en_US",
       type: 'website',
-      images: [{ url: localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png` }],
+      images: ogImageList(localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage)),
     },
     other: {
       ...(publishedTime ? { 'article:published_time': publishedTime } : {}),
@@ -63,7 +63,7 @@ export async function generateMetadata(): Promise<Metadata> {
       card: seo.twitterCard === 'summary' ? 'summary' : 'summary_large_image',
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || "Our Blogs | 410 Muscle Therapy",
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || "Explore our latest articles, insights, and clinical recovery tips.",
-      images: [localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`].filter(Boolean) as string[],
+      images: twImageList(localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage)),
       site: "@410MuscleTherapy",
       creator: "@410MuscleTherapy",
     },
@@ -75,6 +75,7 @@ import { generateSchema } from '@/lib/schema-generator';
 import { resolveSameAs } from '@/lib/businessInfo';
 import PageBreadcrumb from "@/components/PageBreadcrumb";
 import { servicePageText } from '@/lib/servicePageText';
+import { ogImageList, twImageList } from "@/lib/shareImages";
 
 export default async function BlogsIndexPage() {
   await connectToDatabase();

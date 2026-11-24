@@ -5,6 +5,7 @@ import connectToDatabase from "@/lib/mongodb";
 import SiteContent from "@/models/Content";
 import { BASE_URL } from "@/lib/constants";
 import { getRobotsMetadata } from "@/lib/seo";
+import { twImageList } from "@/lib/shareImages";
 
 type Props = {
   params: Promise<{ slug: string }>;
@@ -41,20 +42,22 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       description,
       url: `${BASE_URL}/${slug}/`,
       type: "website",
-      images: [
-        {
-          url: localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`,
-          width: 1200,
-          height: 630,
-          alt: title,
-        },
-      ],
+      images: (localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage))
+        ? [
+            {
+              url: (localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage)) as string,
+              width: 1200,
+              height: 630,
+              alt: title,
+            },
+          ]
+        : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title,
       description,
-      images: [localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`],
+      images: twImageList(localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage)),
       site: "@410MuscleTherapy",
       creator: "@410MuscleTherapy",
     },

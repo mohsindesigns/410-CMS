@@ -175,12 +175,12 @@ export default function TestimonialsSection({ label: labelProp, title1: title1Pr
 
           {/* ── Right: Result Cards (6 Images Grid) ── */}
           <div className="grid grid-cols-2 sm:grid-cols-3 gap-3 md:gap-4 mt-8 lg:mt-0">
-            {(results || []).slice(0, 6).map((result: any) => (
+            {(results || []).filter((r: any) => r && r.image).slice(0, 6).map((result: any) => (
               <div key={result.id} className="group relative overflow-hidden cursor-pointer aspect-[4/5] min-h-[170px] border border-border-dark bg-dark-3 rounded-md">
                 {/* Photo */}
                 <div className="img-testimonial-tile relative w-full h-full">
                   <Image
-                    src={result.image || "/images/placeholder.svg"}
+                    src={result.image}
                     alt={result.label || result.caption || "Testimonial result"}
                     fill
                     sizes="(max-width: 640px) 45vw, 20vw"

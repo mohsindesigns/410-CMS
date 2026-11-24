@@ -6,6 +6,7 @@ import Page from "@/models/Page";
 import { BASE_URL } from "@/lib/constants";
 import { Metadata } from "next";
 import { getRobotsMetadata } from "@/lib/seo";
+import { ogImageList, twImageList } from "@/lib/shareImages";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
@@ -17,7 +18,7 @@ export async function generateMetadata(): Promise<Metadata> {
   const seo = pageDoc?.seo || galleryData.seo || {};
   const settings = content?.data?.settings;
   const pageUrl = `${BASE_URL}/gallery/`;
-  const ogImage = localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`;
+  const ogImage = localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage);
 
   return {
     title: seo.metaTitle || "Project Gallery",
@@ -30,13 +31,13 @@ export async function generateMetadata(): Promise<Metadata> {
       description: seo.ogDescription || seo.metaDescription,
       url: pageUrl,
       type: "website",
-      images: [{ url: ogImage }],
+      images: ogImageList(ogImage),
     },
     twitter: {
       card: "summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || "Project Gallery",
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
-      images: [localizeImageUrl(seo.twitterImage) || ogImage],
+      images: twImageList(localizeImageUrl(seo.twitterImage) || ogImage),
     },
     robots: getRobotsMetadata(settings, seo),
   };

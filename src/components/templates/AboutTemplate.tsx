@@ -9,8 +9,6 @@ import { Icon } from "../../config/icons";
 import gsap from "gsap";
 import { ScrollTrigger } from "gsap/ScrollTrigger";
 
-const owner = "/images/theraphist.jpeg"; // default founder portrait (410 Muscle Therapy specialist)
-
 import {
   ShieldCheck,
   ArrowUpRight,
@@ -195,7 +193,7 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
     <section className="relative min-h-[85vh] sm:min-h-screen w-full bg-background overflow-hidden flex items-center justify-center py-16 sm:py-12">
       <div className="absolute inset-0 z-0">
         <motion.div style={{ y: y1 }} className="absolute inset-0">
-          {hero.bgImage && (hero.bgImage.startsWith('http') || hero.bgImage.startsWith('/uploads') || hero.bgImage.startsWith('/cdn-images')) ? (
+          {!hero.bgImage ? null : (hero.bgImage.startsWith('http') || hero.bgImage.startsWith('/uploads') || hero.bgImage.startsWith('/cdn-images')) ? (
             <img
               src={hero.bgImage}
               alt={hero.bgImageAlt || "410 Muscle Therapy Interior"}
@@ -203,7 +201,7 @@ const Hero = ({ content: passedContent }: { content?: any }) => {
             />
           ) : (
             <Image
-              src={hero.bgImage || "https://images.unsplash.com/photo-1600585154340-be6161a56a0c?q=80&w=2070"}
+              src={hero.bgImage}
               alt={hero.bgImageAlt || "410 Muscle Therapy Interior"}
               fill
               quality={100}
@@ -343,15 +341,17 @@ const FounderPortrait = ({ content }: { content?: any }) => {
               className="object-cover w-full h-full"
             />
           ) : (
-            <Image
-              src={story.portrait?.image || owner}
-              alt={story.portrait?.alt || story.founder?.name || "Founder"}
-              className="object-cover"
-              fill
-              quality={100}
-              sizes="(max-width: 640px) 100vw, (max-width: 768px) 80vw, 50vw"
-              priority
-            />
+            story.portrait?.image && (
+              <Image
+                src={story.portrait?.image}
+                alt={story.portrait?.alt || story.founder?.name || "Founder"}
+                className="object-cover"
+                fill
+                quality={100}
+                sizes="(max-width: 640px) 100vw, (max-width: 768px) 80vw, 50vw"
+                priority
+              />
+            )
           )}
 
           <div className="absolute inset-0 bg-gradient-to-t from-secondary/80 via-secondary/20 to-transparent" />
@@ -672,7 +672,7 @@ const ServiceCard = ({ service, index }: { service: any; index: number }) => {
   if (!service) return null;
 
   // Get the image - prioritize overviewImage, then fall back to imported images
-  let serviceImage: string | any = owner; // default fallback
+  let serviceImage: string | any = "";
 
   // Try to get overviewImage first (could be string URL)
   if (service.overviewImage) {

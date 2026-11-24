@@ -102,11 +102,10 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
 
   const hero = content.hero || {
     headline: pageData?.title || "Our Service Areas",
-    description: "Proudly serving Timonium, Baltimore County, and surrounding Maryland communities with elite sports massage, mobility restoration, and clinical muscle therapy.",
-    image: "/images/service-area-hero.jpg"
+    description: "Proudly serving Timonium, Baltimore County, and surrounding Maryland communities with elite sports massage, mobility restoration, and clinical muscle therapy."
   };
 
-  const bannerImg = hero.image || "/images/service-area-hero.jpg";
+  const bannerImg = hero.image || "";
 
   const regions: Region[] = content.regions || [
     {
@@ -193,8 +192,7 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
     title: "Performance Recovery & Clinical Bodywork in This Community",
     description: "<p>Proudly providing specialized orthopedic bodywork, mobility restoration, and injury prevention to Maryland athletes and active adults.</p>",
     buttonText: "Schedule Session",
-    buttonHref: "#contact",
-    image: "/images/service-area-overview.jpg"
+    buttonHref: "#contact"
   };
 
   const regionsSection = content.regionsSection || {
@@ -226,11 +224,13 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
       <section className="relative pt-36 pb-32 sm:pt-44 sm:pb-36 bg-slate-950 overflow-hidden">
         {/* Background Banner Image */}
         <div className="absolute inset-0 z-0">
-          <img
-            src={bannerImg}
-            alt={pageData?.title || "Service Area Banner"}
-            className="w-full h-full object-cover opacity-35"
-          />
+          {bannerImg && (
+            <img
+              src={bannerImg}
+              alt={pageData?.title || "Service Area Banner"}
+              className="w-full h-full object-cover opacity-35"
+            />
+          )}
           {/* Guaranteed Deep Contrast Mask Overlay */}
           <div className="absolute inset-0 bg-slate-950/80" />
           <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/70 to-slate-950/40" />
@@ -639,11 +639,13 @@ export default function ServiceAreaTemplate({ pageData }: { pageData?: any }) {
             {/* Right Side: Showcase Illustration Image */}
             <div className="lg:col-span-6">
               <div className="relative rounded-[2rem] overflow-hidden shadow-2xl border border-slate-200/80 group">
-                <img
-                  src={overviewData.image || "/images/service-area-overview.jpg"}
-                  alt={overviewData.title}
-                  className="w-full h-[450px] object-cover hover:scale-105 transition-transform duration-700"
-                />
+                {overviewData.image && (
+                  <img
+                    src={overviewData.image}
+                    alt={overviewData.title}
+                    className="w-full h-[450px] object-cover hover:scale-105 transition-transform duration-700"
+                  />
+                )}
                 <div className="absolute inset-0 bg-gradient-to-t from-slate-950/20 to-transparent pointer-events-none" />
               </div>
             </div>

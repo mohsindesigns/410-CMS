@@ -107,7 +107,7 @@ export const useContent = () => {
             const stats = h.stats || [];
             const socialProofText = h.socialProofText || (stats.length > 0 ? `${stats[0].value} ${stats[0].label}` : "Trusted by 500+ athletes & active adults");
                 
-            const image = h.image || h.images?.[0] || "/images/hero-bg.webp";
+            const image = h.image || h.images?.[0] || "";
             const imageAlt = h.imageAlt || h.bgImageAlt || "Expert muscle therapy session";
             
             return {
@@ -154,7 +154,7 @@ export const useContent = () => {
                 titleItalicWord: s.titleItalicWord || "Standards.",
                 description: s.description || "At 410 Muscle Therapy, we believe that true recovery is built on specialized bodywork and precision movement science.",
                 description2: s.description2 || "",
-                image: s.image || "/images/blog-3.webp",
+                image: s.image || "",
                 imageAlt: s.imageAlt || "Clinical sports massage session",
                 items
             };
@@ -175,7 +175,7 @@ export const useContent = () => {
                 const name = item.name || item.title || `Service ${i + 1}`;
                 const slug = item.slug || item.id || title.toLowerCase().replace(/\s+/g, '-');
                 const description = item.description || item.heroDescription || "";
-                const image = item.image || item.featuredImage || "/images/service-massage.webp";
+                const image = item.image || "";
                 const rawBenefits = item.benefits || item.focusCards || [];
                 const benefits = Array.isArray(rawBenefits) && rawBenefits.length > 0 
                     ? rawBenefits 
@@ -248,7 +248,7 @@ export const useContent = () => {
             const label = l.label || section.badge || "The Specialist";
             const title = l.title || section.headline || "Meet Antoine Lyles";
             const tagline = l.tagline || (typeof ceo.quotes?.[0] === 'string' ? ceo.quotes[0].replace(/<[^>]*>/g, '').trim() : "Performance Recovery Specialist");
-            const image = l.image || ceo.image?.src || "/images/theraphist.jpeg";
+            const image = l.image || ceo.image?.src || "";
             const imageAlt = l.imageAlt || ceo.image?.alt || "Antoine Lyles";
 
             const desc1 = l.desc1 || (ceo.description ? ceo.description.split("</p>")[0] + "</p>" : "<p>Antoine Lyles is a certified massage therapist specializing in clinical sports massage, myofascial release, and neuromuscular therapy.</p>");

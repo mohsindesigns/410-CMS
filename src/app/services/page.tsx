@@ -53,13 +53,13 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "410 Muscle Therapy",
       locale: "en_US",
       type: 'website',
-      images: [localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`],
+      images: twImageList(localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage)),
     },
     twitter: {
       card: seo.twitterCard === 'summary' ? 'summary' : 'summary_large_image',
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || pageDoc?.title || "Our Services",
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || servicesData?.description,
-      images: [localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`],
+      images: twImageList(localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage)),
       site: "@410MuscleTherapy",
       creator: "@410MuscleTherapy",
     },
@@ -68,6 +68,7 @@ export async function generateMetadata(): Promise<Metadata> {
 }
 
 import { ContentProvider } from '@/context/ContentContext';
+import { ogImageList, twImageList } from "@/lib/shareImages";
 
 export default async function ServicesPage() {
   await connectToDatabase();

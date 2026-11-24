@@ -31,7 +31,7 @@ const DEFAULT_SERVICE_DETAIL = {
   bookingCtaUrl: "",
   heroCtaSecondary: "SEE HOW IT HELPS",
   heroCtaSecondaryUrl: "#overview",
-  image: "/images/service-massage.webp",
+  image: "",
 
   // 2. Stats
   statsItem1Val: "8 Yrs",

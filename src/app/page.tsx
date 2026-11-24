@@ -16,6 +16,7 @@ import { TemplateWrapper } from "@/components/templates/TemplateRegistry";
 import ServiceDetailTemplate from "@/components/templates/ServiceDetailTemplate";
 import { BASE_URL } from "@/lib/constants";
 import { getRobotsMetadata, buildPageTitle } from "@/lib/seo";
+import { ogImageList, twImageList } from "@/lib/shareImages";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
@@ -68,13 +69,13 @@ export async function generateMetadata(): Promise<Metadata> {
           ...metadata.openGraph,
           title: seo.ogTitle || seo.metaTitle || page.title,
           description: seo.ogDescription || seo.metaDescription || metaDescription,
-          images: [{ url: localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png` }],
+          images: ogImageList(localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage)),
         },
         twitter: {
           ...metadata.twitter,
           title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || page.title,
           description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || metaDescription,
-          images: [localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`].filter(Boolean) as string[],
+          images: twImageList(localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage)),
         },
         robots: getRobotsMetadata(settings, seo)
       };
@@ -96,13 +97,13 @@ export async function generateMetadata(): Promise<Metadata> {
           ...metadata.openGraph,
           title: seo.ogTitle || seo.metaTitle || service.title,
           description: seo.ogDescription || seo.metaDescription || metaDescription,
-          images: [{ url: localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png` }],
+          images: ogImageList(localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage)),
         },
         twitter: {
           ...metadata.twitter,
           title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || service.title,
           description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || metaDescription,
-          images: [localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`].filter(Boolean) as string[],
+          images: twImageList(localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage)),
         },
         robots: getRobotsMetadata(settings, seo)
       };
@@ -142,21 +143,22 @@ export async function generateMetadata(): Promise<Metadata> {
       url: pageUrl,
       type: "website",
       siteName: "410 Muscle Therapy",
-      images: [
-        {
-          url: localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`,
-          width: 1200,
-          height: 630,
-          alt: "410 Muscle Therapy – Performance Recovery & Clinical Bodywork Maryland",
-          type: "image/png",
-        },
-      ],
+      images: (localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage))
+        ? [
+            {
+              url: (localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage)) as string,
+              width: 1200,
+              height: 630,
+              alt: "410 Muscle Therapy – Performance Recovery & Clinical Bodywork Maryland",
+            },
+          ]
+        : undefined,
     },
     twitter: {
       card: "summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || metaTitle,
       description: seo.twitterDescription || seo.ogDescription || metaDescription,
-      images: [localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`],
+      images: twImageList(localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage)),
       creator: "@410MuscleTherapy",
       site: "@410MuscleTherapy",
     },

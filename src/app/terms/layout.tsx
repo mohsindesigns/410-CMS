@@ -11,6 +11,7 @@ import { resolveSameAs } from "@/lib/businessInfo";
 import { getPageDates } from "@/lib/pageDates";
 import { servicePageText } from "@/lib/servicePageText";
 import { TERMS_UPDATED } from "@/lib/legalDates";
+import { ogImageList, twImageList } from "@/lib/shareImages";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
@@ -33,13 +34,13 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "410 Muscle Therapy",
       type: "website",
       locale: "en_US",
-      images: [{ url: localizeImageUrl(seo.ogImage) || `${BASE_URL}/og-default.png` }],
+      images: ogImageList(localizeImageUrl(seo.ogImage)),
     },
     twitter: {
       card: "summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || "Terms & Conditions | 410 Muscle Therapy",
       description: seo.twitterDescription || seo.ogDescription || seo.metaDescription,
-      images: [localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || `${BASE_URL}/og-default.png`],
+      images: twImageList(localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage)),
       site: "@410MuscleTherapy",
     },
     robots: getRobotsMetadata(settings, seo),

@@ -237,8 +237,8 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
   const titleWords = serviceName.split(' ');
   const mainTitle = titleWords.slice(0, -1).join(' ');
   const lastTitleWord = titleWords[titleWords.length - 1] || "";
-  // Card/listing image is also the fallback for the two dedicated images. (/images/service-massage.webp ships in /public.)
-  const serviceImage = cleanImageSrc(service.image) || cleanImageSrc(service.featuredImage) || "/images/service-massage.webp";
+  // The service's own card image is used for the hero / overview when no dedicated image is set. No hard-coded picture.
+  const serviceImage = cleanImageSrc(service.image);
   const heroImageSrc = cleanImageSrc(service.heroImage) || serviceImage;
   const overviewImageSrc = cleanImageSrc(service.overviewImage) || serviceImage;
   const heroImageAlt = typeof service.heroImageAlt === 'string' ? service.heroImageAlt.trim() : "";
@@ -340,18 +340,20 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
           {/* Ambient Background Image */}
           <div className="absolute inset-0 z-0 pointer-events-none opacity-40">
             {/* LCP image: eager + high priority. Decorative (empty alt, hidden from AT) unless an alt text was set. */}
-            <img
-              src={heroImageSrc}
-              alt={heroImageAlt}
-              aria-hidden={heroImageAlt ? undefined : true}
-              width={1600}
-              height={900}
-              loading="eager"
-              fetchPriority="high"
-              decoding="async"
-              style={heroImagePosition ? { objectPosition: heroImagePosition } : undefined}
-              className="w-full h-full object-cover object-center filter contrast-105 saturate-110"
-            />
+            {heroImageSrc && (
+              <img
+                src={heroImageSrc}
+                alt={heroImageAlt}
+                aria-hidden={heroImageAlt ? undefined : true}
+                width={1600}
+                height={900}
+                loading="eager"
+                fetchPriority="high"
+                decoding="async"
+                style={heroImagePosition ? { objectPosition: heroImagePosition } : undefined}
+                className="w-full h-full object-cover object-center filter contrast-105 saturate-110"
+              />
+            )}
             {/* Multi-directional luxury gradient masks */}
             <div className="absolute inset-0 bg-gradient-to-r from-dark via-dark/85 to-transparent" />
             <div className="absolute inset-0 bg-gradient-to-b from-dark/60 via-transparent to-dark" />
@@ -502,16 +504,18 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
               <div className="lg:col-span-5 flex flex-col">
                 <div className="relative w-full h-full min-h-[460px] rounded-lg overflow-hidden shadow-2xl border border-border-light p-2.5 bg-warm-white/80 group">
                   <div className="relative w-full h-full min-h-[440px] rounded-md overflow-hidden">
-                    <img
-                      src={overviewImageSrc}
-                      alt={overviewImageAlt}
-                      width={800}
-                      height={1000}
-                      loading="lazy"
-                      decoding="async"
-                      style={overviewImagePosition ? { objectPosition: overviewImagePosition } : undefined}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter contrast-[1.02]"
-                    />
+                    {overviewImageSrc && (
+                      <img
+                        src={overviewImageSrc}
+                        alt={overviewImageAlt}
+                        width={800}
+                        height={1000}
+                        loading="lazy"
+                        decoding="async"
+                        style={overviewImagePosition ? { objectPosition: overviewImagePosition } : undefined}
+                        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 filter contrast-[1.02]"
+                      />
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-dark/70 via-transparent to-transparent" />
 
                     {/* Top Watermark Tag */}
@@ -804,7 +808,7 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
                   label: sh((typeof rel.menuLabel === 'string' && rel.menuLabel.trim()) || rel.title || rel.name),
                   tag: sh(rel.tag),
                   text: sh(String(rel.heroDescription || rel.description || "").replace(/\[([^\]]+)\]\([^)]*\)/g, '$1')),
-                  image: cleanImageSrc(rel.image) || "/images/service-massage.webp",
+                  image: cleanImageSrc(rel.image),
                 }))}
               />
             </div>

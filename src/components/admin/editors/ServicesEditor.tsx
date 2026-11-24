@@ -31,7 +31,7 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
           badge: "Precision Care & Recovery",
           headline: { prefix: "Therapies", highlight: "Designed", suffix: "Around You" },
           description: "<p>Experience therapeutic bodywork tailored to your performance and recovery goals.</p>",
-          image: "/images/hero-bg.webp",
+          image: "",
           ctaBook: "BOOK APPOINTMENT",
           ctaExplore: "EXPLORE SERVICES",
           services: []
@@ -65,8 +65,8 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
           description: "We analyze your biomechanics, locate the underlying dysfunctions, and apply clinical treatment steps to ensure lasting relief and athletic longevity.",
           phaseLabel: "PHASE",
           items: [
-            { id: "01", title: "Assessment", description: "Identify muscular imbalances and structural restrictions.", image: "/images/blog-1.webp", actions: ["Range of Motion Testing", "Postural Alignment Check"] },
-            { id: "02", title: "Targeted Therapy", description: "Address dysfunctions with deep tissue and mobility techniques.", image: "/images/blog-2.webp", actions: ["Trigger Point Releases", "PNF Muscle Stretching"] }
+            { id: "01", title: "Assessment", description: "Identify muscular imbalances and structural restrictions.", image: "", actions: ["Range of Motion Testing", "Postural Alignment Check"] },
+            { id: "02", title: "Targeted Therapy", description: "Address dysfunctions with deep tissue and mobility techniques.", image: "", actions: ["Trigger Point Releases", "PNF Muscle Stretching"] }
           ]
         }
       });

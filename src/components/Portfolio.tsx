@@ -85,7 +85,7 @@ const MarqueeItem = ({ project }: { project: Project }) => {
       className="relative w-[200px] sm:w-[240px] md:w-[280px] h-[280px] sm:h-[320px] md:h-[360px] flex-shrink-0 cursor-pointer will-change-transform transition-transform duration-300"
     >
       <div className="relative w-full h-full rounded-xl overflow-hidden shadow-2xl shadow-gray-300/50">
-        {project.image && (project.image.startsWith('http') || project.image.startsWith('/uploads') || project.image.startsWith('/cdn-images')) ? (
+        {!project.image ? null : (project.image.startsWith('http') || project.image.startsWith('/uploads') || project.image.startsWith('/cdn-images')) ? (
           <img
             src={project.image}
             alt={project.title}
@@ -97,7 +97,7 @@ const MarqueeItem = ({ project }: { project: Project }) => {
           />
         ) : (
           <Image
-            src={project.image || "/uploads/blog/2_massage-service.jpg"}
+            src={project.image}
             alt={project.title}
             className="object-cover"
             fill

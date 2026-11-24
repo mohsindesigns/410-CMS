@@ -11,7 +11,7 @@ export type RecommendedItem = {
   label: string;
   tag?: string;
   text?: string;
-  image: string;
+  image?: string;
 };
 
 /**
@@ -61,13 +61,15 @@ export default function RecommendedServices({
               <article className="blog-card group bg-[#fbfbfa] border border-border-light hover:border-gold-dark/40 hover:shadow-xl rounded-sm overflow-hidden flex flex-col h-full w-full transition-all duration-300">
                 <Link href={`/${rel.slug}/`} className="flex flex-col flex-1 no-underline">
                   <div className="img-blog relative h-[210px] w-full overflow-hidden bg-dark/10">
-                    <Image
-                      src={rel.image}
-                      alt={rel.label}
-                      fill
-                      sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
-                      className="object-cover transition-transform duration-500 group-hover:scale-105"
-                    />
+                    {rel.image && (
+                      <Image
+                        src={rel.image}
+                        alt={rel.label}
+                        fill
+                        sizes="(max-width: 640px) 100vw, (max-width: 1024px) 50vw, 33vw"
+                        className="object-cover transition-transform duration-500 group-hover:scale-105"
+                      />
+                    )}
                     {rel.tag && (
                       <span className="absolute top-3 left-3 bg-gold-dark text-white text-[10px] font-bold tracking-wider uppercase px-2.5 py-1 rounded-xs shadow-sm">
                         {rel.tag}

@@ -14,6 +14,7 @@ import { BASE_URL } from "@/lib/constants";
 
 
 import { getRobotsMetadata, buildPageTitle } from "@/lib/seo";
+import { ogImageList, twImageList } from "@/lib/shareImages";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
@@ -57,13 +58,13 @@ export async function generateMetadata(): Promise<Metadata> {
       url: pageUrl,
       siteName: "410 Muscle Therapy",
       type: "website",
-      images: [{ url: localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png` }],
+      images: ogImageList(localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage)),
     },
     twitter: {
       card: seo.twitterCard === "summary" ? "summary" : "summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || metaTitle,
       description: seo.twitterDescription || seo.ogDescription || metaDescription,
-      images: [localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage) || `${BASE_URL}/og-default.png`].filter(Boolean) as string[],
+      images: twImageList(localizeImageUrl(seo.twitterImage) || localizeImageUrl(seo.ogImage) || localizeImageUrl(seo.featuredImage)),
     },
     robots: getRobotsMetadata(settings, seo)
   };

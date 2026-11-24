@@ -63,7 +63,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
           hero: data.hero || {
             headline: data.hero?.headline || "Our Service Areas",
             description: data.hero?.description || "Proudly serving Timonium, Baltimore County, and surrounding Maryland communities with elite sports massage, mobility restoration, and clinical muscle therapy.",
-            image: data.hero?.image || "/images/service-area-hero.jpg"
+            image: data.hero?.image || ""
           },
           stats: data.stats || [
             { value: "6+", label: "Years of Specialized Practice" },
@@ -142,7 +142,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
             description: "<p>Proudly providing specialized orthopedic bodywork, mobility restoration, and injury prevention to Maryland athletes and active adults.</p>",
             buttonText: "Schedule Session",
             buttonHref: "#contact",
-            image: "/images/service-area-overview.jpg"
+            image: ""
           },
           cta: data.cta || {
             headline: "Ready to Restore Peak Performance?",
@@ -246,7 +246,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                         value={data.hero?.image || ""}
                         onChange={(e) => updateField("hero", "image", e.target.value)}
                         className={UI.input}
-                        placeholder="e.g. /images/service-area-hero.jpg"
+                        placeholder="Image URL (choose one from Media)"
                       />
                       <button
                         type="button"
@@ -1158,7 +1158,7 @@ export default function ServiceAreaEditor({ pageId, data, setData }: { pageId: s
                         value={data.overview?.image || ""}
                         onChange={(e) => updateField("overview", "image", e.target.value)}
                         className={UI.input}
-                        placeholder="e.g. /uploads/blog/2_massage-service.jpg"
+                        placeholder="Image URL (choose one from Media)"
                       />
                       <button
                         type="button"

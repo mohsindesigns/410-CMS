@@ -60,7 +60,7 @@ function buildBusinessEntity(opts: { aggregateRating?: AggregateRatingInput; wit
       "width": 512,
       "height": 512
     },
-    "image": `${BASE_URL}/og-default.png`,
+    "image": `${BASE_URL}/icons/icon-512.png`,
     "telephone": BUSINESS.phoneE164,
     "email": BUSINESS.email,
     ...(sameAs.length ? { "sameAs": sameAs } : {}),

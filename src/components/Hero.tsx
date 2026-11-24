@@ -18,7 +18,7 @@ export default function HeroSection() {
     ctaBook = "BOOK RECOVERY SESSION",
     ctaServices = "EXPLORE SERVICES",
     socialProofText = "Trusted by 500+ athletes & active adults",
-    image = "/images/hero-bg.webp",
+    image = "",
     imageAlt = "Expert muscle therapy session"
   } = hero || {};
 
@@ -52,7 +52,7 @@ export default function HeroSection() {
 
       {/* ── Blended Hero Image Background (More Visible Photo) ── */}
       <div className="absolute inset-0 z-0 pointer-events-none opacity-85">
-        {image.startsWith('http') || image.startsWith('/uploads') || image.startsWith('/cdn-images') ? (
+        {!image ? null : image.startsWith('http') || image.startsWith('/uploads') || image.startsWith('/cdn-images') ? (
           <img
             src={image}
             alt={imageAlt}

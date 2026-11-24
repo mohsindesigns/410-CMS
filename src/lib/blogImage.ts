@@ -1,43 +1,13 @@
 import { localizeImageUrl } from './imageUrl';
 
 /**
- * Normalizes blog image URLs.
- * Handles legacy WordPress wp-content paths, Cloudinary URLs, and local uploads.
+ * Normalizes a blog image URL (Cloudinary links are served from our own domain).
+ * Returns an empty string when the post has no image - there is no default/fallback picture.
  */
 export function normalizeBlogImage(url?: string | null): string {
-  if (!url || typeof url !== 'string') {
-    return '/images/service-massage.webp';
-  }
-
+  if (!url || typeof url !== 'string') return '';
   const trimmed = url.trim();
-  if (!trimmed) {
-    return '/images/service-massage.webp';
-  }
-
-  // Cloudinary URL: serve it from our own domain (/cdn-images/ proxies the same file)
-  if (trimmed.includes('cloudinary.com')) {
-    return localizeImageUrl(trimmed);
-  }
-
-  // Legacy WordPress wp-content path: convert to /uploads/blog/<filename>
-  if (trimmed.includes('wp-content/uploads')) {
-    try {
-      const parsed = new URL(trimmed.startsWith('http') ? trimmed : `https://410-muscletherapy.com${trimmed.startsWith('/') ? '' : '/'}${trimmed}`);
-      const pathname = parsed.pathname;
-      const filename = pathname.substring(pathname.lastIndexOf('/') + 1);
-      if (filename) {
-        // Normalize any special unicode dashes
-        const cleanFilename = filename.replace(/[–—]/g, '_');
-        return `/uploads/blog/${cleanFilename}`;
-      }
-    } catch {
-      const parts = trimmed.split('/');
-      const filename = parts[parts.length - 1];
-      if (filename) {
-        return `/uploads/blog/${filename.replace(/[–—]/g, '_')}`;
-      }
-    }
-  }
-
+  if (!trimmed) return '';
+  if (trimmed.includes('cloudinary.com')) return localizeImageUrl(trimmed);
   return trimmed;
 }

@@ -47,6 +47,7 @@ function getAbsoluteUrl(path: string | undefined) {
 }
 
 import { getRobotsMetadata, buildPageTitle } from "@/lib/seo";
+import { twImageList } from "@/lib/shareImages";
 
 export async function generateMetadata({ params }: PageProps): Promise<Metadata> {
   const resolvedParams = await params;
@@ -87,18 +88,13 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
         url: pageUrl,
         siteName: "410 Muscle Therapy",
         type: "website",
-        images: [
-          {
-            url: ogImage || `${BASE_URL}/og-default.png`,
-            alt: seo.featuredImageAlt || title,
-          }
-        ],
+        images: ogImage ? [{ url: ogImage, alt: seo.featuredImageAlt || title }] : undefined,
       },
       twitter: {
         card: seo.twitterCard === "summary" ? "summary" : "summary_large_image",
         title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || title,
         description: seo.twitterDescription || seo.ogDescription || seo.metaDescription || description,
-        images: [twitterImage || `${BASE_URL}/og-default.png`],
+        images: twImageList(twitterImage),
         site: "@410MuscleTherapy",
         creator: "@410MuscleTherapy",
       },
@@ -123,18 +119,15 @@ export async function generateMetadata({ params }: PageProps): Promise<Metadata>
       url: pageUrl,
       siteName: "410 Muscle Therapy",
       type: "website",
-      images: [
-        {
-          url: getAbsoluteUrl(seo.ogImage || seo.featuredImage) || `${BASE_URL}/og-default.png`,
-          alt: seo.featuredImageAlt || page.title,
-        }
-      ],
+      images: getAbsoluteUrl(seo.ogImage || seo.featuredImage)
+        ? [{ url: getAbsoluteUrl(seo.ogImage || seo.featuredImage) as string, alt: seo.featuredImageAlt || page.title }]
+        : undefined,
     },
     twitter: {
       card: seo.twitterCard === "summary" ? "summary" : "summary_large_image",
       title: seo.twitterTitle || seo.ogTitle || seo.metaTitle || page.title,
       description: seo.twitterDescription || seo.ogDescription || pageDescription,
-      images: [getAbsoluteUrl(seo.twitterImage || seo.ogImage || seo.featuredImage) || `${BASE_URL}/og-default.png`],
+      images: twImageList(getAbsoluteUrl(seo.twitterImage || seo.ogImage || seo.featuredImage)),
       site: "@410MuscleTherapy",
       creator: "@410MuscleTherapy",
     },

@@ -18,7 +18,6 @@ export default function ServicesSection() {
     id: "01",
     name: "Deep Tissue Therapy",
     description: "Targets chronic muscle tension and knots to relieve pain and restore natural movement.",
-    image: "/images/service-massage.webp",
     benefits: ["Relieves tightness & knots", "Improves mobility", "Enhances blood flow", "Reduces pain & stiffness"],
     slug: "deep-tissue-therapy"
   };
@@ -96,13 +95,15 @@ export default function ServicesSection() {
                 <div>
                   {/* Service image preview */}
                   <div className="img-service-preview relative h-[170px] rounded-xl overflow-hidden mb-4 border border-white/10 shadow-2xl bg-black/40">
-                    <Image
-                      src={active.image || "/images/service-massage.webp"}
-                      alt={active.name}
-                      fill
-                      sizes="(max-width: 1024px) 100vw, 450px"
-                      className="object-cover"
-                    />
+                    {active.image && (
+                      <Image
+                        src={active.image}
+                        alt={active.name}
+                        fill
+                        sizes="(max-width: 1024px) 100vw, 450px"
+                        className="object-cover"
+                      />
+                    )}
                     <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/30 to-transparent" />
                     <span className="absolute bottom-3 right-5 text-[48px] font-bold leading-none text-white/10 font-serif select-none pointer-events-none">
                       {String(activeIdx + 1).padStart(2, '0')}

@@ -78,15 +78,6 @@ export async function generateMetadata(): Promise<Metadata> {
       siteName: "410 Muscle Therapy",
       title: settings.siteTitle,
       description: settings.siteDescription,
-      images: [
-        {
-          url: `${BASE_URL}/og-default.png`,
-          width: 1200,
-          height: 630,
-          alt: "410 Muscle Therapy – Performance Recovery & Clinical Bodywork Maryland",
-          type: "image/png",
-        },
-      ],
     },
 
     // ── Twitter Cards ──
@@ -94,7 +85,6 @@ export async function generateMetadata(): Promise<Metadata> {
       card: "summary_large_image",
       title: settings.siteTitle,
       description: settings.siteDescription,
-      images: [`${BASE_URL}/og-default.png`],
       creator: "@410MuscleTherapy",
       site: "@410MuscleTherapy",
     },

@@ -70,7 +70,7 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
   const absUrl = (u?: string | null) => (!u ? undefined : /^https?:\/\//i.test(u) ? u : `${BASE_URL}${u.startsWith('/') ? '' : '/'}${u}`);
   const seoData = post.seo || {};
   const usable = (u?: string) => (u && !/\/wp-content\/uploads\//i.test(u) ? u : undefined);
-  const pageImage = absUrl(normalizeBlogImage(usable(seoData.ogImage) || usable(seoData.featuredImage) || post.featuredImage)) || `${BASE_URL}/og-default.png`;
+  const pageImage = absUrl(normalizeBlogImage(usable(seoData.ogImage) || usable(seoData.featuredImage) || post.featuredImage));
   const twitterImage = absUrl(seoData.twitterImage ? normalizeBlogImage(seoData.twitterImage) : undefined) || pageImage;
   const canonicalUrl = resolvePostCanonical(post).url;
 
@@ -98,17 +98,14 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       siteName: "410 Muscle Therapy",
       locale: "en_US",
       images: [
-        {
-          url: pageImage,
-          alt: seoData.featuredImageAlt || post.title
-        }
+        ...(pageImage ? [{ url: pageImage, alt: seoData.featuredImageAlt || post.title }] : [])
       ]
     },
     twitter: {
       card: seoData.twitterCard === "summary" ? "summary" : "summary_large_image",
       title: seoData.twitterTitle || seoData.ogTitle || pageTitle,
       description: seoData.twitterDescription || seoData.ogDescription || pageDesc,
-      images: [twitterImage],
+      images: twitterImage ? [twitterImage] : undefined,
       site: "@410MuscleTherapy",
       creator: "@410MuscleTherapy"
     }
@@ -210,7 +207,7 @@ export default async function BlogPostPage({ params }: Props) {
       slug: r.slug || String(r._id),
       title: r.title,
       badge: catBadge,
-      image: normalizeBlogImage(r.featuredImage) || "/images/blog-3.webp",
+      image: normalizeBlogImage(r.featuredImage),
       date: rDate,
       readTime: rReadTime
     };
@@ -243,7 +240,7 @@ export default async function BlogPostPage({ params }: Props) {
 
   const wordCount = rawHtmlContent.replace(/<[^>]*>/g, "").split(/\s+/).filter(Boolean).length;
   const readTimeDisplay = `${Math.max(3, Math.ceil(wordCount / 200))} min read`;
-  const featuredImage = normalizeBlogImage(post.featuredImage) || "/images/blog-3.webp";
+  const featuredImage = normalizeBlogImage(post.featuredImage);
 
   const rawAuthor = post.author as any;
   let cleanName = (post.authorName && typeof post.authorName === "string" && post.authorName.trim())
@@ -300,7 +297,8 @@ export default async function BlogPostPage({ params }: Props) {
   // JSON-LD images must be absolute URLs; the SEO "featured image" wins over the post's own image.
   const schemaImage = (() => {
     const legacy = (x?: string) => (x && !/\/wp-content\/uploads\//i.test(x) ? x : undefined);
-    const u = normalizeBlogImage(legacy(post.seo?.featuredImage) || post.featuredImage) || featuredImage;
+    const u = normalizeBlogImage(legacy(post.seo?.featuredImage) || post.featuredImage);
+    if (!u) return undefined;
     return /^https?:\/\//i.test(u) ? u : `${BASE_URL}${u.startsWith('/') ? '' : '/'}${u}`;
   })();
 
@@ -332,7 +330,7 @@ export default async function BlogPostPage({ params }: Props) {
         "url": url,
         "name": post.seo?.metaTitle || post.title,
         "isPartOf": { "@id": `${BASE_URL}/#website` },
-        "primaryImageOfPage": { "@id": `${url}#primaryimage` },
+        ...(schemaImage ? { "primaryImageOfPage": { "@id": `${url}#primaryimage` } } : {}),
         "datePublished": publishDate,
         "dateModified": modifiedDate,
         "description": tidyDescription(post.seo?.metaDescription, 300) || smartDescription(post.excerpt, 300),
@@ -389,12 +387,14 @@ export default async function BlogPostPage({ params }: Props) {
             "url": `${BASE_URL}/icons/icon-512.png`
           }
         },
-        "image": {
-          "@type": "ImageObject",
-          "@id": `${url}#primaryimage`,
-          "url": schemaImage
-        },
-        "thumbnailUrl": schemaImage,
+        ...(schemaImage ? {
+          "image": {
+            "@type": "ImageObject",
+            "@id": `${url}#primaryimage`,
+            "url": schemaImage
+          },
+          "thumbnailUrl": schemaImage,
+        } : {}),
         "keywords": [...(post.tags || []), ...(post.categories || [])].map((t: any) => t?.name).filter(Boolean).join(", ") || undefined,
         "inLanguage": "en-US"
       },
@@ -541,11 +541,13 @@ export default async function BlogPostPage({ params }: Props) {
       <div className="mx-auto max-w-6xl px-4 sm:px-6 mt-8 sm:mt-10 relative z-20">
         <div className="bg-dark-2 rounded-[24px] sm:rounded-[28px] overflow-hidden shadow-2xl border border-white/10 relative">
           {/* Natural height (no fixed aspect box / cropping) so the whole image is visible */}
-          <img
-            src={featuredImage}
-            alt={post.title}
-            className="block w-full h-auto"
-          />
+          {featuredImage && (
+            <img
+              src={featuredImage}
+              alt={post.title}
+              className="block w-full h-auto"
+            />
+          )}
         </div>
       </div>
 
@@ -710,11 +712,13 @@ export default async function BlogPostPage({ params }: Props) {
               >
                 <div>
                   <div className="relative h-56 w-full overflow-hidden bg-black/40 border-b border-white/10">
-                    <img
-                      src={rPost.image}
-                      alt={rPost.title}
-                      className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
-                    />
+                    {rPost.image && (
+                      <img
+                        src={rPost.image}
+                        alt={rPost.title}
+                        className="w-full h-full object-cover object-center group-hover:scale-105 transition-transform duration-700 ease-out"
+                      />
+                    )}
                     <span className="absolute top-4 left-4 inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full text-[10px] font-mono font-bold uppercase tracking-wider bg-gold text-dark shadow-md shadow-gold/20">
                       <Star className="w-3 h-3 fill-current" />
                       {rPost.badge}

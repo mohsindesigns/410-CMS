@@ -214,13 +214,15 @@ export default function StickyServicesSection() {
 
                 {/* Image Area (Clickable) */}
                 <Link href={`/${service.slug || service.id}/`} className="relative h-[180px] sm:h-[220px] lg:h-auto lg:w-[42%] overflow-hidden bg-black/60 block group/img flex-shrink-0">
-                  <Image
-                    src={service.image || "/images/service-massage.webp"}
-                    alt={service.name}
-                    fill
-                    sizes="(max-width: 1024px) 100vw, 42vw"
-                    className="object-cover object-center group-hover/img:scale-105 transition-transform duration-700 opacity-90 group-hover/img:opacity-100"
-                  />
+                  {service.image && (
+                    <Image
+                      src={service.image}
+                      alt={service.name}
+                      fill
+                      sizes="(max-width: 1024px) 100vw, 42vw"
+                      className="object-cover object-center group-hover/img:scale-105 transition-transform duration-700 opacity-90 group-hover/img:opacity-100"
+                    />
+                  )}
                   <div className="absolute inset-0 bg-gradient-to-t from-dark/90 via-dark/20 to-transparent lg:bg-gradient-to-r lg:from-dark/80 lg:to-transparent pointer-events-none" />
                 </Link>
 

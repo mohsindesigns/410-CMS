@@ -35,7 +35,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
           ctaBook: "BOOK RECOVERY SESSION",
           ctaServices: "EXPLORE SERVICES",
           socialProofText: "Trusted by 500+ athletes & active adults",
-          image: "/images/hero-bg.webp",
+          image: "",
           imageAlt: "Expert muscle therapy session"
         },
         stats: {
@@ -44,7 +44,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
           titleLine2: "Professional",
           titleItalicWord: "Standards.",
           description: "At 410 Muscle Therapy, we believe that true recovery is built on specialized bodywork and precision movement science.",
-          image: "/images/blog-3.webp",
+          image: "",
           imageAlt: "Clinical sports massage session",
           items: [
             { value: "8+", label: "Years of Experience" },
@@ -72,7 +72,7 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
           desc1: "<p>Antoine Lyles is a certified massage therapist specializing in clinical sports massage, myofascial release, and neuromuscular therapy.</p>",
           desc2: "<p>With years of experience working with competitive athletes and active individuals, he delivers targeted protocols designed to restore functional movement.</p>",
           photoBadge: "PERFORMANCE RECOVERY SPECIALIST",
-          image: "/images/theraphist.jpeg",
+          image: "",
           imageAlt: "Antoine Lyles",
           ctaMore: "LEARN MORE ABOUT ANTOINE",
           ctaLink: "",
@@ -85,8 +85,8 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
           description: "We analyze your biomechanics, locate the underlying dysfunctions, and apply clinical treatment steps to ensure lasting relief and athletic longevity.",
           phaseLabel: "PHASE",
           items: [
-            { id: "01", title: "Assessment", description: "Identify muscular imbalances and structural restrictions.", image: "/images/blog-1.webp", actions: ["Range of Motion Testing", "Postural Alignment Check"] },
-            { id: "02", title: "Targeted Therapy", description: "Address dysfunctions with deep tissue and mobility techniques.", image: "/images/blog-2.webp", actions: ["Trigger Point Releases", "PNF Muscle Stretching"] }
+            { id: "01", title: "Assessment", description: "Identify muscular imbalances and structural restrictions.", image: "", actions: ["Range of Motion Testing", "Postural Alignment Check"] },
+            { id: "02", title: "Targeted Therapy", description: "Address dysfunctions with deep tissue and mobility techniques.", image: "", actions: ["Trigger Point Releases", "PNF Muscle Stretching"] }
           ]
         },
         testimonials: {
@@ -96,8 +96,8 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
           testimonials: [],
           items: [],
           results: [
-            { label: "Post-Workout Recovery", image: "/images/testimonial-1.webp" },
-            { label: "Shoulder Range Restoration", image: "/images/testimonial-2.webp" }
+            { label: "Post-Workout Recovery", image: "" },
+            { label: "Shoulder Range Restoration", image: "" }
           ]
         },
         ctaBanner: {

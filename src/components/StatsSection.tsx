@@ -15,7 +15,7 @@ export default function StatsSection() {
     titleItalicWord = "Standards.",
     description = "At 410 Muscle Therapy, we believe that true recovery is built on specialized bodywork and precision movement science.",
     description2 = "",
-    image = "/uploads/blog/2_massage-service.jpg",
+    image = "",
     imageAlt = "Clinical sports massage session"
   } = stats || {};
 
@@ -38,7 +38,7 @@ export default function StatsSection() {
 
           {/* ── Left Column: Editorial Photo Frame (grows with the text) ──────── */}
           <div className="relative h-[300px] sm:h-[400px] md:h-[480px] lg:h-auto lg:min-h-[480px] w-full rounded-sm overflow-hidden shadow-xl border border-border-light">
-            {image.startsWith('http') || image.startsWith('/uploads') || image.startsWith('/cdn-images') ? (
+            {!image ? null : image.startsWith('http') || image.startsWith('/uploads') || image.startsWith('/cdn-images') ? (
               <img
                 src={image}
                 alt={imageAlt}
