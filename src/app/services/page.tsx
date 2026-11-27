@@ -20,6 +20,8 @@ import ContactFaqSection from '@/components/sections/ContactFaqSection';
 import CtaBanner from '@/components/sections/CtaBanner';
 import Testimonials from '@/components/Testimonials';
 import BlogSection from '@/components/sections/BlogSection';
+import BlogGroupsSection from '@/components/sections/BlogGroupsSection';
+import { getGroupedPosts } from '@/lib/blogPicks';
 
 export const revalidate = 3600; // cached for an hour; admin saves refresh pages immediately via revalidatePath
 
@@ -111,6 +113,19 @@ export default async function ServicesPage() {
   }
   const blogSectionDefaults: any = (mergedData as any).blogSection || {};
 
+  // All articles listed by topic (Admin > Pages > Services > Reviews & Blog > Blog topics).
+  const showBlogGroups = sec.showBlogGroups !== false;
+  const liveServiceSlugs = new Set(
+    // the real services list (the services page record keeps an old copy under content.services)
+    ((globalData as any)?.services?.services || []).filter((s: any) => s?.slug && s.status !== 'draft').map((s: any) => String(s.slug))
+  );
+  const blogGroups = showBlogGroups
+    ? (await getGroupedPosts(sec.blogGroups)).map((g) => ({
+        ...g,
+        serviceSlug: g.serviceSlug && liveServiceSlugs.has(g.serviceSlug) ? g.serviceSlug : undefined,
+      }))
+    : [];
+
   const dates = await getPageDates('services');
   const schema = generateSchema({
     title: servicePageText(null, globalData?.serviceDetailPage, 'breadcrumbServices'),
@@ -146,6 +161,15 @@ export default async function ServicesPage() {
             ctaAll={servicePageText(sec, shared, 'blogCtaAll') || blogSectionDefaults.ctaAll}
             ctaReadMore={servicePageText(sec, shared, 'blogCtaReadMore') || blogSectionDefaults.ctaReadMore}
             posts={blogPosts}
+          />
+        )}
+        {blogGroups.length > 0 && (
+          <BlogGroupsSection
+            label={sec.blogGroupsLabel || undefined}
+            title={sec.blogGroupsTitle || undefined}
+            description={sec.blogGroupsDescription || undefined}
+            serviceCta={sec.blogGroupsServiceCta || undefined}
+            groups={blogGroups}
           />
         )}
         <CtaBanner />

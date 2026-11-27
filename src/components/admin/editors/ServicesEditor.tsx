@@ -13,6 +13,7 @@ import ContentSelector from "@/components/admin/ContentSelector";
 import IconSelector from "@/components/admin/IconSelector";
 import ImageField from "@/components/admin/ImageField";
 import BlogSelector from "@/components/admin/BlogSelector";
+import BlogGroupsEditor from "./BlogGroupsEditor";
 
 const RichTextEditor = dynamic(() => import("@/components/admin/RichTextEditor"), { 
   ssr: false,
@@ -403,6 +404,38 @@ export default function ServicesEditor({ pageId, data, setData }: { pageId: stri
                       onChange={(ids: string[]) => setSec("blogPostIds", ids)}
                     />
                   </div>
+                </div>
+
+                <div className={UI.card + " space-y-5"}>
+                  <label className="flex items-center gap-2 text-[14px] font-bold cursor-pointer">
+                    <input type="checkbox" checked={sec.showBlogGroups !== false} onChange={(e) => setSec("showBlogGroups", e.target.checked)} />
+                    <span>Show the blog topics section (all articles listed by topic)</span>
+                  </label>
+                  <p className="text-[12px] text-[#646970]">
+                    These topics are also used for the &quot;related articles&quot; at the bottom of every blog post: a post suggests the other articles in its topic.
+                  </p>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Small label</label>
+                      <input type="text" value={sec.blogGroupsLabel || ""} onChange={(e) => setSec("blogGroupsLabel", e.target.value)} className={UI.input} placeholder="Blog Topics" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Section title</label>
+                      <input type="text" value={sec.blogGroupsTitle || ""} onChange={(e) => setSec("blogGroupsTitle", e.target.value)} className={UI.input} placeholder="Browse Articles by Treatment" />
+                    </div>
+                    <div className="space-y-1.5">
+                      <label className={UI.label}>Service link text</label>
+                      <input type="text" value={sec.blogGroupsServiceCta || ""} onChange={(e) => setSec("blogGroupsServiceCta", e.target.value)} className={UI.input} placeholder="Explore Service" />
+                    </div>
+                  </div>
+                  <div className="space-y-1.5">
+                    <label className={UI.label}>Short text under the title (optional)</label>
+                    <textarea value={sec.blogGroupsDescription || ""} onChange={(e) => setSec("blogGroupsDescription", e.target.value)} className={UI.input + " h-20"} />
+                  </div>
+                  <BlogGroupsEditor
+                    groups={Array.isArray(sec.blogGroups) ? sec.blogGroups : []}
+                    onChange={(groups) => setSec("blogGroups", groups)}
+                  />
                 </div>
               </div>
             )}

@@ -21,6 +21,7 @@ import {
 
 import connectToDatabase from "@/lib/mongodb";
 import Post from "@/models/Post";
+import { getRelatedPostIds } from "@/lib/blogPicks";
 import Page from "@/models/Page";
 import SiteContent from "@/models/Content";
 import ReadingProgress from "@/components/blog/ReadingProgress";
@@ -149,19 +150,38 @@ export default async function BlogPostPage({ params }: Props) {
     title: blogPageData.relatedSection?.title || "Related Articles & Clinical Guides"
   };
 
-  // 3. Fetch 3 Related Articles (excluding current post)
+  // 3. Fetch 3 Related Articles (excluding current post):
+  //    first the other articles in this post's blog topic group / service page (Admin > Pages > Services >
+  //    Blog topics, and Admin > Services > Blog articles), then same-category, then newest.
   const postCategoryIds = Array.isArray(post.categories) ? post.categories.map((c: any) => c._id || c) : [];
 
-  let relatedPostsRaw = await Post.find({
-    _id: { $ne: post._id },
-    status: "published",
-    isTrashed: { $ne: true },
-    ...(postCategoryIds.length > 0 ? { categories: { $in: postCategoryIds } } : {})
-  })
-    .populate("categories")
-    .sort({ publishedAt: -1, createdAt: -1 })
-    .limit(3)
-    .lean();
+  let relatedPostsRaw: any[] = [];
+  const relatedIds = (await getRelatedPostIds(String(post._id))).slice(0, 8);
+  if (relatedIds.length > 0) {
+    const grouped: any[] = await Post.find({
+      _id: { $in: relatedIds },
+      status: "published",
+      isTrashed: { $ne: true }
+    })
+      .populate("categories")
+      .lean();
+    grouped.sort((a: any, b: any) => relatedIds.indexOf(String(a._id)) - relatedIds.indexOf(String(b._id)));
+    relatedPostsRaw = grouped.slice(0, 3);
+  }
+
+  if (relatedPostsRaw.length < 3) {
+    const sameCategory = await Post.find({
+      _id: { $nin: [post._id, ...relatedPostsRaw.map((r: any) => r._id)] },
+      status: "published",
+      isTrashed: { $ne: true },
+      ...(postCategoryIds.length > 0 ? { categories: { $in: postCategoryIds } } : {})
+    })
+      .populate("categories")
+      .sort({ publishedAt: -1, createdAt: -1 })
+      .limit(3 - relatedPostsRaw.length)
+      .lean();
+    relatedPostsRaw = [...relatedPostsRaw, ...sameCategory];
+  }
 
   if (relatedPostsRaw.length < 3) {
     const existingIds = [post._id, ...relatedPostsRaw.map((r: any) => r._id)];
