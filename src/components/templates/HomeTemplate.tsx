@@ -62,11 +62,17 @@ export default function HomeTemplate({ pageData, params }: { pageData?: any, par
         ctaAll={pageData?.content?.blogSection?.ctaAll || blogSection?.ctaAll}
         ctaReadMore={pageData?.content?.blogSection?.ctaReadMore || blogSection?.ctaReadMore}
         posts={(() => {
-          const selected = pageData?.content?.blogSection?.selectedPosts || blogSection?.selectedPosts || [];
-          const filtered = Array.isArray(selected) && selected.length > 0 
-            ? allBlogs.filter((p: any) => selected.map(String).includes(String(p._id)))
+          // Loaded on the server (src/lib/blogPicks.ts getHomeBlogPosts), already newest first.
+          if (Array.isArray(pageData?.homeBlogPosts) && pageData.homeBlogPosts.length > 0) return pageData.homeBlogPosts;
+          const all: any[] = Array.isArray(allBlogs) ? allBlogs : [];
+          const time = (p: any) => new Date(p?.publishedAt || p?.createdAt || 0).getTime() || 0;
+          const newestFirst = (list: any[]) => [...list].sort((a, b) => time(b) - time(a));
+          const section = pageData?.content?.blogSection || blogSection || {};
+          const selected = Array.isArray(section.selectedPosts) ? section.selectedPosts.map(String) : [];
+          const filtered = section.postsMode === 'picked' && selected.length > 0
+            ? all.filter((p: any) => selected.includes(String(p._id)))
             : [];
-          return filtered.length > 0 ? filtered : (allBlogs.length > 0 ? allBlogs.slice(0, 3) : []);
+          return filtered.length > 0 ? newestFirst(filtered) : newestFirst(all).slice(0, Number(section.latestCount) || 9);
         })()}
       />
 

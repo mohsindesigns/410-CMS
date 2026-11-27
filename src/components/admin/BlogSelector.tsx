@@ -16,17 +16,21 @@ interface BlogSelectorProps {
     selectedIds: string[];
     onChange: (ids: string[]) => void;
     label?: string;
+    /** Show 1, 2, 3... on picked cards: the order they appear on the page (click order). */
+    showOrder?: boolean;
 }
 
 export default function BlogSelector({ 
     selectedIds = [], 
     onChange, 
-    label = "Select Featured Blogs" 
+    label = "Select Featured Blogs",
+    showOrder = false
 }: BlogSelectorProps) {
     const [search, setSearch] = useState("");
     const [allPosts, setAllPosts] = useState<BlogPost[]>([]);
     const [loading, setLoading] = useState(false);
-    const [viewMode, setViewMode] = useState<'grid' | 'list'>('list');
+    const [loaded, setLoaded] = useState(false);
+    const [onlySelected, setOnlySelected] = useState(false);
 
     useEffect(() => {
         fetchPosts();
@@ -38,7 +42,8 @@ export default function BlogSelector({
             const res = await fetch('/api/blog');
             if (res.ok) {
                 const data = await res.json();
-                setAllPosts(data);
+                setAllPosts(Array.isArray(data) ? data : []);
+                setLoaded(true);
             }
         } catch (error) {
             console.error("Failed to fetch blogs:", error);
@@ -47,17 +52,29 @@ export default function BlogSelector({
         }
     };
 
+    // Picked ids that still point to a published article (deleted/draft/trashed ones are never shown on the site).
+    const liveSelected = useMemo(() => {
+        const ids = (selectedIds || []).map(String);
+        if (!loaded) return ids;
+        const live = new Set(allPosts.map(p => String(p._id)));
+        return ids.filter(id => live.has(id));
+    }, [selectedIds, allPosts, loaded]);
+
     const filteredPosts = useMemo(() => {
-        return allPosts.filter(post => 
-            post.title.toLowerCase().includes(search.toLowerCase())
-        );
-    }, [allPosts, search]);
+        const q = search.toLowerCase();
+        const matches = allPosts.filter(post => (post.title || "").toLowerCase().includes(q));
+        if (!onlySelected) return matches;
+        // "Selected" view lists the picks in their page order.
+        return liveSelected
+            .map(id => matches.find(p => String(p._id) === id))
+            .filter(Boolean) as BlogPost[];
+    }, [allPosts, search, onlySelected, liveSelected]);
 
     const togglePost = (id: string) => {
-        if (selectedIds.includes(id)) {
-            onChange(selectedIds.filter(i => i !== id));
+        if (liveSelected.includes(id)) {
+            onChange(liveSelected.filter(i => i !== id));
         } else {
-            onChange([...selectedIds, id]);
+            onChange([...liveSelected, id]);
         }
     };
 
@@ -67,10 +84,26 @@ export default function BlogSelector({
             <div className="p-4 bg-[#f6f7f7] border-b border-[#c3c4c7] flex flex-wrap items-center justify-between gap-4">
                 <div className="flex flex-col gap-1">
                     <label className="text-[13px] font-bold text-[#1d2327] uppercase tracking-tight">{label}</label>
-                    <p className="text-[11px] text-[#646970]">Select the articles you want to feature on this page ({selectedIds.length} selected)</p>
+                    <p className="text-[11px] text-[#646970]">Select the articles you want to feature on this page ({liveSelected.length} selected)</p>
                 </div>
                 
                 <div className="flex items-center gap-3">
+                    <div className="flex border border-[#8c8f94] rounded-[3px] overflow-hidden text-[12px] font-semibold">
+                        <button
+                            type="button"
+                            onClick={() => setOnlySelected(false)}
+                            className={`px-3 py-1.5 ${!onlySelected ? "bg-[#2271b1] text-white" : "bg-white text-[#2271b1]"}`}
+                        >
+                            All ({allPosts.length})
+                        </button>
+                        <button
+                            type="button"
+                            onClick={() => setOnlySelected(true)}
+                            className={`px-3 py-1.5 border-l border-[#8c8f94] ${onlySelected ? "bg-[#2271b1] text-white" : "bg-white text-[#2271b1]"}`}
+                        >
+                            Selected ({liveSelected.length})
+                        </button>
+                    </div>
                     <div className="relative">
                         <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-3.5 h-3.5 text-[#8c8f94]" />
                         <input
@@ -94,7 +127,8 @@ export default function BlogSelector({
                 ) : filteredPosts.length > 0 ? (
                     <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 max-h-[500px] overflow-y-auto p-1 custom-scrollbar">
                         {filteredPosts.map(post => {
-                            const isSelected = selectedIds.includes(post._id);
+                            const isSelected = liveSelected.includes(String(post._id));
+                            const order = isSelected ? liveSelected.indexOf(String(post._id)) + 1 : 0;
                             return (
                                 <button
                                     key={post._id}
@@ -120,7 +154,7 @@ export default function BlogSelector({
                                         <div className={`absolute top-2 right-2 w-6 h-6 rounded-full border flex items-center justify-center shadow-sm transition-all ${
                                             isSelected ? "bg-[#2271b1] border-[#2271b1] text-white" : "bg-white/90 border-[#c3c4c7] text-[#c3c4c7]"
                                         }`}>
-                                            {isSelected && <Check className="w-3.5 h-3.5" />}
+                                            {isSelected && (showOrder ? <span className="text-[11px] font-bold">{order}</span> : <Check className="w-3.5 h-3.5" />)}
                                         </div>
                                     </div>
 
@@ -148,8 +182,10 @@ export default function BlogSelector({
                 ) : (
                     <div className="py-20 text-center border-2 border-dashed border-[#dcdcde] rounded-sm m-2">
                         <BookOpen className="w-10 h-10 text-[#dcdcde] mx-auto mb-3" />
-                        <p className="text-[14px] text-[#646970] font-medium">No articles found matching "{search}"</p>
-                        <button onClick={() => setSearch("")} className="text-[#2271b1] underline text-[13px] mt-1">Clear search</button>
+                        <p className="text-[14px] text-[#646970] font-medium">
+                            {onlySelected && !search ? "No articles selected yet" : `No articles found matching "${search}"`}
+                        </p>
+                        {search && <button type="button" onClick={() => setSearch("")} className="text-[#2271b1] underline text-[13px] mt-1">Clear search</button>}
                     </div>
                 )}
             </div>
@@ -159,6 +195,7 @@ export default function BlogSelector({
                 <span className="text-[11px] text-[#646970] font-medium uppercase tracking-wide">Total Articles: {allPosts.length}</span>
                 {selectedIds.length > 0 && (
                     <button 
+                        type="button"
                         onClick={() => onChange([])}
                         className="text-[#d63638] text-[11px] font-bold uppercase hover:underline"
                     >

@@ -132,11 +132,10 @@ export default async function RootLayout({
     const mongoose = (await import('mongoose')).default;
     const Post = (await import('@/models/Post')).default;
 
-    // Home/About "selected posts" resolve by _id against this list, and nested providers no
-    // longer refetch /api/blog - so besides the 6 newest posts, always include the hand-picked ones.
-    // Posts picked for the home blog section AND posts picked on individual service pages.
-    const servicePicked: any[] = (globalContent?.data?.services?.services || []).flatMap((s: any) => (Array.isArray(s?.blogPostIds) ? s.blogPostIds : []));
-    const selectedIds: string[] = Array.from(new Set([...(globalContent?.data?.blogSection?.selectedPosts || []), ...servicePicked].map(String)))
+    // About "selected posts" resolve by _id against this list, and nested providers no longer
+    // refetch /api/blog - so besides the 6 newest posts, include the home hand-picked ones.
+    // The home page and service pages load their own blog cards on the server (src/lib/blogPicks.ts).
+    const selectedIds: string[] = Array.from(new Set([...(globalContent?.data?.blogSection?.selectedPosts || [])].map(String)))
       .filter((id: string) => mongoose.isValidObjectId(id))
       .slice(0, 40);
     const baseFilter = { status: 'published', isTrashed: { $ne: true } };

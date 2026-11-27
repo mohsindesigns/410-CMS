@@ -27,6 +27,7 @@ import { BASE_URL } from '@/lib/constants';
 import { computeAggregateRating } from '@/lib/reviews';
 import { parseCustomSchema, serializeJsonLd, customSchemaMode } from '@/lib/schema-generator';
 import { stripHtml } from '@/lib/utils';
+import { getPostsByIds } from '@/lib/blogPicks';
 
 interface PageProps {
   params: Promise<{ slug: string[] }>;
@@ -229,6 +230,9 @@ export default async function DynamicPage({ params }: PageProps) {
       const customBlocks = parseCustomSchema(webpifyOwnImageUrls(service?.seo?.schemaData));
       const useAutoSchema = !customBlocks || customSchemaMode(service?.seo) === 'append';
 
+      // Related blogs picked for this service in Admin > Services > (service) > Blog articles, in that order.
+      const relatedPosts = await getPostsByIds(service?.blogPostIds);
+
       return (
         <div>
           {useAutoSchema && (
@@ -253,7 +257,7 @@ export default async function DynamicPage({ params }: PageProps) {
               dangerouslySetInnerHTML={{ __html: serializeJsonLd(block) }}
             />
           ))}
-          <ServiceDetailTemplate pageData={service} params={Promise.resolve({ slug })} />
+          <ServiceDetailTemplate pageData={service} params={Promise.resolve({ slug })} relatedPosts={relatedPosts} />
         </div>
       );
     }

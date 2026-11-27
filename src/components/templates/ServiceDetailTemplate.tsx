@@ -77,7 +77,7 @@ function sh(html: string | undefined | null): string {
     .trim();
 }
 
-export default function ServiceDetailTemplate({ pageData, params: syncParams }: { pageData?: any, params?: any }) {
+export default function ServiceDetailTemplate({ pageData, params: syncParams, relatedPosts }: { pageData?: any, params?: any, relatedPosts?: any[] }) {
   const { services: servicesData, globalMetadata, serviceDetailPage: globalServiceDetailPage, allBlogs, blogSection } = useContent();
 
   const resolvedSlug = pageData?.slug || (syncParams?.slug ? (Array.isArray(syncParams.slug) ? syncParams.slug.join('/') : syncParams.slug) : null);
@@ -269,14 +269,16 @@ export default function ServiceDetailTemplate({ pageData, params: syncParams }: 
     return ordered.filter((s: any) => s && s.slug && s.slug !== service.slug && s.status !== 'draft').slice(0, 24);
   })();
 
-  // Blog posts for this page: the ones that mention this service's key words first, then the newest, max 3.
+  // Blog posts for this page: the related blogs picked in Admin > Services (loaded on the server, in the picked order).
+  // If none are picked: the ones that mention this service's key words first, then the newest, max 3.
   const blogPosts: any[] = (() => {
+    if (Array.isArray(relatedPosts) && relatedPosts.length > 0) return relatedPosts;
     const all: any[] = Array.isArray(allBlogs) ? allBlogs : [];
     if (all.length === 0) return [];
     const pickedIds: string[] = Array.isArray(service.blogPostIds) ? service.blogPostIds.map(String) : [];
     if (pickedIds.length > 0) {
       const chosen = pickedIds.map((id) => all.find((p: any) => String(p._id) === id)).filter(Boolean);
-      if (chosen.length > 0) return chosen.slice(0, 6);
+      if (chosen.length > 0) return chosen;
     }
     const STOP = new Set(['maryland', 'timonium', 'massage', 'therapy', 'therapist', 'muscle', 'service', 'services', 'expert', 'best', 'clinic']);
     const tokens = sh(service.menuLabel || service.title || service.name).toLowerCase().split(/[^a-z]+/).filter((w) => w.length >= 4 && !STOP.has(w));

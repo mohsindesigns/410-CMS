@@ -17,6 +17,7 @@ import ServiceDetailTemplate from "@/components/templates/ServiceDetailTemplate"
 import { BASE_URL } from "@/lib/constants";
 import { getRobotsMetadata, buildPageTitle } from "@/lib/seo";
 import { ogImageList, twImageList } from "@/lib/shareImages";
+import { getHomeBlogPosts, getPostsByIds } from "@/lib/blogPicks";
 
 export async function generateMetadata(): Promise<Metadata> {
   await connectToDatabase();
@@ -210,6 +211,7 @@ export default async function HomePage() {
     }).lean();
     if (pageDoc) {
       const page = localizeDeep(JSON.parse(JSON.stringify(pageDoc)));
+      const homeBlogPosts = page.template === 'home' ? await getHomeBlogPosts(content?.data?.blogSection) : undefined;
       return (
         <>
           {schemaScripts}
@@ -221,7 +223,8 @@ export default async function HomePage() {
               // live global content must win. Other templates keep page-specific overrides on top.
               content: page.template === 'home'
                 ? { ...(page.content || {}), ...(content?.data || {}) }
-                : { ...(content?.data || {}), ...(page.content || {}) }
+                : { ...(content?.data || {}), ...(page.content || {}) },
+              ...(homeBlogPosts ? { homeBlogPosts } : {}),
             }} 
             params={Promise.resolve({ slug: ['/'] })} 
           />
@@ -233,10 +236,11 @@ export default async function HomePage() {
       (s._id === homepageId || s.slug === homepageId) && s.status !== 'draft'
     );
     if (serviceDoc) {
+      const relatedPosts = await getPostsByIds(serviceDoc.blogPostIds);
       return (
         <>
           {schemaScripts}
-          <ServiceDetailTemplate params={Promise.resolve({ slug: serviceDoc.slug })} />
+          <ServiceDetailTemplate params={Promise.resolve({ slug: serviceDoc.slug })} relatedPosts={relatedPosts} />
         </>
       );
     }
@@ -249,11 +253,12 @@ export default async function HomePage() {
     isTrashed: { $ne: true },
   }).lean();
   const homePage = homePageDoc ? localizeDeep(JSON.parse(JSON.stringify(homePageDoc))) : null;
+  const homeBlogPosts = await getHomeBlogPosts(content?.data?.blogSection);
 
   return (
     <>
       {schemaScripts}
-      <HomeTemplate pageData={{ ...(homePage || {}), content: { ...(homePage?.content || {}), ...(content?.data || {}) } }} />
+      <HomeTemplate pageData={{ ...(homePage || {}), content: { ...(homePage?.content || {}), ...(content?.data || {}) }, homeBlogPosts }} />
     </>
   );
 }

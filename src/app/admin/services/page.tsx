@@ -1261,8 +1261,9 @@ export default function ServicesAdminPage() {
                           </div>
                           <div className="space-y-1">
                             <label className="text-[11px] font-bold uppercase tracking-wider text-slate-500">Which articles to show</label>
-                            <p className="text-[12px] text-[#646970]">Pick the articles for this page, or leave empty to show the newest articles that mention this service.</p>
+                            <p className="text-[12px] text-[#646970]">Pick the related articles for this service. They show on the page in the order you pick them (the number on each card). Leave empty to show the newest articles that mention this service.</p>
                             <BlogSelector
+                              showOrder
                               label="Select articles for this page"
                               selectedIds={Array.isArray(form.blogPostIds) ? form.blogPostIds : []}
                               onChange={(ids: string[]) => setForm({ ...form, blogPostIds: ids })}

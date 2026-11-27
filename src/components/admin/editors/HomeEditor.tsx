@@ -1405,11 +1405,50 @@ export default function HomeEditor({ pageId, data, setData }: { pageId: string, 
               </div>
 
               <div className="space-y-4 pt-4 border-t border-[#f0f0f1]">
-                <h3 className={UI.sectionHeader}>2. Featured Blog Posts Selection</h3>
-                <BlogSelector
-                  selectedIds={data.blogSection?.selectedPosts || []}
-                  onChange={(ids) => updateSection("blogSection", "selectedPosts", ids)}
-                />
+                <h3 className={UI.sectionHeader}>2. Which Articles to Show</h3>
+                <div className={UI.card + " space-y-3"}>
+                  <p className="text-[12px] text-[#646970]">Articles are always shown newest first.</p>
+                  <label className="flex items-start gap-2 text-[13px] cursor-pointer">
+                    <input
+                      type="radio"
+                      name="home-blog-posts-mode"
+                      className="mt-0.5"
+                      checked={data.blogSection?.postsMode !== "picked"}
+                      onChange={() => updateSection("blogSection", "postsMode", "latest")}
+                    />
+                    <span><strong>Newest articles automatically</strong> (new articles appear here as soon as they are published)</span>
+                  </label>
+                  {data.blogSection?.postsMode !== "picked" && (
+                    <div className="space-y-1.5 pl-6">
+                      <label className={UI.label}>How many articles to show</label>
+                      <input
+                        type="number"
+                        min={1}
+                        max={24}
+                        value={data.blogSection?.latestCount ?? ""}
+                        onChange={(e) => updateSection("blogSection", "latestCount", e.target.value === "" ? undefined : Math.max(1, Math.min(24, Number(e.target.value))))}
+                        className={UI.input + " max-w-[120px]"}
+                        placeholder="9"
+                      />
+                    </div>
+                  )}
+                  <label className="flex items-start gap-2 text-[13px] cursor-pointer">
+                    <input
+                      type="radio"
+                      name="home-blog-posts-mode"
+                      className="mt-0.5"
+                      checked={data.blogSection?.postsMode === "picked"}
+                      onChange={() => updateSection("blogSection", "postsMode", "picked")}
+                    />
+                    <span><strong>Only the articles I pick below</strong> (shown newest first)</span>
+                  </label>
+                </div>
+                {data.blogSection?.postsMode === "picked" && (
+                  <BlogSelector
+                    selectedIds={data.blogSection?.selectedPosts || []}
+                    onChange={(ids) => updateSection("blogSection", "selectedPosts", ids)}
+                  />
+                )}
               </div>
             </div>
           )}
